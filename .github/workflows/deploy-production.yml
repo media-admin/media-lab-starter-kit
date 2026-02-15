@@ -1,0 +1,75 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Build assets
+        run: npm run build:production
+      
+      # NEW: Create pre-deployment backup
+      - name: Create backup
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.PROD_SSH_KEY }}
+          PROD_SERVER: ${{ secrets.PROD_SERVER }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H $PROD_SERVER >> ~/.ssh/known_hosts
+          
+          ssh $PROD_SERVER "/path/to/scripts/pre-deploy-backup.sh production"
+      
+      - name: Deploy to production
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.PROD_SSH_KEY }}
+          PROD_SERVER: ${{ secrets.PROD_SERVER }}
+          PROD_PATH: ${{ secrets.PROD_PATH }}
+        run: |
+          rsync -avz --delete \
+            cms/wp-content/themes/custom-theme/ \
+            $PROD_SERVER:$PROD_PATH/wp-content/themes/custom-theme/
+          
+          rsync -avz --delete \
+            cms/wp-content/mu-plugins/ \
+            $PROD_SERVER:$PROD_PATH/wp-content/mu-plugins/
+          
+          ssh $PROD_SERVER "cd $PROD_PATH && wp cache flush"
+      
+      - name: Notify success
+        if: success()
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        run: |
+          curl -X POST $SLACK_WEBHOOK \
+            -H 'Content-Type: application/json' \
+            -d '{
+              "text": "✅ Production deployment successful (backup created)",
+              "attachments": [{
+                "color": "good",
+                "fields": [
+                  {"title": "Environment", "value": "Production", "short": true},
+                  {"title": "Backup", "value": "Created", "short": true}
+                ]
+              }]
+            }'

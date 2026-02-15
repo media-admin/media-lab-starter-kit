@@ -1,0 +1,67 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Notify start
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        run: |
+          curl -X POST $SLACK_WEBHOOK \
+            -H 'Content-Type: application/json' \
+            -d '{
+              "text": "🚀 Staging deployment started",
+              "attachments": [{
+                "color": "warning",
+                "fields": [
+                  {"title": "Branch", "value": "'"$GITHUB_REF_NAME"'", "short": true},
+                  {"title": "Commit", "value": "'"$GITHUB_SHA"'", "short": true},
+                  {"title": "Author", "value": "'"$GITHUB_ACTOR"'", "short": true}
+                ]
+              }]
+            }'
+      
+      # ... deployment steps ...
+      
+      - name: Notify success
+        if: success()
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        run: |
+          curl -X POST $SLACK_WEBHOOK \
+            -H 'Content-Type: application/json' \
+            -d '{
+              "text": "✅ Staging deployment successful",
+              "attachments": [{
+                "color": "good",
+                "fields": [
+                  {"title": "Environment", "value": "Staging", "short": true},
+                  {"title": "URL", "value": "https://staging.your-domain.com", "short": true}
+                ]
+              }]
+            }'
+      
+      - name: Notify failure
+        if: failure()
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        run: |
+          curl -X POST $SLACK_WEBHOOK \
+            -H 'Content-Type: application/json' \
+            -d '{
+              "text": "❌ Staging deployment failed",
+              "attachments": [{
+                "color": "danger",
+                "fields": [
+                  {"title": "Branch", "value": "'"$GITHUB_REF_NAME"'", "short": true},
+                  {"title": "Check", "value": "'"$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"'", "short": false}
+                ]
+              }]
+            }'

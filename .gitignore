@@ -1,0 +1,87 @@
+# WordPress Core
+/cms/wp-admin/
+/cms/wp-includes/
+/cms/wp-*.php
+/cms/xmlrpc.php
+/cms/readme.html
+/cms/license.txt
+
+# WordPress Config
+/cms/wp-config.php
+
+# Content Uploads
+/cms/wp-content/uploads/
+
+# WooCommerce Plugin
+/cms/wp-content/plugins/wooCommerce/
+*/woocommerce-de_DE*.*
+
+# Node modules
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Build artifacts
+/cms/wp-content/themes/custom-theme/assets/dist/
+*.map
+
+# OS files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# IDE
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Logs
+*.log
+/cms/wp-content/debug.log
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Backups
+*.backup
+*-backup/
+*.sql
+*.sql.gz
+
+# Environment
+.env
+.env.local
+
+# Composer
+/vendor/
+composer.lock
+
+# Package managers
+package-lock.json
+yarn.lock
+
+# Cache
+/cms/wp-content/cache/
+/cms/wp-content/w3tc-config/
+
+# Specific plugins (wenn nicht versioniert werden sollen)
+/cms/wp-content/plugins/
+
+# Keep custom code
+!/cms/wp-content/mu-plugins/
+!/cms/wp-content/themes/custom-theme/
+!/cms/wp-content/plugins/custom-*/
+
+
+# Environment-specific configs (DON'T commit these!)
+/cms/wp-config-local.php
+/cms/wp-config-staging.php
+/cms/wp-config-production.php
+
+# Keep sample files
+!/cms/wp-config-*.sample.php

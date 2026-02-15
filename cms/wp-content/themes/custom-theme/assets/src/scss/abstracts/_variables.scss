@@ -1,0 +1,203 @@
+// ==========================================================================
+// Design Tokens aus Figma
+// ==========================================================================
+
+// Brand Colors
+$color-primary: #ff0000;      // Aus Figma: "Primary"
+$color-secondary: #ff6b6b;    // Aus Figma: "Secondary"
+$color-accent: #00d9ff;       // Aus Figma: "Accent"
+
+// Neutral Colors
+$color-black: #000000;        // Aus Figma: "Black"
+$color-dark: #1a1a1a;        // Aus Figma: "Dark"
+$color-grey-dark: #4a4a4a;   // Aus Figma: "Grey/Dark"
+$color-grey: #9b9b9b;        // Aus Figma: "Grey"
+$color-grey-light: #e0e0e0;  // Aus Figma: "Grey/Light"
+$color-light: #f5f5f5;       // Aus Figma: "Light"
+$color-white: #ffffff;       // Aus Figma: "White"
+
+$color-gray-100: #9b9b9b;        // Aus Figma: "Grey"
+$color-gray-200: #9b9b9b;        // Aus Figma: "Grey"
+$color-gray-50: #e0e0e0;  // Aus Figma: "Grey/Light"
+$color-gray-400: #e0e0e0;  // Aus Figma: "Grey/Light"
+
+
+$color-purple: purple;
+
+// Semantic Colors
+$color-success: #10b981;
+$color-warning: #f59e0b;
+$color-error: #ef4444;
+$color-info: #3b82f6;
+
+// Usage Colors
+$color-text: $color-dark;
+$color-text-muted: $color-grey-dark;
+$color-text-light: $color-grey;
+$color-background: $color-white;
+$color-border: $color-grey-light;
+
+
+
+// Typography
+$font-primary: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+$font-secondary: 'Merriweather', Georgia, serif;
+
+// Font Sizes (aus Figma Text Styles)
+$font-size-xs: 12px;       // Figma: "Text/XSmall"
+$font-size-sm: 14px;       // Figma: "Text/Small"
+$font-size-base: 16px;     // Figma: "Text/Base"
+$font-size-lg: 18px;       // Figma: "Text/Large"
+$font-size-xl: 20px;       // Figma: "Text/XLarge"
+$font-size-2xl: 24px;       // Figma: "Text/2XLarge"
+$font-size-3xl: 28px;       // Figma: "Text/3XLarge"
+
+// Headings (aus Figma Text Styles)
+$font-size-h1: 48px;       // Figma: "Heading 1"
+$font-size-h2: 36px;       // Figma: "Heading 2"
+$font-size-h3: 28px;       // Figma: "Heading 3"
+$font-size-h4: 24px;       // Figma: "Heading 4"
+$font-size-h5: 20px;       // Figma: "Heading 5"
+$font-size-h6: 18px;       // Figma: "Heading 6"
+
+// Font Weights
+$font-weight-light: 300;
+$font-weight-normal: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;
+
+// Line Heights
+$line-height-tight: 1.2;
+$line-height-base: 1.6;
+$line-height-relaxed: 1.8;
+
+
+
+// Spacing System (8px Base)
+$spacing-unit: 8px;
+
+$spacing-0: 0;
+$spacing-1: $spacing-unit;        // 8px
+$spacing-2: $spacing-unit * 2;    // 16px
+$spacing-3: $spacing-unit * 3;    // 24px
+$spacing-4: $spacing-unit * 4;    // 32px
+$spacing-5: $spacing-unit * 5;    // 40px
+$spacing-6: $spacing-unit * 6;    // 48px
+$spacing-7: $spacing-unit * 7;    // 56px
+$spacing-8: $spacing-unit * 8;    // 64px
+$spacing-10: $spacing-unit * 10;  // 80px
+$spacing-12: $spacing-unit * 12;  // 96px
+
+// Semantic Names
+$spacing-xs: $spacing-1;
+$spacing-sm: $spacing-2;
+$spacing-md: $spacing-3;
+$spacing-lg: $spacing-4;
+$spacing-xl: $spacing-6;
+$spacing-2xl: $spacing-8;
+
+
+
+// Layout
+$container-width: 1200px;     // Figma: Desktop Frame Width
+$container-max-width: 1280px;
+$container-padding: $spacing-md;
+
+// Breakpoints (aus Figma Frames)
+$breakpoint-xs: 375px;        // Mobile
+$breakpoint-sm: 576px;        // Mobile Landscape
+$breakpoint-md: 768px;        // Tablet
+$breakpoint-lg: 992px;        // Tablet Landscape
+$breakpoint-xl: 1200px;       // Desktop
+$breakpoint-2xl: 1440px;      // Large Desktop
+
+// Grid
+$grid-columns: 12;
+$grid-gap: $spacing-3;
+
+
+
+// Border Radius (aus Figma Corner Radius)
+$radius-base: 2px;
+$radius-none: 0;
+$radius-sm: 4px;
+$radius-md: 8px;
+$radius-lg: 16px;
+$radius-xl: 24px;
+$radius-full: 9999px;
+
+// Shadows (aus Figma Effects)
+$shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+$shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+$shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+$shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
+
+// Transitions
+$transition-fast: 0.15s ease;
+$transition-base: 0.3s ease;
+$transition-slow: 0.5s ease;
+
+// Z-Index Scale
+$z-header: 100;
+$z-dropdown: 1000;
+$z-modal: 2000;
+$z-tooltip: 3000;
+
+
+// Notification Colors
+$color-success: #10b981 !default;
+$color-danger: #ef4444;
+$color-error: #ef4444 !default;
+$color-warning: #f59e0b !default;
+$color-info: #3b82f6 !default;
+
+
+
+
+// Success (Grün für Produkte)
+$color-success: #10b981;
+$color-success-light: #d1fae5;
+
+// Info (Blau für Projekte)
+$color-info: #3b82f6;
+$color-info-light: #dbeafe;
+
+// Warning (Gelb für Services)
+$color-warning: #f59e0b;
+$color-warning-light: #fef3c7;
+
+// Error (Rot für Out of Stock)
+$color-error: #ef4444;
+$color-error-light: #fee2e2;
+
+
+
+
+
+// Light Mode Colors (default)
+:root {
+  --color-background: #{$color-white};
+  --color-text: #{$color-dark};
+  --color-text-muted: #{$color-grey-dark};
+  --color-text-light: #{$color-grey};
+  --color-border: #{$color-grey-light};
+  --color-card-bg: #{$color-white};
+}
+
+// Dark Mode Colors
+[data-theme="dark"] {
+  --color-background: #1a1a1a;
+  --color-text: #f5f5f5;
+  --color-text-muted: #6b7280:
+  --color-text-light: #b0b0b0;
+  --color-border: #333333;
+  --color-card-bg: #2a2a2a;
+}
+
+// Use CSS Variables
+$color-background: var(--color-background);
+$color-text: var(--color-text);
+$color-text-muted: var(--color-text-muted);
+$color-text-light: var(--color-text-light);
+$color-border: var(--color-border);
