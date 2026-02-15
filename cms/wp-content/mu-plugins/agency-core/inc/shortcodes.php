@@ -2,30 +2,13 @@
 /**
  * Shortcodes
  * 
- * Load all shortcode functionality from custom-blocks.
- * This file acts as a bridge to the existing shortcodes.
+ * All shortcode functionality for Agency Core.
  * 
  * @package Agency_Core
  */
 
 if (!defined('ABSPATH')) {
     exit;
-}
-
-/**
- * Include all shortcodes from custom-blocks
- * 
- * We're loading the existing custom-blocks.php file here.
- * In the future, these could be refactored into separate files.
- */
-$custom_blocks_file = WPMU_PLUGIN_DIR . '/custom-blocks/custom-blocks.php';
-
-if (file_exists($custom_blocks_file)) {
-    require_once $custom_blocks_file;
-} else {
-    add_action('admin_notices', function() {
-        echo '<div class="notice notice-error"><p><strong>Agency Core:</strong> Shortcodes file not found. Please ensure custom-blocks.php exists.</p></div>';
-    });
 }
 
 /**
@@ -473,7 +456,7 @@ function hero_slider_query_shortcode($atts) {
         
         // Last fallback: Placeholder
         if (empty($image_desktop)) {
-            $image_desktop = 'https://via.placeholder.com/1920x1080?text=Hero+Slide';
+            $image_desktop = 'data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1920' height='1080'%3E%3Crect fill='%23667eea' width='1920' height='1080'/%3E%3Ctext fill='white' x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-size='48' font-family='sans-serif'%3EHero Slide%3C/text%3E%3C/svg%3E';
             $image_mobile = $image_desktop;
         }
         

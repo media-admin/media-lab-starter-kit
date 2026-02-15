@@ -3,31 +3,7 @@ import '../scss/style.scss';
 
 // Import Sentry
 import { initSentry } from './utils/sentry';
-
-// Initialize Sentry
 initSentry();
-
-// // Swiper
-// import Swiper from 'swiper';
-// import { Navigation as SwiperNavigation, Pagination as SwiperPagination, Autoplay } from 'swiper/modules';
-// import 'swiper/css';
-// import 'swiper/css/navigation';
-// import 'swiper/css/pagination';
-
-// // Stelle Swiper global zur Verfügung
-// window.Swiper = Swiper;
-// window.SwiperModules = { 
-//   Navigation: SwiperNavigation, 
-//   Pagination: SwiperPagination, 
-//   Autoplay 
-// };
-
-// // Swiper komplett aus node_modules
-// import Swiper from 'swiper/bundle';
-// import 'swiper/css/bundle';
-
-// // Global verfügbar machen
-// window.Swiper = Swiper;
 
 // Components
 import HeroSlider from './components/hero-slider';
@@ -54,5 +30,50 @@ import './components/load-more';
 import './components/google-maps';
 import AjaxFilters from './components/ajax-filters.js';
 
+// Helper: Sichere Initialisierung mit Error-Tracking
+const safeInit = (name, initFn) => {
+  try {
+    initFn();
+    console.log(`✅ ${name} initialisiert`);
+  } catch (error) {
+    console.error(`❌ FEHLER in ${name}:`, error);
+    console.error(`Stack:`, error.stack);
+  }
+};
+
+// Zentrale DOM Ready Initialisierung
+const initApp = () => {
+  console.log('🚀 Initialisiere Komponenten...');
+  
+  // Initialisiere jede Komponente einzeln mit Error-Tracking
+  safeInit('Accordion', () => new Accordion());
+  safeInit('HeroSlider', () => new HeroSlider());
+  safeInit('BackToTop', () => new BackToTop());
+  safeInit('CookieNotice', () => new CookieNotice());
+  safeInit('DarkMode', () => new DarkMode());
+  safeInit('ImageComparison', () => new ImageComparison());
+  safeInit('Lightbox', () => new Lightbox());
+  safeInit('LogoCarousel', () => new LogoCarousel());
+  safeInit('Modal', () => new Modal());
+  safeInit('Navigation', () => new Navigation());
+  safeInit('Notifications', () => new Notifications());
+  safeInit('ScrollAnimations', () => new ScrollAnimations());
+  safeInit('Spoiler', () => new Spoiler());
+  safeInit('StatsCounter', () => new StatsCounter());
+  safeInit('Tabs', () => new Tabs());
+  safeInit('TestimonialsSlider', () => new TestimonialsSlider());
+  safeInit('VideoPlayer', () => new VideoPlayer());
+  safeInit('AjaxFilters', () => new AjaxFilters());
+  
+  console.log('✅ Komponenten-Initialisierung abgeschlossen');
+};
+
+// Warte auf DOM Ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initApp);
+} else {
+  initApp();
+}
+
 // Theme loaded
-console.log('✨ Custom Theme loaded with Vite + Autoprefixer');
+console.log('✨ Custom Theme loaded');

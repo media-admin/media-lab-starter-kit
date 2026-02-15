@@ -8,6 +8,8 @@ export default class Accordion {
     
     if (this.accordions.length > 0) {
       this.init();
+    } else {
+      console.log('ℹ️ Keine Accordions auf dieser Seite');
     }
   }
   
@@ -21,6 +23,7 @@ export default class Accordion {
     const items = accordion.querySelectorAll('.accordion__item');
     
     if (!items || items.length === 0) {
+      console.warn('⚠️ Accordion ohne Items:', accordion);
       return;
     }
     
@@ -28,21 +31,14 @@ export default class Accordion {
       const trigger = item.querySelector('.accordion__trigger');
       const content = item.querySelector('.accordion__content');
       
-      // Skip if elements not found
       if (!trigger || !content) {
+        console.warn('⚠️ Accordion Item ohne Trigger/Content:', item);
         return;
       }
       
       trigger.addEventListener('click', () => {
         const isActive = item.classList.contains('is-active');
         
-        // Close all items (if you want single-open behavior)
-        // Uncomment these lines for single-open:
-        // items.forEach(otherItem => {
-        //   otherItem.classList.remove('is-active');
-        // });
-        
-        // Toggle current item
         if (isActive) {
           item.classList.remove('is-active');
           trigger.setAttribute('aria-expanded', 'false');
@@ -57,5 +53,5 @@ export default class Accordion {
   }
 }
 
-// Initialize
-new Accordion();
+// ✅ KEINE Auto-Initialisierung mehr!
+// main.js macht das zur richtigen Zeit

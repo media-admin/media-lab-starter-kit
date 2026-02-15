@@ -3,88 +3,83 @@
  */
 
 export default class Modal {
-  constructor(element) {
-    this.modal = element;
-    this.init();
+  constructor() {
+    this.modals = document.querySelectorAll('.modal');
+    this.triggers = document.querySelectorAll('[data-modal-trigger]');
+    
+    // Nur initialisieren wenn Modals oder Triggers existieren
+    if (this.modals.length > 0 || this.triggers.length > 0) {
+      this.init();
+    } else {
+      console.log('ℹ️ Keine Modals auf dieser Seite');
+    }
   }
   
   init() {
-    // Close button
-    const closeBtn = this.modal.querySelector('[data-modal-close]');
-    if (closeBtn) {
-      closeBtn.addEventListener('click', () => this.close());
-    }
-    
-    // Background click
-    this.modal.addEventListener('click', (e) => {
-      if (e.target === this.modal) {
-        this.close();
-      }
+    // Trigger Event-Listener
+    this.triggers.forEach(trigger => {
+      if (!trigger) return;
+      
+      trigger.addEventListener('click', (e) => {
+        e.preventDefault();
+        const modalId = trigger.dataset.modalTrigger;
+        if (!modalId) return;
+        
+        const modal = document.getElementById(modalId);
+        if (modal) {
+          this.openModal(modal);
+        }
+      });
     });
     
-    // Escape key
+    // Modal Close-Buttons
+    this.modals.forEach(modal => {
+      if (!modal) return;
+      
+      const closeButtons = modal.querySelectorAll('[data-modal-close]');
+      closeButtons.forEach(btn => {
+        if (!btn) return;
+        btn.addEventListener('click', () => this.closeModal(modal));
+      });
+      
+      // Backdrop click
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          this.closeModal(modal);
+        }
+      });
+    });
+    
+    // ESC key
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && this.modal.classList.contains('is-active')) {
-        this.close();
+      if (e.key === 'Escape') {
+        const openModal = document.querySelector('.modal.is-open');
+        if (openModal) {
+          this.closeModal(openModal);
+        }
       }
     });
   }
   
-  open() {
-    this.modal.classList.add('is-active');
-    document.body.style.overflow = 'hidden';
+  openModal(modal) {
+    if (!modal) return;
     
-    // Emit custom event
-    this.modal.dispatchEvent(new CustomEvent('modal:opened'));
+    modal.classList.add('is-open');
+    document.body.classList.add('modal-open');
+    modal.setAttribute('aria-hidden', 'false');
+    
+    // Focus trap
+    const focusable = modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+    if (focusable.length > 0 && focusable[0]) {
+      focusable[0].focus();
+    }
   }
   
-  close() {
-    this.modal.classList.remove('is-active');
-    document.body.style.overflow = '';
+  closeModal(modal) {
+    if (!modal) return;
     
-    // Emit custom event
-    this.modal.dispatchEvent(new CustomEvent('modal:closed'));
+    modal.classList.remove('is-open');
+    document.body.classList.remove('modal-open');
+    modal.setAttribute('aria-hidden', 'true');
   }
 }
-
-// Auto-initialize
-document.addEventListener('DOMContentLoaded', () => {
-  const modals = document.querySelectorAll('.modal');
-  const modalInstances = new Map();
-  
-  modals.forEach(modal => {
-    const instance = new Modal(modal);
-    modalInstances.set(modal.id, instance);
-  });
-  
-  // Listen for triggers
-  document.addEventListener('click', (e) => {
-    const trigger = e.target.closest('[data-modal-trigger]');
-    if (trigger) {
-      e.preventDefault();
-      const modalId = trigger.dataset.modalTrigger;
-      const instance = modalInstances.get(modalId);
-      if (instance) {
-        instance.open();
-      }
-    }
-  });
-});
-
-// CF7 Integration - Modal schließen nach erfolgreichem Submit
-document.addEventListener('wpcf7mailsent', function(event) {
-  // Finde das Modal, in dem das Formular ist
-  const form = event.target;
-  const modal = form.closest('.modal');
-  
-  if (modal) {
-    // Warte 2 Sekunden, dann schließe das Modal
-    setTimeout(() => {
-      modal.classList.remove('is-active');
-      document.body.classList.remove('modal-open');
-      
-      // Success-Nachricht anzeigen (optional)
-      // alert('Vielen Dank! Ihre Nachricht wurde gesendet.');
-    }, 2000);
-  }
-}, false);
