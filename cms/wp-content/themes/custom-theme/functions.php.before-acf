@@ -147,13 +147,11 @@ function fix_shortcode_fancy_quotes($content) {
  * ACF JSON Save/Load Point
  */
 add_filter('acf/settings/save_json', function($path) {
-    return get_template_directory() . '/acf-json';
+    return get_stylesheet_directory() . '/acf-json';
 });
 
 add_filter('acf/settings/load_json', function($paths) {
     unset($paths[0]);
-    $paths[] = get_template_directory() . '/acf-json';
+    $paths[] = get_stylesheet_directory() . '/acf-json';
     return $paths;
 });
-// Load ACF Field Groups from PHP
-// require_once get_template_directory() . '/inc/acf-fields/register-fields.php'; // ACF lädt automatisch aus JSON

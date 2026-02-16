@@ -1,0 +1,110 @@
+{
+    "key": "group_service",
+    "title": "Service Details",
+    "fields": [
+        {
+            "key": "field_service_icon",
+            "label": "Icon Class",
+            "name": "icon",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "Dashicon class (e.g., dashicons-admin-tools) or Font Awesome (e.g., fa-rocket)",
+            "required": false,
+            "conditional_logic": false,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "placeholder": "dashicons-admin-tools",
+            "default_value": "",
+            "maxlength": "",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_service_price",
+            "label": "Starting Price",
+            "name": "price",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "e.g., \"ab 500€\" or \"On Request\"",
+            "required": false,
+            "conditional_logic": false,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "placeholder": "ab 500€",
+            "default_value": "",
+            "maxlength": "",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_service_features",
+            "label": "Key Features",
+            "name": "features",
+            "aria-label": "",
+            "type": "repeater",
+            "instructions": "",
+            "required": false,
+            "conditional_logic": false,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "button_label": "Add Feature",
+            "layout": "table",
+            "sub_fields": [
+                {
+                    "key": "field_service_feature_text",
+                    "label": "Feature",
+                    "name": "feature_text",
+                    "aria-label": "",
+                    "type": "text",
+                    "instructions": "",
+                    "required": false,
+                    "conditional_logic": false,
+                    "wrapper": {
+                        "width": "",
+                        "class": "",
+                        "id": ""
+                    },
+                    "placeholder": "Feature description",
+                    "default_value": "",
+                    "maxlength": "",
+                    "prepend": "",
+                    "append": "",
+                    "parent_repeater": "field_service_features"
+                }
+            ],
+            "min": 0,
+            "max": 0,
+            "rows_per_page": 20,
+            "collapsed": ""
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "service"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": [],
+    "active": true,
+    "description": "",
+    "show_in_rest": false,
+    "display_title": "",
+    "modified": 1771236278
+}
