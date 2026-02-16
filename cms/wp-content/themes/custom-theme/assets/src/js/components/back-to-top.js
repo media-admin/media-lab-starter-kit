@@ -1,7 +1,6 @@
 /**
  * Back to Top Button
  */
-
 export default class BackToTop {
   constructor() {
     this.button = null;
@@ -49,6 +48,3 @@ export default class BackToTop {
     });
   }
 }
-
-// Initialize
-new BackToTop();

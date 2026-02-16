@@ -106,7 +106,7 @@ document.addEventListener('DOMContentLoaded', function() {
  */
 function performSearch(query, resultsContainer, loadingIndicator, submitButton, limit, postTypes) {
     const ajaxUrl = window.customTheme?.ajaxUrl || '/wp-admin/admin-ajax.php';
-    const nonce = window.customTheme?.nonce || '';
+    const nonce = window.customTheme?.searchNonce || '';
     
     fetch(ajaxUrl, {
         method: 'POST',
