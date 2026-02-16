@@ -49,7 +49,7 @@ class Agency_Core {
      * Include required files
      */
     private function includes() {
-        require_once AGENCY_CORE_PATH . 'inc/custom-post-types.php';
+        // require_once AGENCY_CORE_PATH . 'inc/custom-post-types.php'; // Jetzt im Project Plugin
         // require_once AGENCY_CORE_PATH . 'inc/acf-fields.php'; // ACF lädt aus JSON
         // require_once AGENCY_CORE_PATH . 'inc/shortcodes.php'; // Jetzt im Core Plugin
         // require_once AGENCY_CORE_PATH . 'inc/admin.php'; // Jetzt im Core Plugin
