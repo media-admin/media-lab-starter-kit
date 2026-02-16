@@ -201,3 +201,19 @@ $color-text: var(--color-text);
 $color-text-muted: var(--color-text-muted);
 $color-text-light: var(--color-text-light);
 $color-border: var(--color-border);
+// Border Radius
+$radius-sm: 4px;
+$radius-base: 8px;
+$radius-lg: 12px;
+$radius-full: 9999px;
+
+// Shadows
+$shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+$shadow-base: 0 4px 6px rgba(0, 0, 0, 0.1);
+$shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+$shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
+
+// Transitions
+$transition-base: all 0.2s ease;
+$transition-fast: all 0.15s ease;
+$transition-slow: all 0.3s ease;
