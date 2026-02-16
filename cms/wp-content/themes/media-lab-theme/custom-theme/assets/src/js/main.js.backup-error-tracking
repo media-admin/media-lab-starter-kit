@@ -1,0 +1,74 @@
+// Import CSS
+import '../scss/style.scss';
+
+// Import Sentry
+import { initSentry } from './utils/sentry';
+initSentry();
+
+// Components mit Klassen-Export
+import HeroSlider from './components/hero-slider';
+import Accordion from './components/accordion';
+import BackToTop from './components/back-to-top';
+import CookieNotice from './components/cookie-notice';
+import DarkMode from './components/theme-switcher';
+import ImageComparison from './components/image-comparison';
+import Lightbox from './components/lightbox';
+import LogoCarousel from './components/logo-carousel';
+import Modal from './components/modal';
+import Navigation from './components/navigation';
+import Notifications from './components/notifications';
+import ScrollAnimations from './components/scroll-animations';
+import Spoiler from './components/spoiler';
+import StatsCounter from './components/stats-counter';
+import Tabs from './components/tabs';
+import TestimonialsSlider from './components/testimonials-slider';
+import VideoPlayer from './components/video-player';
+import AjaxFilters from './components/ajax-filters';
+
+// Components die sich selbst initialisieren (direkt importiert)
+import './components/carousel';
+import './components/faq-accordion';
+import './components/ajax-search';
+import './components/load-more';
+import './components/google-maps';
+
+// Zentrale DOM Ready Initialisierung
+const initApp = () => {
+  console.log('🚀 Initialisiere Komponenten...');
+  
+  try {
+    // Initialisiere alle Komponenten NACH DOM Ready
+    new Accordion();
+    new HeroSlider();
+    new BackToTop();
+    new CookieNotice();
+    new DarkMode();
+    new ImageComparison();
+    new Lightbox();
+    new LogoCarousel();
+    new Modal();
+    new Navigation();
+    new Notifications();
+    new ScrollAnimations();
+    new Spoiler();
+    new StatsCounter();
+    new Tabs();
+    new TestimonialsSlider();
+    new VideoPlayer();
+    new AjaxFilters();
+    
+    console.log('✅ Alle Komponenten erfolgreich initialisiert');
+  } catch (error) {
+    console.error('❌ Fehler bei Komponenten-Initialisierung:', error);
+  }
+};
+
+// Warte auf DOM Ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initApp);
+} else {
+  initApp();
+}
+
+// Theme loaded
+console.log('✨ Custom Theme loaded');

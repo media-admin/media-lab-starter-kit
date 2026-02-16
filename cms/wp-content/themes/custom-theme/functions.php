@@ -1,9 +1,8 @@
 <?php
 /**
- * Custom Theme Functions
+ * Media Lab Theme - Custom Theme
  * 
- * This theme relies on Agency Core plugin for business logic.
- * Theme only handles presentation layer (CSS, JS, Templates).
+ * Presentation layer only. Business logic in plugins.
  * 
  * @package Custom_Theme
  * @version 1.0.0
@@ -17,19 +16,38 @@ if (!defined('ABSPATH')) {
 define('CUSTOM_THEME_VERSION', '1.0.0');
 
 /**
- * Check if Agency Core is active
+ * Check Required Plugins
  */
-if (!defined('AGENCY_CORE_VERSION')) {
-    add_action('admin_notices', function() {
-        echo '<div class="notice notice-error"><p><strong>Theme Error:</strong> This theme requires the <strong>Agency Core</strong> plugin. Please ensure it is installed and activated.</p></div>';
-    });
+function customtheme_check_required_plugins() {
+    $required_plugins = array(
+        'media-lab-agency-core' => 'Media Lab Agency Core',
+        'media-lab-project-starter' => 'Media Lab Project Starter',
+    );
+    
+    $missing_plugins = array();
+    
+    foreach ($required_plugins as $plugin_slug => $plugin_name) {
+        if (!is_plugin_active($plugin_slug . '/' . $plugin_slug . '.php')) {
+            $missing_plugins[] = $plugin_name;
+        }
+    }
+    
+    if (!empty($missing_plugins)) {
+        add_action('admin_notices', function() use ($missing_plugins) {
+            echo '<div class="notice notice-warning"><p>';
+            echo '<strong>Custom Theme:</strong> The following plugins are recommended: ';
+            echo implode(', ', $missing_plugins);
+            echo '</p></div>';
+        });
+    }
 }
+add_action('after_setup_theme', 'customtheme_check_required_plugins');
 
 /**
  * Theme Setup
  */
 function customtheme_setup() {
-    // Add theme support
+    // Theme support
     add_theme_support('post-thumbnails');
     add_theme_support('title-tag');
     add_theme_support('custom-logo');
@@ -43,13 +61,13 @@ function customtheme_setup() {
     add_theme_support('responsive-embeds');
     add_theme_support('editor-styles');
     
-    // Register navigation menus
+    // Navigation menus
     register_nav_menus(array(
         'primary' => __('Primary Menu', 'custom-theme'),
         'footer' => __('Footer Menu', 'custom-theme'),
     ));
     
-    // Add image sizes
+    // Image sizes
     add_image_size('custom-thumbnail', 400, 300, true);
     add_image_size('custom-medium', 800, 600, true);
     add_image_size('custom-large', 1200, 900, true);
@@ -57,18 +75,27 @@ function customtheme_setup() {
 add_action('after_setup_theme', 'customtheme_setup');
 
 /**
- * Enqueue scripts and styles
+ * Load Theme Components
  */
 require_once get_template_directory() . '/inc/enqueue.php';
 
-/**
- * Theme-specific customizations
- */
+// Optional components (only if files exist)
+$optional_components = array(
+    'walker-nav-menu.php',
+    'helpers.php',
+    'woocommerce.php',
+);
 
-// Add theme wrapper classes to shortcodes
-add_filter('agency_core_shortcode_wrapper_class', function($class, $shortcode) {
-    return $class . ' theme-styled';
-}, 10, 2);
+foreach ($optional_components as $component) {
+    $file = get_template_directory() . '/inc/' . $component;
+    if (file_exists($file)) {
+        require_once $file;
+    }
+}
+
+/**
+ * Theme Customizations
+ */
 
 // Customize excerpt length
 add_filter('excerpt_length', function($length) {
@@ -81,79 +108,11 @@ add_filter('excerpt_more', function($more) {
 });
 
 /**
- * Custom Walker for Navigation
+ * WooCommerce Support (if WooCommerce is active)
  */
-require_once get_template_directory() . '/inc/walker-nav-menu.php';
-
-/**
- * Block Patterns (optional)
- */
-// require_once get_template_directory() . '/inc/block-patterns.php';
-
-/**
- * Customizer Settings (optional)
- */
-// require_once get_template_directory() . '/inc/customizer.php';
-
-
-
-/**
- * WooCommerce Support
- */
-function customtheme_woocommerce_support() {
+if (class_exists('WooCommerce')) {
     add_theme_support('woocommerce');
-    
-    // Product gallery features
     add_theme_support('wc-product-gallery-zoom');
     add_theme_support('wc-product-gallery-lightbox');
     add_theme_support('wc-product-gallery-slider');
 }
-add_action('after_setup_theme', 'customtheme_woocommerce_support');
-
-/**
- * WooCommerce customizations
- */
-require_once get_template_directory() . '/inc/woocommerce.php';
-
-
-/**
- * Fix typographic quotes in shortcodes
- * Converts fancy quotes to normal quotes before shortcode processing
- */
-add_filter('the_content', 'fix_shortcode_fancy_quotes', 7); // Priority 7 = before do_shortcode (11)
-function fix_shortcode_fancy_quotes($content) {
-    // Replace various quote styles with normal quotes in shortcodes
-    $content = preg_replace_callback(
-        '/\[([^\]]+)\]/',
-        function($matches) {
-            $shortcode = $matches[1];
-            
-            // Replace all fancy quote variations with normal quotes
-            $shortcode = str_replace(
-                ['"', '"', '″', '‶', '〝', '〞', '＂'],  // Fancy quotes
-                '"',                                      // Normal quote
-                $shortcode
-            );
-            
-            return '[' . $shortcode . ']';
-        },
-        $content
-    );
-    
-    return $content;
-}
-
-/**
- * ACF JSON Save/Load Point
- */
-add_filter('acf/settings/save_json', function($path) {
-    return get_template_directory() . '/acf-json';
-});
-
-add_filter('acf/settings/load_json', function($paths) {
-    unset($paths[0]);
-    $paths[] = get_template_directory() . '/acf-json';
-    return $paths;
-});
-// Load ACF Field Groups from PHP
-// require_once get_template_directory() . '/inc/acf-fields/register-fields.php'; // ACF lädt automatisch aus JSON
