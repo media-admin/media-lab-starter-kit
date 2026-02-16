@@ -85,3 +85,6 @@ yarn.lock
 
 # Keep sample files
 !/cms/wp-config-*.sample.php
+# Allow Media Lab plugins
+!cms/wp-content/plugins/media-lab-*/
+!cms/wp-content/plugins/media-lab-*/**
