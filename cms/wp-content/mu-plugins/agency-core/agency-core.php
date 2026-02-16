@@ -53,9 +53,9 @@ class Agency_Core {
         // require_once AGENCY_CORE_PATH . 'inc/acf-fields.php'; // ACF lädt aus JSON
         // require_once AGENCY_CORE_PATH . 'inc/shortcodes.php'; // Jetzt im Core Plugin
         // require_once AGENCY_CORE_PATH . 'inc/admin.php'; // Jetzt im Core Plugin
-        require_once AGENCY_CORE_PATH . 'inc/ajax-search.php';
-        require_once AGENCY_CORE_PATH . 'inc/ajax-load-more.php';
-        require_once AGENCY_CORE_PATH . 'inc/ajax-filters.php';
+        // require_once AGENCY_CORE_PATH . 'inc/ajax-search.php'; // Jetzt im Core Plugin
+        // require_once AGENCY_CORE_PATH . 'inc/ajax-load-more.php'; // Jetzt im Core Plugin
+        // require_once AGENCY_CORE_PATH . 'inc/ajax-filters.php'; // Jetzt im Core Plugin
     }
     
     /**
