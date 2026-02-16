@@ -88,3 +88,4 @@ yarn.lock
 # Allow Media Lab plugins
 !cms/wp-content/plugins/media-lab-*/
 !cms/wp-content/plugins/media-lab-*/**
+docs-backup/
