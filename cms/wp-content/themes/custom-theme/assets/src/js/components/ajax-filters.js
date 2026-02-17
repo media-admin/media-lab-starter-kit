@@ -370,6 +370,7 @@ export default class AjaxFilters {
       case 'job':    return this.renderJobPost(post);
       case 'project': return this.renderProjectPost(post);
       case 'team':   return this.renderTeamPost(post);
+      case 'event':  return this.renderEventPost(post);
       default:       return this.renderCardPost(post);
     }
   }
@@ -455,6 +456,43 @@ export default class AjaxFilters {
     `;
     return div;
   }
+  renderEventPost(post) {
+    const article = document.createElement('article');
+    article.className = 'event-card';
+    article.innerHTML = `
+      ${post.thumbnail ? `
+        <div class="event-card__thumbnail">
+          <a href="${post.url}">
+            <img src="${post.thumbnail}" alt="${this.esc(post.title)}" loading="lazy">
+          </a>
+          ${post.price ? `<span class="event-card__price">${this.esc(post.price)}</span>` : ''}
+        </div>
+      ` : ''}
+      <div class="event-card__content">
+        <h3 class="event-card__title">
+          <a href="${post.url}">${this.esc(post.title)}</a>
+        </h3>
+        <div class="event-card__meta">
+          ${post.date_start ? `
+            <div class="event-card__date">
+              <span>📅</span>
+              <span>${this.esc(post.date_start)}${post.date_end ? ' – ' + this.esc(post.date_end) : ''}</span>
+            </div>
+          ` : ''}
+          ${post.location ? `
+            <div class="event-card__location">
+              <span>📍</span>
+              <span>${this.esc(post.location)}</span>
+            </div>
+          ` : ''}
+        </div>
+        ${post.excerpt ? `<div class="event-card__excerpt">${this.esc(post.excerpt)}</div>` : ''}
+        <a href="${post.url}" class="event-card__link">Details ansehen →</a>
+      </div>
+    `;
+    return article;
+  }
+
   
   // ============================================
   // PAGINATION
