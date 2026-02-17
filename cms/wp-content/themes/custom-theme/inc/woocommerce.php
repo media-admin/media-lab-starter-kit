@@ -161,7 +161,7 @@ add_action('woocommerce_after_shop_loop', function() {
  * Disable WooCommerce scripts on non-shop pages
  */
 add_action('wp_enqueue_scripts', function() {
-    if (!is_woocommerce() && !is_cart() && !is_checkout()) {
+    if (function_exists("is_woocommerce") && !is_woocommerce() && !is_cart() && !is_checkout()) {
         // Dequeue WooCommerce styles
         wp_dequeue_style('woocommerce-general');
         wp_dequeue_style('woocommerce-layout');
@@ -192,7 +192,7 @@ add_filter('woocommerce_add_to_cart_fragments', function($fragments) {
  * Disable cart fragments on non-WC pages
  */
 add_action('wp_enqueue_scripts', function() {
-    if (!is_woocommerce() && !is_cart() && !is_checkout()) {
+    if (function_exists("is_woocommerce") && !is_woocommerce() && !is_cart() && !is_checkout()) {
         wp_dequeue_script('wc-cart-fragments');
     }
 }, 100);
