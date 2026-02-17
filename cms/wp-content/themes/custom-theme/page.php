@@ -1,4 +1,5 @@
 <?php get_header(); ?>
+<?php get_template_part('template-parts/hero-image'); ?>
 
 <main id="primary" class="site-main">
     <div class="container">
