@@ -202,6 +202,15 @@ function medialab_seo_get_product_schema() {
         return [];
     }
     
+    // Ensure $product is a WC_Product object, not a string/ID
+    if (!is_a($product, 'WC_Product')) {
+        $product = wc_get_product(get_the_ID());
+    }
+    
+    if (!$product || !is_a($product, 'WC_Product')) {
+        return [];
+    }
+    
     $schema = [
         '@type' => 'Product',
         '@id' => get_permalink() . '#product',
