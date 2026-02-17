@@ -315,8 +315,8 @@
     flex-wrap: wrap;
   }
   
-  &__page-button,
-  &__page-number {
+  &__pagination-btn,
+  &__pagination-btn {
     padding: 0.75rem 1rem;
     background: $color-white;
     border: 1px solid $color-border;
@@ -347,12 +347,12 @@
     gap: 0.5rem;
   }
   
-  &__page-numbers {
+  &__pagination-list {
     display: flex;
     gap: 0.5rem;
   }
   
-  &__page-dots {
+  &__pagination-dots {
     display: flex;
     align-items: center;
     padding: 0 0.5rem;
@@ -944,8 +944,8 @@
       gap: 0.25rem;
     }
     
-    &__page-button,
-    &__page-number {
+    &__pagination-btn,
+    &__pagination-btn {
       padding: 0.5rem 0.75rem;
       font-size: $font-size-xs;
     }

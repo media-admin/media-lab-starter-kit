@@ -38,7 +38,7 @@ export default class AjaxFilters {
       postType: container.dataset.postType || 'post',
       postsPerPage: parseInt(container.dataset.postsPerPage) || 12,
       template: container.dataset.template || 'card',
-      columns: parseInt(container.dataset.columns) || 3,
+      columns: parseInt(container.dataset.gridColumns) || 3,
     };
     
     container.filterSettings = settings;
