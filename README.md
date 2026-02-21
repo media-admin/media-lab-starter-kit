@@ -449,3 +449,16 @@ Proprietary - Media Lab Tritremmel GmbH
 ---
 
 **Built with ❤️ by Media Lab Tritremmel GmbH**
+
+## 🚀 Neues Projekt starten
+```bash
+./scripts/setup-project.sh
+```
+
+Fragt nach:
+- Projekt Name (z.B. "Stadtwirt Berndorf")
+- Theme Slug (z.B. "stadtwirt-theme")
+- Plugin Slug (z.B. "stadtwirt-plugin")
+- Text Domain (z.B. "stadtwirt")
+
+Benennt automatisch Theme + Plugin um.
