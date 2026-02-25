@@ -1,0 +1,586 @@
+<?php
+/**
+ * Product Configurator Wizard
+ * 
+ * Available vars:
+ * $product_id
+ * $steps
+ * $type
+ */
+
+if (!defined('ABSPATH')) exit;
+
+global $product;
+$min_qty = get_field('min_order_quantity', $product_id) ?: 1;
+$max_qty = get_field('max_order_quantity', $product_id) ?: 10000;
+$show_tier_table = get_field('show_tier_table', $product_id);
+
+// Load Price Calculator
+require_once MEDIA_LAB_WC_PATH . 'inc/configurator/class-price-calculator.php';
+$calculator = new MediaLab_Price_Calculator($product_id);
+$tiers = $calculator->get_all_tiers();
+?>
+
+<div class="product-configurator" 
+<div class="product-configurator" 
+     x-data='productConfigurator(<?php echo json_encode([
+         "productId" => $product_id,
+         "basePrice" => floatval($product->get_regular_price()),
+         "steps" => $steps,
+         "minQty" => $min_qty,
+         "maxQty" => $max_qty,
+         "tiers" => $tiers,
+     ]); ?>)'
+     x-init="init()">
+    
+    <!-- Progress Bar -->
+    <div class="configurator-progress">
+        <div class="configurator-progress__bar">
+            <div class="configurator-progress__fill" 
+                 :style="`width: ${(currentStep / totalSteps) * 100}%`"></div>
+        </div>
+        <div class="configurator-progress__text">
+            Schritt <span x-text="currentStep"></span> von <span x-text="totalSteps"></span>
+        </div>
+    </div>
+    
+    <!-- Steps Container -->
+    <div class="configurator-steps">
+        
+        <?php foreach ($steps as $index => $step) : 
+            $step_number = $index + 1;
+        ?>
+        
+        <div class="configurator-step" 
+             x-show="currentStep === <?php echo $step_number; ?>"
+             x-transition:enter="step-enter"
+             x-transition:enter-start="step-enter-start"
+             x-transition:enter-end="step-enter-end">
+            
+            <div class="configurator-step__header">
+                <h3 class="configurator-step__title">
+                    <?php echo esc_html($step['step_label']); ?>
+                    <?php if ($step['required']) : ?>
+                        <span class="required">*</span>
+                    <?php endif; ?>
+                </h3>
+                
+                <?php if (!empty($step['description'])) : ?>
+                    <p class="configurator-step__description">
+                        <?php echo esc_html($step['description']); ?>
+                    </p>
+                <?php endif; ?>
+            </div>
+            
+            <div class="configurator-step__content">
+                
+                <?php
+                $step_id = $step['step_id'];
+                $step_type = $step['step_type'];
+                
+                switch ($step_type) {
+                    
+                    case 'select':
+                    case 'radio':
+                        include MEDIA_LAB_WC_PATH . 'templates/configurator/fields/select-radio.php';
+                        break;
+                    
+                    case 'checkbox':
+                        include MEDIA_LAB_WC_PATH . 'templates/configurator/fields/checkbox.php';
+                        break;
+                    
+                    case 'number':
+                        include MEDIA_LAB_WC_PATH . 'templates/configurator/fields/number.php';
+                        break;
+                    
+                    case 'text':
+                    case 'textarea':
+                        include MEDIA_LAB_WC_PATH . 'templates/configurator/fields/text.php';
+                        break;
+                    
+                    case 'file_upload':
+                        include MEDIA_LAB_WC_PATH . 'templates/configurator/fields/file-upload.php';
+                        break;
+                    
+                    case 'size_matrix':
+                        include MEDIA_LAB_WC_PATH . 'templates/configurator/fields/size-matrix.php';
+                        break;
+                    
+                    case 'color_picker':
+                        include MEDIA_LAB_WC_PATH . 'templates/configurator/fields/color-picker.php';
+                        break;
+                    
+                    case 'contact_form':
+                        include MEDIA_LAB_WC_PATH . 'templates/configurator/fields/contact-form.php';
+                        break;
+                }
+                ?>
+                
+            </div>
+            
+        </div>
+        
+        <?php endforeach; ?>
+        
+        <!-- Summary Step -->
+        <div class="configurator-step configurator-step--summary" 
+             x-show="currentStep === totalSteps + 1"
+             x-transition:enter="step-enter"
+             x-transition:enter-start="step-enter-start"
+             x-transition:enter-end="step-enter-end">
+            
+            <div class="configurator-step__header">
+                <h3 class="configurator-step__title">Zusammenfassung</h3>
+                <p class="configurator-step__description">Überprüfen Sie Ihre Konfiguration</p>
+            </div>
+            
+            <div class="configurator-summary">
+                
+                <!-- Configuration Items -->
+                <div class="configurator-summary__items">
+                    <template x-for="(item, key) in getSummaryItems()" :key="key">
+                        <div class="configurator-summary__item">
+                            <span class="configurator-summary__label" x-text="item.label"></span>
+                            <span class="configurator-summary__value" x-text="item.value"></span>
+                            <button type="button" 
+                                    class="configurator-summary__edit"
+                                    @click="goToStep(item.step)"
+                                    title="Bearbeiten">✏️</button>
+                        </div>
+                    </template>
+                </div>
+                
+                <!-- Price Breakdown -->
+                <div class="configurator-summary__pricing" x-show="priceBreakdown">
+                    <div class="price-row">
+                        <span>Basispreis:</span>
+                        <span x-text="formatPrice(priceBreakdown.base_price)"></span>
+                    </div>
+                    
+                    <template x-for="addition in priceBreakdown.additions" :key="addition.label">
+                        <div class="price-row price-row--addition">
+                            <span x-text="addition.label"></span>
+                            <span x-text="formatPrice(addition.price)"></span>
+                        </div>
+                    </template>
+                    
+                    <div class="price-row price-row--subtotal">
+                        <span>Zwischensumme (pro Stück):</span>
+                        <span x-text="formatPrice(priceBreakdown.subtotal)"></span>
+                    </div>
+                    
+                    <div class="price-row">
+                        <span>Menge:</span>
+                        <span x-text="priceBreakdown.quantity + ' Stück'"></span>
+                    </div>
+                    
+                    <div class="price-row price-row--discount" x-show="priceBreakdown.tier_discount > 0">
+                        <span x-text="`Mengenrabatt (${(priceBreakdown.tier_discount_percent * 100).toFixed(0)}%):`"></span>
+                        <span x-text="'-' + formatPrice(priceBreakdown.tier_discount * priceBreakdown.quantity)"></span>
+                    </div>
+                    
+                    <div class="price-row price-row--total">
+                        <span>Zwischensumme:</span>
+                        <span x-text="formatPrice(priceBreakdown.total_before_tax)"></span>
+                    </div>
+                    
+                    <div class="price-row price-row--tax">
+                        <span x-text="`MwSt. (${priceBreakdown.tax_rate}%):`"></span>
+                        <span x-text="formatPrice(priceBreakdown.tax_amount)"></span>
+                    </div>
+                    
+                    <div class="price-row price-row--grand-total">
+                        <span>Gesamtpreis:</span>
+                        <span x-text="formatPrice(priceBreakdown.total)"></span>
+                    </div>
+                </div>
+                
+            </div>
+            
+        </div>
+        
+    </div>
+    
+    <!-- Live Price Preview (Sticky) -->
+    <div class="configurator-price-preview" x-show="currentStep <= totalSteps">
+        <div class="configurator-price-preview__content">
+            <div class="configurator-price-preview__label">Geschätzter Preis:</div>
+            <div class="configurator-price-preview__amount" x-text="formatPrice(estimatedPrice)"></div>
+            <div class="configurator-price-preview__note" x-show="config.quantity > 0">
+                <span x-text="formatPrice(pricePerUnit)"></span> pro Stück
+            </div>
+        </div>
+    </div>
+    
+    <!-- Tier Pricing Table -->
+    <?php if ($show_tier_table && !empty($tiers)) : ?>
+    <div class="configurator-tier-table" x-show="currentStep === quantityStep">
+        <h4>Staffelpreise</h4>
+        <table>
+            <thead>
+                <tr>
+                    <th>Menge</th>
+                    <th>Rabatt</th>
+                    <th>Preis/Stück</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($tiers as $tier) : ?>
+                <tr :class="{ 'is-active': config.quantity >= <?php echo $tier['min_quantity']; ?> }">
+                    <td>ab <?php echo $tier['min_quantity']; ?> Stück</td>
+                    <td><?php echo $tier['discount_percent']; ?>%</td>
+                    <td x-text="calculateTierPrice(<?php echo $tier['discount_percent']; ?>)"></td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+    <?php endif; ?>
+    
+    <!-- Navigation -->
+    <div class="configurator-navigation">
+        
+        <button type="button" 
+                class="button button--secondary configurator-nav__button"
+                @click="prevStep()"
+                x-show="currentStep > 1"
+                :disabled="isProcessing">
+            ← Zurück
+        </button>
+        
+        <button type="button" 
+                class="button button--primary configurator-nav__button"
+                @click="nextStep()"
+                x-show="currentStep <= totalSteps"
+                :disabled="!canProceed() || isProcessing"
+                x-text="currentStep === totalSteps ? 'Zur Zusammenfassung' : 'Weiter →'">
+        </button>
+        
+        <button type="button" 
+                class="button button--primary button--large configurator-nav__button"
+                @click="sendInquiry()"
+                x-show="currentStep === totalSteps + 1"
+                :disabled="isProcessing">
+            <span x-show="!isProcessing">Anfrage absenden</span>
+            <span x-show="isProcessing">Wird gesendet...</span>
+        </button>
+        
+    </div>
+    
+    <!-- Error Messages -->
+    <div class="configurator-errors" x-show="errors.length > 0">
+        <template x-for="error in errors" :key="error">
+            <div class="configurator-error" x-text="error"></div>
+        </template>
+    </div>
+    
+</div>
+
+<style>
+.product-configurator {
+    background: #fff;
+    border-radius: 12px;
+    padding: 2rem;
+    margin: 2rem 0;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.configurator-progress {
+    margin-bottom: 2rem;
+}
+
+.configurator-progress__bar {
+    height: 8px;
+    background: #e0e0e0;
+    border-radius: 9999px;
+    overflow: hidden;
+}
+
+.configurator-progress__fill {
+    height: 100%;
+    background: red;
+    transition: width 0.3s ease;
+}
+
+.configurator-progress__text {
+    text-align: center;
+    margin-top: 0.5rem;
+    color: #666;
+    font-size: 14px;
+}
+
+.configurator-step__header {
+    margin-bottom: 2rem;
+}
+
+.configurator-step__title {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.configurator-step__description {
+    color: #666;
+    margin: 0;
+}
+
+.configurator-price-preview {
+    position: sticky;
+    bottom: 20px;
+    background: #f8f9fa;
+    border: 2px solid red;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-top: 2rem;
+    text-align: center;
+}
+
+.configurator-price-preview__label {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 0.5rem;
+}
+
+.configurator-price-preview__amount {
+    font-size: 32px;
+    font-weight: 700;
+    color: red;
+}
+
+.configurator-price-preview__note {
+    font-size: 14px;
+    color: #666;
+    margin-top: 0.5rem;
+}
+
+.configurator-navigation {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    justify-content: space-between;
+}
+
+.configurator-nav__button {
+    padding: 1rem 2rem;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.button--primary {
+    background: red;
+    color: #fff;
+    border: none;
+}
+
+.button--primary:hover:not(:disabled) {
+    background: #c00;
+    transform: translateY(-2px);
+}
+
+.button--secondary {
+    background: #fff;
+    color: #333;
+    border: 2px solid #e0e0e0;
+}
+
+.button--secondary:hover:not(:disabled) {
+    border-color: red;
+    color: red;
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.step-enter {
+    transition: all 0.3s ease;
+}
+
+.step-enter-start {
+    opacity: 0;
+    transform: translateX(20px);
+}
+
+.step-enter-end {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.configurator-summary__items {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.configurator-summary__item {
+    display: grid;
+    grid-template-columns: 150px 1fr auto;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid #e0e0e0;
+    align-items: center;
+}
+
+.configurator-summary__item:last-child {
+    border-bottom: none;
+}
+
+.configurator-summary__label {
+    font-weight: 600;
+}
+
+.configurator-summary__edit {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+
+.configurator-summary__edit:hover {
+    opacity: 1;
+}
+
+.configurator-summary__pricing {
+    background: #fff;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.price-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.price-row:last-child {
+    border-bottom: none;
+}
+
+.price-row--addition {
+    font-size: 14px;
+    color: #666;
+    padding-left: 1rem;
+}
+
+.price-row--subtotal {
+    border-top: 2px solid #e0e0e0;
+    margin-top: 0.5rem;
+    padding-top: 1rem;
+    font-weight: 600;
+}
+
+.price-row--discount {
+    color: #10b981;
+    font-weight: 600;
+}
+
+.price-row--total {
+    font-size: 18px;
+    font-weight: 600;
+    border-top: 2px solid #e0e0e0;
+    margin-top: 0.5rem;
+    padding-top: 1rem;
+}
+
+.price-row--tax {
+    font-size: 14px;
+    color: #666;
+}
+
+.price-row--grand-total {
+    font-size: 24px;
+    font-weight: 700;
+    color: red;
+    border-top: 3px solid red;
+    margin-top: 1rem;
+    padding-top: 1rem;
+}
+
+.configurator-tier-table {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.configurator-tier-table h4 {
+    margin-bottom: 1rem;
+}
+
+.configurator-tier-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.configurator-tier-table th,
+.configurator-tier-table td {
+    padding: 0.75rem;
+    text-align: left;
+}
+
+.configurator-tier-table thead {
+    background: #e0e0e0;
+}
+
+.configurator-tier-table tbody tr {
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.configurator-tier-table tbody tr.is-active {
+    background: #d4edda;
+    font-weight: 600;
+    color: #155724;
+}
+
+.configurator-errors {
+    margin-top: 1rem;
+}
+
+.configurator-error {
+    background: #fee;
+    border: 1px solid #fcc;
+    color: #c00;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .product-configurator {
+        padding: 1rem;
+    }
+    
+    .configurator-navigation {
+        flex-direction: column;
+    }
+    
+    .configurator-summary__item {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+}
+</style>
+
+</div><!-- .product-configurator -->
+
+<!-- Configurator Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+<script>
+const configuratorData = {
+    ajax_url: '<?php echo admin_url('admin-ajax.php'); ?>',
+    nonce: '<?php echo wp_create_nonce('configurator_nonce'); ?>',
+    product_id: <?php echo $product_id; ?>,
+    cart_url: '<?php echo wc_get_cart_url(); ?>'
+};
+</script>
+<script src="<?php echo MEDIA_LAB_WC_URL; ?>assets/js/configurator.js?v=<?php echo time(); ?>"></script>
+<link rel="stylesheet" href="<?php echo MEDIA_LAB_WC_URL; ?>assets/css/configurator.css?v=<?php echo time(); ?>">

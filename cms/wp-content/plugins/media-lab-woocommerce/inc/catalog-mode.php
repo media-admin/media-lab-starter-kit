@@ -159,6 +159,18 @@ class MediaLab_WC_Catalog_Mode {
     
     public function disable_cart_checkout() {
         global $wp;
+        
+        // WICHTIG: Erlaube Warenkorb wenn konfigurierbare Produkte im Cart
+        if (WC()->cart) {
+            foreach (WC()->cart->get_cart() as $cart_item) {
+                $product_id = $cart_item['product_id'];
+                // Wenn konfigurierbar, erlaube Warenkorb
+                if (get_field('is_configurable', $product_id)) {
+                    return; // Nicht redirecten!
+                }
+            }
+        }
+        
         $current_url = home_url($wp->request);
         $cart_url = wc_get_page_permalink('cart');
         $checkout_url = wc_get_page_permalink('checkout');

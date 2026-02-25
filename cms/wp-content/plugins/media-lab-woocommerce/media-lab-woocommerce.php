@@ -28,3 +28,6 @@ add_action('after_setup_theme', function() {
     add_theme_support('wc-product-gallery-lightbox');
     add_theme_support('wc-product-gallery-slider');
 });
+
+// Load Product Configurator
+require_once MEDIA_LAB_WC_PATH . 'inc/configurator/class-configurator.php';
