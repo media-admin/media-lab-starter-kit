@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - Contact Form 7 - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-02-11 21:09:37+0000\n"
+"PO-Revision-Date: 2026-02-20 12:33:20+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -10,6 +10,55 @@ msgstr ""
 "X-Generator: GlotPress/4.0.3\n"
 "Language: de\n"
 "Project-Id-Version: Plugins - Contact Form 7 - Stable (latest release)\n"
+
+#. translators: %s: URL to the Really Simple CAPTCHA plugin page
+#: modules/really-simple-captcha.php:36
+msgid "<strong>Warning:</strong> The <a href=\"%s\">Really Simple CAPTCHA</a> plugin is not active."
+msgstr "Achtung: Das Plugin <a href=\"%s\">Really Simple CAPTCHA</a> ist gerade nicht aktiv."
+
+#. translators: %s: URL to support page about integration with external APIs
+#: admin/admin.php:586
+msgid "You can expand the possibilities of your contact forms by integrating them with external services. For details, see <a href=\"%s\">Integration with external APIs</a>."
+msgstr "Du kannst die Möglichkeiten deiner Kontaktformulare erweitern, indem du sie mit externen Diensten verbindest. Mehr Infos findest du unter <a href=\"%s\">Integration mit externen APIs</a>."
+
+#: admin/includes/editor.php:396
+msgid "Exclude a line from output if all of its mail-tags are blank"
+msgstr "Eine Zeile aus der Ausgabe rausnehmen, wenn alle ihre Mail-Tags leer sind"
+
+#. translators: 1: URL to support page about Cloudflare Turnstile, 2: Stripe
+#: admin/includes/welcome-panel.php:139
+msgid "With help from cloud-based machine learning, anti-spam services will protect your forms (<a href=\"%1$s\">Cloudflare Turnstile</a>). Even payment services are natively supported (<a href=\"%2$s\">Stripe</a>)."
+msgstr "Mit Cloud-basiertem maschinellem Lernen schützen Anti-Spam-Dienste deine Formulare (<a href=\"%1$s\">Cloudflare Turnstile</a>). Sogar Zahlungsdienste werden direkt unterstützt (<a href=\"%2$s\">Stripe</a>)."
+
+#. translators: 1: URL to support page about Akismet, 2: Cloudflare Turnstile,
+#. 3: Disallowed list
+#: admin/includes/welcome-panel.php:64
+msgid "Contact Form 7 supports spam-filtering with <a href=\"%1$s\">Akismet</a>. <a href=\"%2$s\">Cloudflare Turnstile</a> blocks annoying spambots. Plus, using <a href=\"%3$s\">disallowed list</a>, you can block messages containing specified keywords or those sent from specified IP addresses."
+msgstr "Das Kontaktformular 7 hat Spamfilterung mit <a href=\"%1$s\">Akismet</a> eingebaut. <a href=\"%2$s\">Cloudflare Turnstile</a> hält nervige Spambots fern. Außerdem kannst du mit der <a href=\"%3$s\">Sperrliste</a> Nachrichten blockieren, die bestimmte Schlüsselwörter enthalten oder von bestimmten IP-Adressen kommen."
+
+#. translators: %s: URL to support page about the additional settings editor
+#: admin/includes/editor.php:520
+msgid "You can add customization code snippets here. For details, see <a href=\"%s\">Additional settings</a>."
+msgstr "Hier kannst du Code-Schnipsel für Anpassungen hinzufügen. Mehr Infos findest du unter <a href=\"%s\">Zusätzliche Einstellungen</a>."
+
+#. translators: %s: URL to support page about the messages editor
+#: admin/includes/editor.php:459
+msgid "You can edit messages used in various situations here. For details, see <a href=\"%s\">Editing messages</a>."
+msgstr "Hier kannst du Nachrichten bearbeiten, die in verschiedenen Situationen verwendet werden. Weitere Infos findest du unter <a href=\"%s\">Nachrichten bearbeiten</a>."
+
+#. translators: %s: URL to support page about the email template
+#: admin/includes/editor.php:207
+msgid "You can edit the email template here. For details, see <a href=\"%s\">Setting up mail</a>."
+msgstr "Du kannst die E-Mail-Vorlage hier bearbeiten. Weitere Infos findest du unter <a href=\"%s\">E-Mail einrichten</a>."
+
+#. translators: %s: URL to support page about the form template
+#: admin/includes/editor.php:86
+msgid "You can edit the form template here. For details, see <a href=\"%s\">Editing form template</a>."
+msgstr "Hier kannst du die Formularvorlage bearbeiten. Weitere Infos findest du unter <a href=\"%s\">Formularvorlage bearbeiten</a>."
+
+#: admin/includes/editor.php:37
+msgid "Contact form editor tabs"
+msgstr "Registerkarten des Kontaktformular-Editors"
 
 #. Author URI of the plugin
 #: wp-contact-form-7.php
@@ -106,6 +155,11 @@ msgstr "Ungültige Stripe-Payment-Intent-ID erkannt."
 #: admin/includes/welcome-panel.php:90
 msgid "https://contactform7.com/contributing/"
 msgstr "https://contactform7.com/contributing/"
+
+#. translators: %s: URL to support page about ways to contribute
+#: admin/includes/welcome-panel.php:89
+msgid "There are several ways for you to <a href=\"%s\">contribute to the project</a>: testing, coding, translating it into your local languages, helping other users, financial donations, etc, etc. We equally welcome you regardless of the way you contribute."
+msgstr "Es gibt viele Möglichkeiten, wie du <a href=\"%s\">zum Projekt beitragen</a> kannst: Testen, Programmieren, Übersetzen in deine Sprache, anderen Nutzern helfen, Geld spenden usw. Wir freuen uns über jeden Beitrag, egal wie du dich einbringst."
 
 #: admin/includes/welcome-panel.php:86
 msgid "It is hard to continue to maintain this plugin without support from users like you."
@@ -647,6 +701,11 @@ msgstr "Stripe"
 msgid "https://contactform7.com/stripe-integration/"
 msgstr "https://contactform7.com/stripe-integration/"
 
+#. translators: %s: URL to support page about the Brevo integration
+#: admin/includes/welcome-panel.php:134
+msgid "Your contact forms will become more powerful and versatile by integrating them with external APIs. With CRM and email marketing services, you can build your own contact lists (<a href=\"%s\">Brevo</a>)."
+msgstr "Deine Kontaktformulare werden durch die Integration mit externen APIs leistungsfähiger und vielseitiger. Mit CRM- und E-Mail-Marketing-Diensten kannst du deine eigenen Kontaktlisten erstellen (<a href=\"%s\">Brevo</a>)."
+
 #: admin/includes/welcome-panel.php:127
 msgid "You have strong allies to back you up."
 msgstr "Du hast starke Partner, die dir den Rücken stärken."
@@ -1025,6 +1084,11 @@ msgstr "Beim Speichern des Kontaktformulars ist ein Fehler aufgetreten."
 #: includes/functions.php:525
 msgid "Hook %1$s is <strong>deprecated</strong> since Contact Form 7 version %2$s! Use %3$s instead."
 msgstr "Der Hook %1$s ist seit Contact Form 7 Version %2$s <strong>veraltet</strong>! Nutze stattdessen %3$s."
+
+#. translators: %s: URL to support page about the Flamingo plugin
+#: admin/includes/welcome-panel.php:112
+msgid "Install a message storage plugin before this happens to you. <a href=\"%s\">Flamingo</a> saves all messages through contact forms into the database. Flamingo is a free WordPress plugin created by the same author as Contact Form 7."
+msgstr "Installiere ein Plugin zum Speichern von Nachrichten, bevor dir das passiert. <a href=\"%s\">Flamingo</a> speichert alle Nachrichten aus Kontaktformularen in der Datenbank. Flamingo ist ein kostenloses WordPress-Plugin, das vom selben Autor wie Contact Form 7 entwickelt wurde."
 
 #: admin/includes/welcome-panel.php:109
 msgid "Contact Form 7 does not store submitted messages anywhere. Therefore, you may lose important messages forever if your mail server has issues or you make a mistake in mail configuration."

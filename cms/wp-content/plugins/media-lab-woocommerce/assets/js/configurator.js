@@ -11,6 +11,7 @@ function productConfigurator(initialData) {
         minQty: initialData.minQty,
         maxQty: initialData.maxQty,
         tiers: initialData.tiers,
+        quantityStep: initialData.quantityStep,
         
         currentStep: 1,
         totalSteps: initialData.steps.length,
@@ -19,7 +20,18 @@ function productConfigurator(initialData) {
         errors: [],
         isProcessing: false,
         
-        priceBreakdown: null,
+        priceBreakdown: {
+            base_price: initialData.basePrice,
+            additions: [],
+            subtotal: initialData.basePrice,
+            quantity: initialData.minQty || 1,
+            tier_discount: 0,
+            tier_discount_percent: 0,
+            total_before_tax: initialData.basePrice,
+            tax_rate: 20,
+            tax_amount: 0,
+            total: initialData.basePrice
+        },
         estimatedPrice: initialData.basePrice,
         pricePerUnit: initialData.basePrice,
         
@@ -85,12 +97,24 @@ function productConfigurator(initialData) {
                 return true;
             }
             
+            // Contact Form ZUERST prüfen
+            if (currentStepData.step_type === 'contact_form') {
+                return this.config['customer_name'] && 
+                       this.config['customer_name'].trim() !== '' &&
+                       this.config['customer_email'] && 
+                       this.config['customer_email'].trim() !== '';
+            }
+            
             const value = this.config[currentStepData.step_id];
             
             if (currentStepData.step_type === 'checkbox') {
                 return value && value.length > 0;
             } else if (currentStepData.step_type === 'size_matrix') {
                 return this.getSizeMatrixTotal(currentStepData.step_id) > 0;
+            } else if (currentStepData.step_type === 'number') {
+                const numValue = parseInt(value);
+                const minValue = parseInt(currentStepData.min_value) || 0;
+                return !isNaN(numValue) && numValue >= minValue;
             } else {
                 return value !== '' && value !== null && value !== undefined;
             }

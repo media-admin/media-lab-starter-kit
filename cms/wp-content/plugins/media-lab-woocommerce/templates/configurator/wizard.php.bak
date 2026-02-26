@@ -30,34 +30,7 @@ foreach ($steps as $index => $step) {
     }
 }
 ?>
-
-<?php
-// Entferne Standard Tabs von unten
-remove_action('woocommerce_after_single_product_summary', 'woocommerce_output_product_data_tabs', 10);
-
-// Zeige Beschreibung direkt (ohne Tab)
-global $product, $post;
-if ($product && $post->post_content) {
-    echo '<div class="product-description-block" style="margin: 2rem 0;">';
-    echo '<h2>Beschreibung</h2>';
-    echo apply_filters('the_content', $post->post_content);
-    echo '</div>';
-}
-
-// Entferne Beschreibung UND Rezensionen aus Tabs
-add_filter('woocommerce_product_tabs', function($tabs) {
-    unset($tabs['description']); // Beschreibung bereits oben gezeigt
-    unset($tabs['reviews']); // Rezensionen kommen ans Ende
-    return $tabs;
-});
-
-// Zeige verbleibende Tabs (falls welche übrig sind)
-$remaining_tabs = apply_filters('woocommerce_product_tabs', array());
-if (!empty($remaining_tabs)) {
-    woocommerce_output_product_data_tabs();
-}
-?>
-
+<div class="product-configurator" 
 <div class="product-configurator" 
      x-data='productConfigurator(<?php echo json_encode([
          "productId" => $product_id,
@@ -608,15 +581,6 @@ button:disabled {
 </style>
 
 </div><!-- .product-configurator -->
-
-<?php
-// Zeige Rezensionen am Ende
-if (comments_open() || get_comments_number()) {
-    echo '<div class="product-reviews-section" style="margin-top: 3rem;">';
-    comments_template();
-    echo '</div>';
-}
-?>
 
 <!-- Configurator Scripts -->
 <!-- Configurator Scripts -->

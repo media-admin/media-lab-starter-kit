@@ -21,7 +21,9 @@ class MediaLab_Product_Configurator {
         add_action('acf/init', array($this, 'register_acf_fields'));
         
         // Frontend Hooks
+        add_action('woocommerce_before_add_to_cart_button', array($this, 'move_tabs_before_configurator'), 5);
         add_action('woocommerce_before_add_to_cart_button', array($this, 'maybe_show_configurator'));
+        add_filter('woocommerce_placeholder_img_src', array($this, 'replace_placeholder_image'), 999);
         add_filter('woocommerce_add_to_cart_validation', array($this, 'validate_configuration'), 10, 3);
         add_filter('woocommerce_add_cart_item_data', array($this, 'add_configuration_to_cart'), 10, 2);
         
@@ -82,8 +84,36 @@ class MediaLab_Product_Configurator {
         remove_action('woocommerce_simple_add_to_cart', 'woocommerce_simple_add_to_cart', 30);
         remove_action('woocommerce_variable_add_to_cart', 'woocommerce_variable_add_to_cart', 30);
         
-        // Verstecke Quantity per CSS (als Backup)
-        echo '<style>.single_add_to_cart_button, .quantity { display: none !important; }</style>';
+        // Entferne Preis für konfigurierbare Produkte
+        remove_action('woocommerce_single_product_summary', 'woocommerce_template_single_price', 10);
+        
+        // Verstecke Quantity + Preis + Catalog Message per CSS
+        echo '<style>
+            .single_add_to_cart_button, 
+            .quantity,
+            .product.type-product .price,
+            .product.type-product .wc-catalog-mode-message { 
+                display: none !important; 
+            }
+            /* Placeholder Bild für Produkte ohne Bild */
+            .woocommerce-product-gallery__image--placeholder {
+                display: block !important;
+            }
+        </style>';
+        
+        // Ersetze komplettes Gallery HTML wenn kein Bild vorhanden
+        if (!$product->get_image_id()) {
+            add_filter('woocommerce_single_product_image_gallery_html', function($html, $product_id) {
+                $placeholder = wc_placeholder_img_src('woocommerce_single');
+                return '<div class="woocommerce-product-gallery woocommerce-product-gallery--with-images">
+                    <figure class="woocommerce-product-gallery__wrapper">
+                        <div class="woocommerce-product-gallery__image">
+                            <img src="' . esc_url($placeholder) . '" alt="Placeholder" class="wp-post-image" />
+                        </div>
+                    </figure>
+                </div>';
+            }, 999, 2);
+        }
         
         $this->render_configurator($product->get_id());
     }
@@ -488,6 +518,42 @@ class MediaLab_Product_Configurator {
         }
     }
     
+    /**
+     * Verschiebe Tabs (Beschreibung, Rezensionen) VOR den Konfigurator
+     */
+    /**
+     * Verwende WooCommerce Standard Placeholder für Produkte ohne Bild
+     */
+    public function custom_placeholder_image($src) {
+        // WooCommerce Standard Placeholder
+        return WC()->plugin_url() . '/assets/images/placeholder.png';
+    }
+    
+    /**
+     * Ändere Placeholder URL zu 768x768 Version
+     */
+    public function replace_placeholder_image($src) {
+        // Wenn der alte 600x600 Placeholder verwendet wird, ersetze ihn
+        if (strpos($src, 'woocommerce-placeholder-600x600.webp') !== false) {
+            return content_url('uploads/woocommerce-placeholder-768x768.webp');
+        }
+        return $src;
+    }
+    
+    public function move_tabs_before_configurator() {
+        global $product;
+        
+        if (!$this->is_configurable($product)) {
+            return;
+        }
+        
+        // Entferne Tabs von Standard-Position (nach add_to_cart)
+        remove_action('woocommerce_after_single_product_summary', 'woocommerce_output_product_data_tabs', 10);
+        
+        // Zeige Tabs VOR dem Konfigurator
+        woocommerce_output_product_data_tabs();
+    }
+    
     public function enqueue_scripts() {
         if (!is_product()) return;
         
@@ -499,15 +565,31 @@ class MediaLab_Product_Configurator {
         
         if (!$this->is_configurable($product->get_id())) return;
         
-        wp_enqueue_script('alpine-js', 'https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js', array(), '3.0', true);
+        // Alpine.js - OHNE Abhängigkeiten, mit defer
+        wp_enqueue_script(
+            'alpine-js',
+            MEDIA_LAB_WC_URL . 'assets/js/alpine.min.js',
+            array(),
+            '3.14.1',
+            false // Footer, aber VOR configurator
+        );
         
+        // Configurator NACH Alpine
         wp_enqueue_script(
             'medialab-configurator',
             MEDIA_LAB_WC_URL . 'assets/js/configurator.js',
-            array('jquery', 'alpine-js'),
-            '1.0.0',
+            array('jquery'),
+            time(), // Cache buster
             true
         );
+        
+        // Defer für Alpine via Filter
+        add_filter('script_loader_tag', function($tag, $handle) {
+            if ($handle === 'alpine-js') {
+                return str_replace(' src', ' defer src', $tag);
+            }
+            return $tag;
+        }, 10, 2);
         
         wp_localize_script('medialab-configurator', 'configuratorData', array(
             'ajax_url' => admin_url('admin-ajax.php'),
