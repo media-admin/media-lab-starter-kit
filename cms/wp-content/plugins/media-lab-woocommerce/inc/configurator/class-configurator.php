@@ -61,8 +61,48 @@ class MediaLab_Product_Configurator {
     }
     
     public function get_configuration_steps($product_id) {
+        $config_type = get_post_meta($product_id, 'config_type', true);
+        
+        // Textile System: Lade Steps aus Custom Post Types
+        if ($config_type === 'textile') {
+            return $this->get_textile_steps($product_id);
+        }
+        
+        // Standard System: Lade Steps aus ACF Repeater
         $steps = get_field('config_steps', $product_id);
         return $steps ? $steps : array();
+    }
+    
+    private function get_textile_steps($product_id) {
+        // Hole Step IDs aus Meta
+        $step_ids = get_post_meta($product_id, 'config_steps', true);
+        
+        if (!$step_ids || !is_array($step_ids)) {
+            return array();
+        }
+        
+        $steps = array();
+        foreach ($step_ids as $step_id) {
+            $post = get_post($step_id);
+            if (!$post) continue;
+            
+            $steps[] = array(
+                'step_id' => get_post_meta($step_id, 'step_id', true),
+                'step_label' => get_post_meta($step_id, 'step_label', true),
+                'step_type' => get_post_meta($step_id, 'step_type', true),
+                'required' => get_post_meta($step_id, 'required', true),
+                'show_in_summary' => get_post_meta($step_id, 'show_in_summary', true),
+                'description' => get_post_meta($step_id, 'description', true),
+                'options' => get_post_meta($step_id, 'options', true) ?: false,
+                'conditions' => get_post_meta($step_id, 'conditions', true) ?: false,
+                'min_value' => get_post_meta($step_id, 'min_value', true) ?: '',
+                'max_value' => get_post_meta($step_id, 'max_value', true) ?: '',
+                'allowed_file_types' => get_post_meta($step_id, 'allowed_file_types', true) ?: 'pdf,jpg,png',
+                'max_file_size' => get_post_meta($step_id, 'max_file_size', true) ?: 10,
+            );
+        }
+        
+        return $steps;
     }
     
     public function register_acf_fields() {
@@ -496,8 +536,15 @@ class MediaLab_Product_Configurator {
             $body .= $contact['message'] . "\n";
         }
         
-        $headers = array('Content-Type: text/plain; charset=UTF-8');
-        $sent = wp_mail($admin_email, $subject, $body, $headers);
+        // HTML Email Header
+        $headers = array('Content-Type: text/html; charset=UTF-8');
+        
+        // Wrappe Body in HTML
+        $html_body = '<html><body style="font-family: Arial, sans-serif; line-height: 1.6;">';
+        $html_body .= nl2br($body); // Konvertiere \n zu <br>
+        $html_body .= '</body></html>';
+        
+        $sent = wp_mail($admin_email, $subject, $html_body, $headers);
         
         if ($sent) {
             if (!empty($contact['email'])) {
