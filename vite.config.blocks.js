@@ -14,6 +14,12 @@ const pluginDir  = path.resolve(__dirname, 'cms/wp-content/plugins/media-lab-age
  * Aufruf:  vite build --config vite.config.blocks.js
  * Oder via: npm run build  (ruft beide Configs nacheinander auf)
  *
+ * Format-Strategie (Vite 8 / rolldown):
+ *   - format: 'iife' + mehrere Inputs → nicht erlaubt (codeSplitting-Konflikt)
+ *   - Lösung: ES-Module-Format (rolldown-Standard) + type="module" via WP-Filter
+ *   - ES-Module sind browser-seitig automatisch defer → löst wp.*-Timing mit
+ *   - wp.domReady() in blocks.js als zusätzliche Absicherung beibehalten
+ *
  * @since 1.6.0
  */
 export default defineConfig({
@@ -31,7 +37,17 @@ export default defineConfig({
         'block-logo-slider': path.resolve(pluginDir, 'assets/src/js/block-logo-slider.js'),
         // 'blocks-scss': wird via sass CLI gebaut – Vite 8 Bug mit SCSS als Rollup-Input
       },
+
+      external: [
+        // @wordpress/* ESM-Imports nicht bundeln (für künftige Verwendung)
+        /^@wordpress\/.*/,
+      ],
+
       output: {
+        // ES-Module: Standard in rolldown, unterstützt mehrere Inputs ohne Einschränkungen.
+        // WordPress lädt diese via type="module" (s. script_loader_tag-Filter in inc/blocks.php).
+        format: 'es',
+
         entryFileNames: 'js/[name].js',
         chunkFileNames: 'js/chunks/[name]-[hash].js',
         assetFileNames: (assetInfo) => {
@@ -39,11 +55,8 @@ export default defineConfig({
           return 'assets/[name][extname]';
         },
       },
-      // wp-* nicht bundeln – WordPress stellt diese zur Laufzeit bereit
-      external: [/^@wordpress\/.*/],
     },
 
-    cssCodeSplit: false,
     minify: 'terser',
     terserOptions: {
       compress: { drop_console: true, drop_debugger: true },

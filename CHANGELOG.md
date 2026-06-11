@@ -6,6 +6,48 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ---
 
+## [1.20.1] - 2026-06-11
+
+### media-lab-agency-core 1.12.1
+
+#### Fixed
+- **SVG Sanitizer – Lowercase-Allowlist** (`inc/svg-support.php`) –
+  `$allowed_tags` und `$forbidden_tags` vollständig auf Lowercase normalisiert.
+  `strtolower($child->localName)` ergab z.B. `"radialgradient"`, aber die
+  Allowlist enthielt `"radialGradient"` → Gradient-Elemente wurden fälschlich
+  entfernt, SVG-Farbverläufe waren nach dem Upload unsichtbar. Betrifft alle
+  CamelCase-Tags: `linearGradient`, `radialGradient`, `clipPath`, `textPath`,
+  `foreignObject`, Animations- und Filter-Elemente.
+- **Native Blocks – wp.domReady()-Wrapper** (`assets/src/js/blocks.js`) –
+  `registerBlockType()` wurde außerhalb von `wp.domReady()` aufgerufen, was
+  bei bestimmten Ladereihenfolgen zu Race Conditions führte (`wp.blocks` noch
+  nicht initialisiert). Gesamter Block-Registrierungscode in `wp.domReady()`
+  gewrapped.
+- **Editor-CSS im Gutenberg-Iframe** (`inc/blocks.php`) – Seit WP 6.3 wird
+  der Editor in einem Iframe gerendert; Styles über `enqueue_block_editor_assets`
+  landen außerhalb des Iframes und waren im Editor unsichtbar. Hook auf
+  `enqueue_block_assets` (mit `is_admin()`-Guard) geändert. `wp-edit-blocks`-
+  Dependency bei Editor-Styles entfernt (verursachte Konflikte im Iframe-Kontext).
+- **wp-dom-ready Dependency** (`inc/blocks.php`) – `wp-dom-ready` zu den
+  Script-Dependencies von `medialab-blocks` hinzugefügt, damit der
+  `wp.domReady()`-Wrapper in `blocks.js` korrekt aufgelöst wird.
+
+### Starter Kit (root)
+
+#### Fixed
+- **Vite – Swiper stabiler Chunk-Name** (`vite.config.js`) – Swiper wurde
+  mit Hash im Dateinamen gebaut (`chunks/swiper-[hash].js`), was bei jedem
+  Build die URL änderte und `wp_enqueue_script('swiper', ...)` mit hartem
+  Pfad brechen ließ. `manualChunks` und `STABLE_CHUNKS`-Logik ergänzt:
+  Swiper landet jetzt immer unter `chunks/swiper.js`.
+- **vite.config.blocks.js – ES-Module-Format** (`vite.config.blocks.js`) –
+  `format: 'es'` explizit gesetzt; `external` korrekt in `rollupOptions`
+  verschoben (war außerhalb); `cssCodeSplit: false` entfernt (dort nicht
+  zutreffend). Konsistent mit dem `type="module"`-Filter in `inc/blocks.php`.
+
+---
+
+
 ## [1.20.0] - 2026-05-22
 
 ### media-lab-agency-core 1.9.2

@@ -17,6 +17,9 @@ const themeDir   = path.resolve(__dirname, 'cms/wp-content/themes/custom-theme')
 
 const isDev = process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'staging';
 
+// Chunks die WordPress unter stabilem Namen (ohne Hash) erwartet
+const STABLE_CHUNKS = ['swiper'];
+
 export default defineConfig({
   root: path.resolve(themeDir, 'assets'),
 
@@ -56,11 +59,26 @@ export default defineConfig({
       },
       output: {
         entryFileNames: 'js/[name].js',
-        chunkFileNames: 'js/chunks/[name]-[hash].js',
+
+        // Swiper → stabiler Name ohne Hash; alle anderen Chunks mit Hash
+        chunkFileNames: (chunkInfo) => {
+          if (STABLE_CHUNKS.includes(chunkInfo.name)) {
+            return 'js/chunks/[name].js';
+          }
+          return 'js/chunks/[name]-[hash].js';
+        },
+
         assetFileNames: (assetInfo) => {
           if (assetInfo.name?.endsWith('.css')) return 'css/style.css';
           if (/\.(png|jpe?g|svg|gif|webp)$/.test(assetInfo.name ?? '')) return 'images/[name][extname]';
           return 'assets/[name][extname]';
+        },
+
+        // Swiper als eigenen Chunk erzwingen → chunks/swiper.js
+        manualChunks: (id) => {
+          if (id.includes('/swiper/') || id.includes('\\swiper\\')) {
+            return 'swiper';
+          }
         },
       },
     },
