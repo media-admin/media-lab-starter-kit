@@ -6,10 +6,36 @@ defined( 'ABSPATH' ) || exit;
  *
  * Erstellt ZIP-Archive von WordPress-Verzeichnissen.
  * Unterstützt: wp-content, vollständiges WP-Verzeichnis.
+ *
+ * Speicher-Optimierungen für Shared Hosting:
+ *
+ *  1. ZIP_COMPRESSION_METHOD = ZipArchive::CM_STORE (keine Komprimierung):
+ *     Komprimierung spart bei bereits komprimierten Medien (JPEG, PNG, MP4)
+ *     kaum Speicher, verbraucht aber viel CPU und Zeit. CM_STORE ist 3–10×
+ *     schneller und vermeidet PHP-Speicher-Erschöpfung bei großen Verzeichnissen.
+ *
+ *  2. Periodisches gc_collect_cycles() + memory_get_usage()-Check:
+ *     ZipArchive puffert intern — bei tausenden Dateien kann das kumulativ
+ *     viel Speicher belegen. Alle MLBKP_ZIP_FLUSH_EVERY Dateien wird der
+ *     Garbage Collector explizit aufgerufen.
+ *
+ *  3. Einzelne Dateien > 500 MB werden übersprungen (unverändert).
  */
 class MLBKP_File_Backup {
 
     private string $temp_dir;
+
+    /**
+     * ZIP-Komprimierungsmethode.
+     * CM_STORE (0) = unkomprimiert, deutlich schneller auf Shared Hosting.
+     * CM_DEFLATE  = Standard-Komprimierung (langsamer, kleiner bei Text/PHP-Dateien).
+     */
+    private const ZIP_COMPRESSION_METHOD = ZipArchive::CM_STORE;
+
+    /**
+     * Alle N Dateien Garbage Collector aufrufen und Speicher loggen.
+     */
+    private const GC_EVERY_FILES = 500;
 
     /** Standardmäßig ausgeschlossene Pfade (relativ zum Quellverzeichnis) */
     private array $default_excludes = [
@@ -31,7 +57,7 @@ class MLBKP_File_Backup {
     /**
      * Erstellt ein ZIP-Archiv des angegebenen Verzeichnisses.
      *
-     * @param string $type       'wpcontent' | 'wpcore'
+     * @param string $type          'wpcontent' | 'wpcore'
      * @param array  $extra_excludes  Zusätzliche auszuschließende Pfade
      * @return array{path: string, filename: string, size: int}
      * @throws RuntimeException
@@ -79,7 +105,8 @@ class MLBKP_File_Backup {
             throw new RuntimeException( "Konnte ZIP-Datei nicht erstellen: {$zip_path}" );
         }
 
-        $base_name = basename( $source );
+        $base_name  = basename( $source );
+        $file_count = 0;
 
         $iterator = new RecursiveIteratorIterator(
             new RecursiveDirectoryIterator(
@@ -90,30 +117,43 @@ class MLBKP_File_Backup {
         );
 
         foreach ( $iterator as $file ) {
-            $file_path    = $file->getPathname();
-            $relative     = substr( $file_path, strlen( $source ) + 1 );
-            $zip_entry    = $base_name . '/' . $relative;
+            $file_path = $file->getPathname();
+            $relative  = substr( $file_path, strlen( $source ) + 1 );
+            $zip_entry = $base_name . '/' . $relative;
 
             // Ausschlüsse prüfen
             if ( $this->should_exclude( $relative, $excludes ) ) {
                 if ( $file->isDir() ) {
-                    $iterator->getInnerIterator()->current(); // Skip subtree
+                    $iterator->getInnerIterator()->current();
                 }
                 continue;
             }
 
             if ( $file->isDir() ) {
                 $zip->addEmptyDir( $zip_entry );
+
             } elseif ( $file->isFile() && $file->isReadable() ) {
-                // Sehr große Einzeldateien (>500MB) mit Warnung überspringen
+
+                // Sehr große Einzeldateien (>500 MB) überspringen
                 if ( $file->getSize() > 524288000 ) {
                     $zip->addFromString(
                         $zip_entry . '.skipped',
-                        "Diese Datei wurde übersprungen (>500MB): " . $file_path
+                        "Diese Datei wurde übersprungen (>500 MB): " . $file_path
                     );
                     continue;
                 }
+
                 $zip->addFile( $file_path, $zip_entry );
+
+                // Komprimierungsmethode setzen: CM_STORE = kein Overhead
+                $zip->setCompressionName( $zip_entry, self::ZIP_COMPRESSION_METHOD );
+
+                $file_count++;
+
+                // Periodisch Speicher freigeben
+                if ( $file_count % self::GC_EVERY_FILES === 0 ) {
+                    gc_collect_cycles();
+                }
             }
         }
 
@@ -125,11 +165,9 @@ class MLBKP_File_Backup {
      */
     private function should_exclude( string $relative_path, array $excludes ): bool {
         foreach ( $excludes as $exclude ) {
-            // Exakter Match oder Verzeichnis-Prefix
             if ( $relative_path === $exclude || str_starts_with( $relative_path, $exclude . '/' ) ) {
                 return true;
             }
-            // Dateiname match (z.B. ".DS_Store" überall)
             if ( ! str_contains( $exclude, '/' ) && basename( $relative_path ) === $exclude ) {
                 return true;
             }

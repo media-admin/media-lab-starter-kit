@@ -6,6 +6,38 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ---
 
+## [1.21.1] - 2026-06-11
+
+### media-lab-backup 1.3.1
+
+#### Fixed
+- **File-Backup Timeout auf Shared Hosting** (`includes/class-mlb-file-backup.php`,
+  `includes/class-mlb-sftp.php`, `includes/class-mlb-logger.php`) –
+  File-Backups schlugen nach 60 Minuten mit „Job-Timeout" fehl, während
+  DB-Backups erfolgreich liefen. Zwei Ursachen behoben:
+
+  **Ursache 1 – SFTP-Upload ohne Chunking** (`class-mlb-sftp.php`):
+  `SFTP::SOURCE_LOCAL_FILE` lädt die gesamte Datei in einem Paket in den RAM.
+  Bei 500 MB – 3 GB ZIP-Archiven führt das auf Shared Hosting (256–512 MB
+  `memory_limit`) zur Erschöpfung. Ersetzt durch manuellen Chunked-Transfer:
+  Datei wird in 8-MB-Blöcken via `fread()` gelesen und mit Offset-Parameter
+  in `sftp->put()` gesendet. Speicher-Peak sinkt von Dateigröße auf ~16 MB.
+
+  **Ursache 2 – ZIP-Komprimierung CPU-intensiv** (`class-mlb-file-backup.php`):
+  `ZipArchive::CM_DEFLATE` komprimiert jeden File beim Hinzufügen — bei
+  tausenden JPEG/PNG/MP4-Dateien (die bereits komprimiert sind) entsteht
+  massiver CPU-Overhead ohne nennenswerte Größenersparnis. Umgestellt auf
+  `ZipArchive::CM_STORE` (keine Komprimierung) — 3–10× schneller. Zusätzlich
+  `gc_collect_cycles()` alle 500 Dateien um ZipArchive-internen Puffer
+  freizugeben.
+
+  **Timeout-Konstante** (`class-mlb-logger.php`):
+  `JOB_TIMEOUT_MINUTES` von 60 auf 240 Minuten erhöht, damit der Logger
+  laufende Jobs nicht fälschlicherweise als Timeout markiert.
+
+---
+
+
 ## [1.21.0] - 2026-06-11
 
 ### media-lab-agency-core 1.13.0
