@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - Advanced Custom Fields (ACF®) - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-05-23 01:45:59+0000\n"
+"PO-Revision-Date: 2026-05-28 19:53:29+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -4365,10 +4365,6 @@ msgstr "Mittel"
 msgid "Thumbnail"
 msgstr "Vorschaubild"
 
-#: includes/fields/class-acf-field-page_link.php:203
-msgid "Archives"
-msgstr "Archive"
-
 #: includes/fields/class-acf-field-taxonomy.php:902
 #: includes/locations/class-acf-location-user-form.php:81
 msgid "Add"
@@ -4637,11 +4633,11 @@ msgstr "Heute"
 
 #: includes/fields/class-acf-field-image.php:247
 #: includes/fields/class-acf-field-image.php:283
-#: includes/fields/class-acf-field-oembed.php:249
+#: includes/fields/class-acf-field-oembed.php:287
 msgid "Width"
 msgstr "Breite"
 
-#: includes/fields/class-acf-field-oembed.php:206
+#: includes/fields/class-acf-field-oembed.php:244
 msgid "Enter URL"
 msgstr "URL eingeben"
 
@@ -4700,7 +4696,7 @@ msgstr "Gruppe"
 #: includes/fields/class-acf-field-google-map.php:230
 #: includes/fields/class-acf-field-image.php:258
 #: includes/fields/class-acf-field-image.php:294
-#: includes/fields/class-acf-field-oembed.php:261
+#: includes/fields/class-acf-field-oembed.php:299
 msgid "Height"
 msgstr "Höhe"
 
@@ -5611,8 +5607,8 @@ msgstr "Das %1$s-Feld kann jetzt in der %2$s-Feldgruppe gefunden werden"
 msgid "Center the initial map"
 msgstr "Ausgangskarte zentrieren"
 
-#: includes/fields/class-acf-field-oembed.php:246
-#: includes/fields/class-acf-field-oembed.php:258
+#: includes/fields/class-acf-field-oembed.php:284
+#: includes/fields/class-acf-field-oembed.php:296
 msgid "Embed Size"
 msgstr "Einbettungs-Größe"
 
@@ -6289,6 +6285,10 @@ msgstr "Beitragsseite"
 #: includes/fields/class-acf-field-page_link.php:31
 msgid "Page Link"
 msgstr "Seitenlink"
+
+#: includes/fields/class-acf-field-page_link.php:203
+msgid "Archives"
+msgstr "Archiv"
 
 #. Plugin Name of the plugin
 #: acf.php acf.php:347

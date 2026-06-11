@@ -94,7 +94,7 @@ class MLT_Settings {
         return $val ? 1 : 0;
     }
     public function sanitize_option_analytics_provider( $val ) {
-        return in_array( $val, [ 'ga4', 'gtm' ], true ) ? $val : 'ga4';
+        return in_array( $val, [ 'ga4', 'gtm', 'matomo' ], true ) ? $val : 'ga4';
     }
     public function sanitize_option_analytics_id( $val ) {
         return sanitize_text_field( $val );
@@ -317,33 +317,76 @@ class MLT_Settings {
                         </div>
                     </div>
 
-                    <!-- ── Analytics Adapter (Reporting) ───────────────── -->
-                    <div class="mlt-card mlt-card--full">
+                    <!-- ── GA4 OAuth API ───────────────────────────────── -->
+                    <div class="mlt-card mlt-card--full" id="ga4">
                         <div class="mlt-card__header">
                             <span class="mlt-card__icon">📈</span>
-                            <h2>Analytics Reporting</h2>
+                            <h2>Google Analytics 4 API</h2>
                         </div>
                         <div class="mlt-card__body">
-                            <p class="mlt-hint" style="margin-bottom:16px">Für das SEO-Dashboard und den Report-Mailer. Unabhängig vom Tracking oben — hier werden API-Credentials für den Server-seitigen Datenabruf eingetragen.</p>
-                            <?php $prov = get_option( 'mlt_analytics_provider', 'ga4' ); ?>
-                            <div class="mlt-grid">
-                                <?php if ( $prov === 'ga4' ) : ?>
+                            <p class="mlt-hint" style="margin-bottom:16px">Für das SEO-Dashboard und den Report-Mailer. Verbindet sich per OAuth mit demselben Google-Account wie die Search Console — gleiche OAuth-App, kein separates Setup.</p>
+                            <?php
+                            $ga4 = MLT_GA4_API::instance();
+                            if ( $ga4->is_connected() ) : ?>
+                                <div class="mlt-notice mlt-notice--success">
+                                    <strong>✓ Verbunden.</strong> GA4-Daten werden im Dashboard angezeigt.
+                                    <a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=mlt_ga4_disconnect' ), 'mlt_ga4_disconnect' ) ); ?>"
+                                        class="button button-small mlt-btn-remove" style="margin-left:12px">Verbindung trennen</a>
+                                </div>
+                            <?php endif; ?>
+
+                            <div class="mlt-grid" style="margin-top:0">
                                 <div class="mlt-field">
                                     <label for="mlt_ga4_property_id">GA4 Property ID</label>
                                     <input type="text" id="mlt_ga4_property_id" name="mlt_ga4_property_id"
                                         value="<?php echo esc_attr( get_option( 'mlt_ga4_property_id', '' ) ); ?>"
                                         class="regular-text" placeholder="123456789" />
-                                    <p class="mlt-hint">Numerische ID (nicht G-XXXXXXXX)</p>
+                                    <p class="mlt-hint">Numerische ID aus Google Analytics → Verwaltung → Property-Details (nicht G-XXXXXXXX)</p>
                                 </div>
                                 <div class="mlt-field">
-                                    <label for="mlt_ga4_service_account_json">Service Account JSON</label>
+                                    <label>OAuth Credentials</label>
+                                    <p class="mlt-hint" style="margin:0">Werden von der GSC-Konfiguration oben übernommen — gleiche Client ID und Client Secret. Nur einmal einrichten.</p>
+                                </div>
+                                <div class="mlt-field">
+                                    <label>Redirect URI (in Google Cloud eintragen)</label>
+                                    <code style="display:block;padding:8px;background:#f3f4f6;border-radius:4px;font-size:12px"><?php echo esc_html( MLT_GA4_API::instance()->get_redirect_uri() ); ?></code>
+                                    <p class="mlt-hint" style="margin-top:4px">Google Cloud Console → OAuth2-Credentials → Authorized Redirect URIs → diese URL zusätzlich eintragen.</p>
+                                </div>
+                            </div>
+
+                            <?php if ( $ga4->is_configured() && ! $ga4->is_connected() ) : ?>
+                                <a href="<?php echo esc_url( $ga4->get_auth_url() ); ?>" class="button button-primary" style="margin-top:8px">Mit Google verbinden</a>
+                                <p class="mlt-hint" style="margin-top:8px">Zuerst Property ID eintragen und speichern, dann verbinden.</p>
+                            <?php elseif ( ! $ga4->is_configured() ) : ?>
+                                <p class="mlt-hint" style="margin-top:8px">⚠ Bitte zuerst GSC OAuth-Credentials (Client ID + Secret) und die GA4 Property ID eintragen und speichern.</p>
+                            <?php endif; ?>
+
+                            <?php if ( get_option( 'mlt_ga4_service_account_json' ) && ! $ga4->is_connected() ) : ?>
+                                <div class="mlt-notice mlt-notice--warning" style="margin-top:16px">
+                                    <strong>Service Account (Legacy) gefunden.</strong> Wird als Fallback verwendet, solange keine OAuth-Verbindung aktiv ist.
+                                    <br><em style="font-size:12px">Empfehlung: Nach erfolgreicher OAuth-Verbindung Inhalt unten löschen und speichern.</em>
+                                </div>
+                                <div class="mlt-field" style="margin-top:12px">
+                                    <label for="mlt_ga4_service_account_json">Service Account JSON (Legacy-Fallback)</label>
                                     <textarea id="mlt_ga4_service_account_json" name="mlt_ga4_service_account_json"
                                         rows="3" class="large-text code"
                                         placeholder='{"type":"service_account","project_id":"...","private_key":"...","client_email":"..."}'
                                         style="font-size:12px;font-family:monospace"><?php echo esc_textarea( get_option( 'mlt_ga4_service_account_json', '' ) ); ?></textarea>
-                                    <p class="mlt-hint">Google Cloud → Service Account → JSON-Key herunterladen</p>
+                                    <p class="mlt-hint">Zum Entfernen: Inhalt löschen und speichern.</p>
                                 </div>
-                                <?php else : ?>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+
+                    <!-- ── Matomo Reporting ─────────────────────────────── -->
+                    <?php if ( get_option( 'mlt_analytics_provider', 'ga4' ) === 'matomo' ) : ?>
+                    <div class="mlt-card mlt-card--full">
+                        <div class="mlt-card__header">
+                            <span class="mlt-card__icon">📊</span>
+                            <h2>Matomo Reporting</h2>
+                        </div>
+                        <div class="mlt-card__body">
+                            <div class="mlt-grid">
                                 <div class="mlt-field">
                                     <label for="mlt_matomo_url">Matomo URL</label>
                                     <input type="url" id="mlt_matomo_url" name="mlt_matomo_url"
@@ -363,10 +406,10 @@ class MLT_Settings {
                                         value="<?php echo esc_attr( get_option( 'mlt_matomo_site_id', '1' ) ); ?>"
                                         class="small-text" min="1" />
                                 </div>
-                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
+                    <?php endif; ?>
 
                     <!-- ── Report-Mail ──────────────────────────────────── -->
                     <div class="mlt-card mlt-card--full">

@@ -2,8 +2,8 @@
 /**
  * Plugin Name: Media Lab SEO Toolkit
  * Plugin URI:  https://github.com/media-admin/media-lab-starter-kit
- * Description: SEO-Toolkit für Media Lab Kundenprojekte. GSC-Integration, Schema.org, Breadcrumbs, Redirect-Manager, Consent-aware Analytics und wöchentlicher Report-Mailer.
- * Version:     1.1.0
+ * Description: SEO-Toolkit für Media Lab Kundenprojekte. GSC-Integration, GA4 OAuth, Schema.org, Breadcrumbs, Redirect-Manager, Consent-aware Analytics und wöchentlicher Report-Mailer.
+ * Version:     1.2.0
  * Author:      Media Lab
  * Author URI:  https://medialab.at
  * Text Domain: media-lab-seo
@@ -14,7 +14,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define( 'MLT_VERSION',  '1.1.0' );
+define( 'MLT_VERSION',  '1.2.0' );
 define( 'MLT_FILE',     __FILE__ );
 define( 'MLT_PATH',     plugin_dir_path( __FILE__ ) );
 define( 'MLT_URL',      plugin_dir_url( __FILE__ ) );
@@ -46,6 +46,7 @@ function mlt_init() {
     load_plugin_textdomain( 'media-lab-seo', false, dirname( MLT_BASENAME ) . '/languages' );
 
     require_once MLT_PATH . 'inc/class-gsc-api.php';
+    require_once MLT_PATH . 'inc/class-ga4-api.php';
     require_once MLT_PATH . 'inc/class-analytics-adapter.php';
     require_once MLT_PATH . 'inc/class-settings.php';
     require_once MLT_PATH . 'inc/class-seo.php';
@@ -64,10 +65,29 @@ function mlt_init() {
     new MLT_SEO_Dashboard();
     new MLT_Report_Mailer();
     MLT_GSC_API::instance();
+    MLT_GA4_API::instance();
 
     if ( get_option( 'mlt_analytics_enabled' ) ) {
         require_once MLT_PATH . 'inc/class-analytics.php';
         new MLT_Analytics();
+    }
+
+    // Admin-Notices für OAuth-Callbacks
+    add_action( 'admin_notices', 'mlt_oauth_admin_notices' );
+}
+
+function mlt_oauth_admin_notices() {
+    if ( isset( $_GET['mlt_ga4_connected'] ) ) {
+        echo '<div class="notice notice-success is-dismissible"><p><strong>Google Analytics 4</strong> erfolgreich verbunden.</p></div>';
+    }
+    if ( isset( $_GET['mlt_ga4_disconnected'] ) ) {
+        echo '<div class="notice notice-info is-dismissible"><p><strong>Google Analytics 4</strong> Verbindung getrennt.</p></div>';
+    }
+    if ( isset( $_GET['mlt_gsc_connected'] ) ) {
+        echo '<div class="notice notice-success is-dismissible"><p><strong>Google Search Console</strong> erfolgreich verbunden.</p></div>';
+    }
+    if ( isset( $_GET['mlt_gsc_disconnected'] ) ) {
+        echo '<div class="notice notice-info is-dismissible"><p><strong>Google Search Console</strong> Verbindung getrennt.</p></div>';
     }
 }
 

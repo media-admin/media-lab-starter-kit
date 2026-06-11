@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: _s woocommerce-services\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-20T09:27:38.695Z\n"
+"POT-Creation-Date: 2026-06-08T11:19:47.160Z\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -12,28 +12,28 @@ msgstr ""
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 
-#: dist/chunks/026b2912a5be8e19143a.min.js:1
-#: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Saving\\u2026"
-msgstr ""
-
-#: dist/chunks/026b2912a5be8e19143a.min.js:1
-#: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Save Settings"
-msgstr ""
-
 #: dist/chunks/05a9edb23fbfd16fbd0c.min.js:1
 msgid "No tracking information available at this time"
 msgstr ""
 
 #: dist/chunks/05a9edb23fbfd16fbd0c.min.js:1
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
+#: dist/chunks/c5ffeed408319ce3cb72.min.js:1
 #: dist/chunks/c97c54e68e0bdfe04b7e.min.js:1
-#: dist/chunks/cc78581d1f4839f447a8.min.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
 msgid "Dismiss"
+msgstr ""
+
+#: dist/chunks/3746bc6ac8e3dac3b3d6.min.js:1
+#: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Saving\\u2026"
+msgstr ""
+
+#: dist/chunks/3746bc6ac8e3dac3b3d6.min.js:1
+#: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Save Settings"
 msgstr ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
@@ -55,7 +55,7 @@ msgid ""
 msgstr ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
 msgid "Name"
 msgstr ""
 
@@ -64,7 +64,7 @@ msgid "Company"
 msgstr ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
 msgid "Phone"
 msgstr ""
 
@@ -73,32 +73,32 @@ msgid "%(message)s. Please modify the address and try again."
 msgstr ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
 msgid "Address"
 msgstr ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
 msgid "City"
 msgstr ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
 msgid "State"
 msgstr ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
 msgid "Select one\\u2026"
 msgstr ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
 msgid "ZIP/Postal code"
 msgstr ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
 msgid "Country"
 msgstr ""
 
@@ -155,7 +155,7 @@ msgid "View on Google Maps"
 msgstr ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
 msgid "Packaging"
 msgstr ""
 
@@ -229,7 +229,7 @@ msgid "Package details"
 msgstr ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
 msgid "Add package"
 msgid_plural "Add packages"
 msgstr[0] ""
@@ -256,8 +256,8 @@ msgid "{{itemLink/}} is currently in {{pckg/}}."
 msgstr ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
 #: dist/chunks/debcc0c7f5a44e043b3e.min.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
 msgid "Cancel"
 msgstr ""
 
@@ -331,7 +331,7 @@ msgid ""
 msgstr ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
 msgid "DHL Express"
 msgstr ""
 
@@ -470,8 +470,8 @@ msgid "Shipping summary"
 msgstr ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
 #: dist/chunks/debcc0c7f5a44e043b3e.min.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
 msgid "Paper size"
 msgstr ""
 
@@ -510,7 +510,7 @@ msgid "Shipping from"
 msgstr ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
 msgid "Edit"
 msgstr ""
 
@@ -674,95 +674,95 @@ msgid "Skip"
 msgstr ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.6.3.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
+#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.6.5.js:1
 msgid "Try WooCommerce Shipping"
 msgstr ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.6.3.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
+#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.6.5.js:1
 msgid "A new WooCommerce Shipping experience is now available"
 msgstr ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.6.3.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
+#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.6.5.js:1
 msgid ""
 "We'll ensure a seamless transition by allowing you to migrate all your "
 "compatible settings and shipping labels when you update."
 msgstr ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.6.3.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
+#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.6.5.js:1
 msgid "Here's what you can expect from the new shipping experience:"
 msgstr ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.6.3.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
+#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.6.5.js:1
 msgid "A seamless transition"
 msgstr ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.6.3.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
+#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.6.5.js:1
 msgid ""
 "Automatically migrate all your compatible settings and shipment history to "
 "the new extension."
 msgstr ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.6.3.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
+#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.6.5.js:1
 msgid "Print and save"
 msgstr ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.6.3.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
+#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.6.5.js:1
 msgid ""
 "Speed up label creation with a streamlined process to print and save your "
 "label preferences."
 msgstr ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.6.3.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
+#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.6.5.js:1
 msgid "USPS and DHL Express"
 msgstr ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.6.3.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
+#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.6.5.js:1
 msgid ""
 "Ship your productss using trusted shipping carriers like USPS and DHL "
 "Express at discounted rates, with more options and carriers coming soon."
 msgstr ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.6.3.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
+#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.6.5.js:1
 msgid "Enhanced label purchase flow"
 msgstr ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.6.3.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
+#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.6.5.js:1
 msgid ""
 "Experience a smoother label purchasing process with our updated interface."
 msgstr ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.6.3.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
+#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.6.5.js:1
 msgid "Maybe later"
 msgstr ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
 #: dist/chunks/bac3abaa2e8ea4d1119c.min.js:1
-#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.6.3.js:1
+#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.6.5.js:1
 msgid "Create shipping label"
 msgid_plural "Create shipping labels"
 msgstr[0] ""
@@ -778,27 +778,27 @@ msgstr ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
 #: dist/chunks/9de54fe810d7b0e3288f.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-#: dist/chunks/cc78581d1f4839f447a8.min.js:1
+#: dist/chunks/c5ffeed408319ce3cb72.min.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
 msgid "Required"
 msgstr ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
 #: dist/chunks/9de54fe810d7b0e3288f.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-#: dist/chunks/cc78581d1f4839f447a8.min.js:1
+#: dist/chunks/c5ffeed408319ce3cb72.min.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
 msgid "Optional"
 msgstr ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-#: dist/chunks/cc78581d1f4839f447a8.min.js:1
+#: dist/chunks/c5ffeed408319ce3cb72.min.js:1
 #: dist/chunks/debcc0c7f5a44e043b3e.min.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
 msgid "More"
 msgstr ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
 msgid "Untitled"
 msgstr ""
 
@@ -807,113 +807,113 @@ msgid "Expand"
 msgstr ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
 msgid "Your shipping packages have been saved."
 msgstr ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
 msgid "Unable to save your shipping packages. Please try again."
 msgstr ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
 msgid "Done"
 msgstr ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
 msgid "{{icon/}} Delete this package"
 msgstr ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
 msgid "Invalid value."
 msgstr ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
 msgid "This field is required."
 msgstr ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
 msgid "Type of package"
 msgstr ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
 msgid "Box"
 msgstr ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
 msgid "Envelope"
 msgstr ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
 msgid "Package name"
 msgstr ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
 msgid "Unique package name"
 msgstr ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
 msgid "This field must be unique"
 msgstr ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
 msgid "Dimensions (L x W x H)"
 msgstr ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
 msgid "Weight of empty package"
 msgstr ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
 msgid "0.0"
 msgstr ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
 #. Length placeholder for dimensions input
 msgid "L"
 msgstr ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
 #. Width placeholder for dimensions input
 msgid "W"
 msgstr ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
 #. Height placeholder for dimensions input
 msgid "H"
 msgstr ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
 msgid "All packages selected"
 msgstr ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
 msgid "%(selectedCount)d package selected"
 msgid_plural "%(selectedCount)d packages selected"
 msgstr[0] ""
 msgstr[1] ""
 
 #: dist/chunks/5dec3dbf60c5fe9d347c.min.js:1
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-#: dist/chunks/cc78581d1f4839f447a8.min.js:1
+#: dist/chunks/c5ffeed408319ce3cb72.min.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
 msgid "Expand Services"
 msgstr ""
 
@@ -1125,498 +1125,25 @@ msgstr ""
 msgid "No services configured. {{a}}Add a shipping service{{/a}}"
 msgstr ""
 
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Your carrier account was connected successfully."
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid ""
-"There was an error connecting to your %(carrierName)s account. Please check "
-"that all of the information entered matches your %(carrierName)s account and "
-"try to connect again."
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Connect your %(carrierName)s account"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid ""
-"Set up your own carrier account to compare rates and print labels from "
-"multiple carriers in WooCommerce Shipping. Learn more about adding "
-"{{a}}carrier accounts{{/a}}."
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "General Information"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Connect"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-#: dist/chunks/cc78581d1f4839f447a8.min.js:1
-msgid "You have unsaved changes."
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-#: dist/chunks/cc78581d1f4839f447a8.min.js:1
-msgid "You have unsaved changes. Are you sure you want to leave this page?"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Return to Order #%(orderId)s"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Your shipping settings have been saved."
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Unable to save your shipping settings. Please try again."
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "WooCommerce Shipping"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Live rates"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-#: dist/chunks/cc78581d1f4839f447a8.min.js:1
-msgid "Save changes"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Migration to WooCommerce Shipping"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid ""
-"You can now migrate to WooCommerce Shipping. This will provide you with a "
-"dedicated WooCommerce Shipping extension, which will carry over all your "
-"settings and shipping labels when you update."
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Start migration process"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Unable to get your settings. Please refresh the page to try again."
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Shipping Labels"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Print shipping labels yourself and save a trip to the post office"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid ""
-"Only the site owner can manage shipping label payment methods. Please "
-"contact %(ownerName)s (%(ownerLogin)s) to manage payment methods."
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Retry"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid ""
-"Only the site owner can change these settings. Please contact %(ownerName)s "
-"(%(ownerLogin)s) to change the shipping label settings."
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid ""
-"Credit cards are retrieved from the following WordPress.com account: "
-"%(wpcomLogin)s <%(wpcomEmail)s>"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid ""
-"We'll charge the credit card on your account (%(card)s) to pay for the "
-"labels you print"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "To purchase shipping labels, add a credit card."
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Choose a different card"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid ""
-"To purchase shipping labels, choose a credit card you have on file or add a "
-"new card."
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Add another credit card"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Add a credit card"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Email Receipts"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid ""
-"Email the label purchase receipts to %(ownerName)s (%(ownerLogin)s) at "
-"%(ownerEmail)s"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Service Selection"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Save the service selection from previous transaction."
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Package Selection"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Save the package selection from previous transaction."
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Payment"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "American Express"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Discover"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "MasterCard"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "VISA"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "PayPal"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "%(card)s ****%(digits)s"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgctxt "date is of the form MM/YY"
-msgid "Expires %(date)s"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-#. Name for WeChat Pay - https://pay.weixin.qq.com/
-msgid "WeChat Pay"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Dimensions"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Remove"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Add boxes, envelopes, and other packages you use most frequently"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Carrier account"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Set up your own carrier account by adding your credentials here"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Credentials"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Your carrier account was disconnected succesfully."
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "There was an error trying to disconnect your carrier account"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Disconnect"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Disconnect your %(carrier_name)s account"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid ""
-"This will remove the connection with %(carrier_name)s. All of your "
-"%(carrier_name)s account information will be deleted and you won\\u2019t see "
-"%(carrier_name)s rates."
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Live rates at checkout"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid ""
-"Show live rates directly on your store - never under or overcharge for "
-"shipping again"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Add to shipping zones"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid ""
-"To be displayed at checkout, this carrier must be added as a shipping method "
-"to selected shipping zones"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Discounted %(carrierName)s shipping labels"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "USPS"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Ship with the largest delivery network in the United States"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Live rates for %(carrierName)s at checkout"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Express delivery from the experts in international shipping"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Carrier"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Features"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Shipping method"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "View and manage your subscription usage"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Usage"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid ""
-"Your store is over the limit for rate calls this month and your account will "
-"be charged for overages. To prevent future overage charges you can upgrade "
-"your plan."
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Manage"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Your subscription was succesfully activated."
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "There was an error trying to activate your subscription."
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Activate"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "This field is required"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "The UPS account number needs to be 6 letters and digits in length"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "The phone number needs to be 10 digits in length"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "The ZIP/Postal code needs to be 5 digits in length"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "The email format is not valid"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "The company website format is not valid"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "The invoice number needs to be 9 or 13 letters and digits in length"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "The date must be a valid date in the format YYYY-MM-DD"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Ok"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Cancel connection"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "This action will delete any information entered on the form."
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Connect your UPS account"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid ""
-"Set up your own UPS carrier account to compare rates and print labels from "
-"multiple carriers in WooCommerce Shipping. Learn more about adding "
-"{{a}}carrier accounts{{/a}}."
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid ""
-"If you need a UPS account number, go to {{a}}UPS.com{{/a}} to create a new "
-"account."
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "General information"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "This is the account number and address from your UPS profile"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Account number"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Address 2 (optional)"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Email"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Company information"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "This is the company info you used to create your UPS account"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Company name"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Job title"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Company website"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "UPS account information"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "I have been issued an invoice from UPS within the past 90 days"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "UPS invoice number"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "UPS invoice date"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "UPS invoice amount"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "UPS invoice currency"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "UPS invoice control id"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "Loading"
-msgstr ""
-
-#: dist/chunks/ab0ee3b6f5169fd97c28.min.js:1
-msgid "%(carrierName)s not supported."
-msgstr ""
-
 #: dist/chunks/bac3abaa2e8ea4d1119c.min.js:1
-#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.6.3.js:1
+#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.6.5.js:1
 msgid "Track Package"
 msgid_plural "Track Packages"
 msgstr[0] ""
 msgstr[1] ""
 
 #: dist/chunks/bac3abaa2e8ea4d1119c.min.js:1
-#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.6.3.js:1
+#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.6.5.js:1
 msgid "Create new label"
 msgstr ""
 
 #: dist/chunks/bac3abaa2e8ea4d1119c.min.js:1
-#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.6.3.js:1
+#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.6.5.js:1
 msgid "Connection error: unable to create label at this time"
 msgstr ""
 
 #: dist/chunks/bac3abaa2e8ea4d1119c.min.js:1
-#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.6.3.js:1
+#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.6.5.js:1
 msgid "%(itemCount)d item was fulfilled on {{span}}%(createdDate)s{{/span}}"
 msgid_plural ""
 "%(itemCount)d items were fulfilled on {{span}}%(createdDate)s{{/span}}"
@@ -1624,50 +1151,65 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: dist/chunks/bac3abaa2e8ea4d1119c.min.js:1
-#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.6.3.js:1
+#: dist/woocommerce-services-wcshipping-migration-admin-notice-3.6.5.js:1
 msgid "%(itemCount)d item is ready to be fulfilled"
 msgid_plural "%(itemCount)d items are ready to be fulfilled"
 msgstr[0] ""
 msgstr[1] ""
 
-#: dist/chunks/cc78581d1f4839f447a8.min.js:1
+#: dist/chunks/c5ffeed408319ce3cb72.min.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "You have unsaved changes."
+msgstr ""
+
+#: dist/chunks/c5ffeed408319ce3cb72.min.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "You have unsaved changes. Are you sure you want to leave this page?"
+msgstr ""
+
+#: dist/chunks/c5ffeed408319ce3cb72.min.js:1
 msgid "Your changes have been saved."
 msgstr ""
 
-#: dist/chunks/cc78581d1f4839f447a8.min.js:1
+#: dist/chunks/c5ffeed408319ce3cb72.min.js:1
 msgid ""
 "There was a problem with one or more entries. Please fix the errors below "
 "and try saving again."
 msgstr ""
 
-#: dist/chunks/cc78581d1f4839f447a8.min.js:1
+#: dist/chunks/c5ffeed408319ce3cb72.min.js:1
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Save changes"
+msgstr ""
+
+#: dist/chunks/c5ffeed408319ce3cb72.min.js:1
 msgid "Saved Packages"
 msgstr ""
 
-#: dist/chunks/cc78581d1f4839f447a8.min.js:1
+#: dist/chunks/c5ffeed408319ce3cb72.min.js:1
 msgid "Add and edit saved packages using the {{a}}Packaging Manager{{/a}}."
 msgstr ""
 
-#: dist/chunks/cc78581d1f4839f447a8.min.js:1
+#: dist/chunks/c5ffeed408319ce3cb72.min.js:1
 msgid "All services selected"
 msgstr ""
 
-#: dist/chunks/cc78581d1f4839f447a8.min.js:1
+#: dist/chunks/c5ffeed408319ce3cb72.min.js:1
 msgid "%(numSelected)d service selected"
 msgid_plural "%(numSelected)d services selected"
 msgstr[0] ""
 msgstr[1] ""
 
-#: dist/chunks/cc78581d1f4839f447a8.min.js:1
+#: dist/chunks/c5ffeed408319ce3cb72.min.js:1
 #: dist/chunks/debcc0c7f5a44e043b3e.min.js:1
 msgid "Service"
 msgstr ""
 
-#: dist/chunks/cc78581d1f4839f447a8.min.js:1
+#: dist/chunks/c5ffeed408319ce3cb72.min.js:1
 msgid "Price adjustment"
 msgstr ""
 
-#: dist/chunks/cc78581d1f4839f447a8.min.js:1
+#: dist/chunks/c5ffeed408319ce3cb72.min.js:1
 msgid ""
 "Increase the rates calculated by the carrier to account for packaging and "
 "handling costs. You can also add a negative amount to save your customers "
@@ -1823,6 +1365,464 @@ msgstr ""
 
 #: dist/chunks/debcc0c7f5a44e043b3e.min.js:1
 msgid "Tracking #: {{trackingLink/}}"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Your carrier account was connected successfully."
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid ""
+"There was an error connecting to your %(carrierName)s account. Please check "
+"that all of the information entered matches your %(carrierName)s account and "
+"try to connect again."
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Connect your %(carrierName)s account"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid ""
+"Set up your own carrier account to compare rates and print labels from "
+"multiple carriers in WooCommerce Shipping. Learn more about adding "
+"{{a}}carrier accounts{{/a}}."
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "General Information"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Connect"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Return to Order #%(orderId)s"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Your shipping settings have been saved."
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Unable to save your shipping settings. Please try again."
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "WooCommerce Shipping"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Live rates"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Migration to WooCommerce Shipping"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid ""
+"You can now migrate to WooCommerce Shipping. This will provide you with a "
+"dedicated WooCommerce Shipping extension, which will carry over all your "
+"settings and shipping labels when you update."
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Start migration process"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Unable to get your settings. Please refresh the page to try again."
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Shipping Labels"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Print shipping labels yourself and save a trip to the post office"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid ""
+"Only the site owner can manage shipping label payment methods. Please "
+"contact %(ownerName)s (%(ownerLogin)s) to manage payment methods."
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Retry"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid ""
+"Only the site owner can change these settings. Please contact %(ownerName)s "
+"(%(ownerLogin)s) to change the shipping label settings."
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid ""
+"Credit cards are retrieved from the following WordPress.com account: "
+"%(wpcomLogin)s <%(wpcomEmail)s>"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid ""
+"We'll charge the credit card on your account (%(card)s) to pay for the "
+"labels you print"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "To purchase shipping labels, add a credit card."
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Choose a different card"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid ""
+"To purchase shipping labels, choose a credit card you have on file or add a "
+"new card."
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Add another credit card"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Add a credit card"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Email Receipts"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid ""
+"Email the label purchase receipts to %(ownerName)s (%(ownerLogin)s) at "
+"%(ownerEmail)s"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Service Selection"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Save the service selection from previous transaction."
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Package Selection"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Save the package selection from previous transaction."
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Payment"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "American Express"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Discover"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "MasterCard"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "VISA"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "PayPal"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "%(card)s ****%(digits)s"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgctxt "date is of the form MM/YY"
+msgid "Expires %(date)s"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+#. Name for WeChat Pay - https://pay.weixin.qq.com/
+msgid "WeChat Pay"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Dimensions"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Remove"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Add boxes, envelopes, and other packages you use most frequently"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Carrier account"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Set up your own carrier account by adding your credentials here"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Credentials"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Your carrier account was disconnected succesfully."
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "There was an error trying to disconnect your carrier account"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Disconnect"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Disconnect your %(carrier_name)s account"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid ""
+"This will remove the connection with %(carrier_name)s. All of your "
+"%(carrier_name)s account information will be deleted and you won\\u2019t see "
+"%(carrier_name)s rates."
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Live rates at checkout"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid ""
+"Show live rates directly on your store - never under or overcharge for "
+"shipping again"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Add to shipping zones"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid ""
+"To be displayed at checkout, this carrier must be added as a shipping method "
+"to selected shipping zones"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Discounted %(carrierName)s shipping labels"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "USPS"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Ship with the largest delivery network in the United States"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Live rates for %(carrierName)s at checkout"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Express delivery from the experts in international shipping"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Carrier"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Features"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Shipping method"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "View and manage your subscription usage"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Usage"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid ""
+"Your store is over the limit for rate calls this month and your account will "
+"be charged for overages. To prevent future overage charges you can upgrade "
+"your plan."
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Manage"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Your subscription was succesfully activated."
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "There was an error trying to activate your subscription."
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Activate"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "This field is required"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "The UPS account number needs to be 6 letters and digits in length"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "The phone number needs to be 10 digits in length"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "The ZIP/Postal code needs to be 5 digits in length"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "The email format is not valid"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "The company website format is not valid"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "The invoice number needs to be 9 or 13 letters and digits in length"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "The date must be a valid date in the format YYYY-MM-DD"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Ok"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Cancel connection"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "This action will delete any information entered on the form."
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Connect your UPS account"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid ""
+"Set up your own UPS carrier account to compare rates and print labels from "
+"multiple carriers in WooCommerce Shipping. Learn more about adding "
+"{{a}}carrier accounts{{/a}}."
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid ""
+"If you need a UPS account number, go to {{a}}UPS.com{{/a}} to create a new "
+"account."
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "General information"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "This is the account number and address from your UPS profile"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Account number"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Address 2 (optional)"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Email"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Company information"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "This is the company info you used to create your UPS account"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Company name"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Job title"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Company website"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "UPS account information"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "I have been issued an invoice from UPS within the past 90 days"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "UPS invoice number"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "UPS invoice date"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "UPS invoice amount"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "UPS invoice currency"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "UPS invoice control id"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "Loading"
+msgstr ""
+
+#: dist/chunks/e3bebba482b454806505.min.js:1
+msgid "%(carrierName)s not supported."
 msgstr ""
 
 # THIS IS THE END OF THE GENERATED FILE.

@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the WordPress - 7.0.x - Development package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-05-23 04:14:21+0000\n"
+"PO-Revision-Date: 2026-06-10 19:55:58+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -3993,7 +3993,7 @@ msgstr "Bitte übergib dieser Funktion ein Abfrage-Array."
 #. translators: %s: WP_HTML_Processor::create_fragment().
 #: wp-includes/html-api/class-wp-html-processor.php:391
 msgid "Call %s to create an HTML Processor instead of calling the constructor directly."
-msgstr "%s aufrufen, um einen HTML-Processor zu erstellen, statt den Konstruktor direkt aufzurufen."
+msgstr "%s aufrufen, um einen HTML-Prozessor zu erstellen, statt den Konstruktor direkt aufzurufen."
 
 #. translators: %s: The "type" key.
 #: wp-includes/functions.php:9119
@@ -4404,22 +4404,22 @@ msgstr "Anhang-Seiten"
 #: wp-includes/block-template-utils.php:200
 msgctxt "Template name"
 msgid "Tag Archives"
-msgstr "Schlagwort-Archive"
+msgstr "Schlagwortarchiv"
 
 #: wp-includes/block-template-utils.php:196
 msgctxt "Template name"
 msgid "Date Archives"
-msgstr "Datums-Archive"
+msgstr "Datumsarchiv"
 
 #: wp-includes/block-template-utils.php:188
 msgctxt "Template name"
 msgid "Category Archives"
-msgstr "Kategorie-Archive"
+msgstr "Kategoriearchiv"
 
 #: wp-includes/block-template-utils.php:184
 msgctxt "Template name"
 msgid "Author Archives"
-msgstr "Autoren-Archive"
+msgstr "Autorenarchiv"
 
 #: wp-includes/block-template-utils.php:180
 msgctxt "Template name"
@@ -5544,7 +5544,7 @@ msgstr "(Link zur Website von %s, wird in einem neuen Tab geöffnet)"
 #. translators: %s is the Author name.
 #: wp-includes/blocks/avatar.php:65
 msgid "(%s author archive, opens in a new tab)"
-msgstr "(Autoren-Archiv von %s, wird in einem neuen Tab geöffnet)"
+msgstr "(Autorenarchiv von %s, wird in einem neuen Tab geöffnet)"
 
 #. translators: %s: Author name.
 #: wp-includes/blocks/avatar.php:50 wp-includes/blocks/avatar.php:77
@@ -6150,7 +6150,7 @@ msgstr "Ins Navigationsmenü einfügen"
 
 #: wp-includes/post.php:554
 msgid "Navigation Menu archives"
-msgstr "Navigationsmenü-Archive"
+msgstr "Navigationsmenü-Archiv"
 
 #: wp-includes/post.php:553
 msgid "No Navigation Menu found in Trash."
@@ -6229,7 +6229,7 @@ msgstr "In das Template-Teil einfügen"
 
 #: wp-includes/post.php:448
 msgid "Template part archives"
-msgstr "Template-Teil-Archive"
+msgstr "Template-Teil-Archiv"
 
 #: wp-includes/post.php:447
 msgid "No template parts found in Trash."
@@ -9959,7 +9959,7 @@ msgstr "Ob das Theme den Title-Tag des Dokuments verwalten kann."
 
 #: wp-includes/theme.php:4265
 msgid "Allows use of HTML5 markup for search forms, comment forms, comment lists, gallery, and caption."
-msgstr "Erlaubt die Verwendung von HTML5-Markup für Such- und Kommentar-Formulare, Kommentar-Listen, Galerien und Untertitel."
+msgstr "Erlaubt die Verwendung von HTML5-Markup für Such- und Kommentar-Formulare, Kommentarlisten, Galerien und Beschriftungen."
 
 #: wp-includes/theme.php:4257
 msgid "Whether theme opts in to the editor styles CSS wrapper."
@@ -10383,7 +10383,7 @@ msgstr "Videotitel"
 
 #: wp-includes/media-template.php:646
 msgid "Caption&hellip;"
-msgstr "Untertitel …"
+msgstr "Beschriftung …"
 
 #. translators: Hidden accessibility text.
 #: wp-includes/media-template.php:442 wp-includes/js/dist/editor.js:49630
@@ -13444,7 +13444,7 @@ msgstr "Die Beschreibung des Anhangs."
 
 #: wp-includes/rest-api/endpoints/class-wp-rest-attachments-controller.php:1135
 msgid "The attachment caption."
-msgstr "Der Untertitel des Anhangs."
+msgstr "Die Beschriftung des Anhangs."
 
 #: wp-includes/option.php:2874
 msgid "Default post category."
@@ -13527,7 +13527,7 @@ msgstr "Archiv"
 #: wp-includes/theme.php:2476
 msgctxt "Theme starter content"
 msgid "This is an example of a homepage section. Homepage sections can be any page other than the homepage itself, including the page that shows your latest blog posts."
-msgstr "Hier ist als Beispiel ein Abschnitt deiner Homepage. Ein Homepage-Abschnitt kann jede Seite sein; ausgenommen die Homepage selbst, aber einschließlich der Seite, die deine neuen Blog-Beiträge zeigt."
+msgstr "Hier ist als Beispiel ein Abschnitt deiner Homepage. Ein Homepage-Abschnitt kann jede Seite sein; ausgenommen die Homepage selbst, aber einschließlich der Seite, die deine neuen Blogbeiträge zeigt."
 
 #: wp-includes/theme.php:2468
 msgctxt "Theme starter content"
@@ -13865,11 +13865,11 @@ msgstr "Beschreibung für den Anhang, wie sie in der Datenbank vorliegt."
 
 #: wp-includes/rest-api/endpoints/class-wp-rest-attachments-controller.php:1149
 msgid "HTML caption for the attachment, transformed for display."
-msgstr "Der für die Anzeige umgewandelte HTML-Untertitel des Anhangs."
+msgstr "Der für die Anzeige umgewandelte HTML-Beschriftung des Anhangs."
 
 #: wp-includes/rest-api/endpoints/class-wp-rest-attachments-controller.php:1144
 msgid "Caption for the attachment, as it exists in the database."
-msgstr "Der Untertitel für den Anhang, wie er in der Datenbank vorliegt."
+msgstr "Die Beschriftung für den Anhang, wie er in der Datenbank vorliegt."
 
 #: wp-includes/class-wp-customize-manager.php:6127
 msgid "Please enter a valid YouTube URL."
@@ -15713,22 +15713,22 @@ msgstr "Breite für mittelgroße Bilder"
 #. translators: %s: Site link.
 #: wp-includes/theme-compat/sidebar.php:107
 msgid "You are currently browsing the %s blog archives."
-msgstr "Du befindest dich aktuell im Blog-Archiv von %s."
+msgstr "Du befindest dich im Blogarchiv von %s."
 
 #. translators: 1: Site link, 2: Archive year.
 #: wp-includes/theme-compat/sidebar.php:83
 msgid "You are currently browsing the %1$s blog archives for the year %2$s."
-msgstr "Du befindest dich im Moment in den Blog-Archiven von %1$s für das Jahr %2$s."
+msgstr "Du befindest dich im Blogarchiv von %1$s für das Jahr %2$s."
 
 #. translators: 1: Site link, 2: Archive month.
 #: wp-includes/theme-compat/sidebar.php:70
 msgid "You are currently browsing the %1$s blog archives for %2$s."
-msgstr "Du befindest dich im Moment in den Blog-Archiven von %1$s für %2$s."
+msgstr "Du befindest dich im Blogarchiv von %1$s für %2$s."
 
 #. translators: 1: Site link, 2: Archive date.
 #: wp-includes/theme-compat/sidebar.php:57
 msgid "You are currently browsing the %1$s blog archives for the day %2$s."
-msgstr "Du befindest dich im Moment in den Blog-Archiven von %1$s für den Tag %2$s."
+msgstr "Du befindest dich im Blogarchiv von %1$s für den Tag %2$s."
 
 #. translators: %s: Admin email link.
 #: wp-includes/ms-load.php:111
@@ -15748,7 +15748,7 @@ msgstr "Die Website, die du gesucht hast, %s, existiert nicht."
 #. translators: %s: A link to the embedded site.
 #: wp-includes/theme-compat/embed-404.php:21
 msgid "It looks like nothing was found at this location. Maybe try visiting %s directly?"
-msgstr "An diesem Ort konnte nichts gefunden werden. Möchtest du vielleicht versuchen, %s direkt aufzurufen?"
+msgstr "An diesem Ort wurde nichts gefunden. Möchtest du %s direkt aufrufen?"
 
 #: wp-includes/theme-compat/embed-404.php:14
 msgid "Oops! That embed cannot be found."
@@ -16118,11 +16118,11 @@ msgstr "Teilen-Dialog schließen"
 
 #: wp-includes/embed.php:1214
 msgid "Copy and paste this code into your site to embed"
-msgstr "Füge diesen Code in deine Website ein, um ihn einzubinden"
+msgstr "Füge diesen Code in deine Website ein, um den Inhalt einzubetten"
 
 #: wp-includes/embed.php:1207
 msgid "Copy and paste this URL into your WordPress site to embed"
-msgstr "Füge diese URL in deine WordPress-Website ein, um sie einzubetten"
+msgstr "Füge diese URL in deine WordPress-Website ein, um den Inhalt einzubetten"
 
 #: wp-includes/embed.php:1200
 msgid "HTML Embed"
@@ -16848,7 +16848,7 @@ msgstr "Taxonomie-Namen müssen eine Länge zwischen 1 und 32 Zeichen haben."
 
 #: wp-includes/script-loader.php:1326 wp-includes/js/dist/edit-site.js:22314
 msgid "Site Preview"
-msgstr "Vorschau der Website"
+msgstr "Website-Vorschau"
 
 #: wp-includes/post.php:1829 wp-includes/post.php:1830
 msgid "Post type names must be between 1 and 20 characters in length."
@@ -18218,7 +18218,7 @@ msgstr "Video einfügen"
 
 #: wp-includes/class-wp-editor.php:1243
 msgid "Paste your embed code below:"
-msgstr "Embed-Code unten einfügen:"
+msgstr "Einbettungscode unten einfügen:"
 
 #: wp-includes/class-wp-editor.php:1242
 msgid "Alternative source"
@@ -18595,7 +18595,7 @@ msgstr "Das SSL-Zertifikat für den Host konnte nicht verifiziert werden."
 
 #: wp-includes/media-template.php:869
 msgid "Embed Media Player"
-msgstr "Eingebundener Medien-Player"
+msgstr "Medien-Player einbetten"
 
 #: wp-includes/media-template.php:886
 msgid "Link to Attachment Page"
@@ -20306,7 +20306,7 @@ msgstr "l, j. F Y"
 #. translators: %s: Category name.
 #: wp-includes/theme-compat/sidebar.php:46
 msgid "You are currently browsing the archives for the %s category."
-msgstr "Du befindest dich im Moment im Archiv der Kategorie %s."
+msgstr "Du befindest dich im Archiv der Kategorie %s."
 
 #. translators: Used to join items in a list with only 2 items.
 #: wp-includes/formatting.php:5354
@@ -21471,7 +21471,7 @@ msgstr[1] "Zurzeit warten %s Kommentare auf Freigabe. Bitte gehe zur Moderation
 #. translators: Comment moderation. %s: Comment action URL.
 #: wp-includes/pluggable.php:2125
 msgid "Approve it: %s"
-msgstr "Genehmigen: %s"
+msgstr "Freigeben: %s"
 
 #: wp-includes/pluggable.php:2100
 msgid "Pingback excerpt: "
@@ -23324,7 +23324,7 @@ msgstr "Bild bearbeiten"
 #: wp-includes/js/dist/media-utils.js:17367 wp-admin/includes/media.php:1422
 #: wp-admin/includes/media.php:3276
 msgid "Caption"
-msgstr "Untertitel"
+msgstr "Beschriftung"
 
 #: wp-includes/class-wp-editor.php:1337 wp-includes/media-template.php:830
 #: wp-admin/includes/media.php:1507 wp-admin/includes/media.php:3008
