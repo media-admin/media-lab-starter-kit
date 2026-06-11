@@ -4,6 +4,58 @@
     <meta charset="<?php bloginfo('charset'); ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <?php wp_head(); ?>
+    <style id="ml-header-height">
+        /*
+         * --header-height: CSS-Variable für Hero-Offset und ähnliche Layouts.
+         * Fallback-Wert greift bis JS nach window.load die exakte Höhe setzt.
+         * Layouts die diese Variable nutzen: Hero-Image, Sticky-Elemente etc.
+         */
+        :root {
+            --header-height: 80px;
+        }
+
+        /* Hero: margin-top mit Variable – überschreibt fixen Wert im Theme */
+        .hero-image {
+            margin-top: calc(-1 * var(--header-height));
+        }
+
+        /* site-main: kein overflow-clipping wenn Hero direkt darunter liegt */
+        .site-main:has(> .hero-image:first-child) {
+            padding-top: 0 !important;
+            overflow: visible !important;
+        }
+
+        /* Hero-Content: Padding-top = Header-Höhe, damit Inhalt nicht dahinter verschwindet */
+        .hero-image--vpos-bottom .hero-image__content {
+            padding-top: var(--header-height);
+            box-sizing: border-box;
+        }
+    </style>
+    <style id="ml-cf7-fixes">
+        /*
+         * CF7 Select-Fix: Theme-Bug – padding:24px 32px + height:48px (border-box)
+         * ergibt 0px Content-Bereich → Select-Text wird nicht dargestellt.
+         * Fix: vertikales Padding entfernen, Text per line-height zentrieren.
+         */
+        .wpcf7-form-control.wpcf7-select,
+        .wpcf7 select {
+            -webkit-appearance:      none !important;
+            appearance:              none !important;
+            color-scheme:            light !important;
+            color:                   #374151 !important;
+            -webkit-text-fill-color: #374151 !important;
+            padding-top:             0 !important;
+            padding-bottom:          0 !important;
+            line-height:             44px !important;
+            background-image:        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23999' d='M6 8L0 0h12z'/%3E%3C/svg%3E") !important;
+        }
+
+        /* CF7 Datumsfeld: Format-Platzhalter lesbar in iOS/Safari */
+        .wpcf7 input[type="date"]::-webkit-datetime-edit {
+            color:                   #6b7280 !important;
+            -webkit-text-fill-color: #6b7280 !important;
+        }
+    </style>
     <script>
         // Theme sofort setzen – verhindert Flash of wrong theme
         (function() {
@@ -12,6 +64,26 @@
                 ? stored
                 : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
             document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
+    <script>
+        /*
+         * --header-height dynamisch setzen.
+         * Läuft nach window.load (nicht DOMContentLoaded), damit Fonts und
+         * das ACF-Logo vollständig geladen sind und offsetHeight korrekt ist.
+         * Auch bei Resize neu berechnen (Orientierungswechsel, Admin-Bar).
+         */
+        (function() {
+            function setHeaderHeight() {
+                var h = document.querySelector('.site-header');
+                if (h) {
+                    document.documentElement.style.setProperty(
+                        '--header-height', h.offsetHeight + 'px'
+                    );
+                }
+            }
+            window.addEventListener('load', setHeaderHeight);
+            window.addEventListener('resize', setHeaderHeight, { passive: true });
         })();
     </script>
 </head>
@@ -196,20 +268,20 @@ if ( function_exists( 'get_field' ) && get_field( 'top_header_enable', 'option' 
             endif;
             ?>
         </a>
-        
+
         <!-- Desktop Menu -->
         <div class="primary-menu">
             <?php
             wp_nav_menu(array(
                 'theme_location' => 'primary',
-                'container' => false,
-                'menu_class' => '',
-                'fallback_cb' => false,
-                'depth' => 4, // 4 levels
+                'container'      => false,
+                'menu_class'     => '',
+                'fallback_cb'    => false,
+                'depth'          => 4,
             ));
             ?>
         </div>
-        
+
         <!-- Mobile Toggle -->
         <button class="mobile-menu-toggle" aria-label="Toggle Menu" aria-expanded="false">
             <span></span>
@@ -222,10 +294,10 @@ if ( function_exists( 'get_field' ) && get_field( 'top_header_enable', 'option' 
     <?php
     wp_nav_menu(array(
         'theme_location' => 'primary',
-        'container' => false,
-        'menu_class' => '',
-        'fallback_cb' => false,
-        'depth' => 4,
+        'container'      => false,
+        'menu_class'     => '',
+        'fallback_cb'    => false,
+        'depth'          => 4,
     ));
     ?>
 </div>

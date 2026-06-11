@@ -6,6 +6,31 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ---
 
+## [1.20.2] - 2026-06-11
+
+### custom-theme 1.14.2
+
+#### Added
+- **`--header-height` CSS-Variable** (`header.php`) – Neue CSS-Custom-Property
+  im `:root`-Scope mit generischem Fallback `80px`. Wird nach `window.load`
+  via Inline-JS auf die tatsächliche `offsetHeight` des `.site-header` gesetzt
+  und bei `resize` aktualisiert (Admin-Bar, Orientierungswechsel). Layoutsysteme
+  wie Hero-Image können damit exakt offsetten ohne hartcodierte Pixelwerte.
+  Betroffene Regeln im selben `<style>`-Block: `.hero-image { margin-top }`,
+  `.site-main:has(> .hero-image)` und `.hero-image--vpos-bottom .hero-image__content`.
+
+#### Fixed
+- **CF7 Select-Darstellung** (`header.php`) – Theme-Bug: `padding: 24px 32px`
+  kombiniert mit `height: 48px; box-sizing: border-box` ergibt 0px
+  Content-Bereich, Select-Text unsichtbar. Fix: vertikales Padding auf `0`
+  zurückgesetzt, Text per `line-height: 44px` zentriert. Gilt für
+  `.wpcf7-form-control.wpcf7-select` und `.wpcf7 select`.
+  Zusätzlich: `input[type="date"]::-webkit-datetime-edit` Farbe für
+  iOS/Safari-Platzhalter gesetzt.
+
+---
+
+
 ## [1.20.1] - 2026-06-11
 
 ### media-lab-agency-core 1.12.1
