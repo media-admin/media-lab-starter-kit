@@ -6,6 +6,44 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ---
 
+## [1.20.3] - 2026-06-11
+
+### media-lab-agency-core 1.12.2
+
+#### Added
+- **Hero – Featured Image Fallback** (`inc/hero-image.php`) –
+  `media_lab_get_hero_image()` erweitert um dritte Stufe in der
+  Fallback-Kette für das Desktop-Bild: seitenspezifisches Feld →
+  globale Option `hero_fallback_desktop` → **Featured Image des Posts**.
+  Ermöglicht Hero-Anzeige ohne explizite Hero-Konfiguration, wenn ein
+  Featured Image gesetzt ist (typisch bei Blog-Posts und CPTs).
+
+#### Changed
+- **Hero – Numerische Höhe** (`inc/hero-image.php`) –
+  `media_lab_get_hero_image()` erlaubt jetzt ganzzahlige Pixel-Werte als
+  `height` (z.B. `"500"`). Bisher wurden nur Named Heights (`sm`, `md`,
+  `lg`, `xl`) akzeptiert; andere Werte fielen auf `'md'` zurück. Numerische
+  Werte werden als String durchgereicht und im Template Part als
+  `style="height:500px"` gesetzt (statt CSS-Klasse).
+
+### custom-theme 1.14.3
+
+#### Fixed
+- **Hero – `width`/`height`-Attribute auf `<img>`** (`template-parts/hero-image.php`) –
+  `_medialab_resolve_image()` liefert bereits `width` und `height`, diese
+  wurden aber im Template Part nicht ausgegeben. Fehlende Dimensionen führen
+  zu Cumulative Layout Shift (CLS). Beide Attribute werden jetzt auf `<img>`
+  (und `<picture>`-Fallback) gesetzt, sofern die Funktion Werte zurückgibt.
+
+#### Changed
+- **Hero – Numerische Höhe** (`template-parts/hero-image.php`) –
+  Ist `$hero['height']` ein numerischer Wert, wird `style="height:Npx"` direkt
+  auf dem `<section>`-Element gesetzt statt einer CSS-Klasse. Named Heights
+  (`sm`, `md`, `lg`, `xl`) verhalten sich unverändert als CSS-Klassen.
+
+---
+
+
 ## [1.20.2] - 2026-06-11
 
 ### custom-theme 1.14.2

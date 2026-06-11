@@ -21,21 +21,29 @@ $hero      = media_lab_get_hero_image($post_id);
 
 if (!$hero) return;
 
-$desktop_url = $hero['desktop']['url'] ?? '';
-$mobile_url  = $hero['mobile']['url']  ?? $desktop_url;
-$desktop_alt = $hero['desktop']['alt'] ?? '';
+$desktop_url = $hero['desktop']['url']    ?? '';
+$desktop_alt = $hero['desktop']['alt']    ?? '';
+$desktop_w   = $hero['desktop']['width']  ?? '';
+$desktop_h   = $hero['desktop']['height'] ?? '';
+$mobile_url  = $hero['mobile']['url']     ?? $desktop_url;
 $opacity     = $hero['opacity'] / 100;
 
+// ── Höhe: numerisch → inline style; named → CSS-Klasse ───────────────────────
+$is_numeric_height = is_numeric($hero['height']) && (int)$hero['height'] > 0;
+$height_class      = $is_numeric_height ? '' : 'hero-image--' . $hero['height'];
+$height_style      = $is_numeric_height ? 'height:' . (int)$hero['height'] . 'px;' : '';
+
 // CSS-Klassen
-$classes = [
+$classes = array_filter([
     'hero-image',
-    'hero-image--' . $hero['height'],
+    $height_class,
     'hero-image--align-' . $hero['align'],
-    'hero-image--vpos-' . $hero['vpos'],
-];
+    'hero-image--vpos-'  . $hero['vpos'],
+]);
 ?>
 
 <section class="<?php echo esc_attr(implode(' ', $classes)); ?>"
+         <?php if ($height_style) echo 'style="' . esc_attr($height_style) . '"'; ?>
          aria-label="<?php echo esc_attr($hero['title']); ?>">
 
     <?php /* ── Bild ──────────────────────────────────────────────────────────── */ ?>
@@ -45,6 +53,8 @@ $classes = [
         <img class="hero-image__img"
              src="<?php echo esc_url($mobile_url); ?>"
              alt="<?php echo esc_attr($desktop_alt); ?>"
+             <?php if ($desktop_w) echo 'width="'  . esc_attr($desktop_w) . '"'; ?>
+             <?php if ($desktop_h) echo 'height="' . esc_attr($desktop_h) . '"'; ?>
              loading="eager"
              fetchpriority="high">
     </picture>
@@ -52,6 +62,8 @@ $classes = [
     <img class="hero-image__img"
          src="<?php echo esc_url($desktop_url); ?>"
          alt="<?php echo esc_attr($desktop_alt); ?>"
+         <?php if ($desktop_w) echo 'width="'  . esc_attr($desktop_w) . '"'; ?>
+         <?php if ($desktop_h) echo 'height="' . esc_attr($desktop_h) . '"'; ?>
          loading="eager"
          fetchpriority="high">
     <?php endif; ?>
