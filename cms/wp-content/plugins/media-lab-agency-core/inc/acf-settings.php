@@ -643,6 +643,235 @@ add_action('acf/init', function () {
                         ))),
                     ),
 
+                    // ── Honeypot ──────────────────────────────────────────────
+                    array(
+                        'key'     => 'field_honeypot_separator',
+                        'label'   => ' ',
+                        'name'    => 'honeypot_separator',
+                        'type'    => 'message',
+                        'message' => '<strong style="font-size:13px;">Honeypot</strong>'
+                                   . '<p style="margin:.4rem 0 0;color:#666;font-size:12px;">'
+                                   . 'DSGVO-konformer Basisschutz ohne externe Requests. '
+                                   . 'Immer aktiv – keine Keys erforderlich.</p>',
+                    ),
+
+                    array(
+                        'key'           => 'field_honeypot_min_time',
+                        'label'         => 'Mindest-Ausfüllzeit (Sekunden)',
+                        'name'          => 'honeypot_min_time',
+                        'type'          => 'number',
+                        'default_value' => 3,
+                        'min'           => 1,
+                        'max'           => 30,
+                        'step'          => 1,
+                        'instructions'  => 'Formulare die schneller abgeschickt werden, gelten als Spam. Standard: 3 s.',
+                        'wrapper'       => array( 'width' => '50' ),
+                    ),
+
+                    array(
+                        'key'           => 'field_honeypot_max_age',
+                        'label'         => 'Maximales Formular-Alter (Sekunden)',
+                        'name'          => 'honeypot_max_age',
+                        'type'          => 'number',
+                        'default_value' => 86400,
+                        'min'           => 300,
+                        'max'           => 604800,
+                        'step'          => 60,
+                        'instructions'  => 'Formulare die älter als dieser Wert sind (gecachte Seiten), werden abgelehnt. Standard: 86400 s (24 h).',
+                        'wrapper'       => array( 'width' => '50' ),
+                    ),
+
+                    // ── Cloudflare Turnstile ───────────────────────────────────
+                    array(
+                        'key'     => 'field_turnstile_separator',
+                        'label'   => ' ',
+                        'name'    => 'turnstile_separator',
+                        'type'    => 'message',
+                        'message' => '<strong style="font-size:13px;">Cloudflare Turnstile</strong>'
+                                   . '<p style="margin:.4rem 0 0;color:#666;font-size:12px;">'
+                                   . 'Site- und Secret-Key unter '
+                                   . '<a href="https://dash.cloudflare.com/?to=/:account/turnstile" target="_blank" rel="noopener">dash.cloudflare.com → Turnstile</a> erstellen.</p>',
+                    ),
+
+                    array(
+                        'key'           => 'field_turnstile_enabled',
+                        'label'         => 'Cloudflare Turnstile aktivieren',
+                        'name'          => 'turnstile_enabled',
+                        'type'          => 'true_false',
+                        'ui'            => 1,
+                        'default_value' => 0,
+                        'instructions'  => 'CAPTCHA-Schutz via Cloudflare Turnstile (datenschutzfreundliche Alternative zu reCAPTCHA).',
+                    ),
+
+                    array(
+                        'key'          => 'field_turnstile_site_key',
+                        'label'        => 'Site Key',
+                        'name'         => 'turnstile_site_key',
+                        'type'         => 'text',
+                        'placeholder'  => '0x4AAAAAAA…',
+                        'instructions' => 'Öffentlicher Schlüssel – wird im HTML ausgegeben.',
+                        'conditional_logic' => array(array(array(
+                            'field' => 'field_turnstile_enabled', 'operator' => '==', 'value' => '1',
+                        ))),
+                        'wrapper' => array( 'width' => '50' ),
+                    ),
+
+                    array(
+                        'key'          => 'field_turnstile_secret_key',
+                        'label'        => 'Secret Key',
+                        'name'         => 'turnstile_secret_key',
+                        'type'         => 'text',
+                        'placeholder'  => '0x4AAAAAAA…',
+                        'instructions' => 'Privater Schlüssel – wird nur serverseitig verwendet, nie im HTML ausgegeben.',
+                        'conditional_logic' => array(array(array(
+                            'field' => 'field_turnstile_enabled', 'operator' => '==', 'value' => '1',
+                        ))),
+                        'wrapper' => array( 'width' => '50' ),
+                    ),
+
+                    array(
+                        'key'           => 'field_turnstile_cf7',
+                        'label'         => 'Contact Form 7',
+                        'name'          => 'turnstile_cf7',
+                        'type'          => 'true_false',
+                        'ui'            => 1,
+                        'default_value' => 1,
+                        'instructions'  => 'Schützt alle CF7-Formulare automatisch.',
+                        'conditional_logic' => array(array(array(
+                            'field' => 'field_turnstile_enabled', 'operator' => '==', 'value' => '1',
+                        ))),
+                    ),
+
+                    array(
+                        'key'           => 'field_turnstile_wp_login',
+                        'label'         => 'WordPress Login',
+                        'name'          => 'turnstile_wp_login',
+                        'type'          => 'true_false',
+                        'ui'            => 1,
+                        'default_value' => 1,
+                        'instructions'  => 'Schützt wp-login.php gegen Brute-Force.',
+                        'conditional_logic' => array(array(array(
+                            'field' => 'field_turnstile_enabled', 'operator' => '==', 'value' => '1',
+                        ))),
+                    ),
+
+                    array(
+                        'key'           => 'field_turnstile_woo_checkout',
+                        'label'         => 'WooCommerce Checkout',
+                        'name'          => 'turnstile_woo_checkout',
+                        'type'          => 'true_false',
+                        'ui'            => 1,
+                        'default_value' => 1,
+                        'instructions'  => 'Schützt den Checkout-Schritt.',
+                        'conditional_logic' => array(array(array(
+                            'field' => 'field_turnstile_enabled', 'operator' => '==', 'value' => '1',
+                        ))),
+                    ),
+
+                    array(
+                        'key'           => 'field_turnstile_woo_login',
+                        'label'         => 'WooCommerce Login',
+                        'name'          => 'turnstile_woo_login',
+                        'type'          => 'true_false',
+                        'ui'            => 1,
+                        'default_value' => 1,
+                        'instructions'  => 'Schützt das Login-Formular unter „Mein Konto".',
+                        'conditional_logic' => array(array(array(
+                            'field' => 'field_turnstile_enabled', 'operator' => '==', 'value' => '1',
+                        ))),
+                    ),
+
+                    array(
+                        'key'           => 'field_turnstile_woo_register',
+                        'label'         => 'WooCommerce Registrierung',
+                        'name'          => 'turnstile_woo_register',
+                        'type'          => 'true_false',
+                        'ui'            => 1,
+                        'default_value' => 1,
+                        'instructions'  => 'Schützt das Registrierungsformular unter „Mein Konto".',
+                        'conditional_logic' => array(array(array(
+                            'field' => 'field_turnstile_enabled', 'operator' => '==', 'value' => '1',
+                        ))),
+                    ),
+
+                    array(
+                        'key'           => 'field_turnstile_appearance',
+                        'label'         => 'Erscheinungsbild',
+                        'name'          => 'turnstile_appearance',
+                        'type'          => 'select',
+                        'choices'       => array(
+                            'auto'  => 'Auto (passt sich dem Theme an)',
+                            'light' => 'Light',
+                            'dark'  => 'Dark',
+                        ),
+                        'default_value' => 'auto',
+                        'allow_null'    => 0,
+                        'return_format' => 'value',
+                        'conditional_logic' => array(array(array(
+                            'field' => 'field_turnstile_enabled', 'operator' => '==', 'value' => '1',
+                        ))),
+                        'wrapper' => array( 'width' => '33' ),
+                    ),
+
+                    array(
+                        'key'           => 'field_turnstile_size',
+                        'label'         => 'Größe',
+                        'name'          => 'turnstile_size',
+                        'type'          => 'select',
+                        'choices'       => array(
+                            'normal'   => 'Normal',
+                            'compact'  => 'Compact',
+                            'flexible' => 'Flexible (volle Breite)',
+                        ),
+                        'default_value' => 'normal',
+                        'allow_null'    => 0,
+                        'return_format' => 'value',
+                        'conditional_logic' => array(array(array(
+                            'field' => 'field_turnstile_enabled', 'operator' => '==', 'value' => '1',
+                        ))),
+                        'wrapper' => array( 'width' => '33' ),
+                    ),
+
+                    array(
+                        'key'           => 'field_turnstile_dsgvo_mode',
+                        'label'         => 'DSGVO-Modus',
+                        'name'          => 'turnstile_dsgvo_mode',
+                        'type'          => 'select',
+                        'choices'       => array(
+                            'legitimate_interest' => 'Berechtigtes Interesse (empfohlen)',
+                            'consent'             => 'Consent-abhängig (strenger)',
+                        ),
+                        'default_value' => 'legitimate_interest',
+                        'allow_null'    => 0,
+                        'return_format' => 'value',
+                        'instructions'  => 'Berechtigtes Interesse: Widget lädt sofort, Cloudflare in Datenschutzerklärung dokumentieren. Consent-abhängig: Widget wird erst nach Cookie-Zustimmung gerendert.',
+                        'conditional_logic' => array(array(array(
+                            'field' => 'field_turnstile_enabled', 'operator' => '==', 'value' => '1',
+                        ))),
+                        'wrapper' => array( 'width' => '34' ),
+                    ),
+
+                    array(
+                        'key'           => 'field_turnstile_consent_category',
+                        'label'         => 'Consent-Kategorie',
+                        'name'          => 'turnstile_consent_category',
+                        'type'          => 'select',
+                        'choices'       => array(
+                            'necessary'  => 'Notwendig',
+                            'statistics' => 'Statistik',
+                            'marketing'  => 'Marketing',
+                            'comfort'    => 'Komfort',
+                        ),
+                        'default_value' => 'necessary',
+                        'allow_null'    => 0,
+                        'return_format' => 'value',
+                        'instructions'  => 'Welche Cookie-Kategorie muss akzeptiert sein, damit Turnstile geladen wird.',
+                        'conditional_logic' => array(array(array(
+                            'field' => 'field_turnstile_dsgvo_mode', 'operator' => '==', 'value' => 'consent',
+                        ))),
+                        'wrapper' => array( 'width' => '50' ),
+                    ),
+
                     // ── hCaptcha ──────────────────────────────────────────────
                     array(
                         'key'     => 'field_hcaptcha_separator',

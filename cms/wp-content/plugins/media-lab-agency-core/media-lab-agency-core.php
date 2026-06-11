@@ -3,7 +3,7 @@
  * Plugin Name: Media Lab Agency Core
  * Plugin URI: https://github.com/media-admin/media-lab-starter-kit
  * Description: Core functionality for Media Lab agency websites. Provides shortcodes, security features, and admin customizations.
- * Version:           1.12.1
+ * Version:           1.13.0
  * Author: Media Lab
  * Author URI: https://medialab.at
  * Text Domain: media-lab-core
@@ -14,7 +14,7 @@
 
 if (!defined('ABSPATH')) { exit; }
 
-define('MEDIALAB_CORE_VERSION', '1.12.0');
+define('MEDIALAB_CORE_VERSION', '1.13.0');
 define('MEDIALAB_CORE_FILE', __FILE__);
 define('MEDIALAB_CORE_PATH', plugin_dir_path(__FILE__));
 define('MEDIALAB_CORE_URL', plugin_dir_url(__FILE__));
@@ -63,6 +63,8 @@ function medialab_core_init() {
     require_once MEDIALAB_CORE_PATH . 'inc/maintenance.php';
     require_once MEDIALAB_CORE_PATH . 'inc/cookie-consent.php';
     require_once MEDIALAB_CORE_PATH . 'inc/hcaptcha.php';
+    require_once MEDIALAB_CORE_PATH . 'inc/honeypot.php';
+    require_once MEDIALAB_CORE_PATH . 'inc/turnstile.php';
 
     // ── Dark Mode Toggle — since 1.12.0 ───────────────────
     require_once MEDIALAB_CORE_PATH . 'inc/dark-mode.php';

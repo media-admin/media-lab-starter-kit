@@ -6,6 +6,53 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ---
 
+## [1.21.0] - 2026-06-11
+
+### media-lab-agency-core 1.13.0
+
+#### Added
+- **Cloudflare Turnstile** (`inc/turnstile.php`) – Neue CAPTCHA-Integration als
+  datenschutzfreundliche Alternative zu reCAPTCHA. Läuft parallel zu hCaptcha;
+  Admin-Notice wenn beide für denselben Scope aktiv sind.
+  - Scopes: CF7 (default: an), WP Login (an), WooCommerce Checkout (an),
+    WooCommerce Login (an), WooCommerce Registrierung (an)
+  - Öffentliche API: `medialab_turnstile_render()`, `medialab_turnstile_verify()`,
+    `medialab_turnstile_active()`
+  - DSGVO-Modus: „Berechtigtes Interesse" (Standard, empfohlen) oder
+    „Consent-abhängig" (Widget rendert erst nach Zustimmung zur konfigurierten
+    Cookie-Kategorie; dockt via `mlConsentUpdated`-Event und MutationObserver
+    an das Media Lab Cookie Consent System an)
+  - Widget-Optionen: Erscheinungsbild (auto/light/dark), Größe (normal/compact/flexible)
+  - Konfiguration: Agency Core → Spam-Schutz
+
+#### Changed
+- **Honeypot – konfigurierbare Parameter** (`inc/honeypot.php`) –
+  Mindest-Ausfüllzeit und maximales Formular-Alter sind jetzt in
+  Agency Core → Spam-Schutz konfigurierbar (statt nur über Konstanten).
+  Konstanten (z.B. in `wp-config.php`) haben weiterhin Vorrang – bestehende
+  Projekte bleiben vollständig kompatibel.
+  Neue ACF-Felder: `honeypot_min_time` (Standard: 3 s), `honeypot_max_age`
+  (Standard: 86400 s / 24 h).
+- **ACF-Settings – Spam-Schutz-Sektion** (`inc/acf-settings.php`) –
+  Honeypot-Parameter-Felder und vollständige Turnstile-Konfiguration in die
+  bestehende Spam-Schutz-Seite integriert (vor hCaptcha).
+
+#### Changed
+- **Cookie Consent – Standard-Texte** (`inc/cookie-consent.php`) –
+  Alle Default-Texte überarbeitet für sofortigen Einsatz ohne projektspezifische
+  Anpassung:
+  - Banner-Titel: präziser und rechtlich klarer
+  - Banner-Text: vollständiger mit Erwähnung technisch notwendiger Cookies
+  - Ablehnen-Button: „Nur Notwendige" statt „Ablehnen" (klarer für Nutzer)
+  - Modal-Intro: Hinweis auf nicht deaktivierbare notwendige Cookies ergänzt
+  - Kategorie-Beschreibungen: Beispiele (Google Analytics, Meta Pixel, YouTube,
+    Google Maps) und rechtliche Einordnung ergänzt
+  - Notwendig-Beschreibung: Cloudflare Turnstile-Hinweis (berechtigtes Interesse)
+    wird dynamisch ergänzt wenn Turnstile aktiv ist
+
+---
+
+
 ## [1.20.3] - 2026-06-11
 
 ### media-lab-agency-core 1.12.2
