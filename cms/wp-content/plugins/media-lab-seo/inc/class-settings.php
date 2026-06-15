@@ -29,7 +29,6 @@ class MLT_Settings {
         add_action( 'admin_init',              [ $this, 'register_settings' ] );
         add_action( 'admin_enqueue_scripts',   [ $this, 'enqueue_assets' ] );
         add_action( 'wp_ajax_mlt_test_mail',   [ $this, 'ajax_test_mail' ] );
-        add_action( 'mlt_weekly_report',       [ $this, 'send_weekly_report' ] );
         add_action( 'update_option_' . self::OPT_REPORT_ENABLED, [ $this, 'sync_cron' ], 10, 2 );
     }
 
@@ -584,42 +583,5 @@ class MLT_Settings {
             $next = new DateTime( 'today 08:00', $tz );
         }
         return $next->getTimestamp();
-    }
-
-    // ── Report-Mail senden (Cron-Hook) ────────────────────────────────────────
-
-    public function send_weekly_report() {
-        $to = get_option( self::OPT_REPORT_EMAIL, get_option( 'admin_email' ) );
-        if ( ! is_email( $to ) ) return;
-
-        $subject = '[' . get_bloginfo( 'name' ) . '] Wöchentlicher SEO-Report';
-        $headers = [ 'Content-Type: text/html; charset=UTF-8' ];
-
-        /**
-         * Filter: Report-HTML anpassen oder erweitern.
-         * 
-         * @param string $html    Standard-Report-HTML
-         * @param string $to      Empfänger
-         */
-        $html = apply_filters( 'mlt_weekly_report_html', $this->build_report_html(), $to );
-
-        wp_mail( $to, $subject, $html, $headers );
-    }
-
-    private function build_report_html() {
-        $site = get_bloginfo( 'name' );
-        $url  = get_bloginfo( 'url' );
-        $week = wp_date( 'W/Y' );
-
-        return "
-        <div style='font-family:sans-serif;max-width:600px;margin:0 auto;padding:32px 24px;background:#f9fafb'>
-            <h2 style='margin:0 0 4px;color:#1a1a2e'>{$site}</h2>
-            <p style='color:#6b7280;margin:0 0 32px;font-size:14px'>Wöchentlicher SEO-Report – KW {$week}</p>
-            <p style='color:#374151'>Dieser Report wird automatisch von <a href='{$url}'>Media Lab SEO Toolkit</a> gesendet.</p>
-            <hr style='border:none;border-top:1px solid #e5e7eb;margin:24px 0'>
-            <p style='color:#9ca3af;font-size:12px'>
-                Um den Report zu deaktivieren: WordPress Admin → ML Toolkit → Wöchentlicher Report deaktivieren.
-            </p>
-        </div>";
     }
 }
