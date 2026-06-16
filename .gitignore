@@ -45,11 +45,11 @@
 /cms/wp-content/plugins/query-monitor/
 
 # Inaktive Plugins (noch nicht fertig entwickelt)
-/cms/wp-content/plugins/media-lab-core/
-/cms/wp-content/plugins/media-lab-analytics/
-/cms/wp-content/plugins/media-lab-events/
-/cms/wp-content/plugins/media-lab-project-starter/
-/cms/wp-content/plugins/media-lab-woocommerce/
+# /cms/wp-content/plugins/media-lab-core/
+# /cms/wp-content/plugins/media-lab-analytics/
+# /cms/wp-content/plugins/media-lab-events/
+# /cms/wp-content/plugins/media-lab-project-starter/
+# /cms/wp-content/plugins/media-lab-woocommerce/
 
 # ============================================
 # THEMES – Standard WP Themes
