@@ -1,0 +1,65 @@
+/**
+ * WP Login – Button-Style aus Theme-Variablen
+ *
+ * Wird von inc/login-style.php via wp_enqueue_style auf der Login-Seite geladen.
+ * Verwendet CSS Custom Properties aus dem Theme (--color-primary, --color-primary-dark,
+ * --border-radius-btn, --font-family-base etc.).
+ *
+ * Fallback-Werte greifen wenn das Theme-CSS auf der Login-Seite nicht verfügbar ist
+ * (was der Normalfall ist – daher werden die Variablen hier mit sinnvollen Defaults
+ * auf :root re-definiert und können per ACF-Option oder wp-config überschrieben werden).
+ */
+
+:root {
+	/* Fallbacks – werden von Theme-CSS überschrieben wenn vorhanden */
+	--color-primary:        #c0392b;
+	--color-primary-dark:   #96281b;
+	--color-primary-text:   #ffffff;
+	--border-radius-btn:    4px;
+	--font-family-base:     -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Layout */
+body.login {
+	font-family: var(--font-family-base);
+}
+
+/* Primary Button: Anmelden */
+body.login #wp-submit,
+body.login .button-primary {
+	background:    var(--color-primary) !important;
+	border-color:  var(--color-primary-dark) !important;
+	color:         var(--color-primary-text) !important;
+	border-radius: var(--border-radius-btn) !important;
+	box-shadow:    none !important;
+	text-shadow:   none !important;
+	font-family:   var(--font-family-base) !important;
+	transition:    background 0.2s ease, border-color 0.2s ease !important;
+}
+
+body.login #wp-submit:hover,
+body.login #wp-submit:focus,
+body.login .button-primary:hover,
+body.login .button-primary:focus {
+	background:   var(--color-primary-dark) !important;
+	border-color: var(--color-primary-dark) !important;
+	box-shadow:   none !important;
+	outline:      2px solid var(--color-primary) !important;
+	outline-offset: 2px !important;
+}
+
+/* Sprach-Button neben dem Dropdown */
+body.login .language-switcher .button {
+	border-radius: var(--border-radius-btn) !important;
+	font-family:   var(--font-family-base) !important;
+}
+
+/* Links */
+body.login a {
+	color: var(--color-primary) !important;
+}
+
+body.login a:hover,
+body.login a:focus {
+	color: var(--color-primary-dark) !important;
+}

@@ -56,6 +56,8 @@ function mlt_init() {
     require_once MLT_PATH . 'inc/class-seo-dashboard.php';
     require_once MLT_PATH . 'inc/class-report-template.php';
     require_once MLT_PATH . 'inc/class-report-mailer.php';
+    require_once MLT_PATH . 'inc/report-recipients.php';
+    require_once MLT_PATH . 'inc/report-schedule.php';
 
     new MLT_Settings();
     new MLT_SEO();

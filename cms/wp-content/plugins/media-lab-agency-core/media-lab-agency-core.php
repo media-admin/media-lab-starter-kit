@@ -39,6 +39,7 @@ function medialab_core_init() {
     require_once MEDIALAB_CORE_PATH . 'inc/notifications-shortcodes.php';
     require_once MEDIALAB_CORE_PATH . 'inc/acf-fields-gmap.php';
     require_once MEDIALAB_CORE_PATH . 'inc/top-header-order.php';
+    require_once MEDIALAB_CORE_PATH . 'inc/login-style.php';
 
     // ── ACF Options + Fields ──────────────────────────────
     require_once MEDIALAB_CORE_PATH . 'inc/acf-settings.php';
@@ -58,6 +59,7 @@ function medialab_core_init() {
     require_once MEDIALAB_CORE_PATH . 'inc/post-order.php';
     require_once MEDIALAB_CORE_PATH . 'inc/duplicate-post.php';
     require_once MEDIALAB_CORE_PATH . 'inc/smtp.php';
+    require_once MEDIALAB_CORE_PATH . 'inc/smtp-oauth.php';
     require_once MEDIALAB_CORE_PATH . 'inc/email-obfuscation.php';
     require_once MEDIALAB_CORE_PATH . 'inc/white-label.php';
     require_once MEDIALAB_CORE_PATH . 'inc/maintenance.php';
