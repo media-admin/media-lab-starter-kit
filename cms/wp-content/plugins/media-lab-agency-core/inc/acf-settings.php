@@ -11,8 +11,6 @@ define('MEDIALAB_ACF_SETTINGS_LOADED', true);
 
 // ─────────────────────────────────────────────────────────────────
 // 1. ELTERN-MENÜ  –  nativ via admin_menu
-//    Zuverlässiger als acf_add_options_page für Top-Level,
-//    da WordPress sonst immer zum ersten Sub-Menü weiterleitet.
 // ─────────────────────────────────────────────────────────────────
 add_action('admin_menu', function () {
     add_menu_page(
@@ -22,22 +20,84 @@ add_action('admin_menu', function () {
         'agency-core',
         '__return_null',
         'dashicons-admin-generic',
-        81  // ← war: 2
+        81
     );
 }, 5);
 
-// Muss NACH allen anderen admin_menu-Hooks laufen (Priorität 999)
 add_action('admin_menu', function () {
     remove_submenu_page('agency-core', 'agency-core');
 }, 999);
 
 
 // ─────────────────────────────────────────────────────────────────
-// 2. ACF OPTIONS SUB-PAGE  –  als erstes Untermenü
-//    Ersetzt den "__return_null" Callback des Eltern-Menüs.
+// 1b. OAUTH-UNTERSEITE  –  native WP-Seite (kein ACF, eigener Callback)
+//     Platziert zwischen "E-Mail / SMTP" (pos 6) und "Spam-Schutz" (pos 8)
 // ─────────────────────────────────────────────────────────────────
+add_action('admin_menu', function () {
+    add_submenu_page(
+        'agency-core',
+        'E-Mail / OAuth',
+        'E-Mail / OAuth',
+        'manage_options',
+        'agency-core-smtp-oauth',
+        'medialab_render_smtp_oauth_page'
+    );
+}, 5);
+
+/**
+ * Render-Callback für die OAuth-Seite.
+ * Nutzt render_oauth_section() aus inc/smtp-oauth.php.
+ */
+function medialab_render_smtp_oauth_page(): void {
+    if ( ! current_user_can( 'manage_options' ) ) return;
+
+    // Settings-Update-Notice
+    if ( isset( $_GET['settings-updated'] ) ) {
+        echo '<div class="notice notice-success is-dismissible"><p>'
+            . esc_html__( 'Einstellungen gespeichert.', 'media-lab-core' )
+            . '</p></div>';
+    }
+    if ( isset( $_GET['ms365_disconnected'] ) ) {
+        echo '<div class="notice notice-info is-dismissible"><p>'
+            . esc_html__( 'Microsoft 365 Verbindung getrennt.', 'media-lab-core' )
+            . '</p></div>';
+    }
+    if ( isset( $_GET['gws_connected'] ) ) {
+        echo '<div class="notice notice-success is-dismissible"><p>'
+            . esc_html__( 'Google Workspace erfolgreich verbunden.', 'media-lab-core' )
+            . '</p></div>';
+    }
+    if ( isset( $_GET['gws_disconnected'] ) ) {
+        echo '<div class="notice notice-info is-dismissible"><p>'
+            . esc_html__( 'Google Workspace Verbindung getrennt.', 'media-lab-core' )
+            . '</p></div>';
+    }
+    if ( isset( $_GET['gws_error'] ) ) {
+        echo '<div class="notice notice-error is-dismissible"><p>'
+            . esc_html__( 'Google Workspace Verbindung fehlgeschlagen. Bitte Credentials prüfen.', 'media-lab-core' )
+            . '</p></div>';
+    }
+
+    echo '<div class="wrap"><h1>' . esc_html__( 'E-Mail / OAuth', 'media-lab-core' ) . '</h1>';
+
+    // OAuth-Abschnitt aus smtp-oauth.php rendern
+    if ( class_exists( 'MediaLab_SMTP_OAuth' ) ) {
+        global $medialab_smtp_oauth;
+        if ( $medialab_smtp_oauth instanceof MediaLab_SMTP_OAuth ) {
+            $medialab_smtp_oauth->render_oauth_section();
+        }
+    } else {
+        echo '<div class="notice notice-warning"><p>'
+            . esc_html__( 'smtp-oauth.php ist nicht geladen. Bitte prüfen ob die Datei in media-lab-agency-core.php per require_once eingebunden ist.', 'media-lab-core' )
+            . '</p></div>';
+    }
+
+    echo '</div>';
+}
+
+
 // ─────────────────────────────────────────────────────────────────
-// 2. ACF OPTIONS SUB-PAGES  –  10 separate Unterseiten
+// 2. ACF OPTIONS SUB-PAGES
 // ─────────────────────────────────────────────────────────────────
 add_action('acf/init', function () {
     if ( ! function_exists('acf_add_options_sub_page') ) return;
@@ -98,13 +158,15 @@ add_action('acf/init', function () {
         'position'    => 6,
     ));
 
+    // Position 7 = native WP-Seite "E-Mail / OAuth" (via admin_menu oben)
+
     acf_add_options_sub_page(array(
         'page_title'  => 'Spam-Schutz / E-Mail Obfuskierung',
         'menu_title'  => 'Spam-Schutz / E-Mail Obfuskierung',
         'parent_slug' => $parent,
         'capability'  => 'manage_options',
         'slug'        => 'agency-core-spam',
-        'position'    => 7,
+        'position'    => 8,
     ));
 
     acf_add_options_sub_page(array(
@@ -113,7 +175,7 @@ add_action('acf/init', function () {
         'parent_slug' => $parent,
         'capability'  => 'manage_options',
         'slug'        => 'agency-core-top-header',
-        'position'    => 8,
+        'position'    => 9,
     ));
 
     acf_add_options_sub_page(array(
@@ -122,7 +184,7 @@ add_action('acf/init', function () {
         'parent_slug' => $parent,
         'capability'  => 'manage_options',
         'slug'        => 'agency-core-multilang',
-        'position'    => 9,
+        'position'    => 10,
     ));
 
     acf_add_options_sub_page(array(
@@ -131,7 +193,7 @@ add_action('acf/init', function () {
         'parent_slug' => $parent,
         'capability'  => 'manage_options',
         'slug'        => 'agency-core-white-label',
-        'position'    => 10,
+        'position'    => 11,
     ));
 
 }, 5);
@@ -398,7 +460,7 @@ add_action('acf/init', function () {
                 'type'          => 'true_false',
                 'ui'            => 1,
                 'default_value' => 0,
-                'instructions'  => 'Zeigt eine dünne Fortschritts-Linie am oberen Viewport-Rand. Wo sie erscheint, steuert die Option darunter.',
+                'instructions'  => 'Zeigt eine dünne Fortschritts-Linie am oberen Viewport-Rand.',
             ),
 
             array(
@@ -420,7 +482,6 @@ add_action('acf/init', function () {
                 ))),
             ),
 
-            // ── Dark Mode Toggle ──────────────────────────────────────────────
             array(
                 'key'           => 'field_dark_mode_enabled',
                 'label'         => 'Dark Mode Toggle',
@@ -428,19 +489,15 @@ add_action('acf/init', function () {
                 'type'          => 'true_false',
                 'ui'            => 1,
                 'default_value' => 1,
-                'instructions'  => 'Zeigt den Dark/Light-Mode-Umschalter im Frontend an (🌙 / ☀️). Wenn deaktiviert, wird immer der Light Mode erzwungen.',
+                'instructions'  => 'Zeigt den Dark/Light-Mode-Umschalter im Frontend an.',
             ),
 
         ),
-        'location' => array(
-            array(
-                array(
-                    'param'    => 'options_page',
-                    'operator' => '==',
-                    'value'    => 'agency-core-logo',
-                ),
-            ),
-        ),
+        'location' => array(array(array(
+            'param'    => 'options_page',
+            'operator' => '==',
+            'value'    => 'agency-core-logo',
+        ))),
         'menu_order'            => 5,
         'position'              => 'normal',
         'style'                 => 'default',
@@ -580,6 +637,16 @@ add_action('acf/init', function () {
                             'field' => 'field_smtp_enabled', 'operator' => '==', 'value' => '1',
                         ))),
                     ),
+
+                    array(
+                        'key'     => 'field_smtp_oauth_hint',
+                        'label'   => ' ',
+                        'name'    => 'smtp_oauth_hint',
+                        'type'    => 'message',
+                        'message' => '<p style="margin:0;padding:10px 12px;background:#f0f6fc;border-left:3px solid #2271b1;">'
+                                   . '🔐 <strong>OAuth2 (Microsoft 365 / Google Workspace)</strong> wird unter '
+                                   . '<a href="' . admin_url('admin.php?page=agency-core-smtp-oauth') . '">Agency Core → E-Mail / OAuth</a> konfiguriert.</p>',
+                    ),
                 ),
             ),
         ),
@@ -615,7 +682,7 @@ add_action('acf/init', function () {
                         'type'          => 'true_false',
                         'ui'            => 1,
                         'default_value' => 0,
-                        'instructions'  => 'Kodiert E-Mail-Adressen so, dass Spam-Bots sie nicht auslesen können. Für Besucher bleibt alles wie gewohnt.',
+                        'instructions'  => 'Kodiert E-Mail-Adressen so, dass Spam-Bots sie nicht auslesen können.',
                     ),
 
                     array(
@@ -625,7 +692,7 @@ add_action('acf/init', function () {
                         'type'          => 'true_false',
                         'ui'            => 1,
                         'default_value' => 1,
-                        'instructions'  => 'Schützt automatisch alle mailto:-Links und nackte E-Mail-Adressen in Seiteninhalten. Alternativ: Shortcode [obfuscate_email email="..." label="..."] verwenden.',
+                        'instructions'  => 'Schützt automatisch alle mailto:-Links und nackte E-Mail-Adressen in Seiteninhalten.',
                         'conditional_logic' => array(array(array(
                             'field' => 'field_obf_enabled', 'operator' => '==', 'value' => '1',
                         ))),
@@ -633,10 +700,9 @@ add_action('acf/init', function () {
 
                     array(
                         'key'     => 'field_obf_shortcode_hint',
-                        'label'   => 'Shortcode',
+                        'label'   => ' ',
                         'name'    => 'obf_shortcode_hint',
                         'type'    => 'message',
-                        'label'   => ' ',
                         'message' => '<code>[obfuscate_email email="info@example.com" label="Kontakt aufnehmen"]</code><br>Schützt eine einzelne E-Mail-Adresse manuell.',
                         'conditional_logic' => array(array(array(
                             'field' => 'field_obf_enabled', 'operator' => '==', 'value' => '1',
@@ -651,8 +717,7 @@ add_action('acf/init', function () {
                         'type'    => 'message',
                         'message' => '<strong style="font-size:13px;">Honeypot</strong>'
                                    . '<p style="margin:.4rem 0 0;color:#666;font-size:12px;">'
-                                   . 'DSGVO-konformer Basisschutz ohne externe Requests. '
-                                   . 'Immer aktiv – keine Keys erforderlich.</p>',
+                                   . 'DSGVO-konformer Basisschutz ohne externe Requests. Immer aktiv.</p>',
                     ),
 
                     array(
@@ -677,7 +742,7 @@ add_action('acf/init', function () {
                         'min'           => 300,
                         'max'           => 604800,
                         'step'          => 60,
-                        'instructions'  => 'Formulare die älter als dieser Wert sind (gecachte Seiten), werden abgelehnt. Standard: 86400 s (24 h).',
+                        'instructions'  => 'Formulare die älter als dieser Wert sind, werden abgelehnt. Standard: 86400 s (24 h).',
                         'wrapper'       => array( 'width' => '50' ),
                     ),
 
@@ -700,7 +765,6 @@ add_action('acf/init', function () {
                         'type'          => 'true_false',
                         'ui'            => 1,
                         'default_value' => 0,
-                        'instructions'  => 'CAPTCHA-Schutz via Cloudflare Turnstile (datenschutzfreundliche Alternative zu reCAPTCHA).',
                     ),
 
                     array(
@@ -722,7 +786,7 @@ add_action('acf/init', function () {
                         'name'         => 'turnstile_secret_key',
                         'type'         => 'text',
                         'placeholder'  => '0x4AAAAAAA…',
-                        'instructions' => 'Privater Schlüssel – wird nur serverseitig verwendet, nie im HTML ausgegeben.',
+                        'instructions' => 'Privater Schlüssel – nur serverseitig verwendet.',
                         'conditional_logic' => array(array(array(
                             'field' => 'field_turnstile_enabled', 'operator' => '==', 'value' => '1',
                         ))),
@@ -736,7 +800,6 @@ add_action('acf/init', function () {
                         'type'          => 'true_false',
                         'ui'            => 1,
                         'default_value' => 1,
-                        'instructions'  => 'Schützt alle CF7-Formulare automatisch.',
                         'conditional_logic' => array(array(array(
                             'field' => 'field_turnstile_enabled', 'operator' => '==', 'value' => '1',
                         ))),
@@ -749,7 +812,6 @@ add_action('acf/init', function () {
                         'type'          => 'true_false',
                         'ui'            => 1,
                         'default_value' => 1,
-                        'instructions'  => 'Schützt wp-login.php gegen Brute-Force.',
                         'conditional_logic' => array(array(array(
                             'field' => 'field_turnstile_enabled', 'operator' => '==', 'value' => '1',
                         ))),
@@ -762,7 +824,6 @@ add_action('acf/init', function () {
                         'type'          => 'true_false',
                         'ui'            => 1,
                         'default_value' => 1,
-                        'instructions'  => 'Schützt den Checkout-Schritt.',
                         'conditional_logic' => array(array(array(
                             'field' => 'field_turnstile_enabled', 'operator' => '==', 'value' => '1',
                         ))),
@@ -775,7 +836,6 @@ add_action('acf/init', function () {
                         'type'          => 'true_false',
                         'ui'            => 1,
                         'default_value' => 1,
-                        'instructions'  => 'Schützt das Login-Formular unter „Mein Konto".',
                         'conditional_logic' => array(array(array(
                             'field' => 'field_turnstile_enabled', 'operator' => '==', 'value' => '1',
                         ))),
@@ -788,7 +848,6 @@ add_action('acf/init', function () {
                         'type'          => 'true_false',
                         'ui'            => 1,
                         'default_value' => 1,
-                        'instructions'  => 'Schützt das Registrierungsformular unter „Mein Konto".',
                         'conditional_logic' => array(array(array(
                             'field' => 'field_turnstile_enabled', 'operator' => '==', 'value' => '1',
                         ))),
@@ -844,7 +903,7 @@ add_action('acf/init', function () {
                         'default_value' => 'legitimate_interest',
                         'allow_null'    => 0,
                         'return_format' => 'value',
-                        'instructions'  => 'Berechtigtes Interesse: Widget lädt sofort, Cloudflare in Datenschutzerklärung dokumentieren. Consent-abhängig: Widget wird erst nach Cookie-Zustimmung gerendert.',
+                        'instructions'  => 'Berechtigtes Interesse: Widget lädt sofort. Consent-abhängig: erst nach Cookie-Zustimmung.',
                         'conditional_logic' => array(array(array(
                             'field' => 'field_turnstile_enabled', 'operator' => '==', 'value' => '1',
                         ))),
@@ -865,7 +924,6 @@ add_action('acf/init', function () {
                         'default_value' => 'necessary',
                         'allow_null'    => 0,
                         'return_format' => 'value',
-                        'instructions'  => 'Welche Cookie-Kategorie muss akzeptiert sein, damit Turnstile geladen wird.',
                         'conditional_logic' => array(array(array(
                             'field' => 'field_turnstile_dsgvo_mode', 'operator' => '==', 'value' => 'consent',
                         ))),
@@ -888,7 +946,7 @@ add_action('acf/init', function () {
                         'type'          => 'true_false',
                         'ui'            => 1,
                         'default_value' => 0,
-                        'instructions'  => 'CAPTCHA-Schutz via hCaptcha. Site- und Secret-Key unter hcaptcha.com holen.',
+                        'instructions'  => 'CAPTCHA-Schutz via hCaptcha. Keys unter hcaptcha.com holen.',
                     ),
 
                     array(
@@ -897,7 +955,6 @@ add_action('acf/init', function () {
                         'name'         => 'hcaptcha_site_key',
                         'type'         => 'text',
                         'placeholder'  => '10000000-ffff-ffff-ffff-000000000001',
-                        'instructions' => 'Öffentlicher Schlüssel von hcaptcha.com → Sites.',
                         'conditional_logic' => array(array(array(
                             'field' => 'field_hcaptcha_enabled', 'operator' => '==', 'value' => '1',
                         ))),
@@ -909,7 +966,6 @@ add_action('acf/init', function () {
                         'name'         => 'hcaptcha_secret_key',
                         'type'         => 'text',
                         'placeholder'  => '0x0000000000000000000000000000000000000000',
-                        'instructions' => 'Privater Schlüssel – wird nur serverseitig verwendet, nie im HTML ausgegeben.',
                         'conditional_logic' => array(array(array(
                             'field' => 'field_hcaptcha_enabled', 'operator' => '==', 'value' => '1',
                         ))),
@@ -922,7 +978,6 @@ add_action('acf/init', function () {
                         'type'          => 'true_false',
                         'ui'            => 1,
                         'default_value' => 1,
-                        'instructions'  => 'Schützt alle CF7-Formulare.',
                         'conditional_logic' => array(array(array(
                             'field' => 'field_hcaptcha_enabled', 'operator' => '==', 'value' => '1',
                         ))),
@@ -935,7 +990,6 @@ add_action('acf/init', function () {
                         'type'          => 'true_false',
                         'ui'            => 1,
                         'default_value' => 1,
-                        'instructions'  => 'Schützt wp-login.php gegen Brute-Force.',
                         'conditional_logic' => array(array(array(
                             'field' => 'field_hcaptcha_enabled', 'operator' => '==', 'value' => '1',
                         ))),
@@ -948,7 +1002,6 @@ add_action('acf/init', function () {
                         'type'          => 'true_false',
                         'ui'            => 1,
                         'default_value' => 0,
-                        'instructions'  => 'Schützt den Checkout-Schritt.',
                         'conditional_logic' => array(array(array(
                             'field' => 'field_hcaptcha_enabled', 'operator' => '==', 'value' => '1',
                         ))),
@@ -961,7 +1014,6 @@ add_action('acf/init', function () {
                         'type'          => 'true_false',
                         'ui'            => 1,
                         'default_value' => 0,
-                        'instructions'  => 'Schützt das Registrierungsformular unter „Mein Konto".',
                         'conditional_logic' => array(array(array(
                             'field' => 'field_hcaptcha_enabled', 'operator' => '==', 'value' => '1',
                         ))),
@@ -1159,15 +1211,11 @@ add_action('acf/init', function () {
             ),
 
         ),
-        'location' => array(
-            array(
-                array(
-                    'param'    => 'options_page',
-                    'operator' => '==',
-                    'value'    => 'agency-core-top-header',
-                ),
-            ),
-        ),
+        'location' => array(array(array(
+            'param'    => 'options_page',
+            'operator' => '==',
+            'value'    => 'agency-core-top-header',
+        ))),
         'menu_order'            => 10,
         'position'              => 'normal',
         'style'                 => 'default',

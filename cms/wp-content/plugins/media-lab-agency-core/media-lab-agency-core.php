@@ -59,7 +59,6 @@ function medialab_core_init() {
     require_once MEDIALAB_CORE_PATH . 'inc/post-order.php';
     require_once MEDIALAB_CORE_PATH . 'inc/duplicate-post.php';
     require_once MEDIALAB_CORE_PATH . 'inc/smtp.php';
-    require_once MEDIALAB_CORE_PATH . 'inc/smtp-oauth.php';
     require_once MEDIALAB_CORE_PATH . 'inc/email-obfuscation.php';
     require_once MEDIALAB_CORE_PATH . 'inc/white-label.php';
     require_once MEDIALAB_CORE_PATH . 'inc/maintenance.php';
@@ -67,6 +66,9 @@ function medialab_core_init() {
     require_once MEDIALAB_CORE_PATH . 'inc/hcaptcha.php';
     require_once MEDIALAB_CORE_PATH . 'inc/honeypot.php';
     require_once MEDIALAB_CORE_PATH . 'inc/turnstile.php';
+
+    require_once MEDIALAB_CORE_PATH . 'inc/smtp-oauth.php';
+    $GLOBALS['medialab_smtp_oauth'] = new MediaLab_SMTP_OAuth();
 
     // ── Dark Mode Toggle — since 1.12.0 ───────────────────
     require_once MEDIALAB_CORE_PATH . 'inc/dark-mode.php';

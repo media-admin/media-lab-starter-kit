@@ -545,5 +545,3 @@ class MediaLab_SMTP_OAuth {
 		<?php
 	}
 }
-
-new MediaLab_SMTP_OAuth();
