@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - WooCommerce - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-06-06 23:41:19+0000\n"
+"PO-Revision-Date: 2026-06-22 20:06:50+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -16,56 +16,42 @@ msgctxt "Font family name"
 msgid "Inter"
 msgstr "Inter"
 
-#: templates/order/customer-review-order-row.php:93
-msgid "Share your experience with this product..."
-msgstr "Teile deine Erfahrungen mit diesem Produkt ..."
-
-#: templates/order/customer-review-order.php:96
-msgid "Review your order"
-msgstr "Deine Bestellung überprüfen"
-
-#: templates/order/customer-review-order.php:100
-msgid "Loved something? Not so much? Share a quick review for what you bought. Feel free to skip any product."
-msgstr "Gefiel dir etwas? Eher nicht? Gib eine kurze Bewertung dazu ab, was du gekauft hast. Du kannst gerne ein Produkt überspringen."
-
 #: templates/order/customer-review-order.php:104
 msgid "* Mandatory fields"
 msgstr "* Pflichtfelder"
-
-#: templates/order/customer-review-order.php:173
-msgid "Submit reviews"
-msgstr "Bewertungen einreichen"
 
 #. translators: 1: numeric star rating 2: label text e.g. "Good"
 #: templates/order/star-rating.php:52
 msgid "%1$d out of 5 stars: %2$s"
 msgstr "%1$d von 5 Sternen: %2$s"
 
-#: templates/order/customer-review-order.php:117
-msgid "Some products may not be available for review because the store has disabled reviews for them."
-msgstr "Einige Produkte sind möglicherweise nicht zur Überprüfung verfügbar, weil Bewertungen für sie im Shop deaktiviert sind."
-
 #: templates/order/customer-review-order-empty.php:43
 msgid "There are no products on this order that are open for reviews right now."
-msgstr "Es gibt derzeit keine Produkte in dieser Bestellung, die für Bewertungen geöffnet sind."
+msgstr "Es gibt derzeit keine Produkte in dieser Bestellung, die für Rezensionen geöffnet sind."
+
+#: templates/order/customer-review-order.php:173
+msgid "Submit reviews"
+msgstr "Rezensionen einreichen"
+
+#: templates/order/customer-review-order.php:96
+msgid "Review your order"
+msgstr "Rezensiere deine Bestellung"
+
+#: templates/order/customer-review-order.php:117
+msgid "Some products may not be available for review because the store has disabled reviews for them."
+msgstr "Möglicherweise können einige Produkte nicht rezensiert werden, da der Shop die Rezensionsfunktion für diese Produkte deaktiviert hat."
+
+#: templates/order/customer-review-order-row.php:93
+msgid "Share your experience with this product..."
+msgstr "Teile deine Erfahrungen mit diesem Produkt …"
+
+#: templates/order/customer-review-order.php:100
+msgid "Loved something? Not so much? Share a quick review for what you bought. Feel free to skip any product."
+msgstr "Hat dir etwas gefallen? Oder eher nicht? Schreib doch eine kurze Rezension zu deinem Kauf. Du kannst auch gerne Produkte überspringen."
 
 #: templates/order/customer-review-order.php:114
 msgid "Don't see all your products?"
-msgstr "Du siehst nicht alle deine Produkte?"
-
-#: templates/emails/block/customer-review-request.php:36
-#: templates/emails/customer-review-request.php:49
-#: templates/emails/plain/customer-review-request.php:33
-msgid "We’d love to know what you thought of the products you ordered. Your review helps other shoppers make better decisions and helps us improve."
-msgstr "Wir würden gerne wissen, was du von den Produkten hältst, die du bestellt hast. Deine Bewertung hilft anderen Käufern, bessere Entscheidungen zu treffen, und hilft uns, uns zu verbessern."
-
-#: templates/emails/customer-review-request.php:53
-msgid "Leave a review"
-msgstr "Bewertung schreiben"
-
-#: templates/emails/plain/customer-review-request.php:36
-msgid "Leave a review:"
-msgstr "Schreibe eine Bewertung:"
+msgstr "Sind nicht alle deine Produkte aufgeführt?"
 
 #: templates/emails/block/general-block-content-for-fulfillment-emails.php:25
 #: templates/emails/customer-fulfillment-updated.php:40
@@ -73,35 +59,33 @@ msgstr "Schreibe eine Bewertung:"
 msgid "Note from the store:"
 msgstr "Notiz aus dem Shop:"
 
-#: templates/order/customer-review-order-empty.php:31
-#: templates/order/customer-review-order.php:180
-msgid "Thank you for your reviews"
-msgstr "Vielen Dank für deine Bewertungen"
-
-#: templates/order/customer-review-order-empty.php:33
-msgid "Nothing to review here"
-msgstr "Hier gibt es nichts zu bewerten"
-
 #: templates/order/customer-review-order-empty.php:41
 #: templates/order/customer-review-order.php:183
 msgid "Your feedback helps other customers make better purchasing decisions."
 msgstr "Dein Feedback hilft anderen Kunden, bessere Kaufentscheidungen zu treffen."
 
-#. translators: 1: order ID, 2: skip reason
-#: src/Internal/OrderReviews/Scheduler.php:215
-msgid "Skipped scheduling review-request email for order %1$d: %2$s."
-msgstr "Planung der Bewertungs-Anfrage-E-Mail für Bestellung %1$d übersprungen: %2$s."
+#: templates/emails/customer-review-request.php:53
+msgid "Leave a review"
+msgstr "Rezension schreiben"
 
-#: src/Internal/OrderReviews/Endpoint.php:181
-#: src/Internal/OrderReviews/Endpoint.php:198
-msgctxt "Page slug"
-msgid "review-order"
-msgstr "bestellung-bewerten"
+#: templates/emails/plain/customer-review-request.php:36
+msgid "Leave a review:"
+msgstr "Schreibe eine Rezension:"
 
-#: src/Internal/OrderReviews/Endpoint.php:182
-msgctxt "Page title"
-msgid "Review your order"
-msgstr "Bewerte deine Bestellung"
+#: templates/order/customer-review-order-empty.php:33
+msgid "Nothing to review here"
+msgstr "Hier gibt es nichts zu rezensieren"
+
+#: templates/emails/block/customer-review-request.php:36
+#: templates/emails/customer-review-request.php:49
+#: templates/emails/plain/customer-review-request.php:33
+msgid "We’d love to know what you thought of the products you ordered. Your review helps other shoppers make better decisions and helps us improve."
+msgstr "Wir würden uns sehr freuen, zu erfahren, wie dir die bestellten Produkte gefallen haben. Deine Rezension hilft anderen Käufern, eine bessere Kaufentscheidung zu treffen, und hilft uns, uns zu verbessern."
+
+#: templates/order/customer-review-order-empty.php:31
+#: templates/order/customer-review-order.php:180
+msgid "Thank you for your reviews"
+msgstr "Vielen Dank für deine Rezensionen"
 
 #: src/Internal/Features/FeaturesController.php:580
 msgid "Dual Code & GraphQL API"
@@ -115,42 +99,58 @@ msgstr "Experimentelle Code-First-API für WooCommerce mit automatischer GraphQL
 msgid "The related product ID is invalid or the product is not visible."
 msgstr "Die zugehörige Produkt-ID ist ungültig oder das Produkt ist nicht sichtbar."
 
-#: src/Internal/Features/FeaturesController.php:443
-msgid "Customer review request (beta)"
-msgstr "Kundenbewertungsanfrage (Beta)"
-
-#: src/Internal/Features/FeaturesController.php:444
-msgid "Send customers a transactional email after order completion inviting them to review the products they bought, and host the per-order Review Order landing page."
-msgstr "Sende Kunden nach Abschluss der Bestellung eine Transaktions-E-Mail, in der sie aufgefordert werden, die gekauften Produkte zu bewerten, und hoste eine Seite zur Bestellungsüberprüfung."
-
-#: src/Internal/OrderReviews/Endpoint.php:227
-msgid "Review Order Page"
-msgstr "Seite zur Bestellungsüberprüfung"
-
-#. translators: 1: order ID, 2: error message
-#: src/Internal/OrderReviews/Endpoint.php:611
-msgid "Could not stamp Review Order completion meta on order %1$d: %2$s."
-msgstr "Kein Metadaten-Zeitstempel zum Abschluss der Bestellungsüberprüfung für Bestellung %1$d möglich: %2$s."
-
-#: src/Internal/OrderReviews/Endpoint.php:752
-msgid "Thanks, your review is live."
-msgstr "Danke, deine Bewertung ist jetzt online."
-
-#: src/Internal/OrderReviews/Endpoint.php:753
-msgid "Thanks, your review is pending approval."
-msgstr "Danke, deine Bewertung muss noch genehmigt werden."
-
-#: src/Internal/OrderReviews/Endpoint.php:754
-msgid "Something went wrong, please try again."
-msgstr "Etwas ist schiefgelaufen. Bitte versuche es später erneut."
-
 #: src/Internal/OrderReviews/Endpoint.php:755
 msgid "Please rate this product before submitting your review."
 msgstr "Bitte bewerte dieses Produkt, bevor du deine Rezension einreichst."
 
+#: src/Internal/OrderReviews/Endpoint.php:752
+msgid "Thanks, your review is live."
+msgstr "Danke, deine Rezension ist jetzt online."
+
 #: src/Internal/OrderReviews/SubmissionHandler.php:69
 msgid "Security check failed."
-msgstr "Sicherheits-Überprüfung fehlgeschlagen."
+msgstr "Die Sicherheitsüberprüfung ist fehlgeschlagen."
+
+#: src/Internal/OrderReviews/Endpoint.php:754
+msgid "Something went wrong, please try again."
+msgstr "Es ist ein Fehler aufgetreten. Bitte versuche es erneut."
+
+#: src/Internal/OrderReviews/Endpoint.php:182
+msgctxt "Page title"
+msgid "Review your order"
+msgstr "Deine Bestellung rezensieren"
+
+#: src/Internal/Features/FeaturesController.php:443
+msgid "Customer review request (beta)"
+msgstr "Kunden-Rezensionsanfrage (Beta)"
+
+#: src/Internal/OrderReviews/Endpoint.php:181
+#: src/Internal/OrderReviews/Endpoint.php:198
+msgctxt "Page slug"
+msgid "review-order"
+msgstr "bestellung-rezensieren"
+
+#: src/Internal/OrderReviews/Endpoint.php:753
+msgid "Thanks, your review is pending approval."
+msgstr "Danke, deine Rezension muss noch freigegeben werden."
+
+#. translators: 1: order ID, 2: skip reason
+#: src/Internal/OrderReviews/Scheduler.php:215
+msgid "Skipped scheduling review-request email for order %1$d: %2$s."
+msgstr "Planung der Rezensionsanfrage-E-Mail für Bestellung %1$d übersprungen: %2$s."
+
+#: src/Internal/OrderReviews/Endpoint.php:227
+msgid "Review Order Page"
+msgstr "Seite „Bestellung rezensieren“"
+
+#. translators: 1: order ID, 2: error message
+#: src/Internal/OrderReviews/Endpoint.php:611
+msgid "Could not stamp Review Order completion meta on order %1$d: %2$s."
+msgstr "Metadaten zum Abschluss von „Bestellung rezensieren“ für Bestellung %1$d konnten nicht gesetzt werden: %2$s."
+
+#: src/Internal/Features/FeaturesController.php:444
+msgid "Send customers a transactional email after order completion inviting them to review the products they bought, and host the per-order Review Order landing page."
+msgstr "Sende Kunden nach Abschluss der Bestellung eine Transaktions-E-Mail, in der sie aufgefordert werden, die gekauften Produkte zu rezensieren, und stelle die auftragsbezogene Landingpage „Bestellung rezensieren“ bereit."
 
 #: src/Internal/Api/Settings.php:62
 msgid "Allow GraphQL queries over GET in addition to POST"
@@ -163,10 +163,6 @@ msgstr "Der kanonische Blockinhalt, der in den Beitrag geschrieben wurde."
 #: src/Internal/EmailEditor/EmailApiController.php:382
 msgid "The core block template @version stamped on the post, or null when the email is not sync-enabled."
 msgstr "Das Core-Block-Template @version, das auf den Beitrag gestempelt wurde, oder null, wenn die E-Mail nicht synchronisiert werden kann."
-
-#: src/Internal/EmailEditor/EmailApiController.php:392
-msgid "UTC timestamp when the post was stamped (Y-m-d H:i:s), or null when the email is not sync-enabled."
-msgstr "UTC-Zeitstempel, wenn der Beitrag gestempelt wurde (J-m-t H:i:s), oder null, wenn die E-Mail nicht synchronisiert werden kann."
 
 #: src/Internal/EmailEditor/EmailApiController.php:397
 msgid "The post-reset sync status (in_sync on success for sync-enabled emails, null otherwise)."
@@ -181,10 +177,6 @@ msgstr "E-Mail-Inhalt konnte nicht zurückgesetzt werden: %s"
 msgid "Deferred emails"
 msgstr "Verzögerte E-Mails"
 
-#: src/Internal/Features/FeaturesController.php:434
-msgid "Send transactional emails asynchronously via Action Scheduler instead of during the current request."
-msgstr "Sende Transaktions-E-Mails asynchron über den Aktionsplaner anstatt während der aktuellen Anfrage."
-
 #: src/Internal/EmailEditor/EmailApiController.php:387
 msgid "sha1 of the canonical block content stamped on the post, or null when the email is not sync-enabled."
 msgstr "SHA1 des im Beitrag hinterlegten kanonischen Block-Inhalts, oder null, wenn für die E-Mail keine Synchronisierung aktiviert ist."
@@ -197,33 +189,9 @@ msgstr "Die ID des Bildanhangs."
 msgid "The image URL."
 msgstr "Die Bild-URL."
 
-#: src/Internal/Api/Autogenerated/GraphQLTypes/Output/ProductImage.php:31
-msgid "The image alt text."
-msgstr "Der Alt-Text für das Bild."
-
 #: src/Internal/Api/Autogenerated/GraphQLTypes/Output/ProductImage.php:35
 msgid "The image display position."
 msgstr "Die Position der Bildanzeige."
-
-#: src/Internal/Api/Autogenerated/GraphQLTypes/Output/ProductReview.php:20
-msgid "Represents a customer review for a product."
-msgstr "Stellt eine Kundenbewertung für ein Produkt dar."
-
-#: src/Internal/Api/Autogenerated/GraphQLTypes/Output/ProductReview.php:24
-msgid "The review ID."
-msgstr "Die Bewertungs-ID."
-
-#: src/Internal/Api/Autogenerated/GraphQLTypes/Output/ProductReview.php:28
-msgid "The product ID this review belongs to."
-msgstr "Die Produkt-ID, zu der diese Bewertung gehört."
-
-#: src/Internal/Api/Autogenerated/GraphQLTypes/Output/ProductReview.php:32
-msgid "The reviewer name."
-msgstr "Der Name des Bewerters."
-
-#: src/Internal/Api/Autogenerated/GraphQLTypes/Output/ProductReview.php:36
-msgid "The review content."
-msgstr "Der Bewertungsinhalt."
 
 #: src/Internal/Api/Autogenerated/GraphQLTypes/Output/ProductReview.php:40
 msgid "The review rating (1-5)."
@@ -257,14 +225,6 @@ msgstr "Ein einfaches WooCommerce-Produkt."
 msgid "The product variations."
 msgstr "Die Produktvarianten."
 
-#: src/Internal/Api/Autogenerated/GraphQLTypes/Pagination/CouponConnection.php:21
-msgid "A connection to a list of Coupon items."
-msgstr "Eine Verbindung zu einer Liste von Gutscheinelementen."
-
-#: src/Internal/Api/Autogenerated/GraphQLTypes/Pagination/ProductConnection.php:21
-msgid "A connection to a list of Product items."
-msgstr "Eine Verbindung zu einer Liste von Produktelementen."
-
 #: src/Internal/Api/Autogenerated/GraphQLTypes/Pagination/ProductReviewConnection.php:21
 msgid "A connection to a list of ProductReview items."
 msgstr "Eine Verbindung zu einer Liste von ProductReview-Elementen."
@@ -277,10 +237,6 @@ msgstr "Eine Verbindung zu einer Liste von ProductVariation-Elementen."
 msgid "An ISO 8601 encoded date and time string."
 msgstr "Eine nach ISO 8601 kodierte Datums- und Uhrzeitzeichenfolge."
 
-#: src/Internal/Api/Settings.php:56
-msgid "Configure the WooCommerce GraphQL API."
-msgstr "Konfiguriere die WooCommerce GraphQL-API."
-
 #: src/Internal/Api/Settings.php:61
 msgid "Enable GET endpoint"
 msgstr "GET-Endpunkt aktivieren"
@@ -292,6 +248,50 @@ msgstr "GraphQL"
 #: src/Internal/Api/Autogenerated/GraphQLTypes/Output/ProductReview.php:44
 msgid "The date the review was created."
 msgstr "Das Datum, an dem die Rezension erstellt wurde."
+
+#: src/Internal/Api/Autogenerated/GraphQLTypes/Output/ProductReview.php:24
+msgid "The review ID."
+msgstr "Die Rezensions-ID."
+
+#: src/Internal/Api/Autogenerated/GraphQLTypes/Output/ProductReview.php:28
+msgid "The product ID this review belongs to."
+msgstr "Die Produkt-ID, zu der diese Rezension gehört."
+
+#: src/Internal/Api/Autogenerated/GraphQLTypes/Output/ProductImage.php:31
+msgid "The image alt text."
+msgstr "Der Alternativtext des Bildes."
+
+#: src/Internal/Api/Autogenerated/GraphQLTypes/Output/ProductReview.php:36
+msgid "The review content."
+msgstr "Der Rezensionsinhalt."
+
+#: src/Internal/Api/Settings.php:56
+msgid "Configure the WooCommerce GraphQL API."
+msgstr "Die WooCommerce-GraphQL-API konfigurieren."
+
+#: src/Internal/Api/Autogenerated/GraphQLTypes/Output/ProductReview.php:32
+msgid "The reviewer name."
+msgstr "Der Name des Rezensenten."
+
+#: src/Internal/Api/Autogenerated/GraphQLTypes/Output/ProductReview.php:20
+msgid "Represents a customer review for a product."
+msgstr "Stellt eine Kundenrezension für ein Produkt dar."
+
+#: src/Internal/EmailEditor/EmailApiController.php:392
+msgid "UTC timestamp when the post was stamped (Y-m-d H:i:s), or null when the email is not sync-enabled."
+msgstr "UTC-Zeitstempel, wenn der Beitrag gestempelt wurde (Y-m-d H:i:s), oder null, wenn die E-Mail nicht synchronisiert werden kann."
+
+#: src/Internal/Api/Autogenerated/GraphQLTypes/Pagination/ProductConnection.php:21
+msgid "A connection to a list of Product items."
+msgstr "Eine Verbindung zu einer Liste von Product-Elementen."
+
+#: src/Internal/Api/Autogenerated/GraphQLTypes/Pagination/CouponConnection.php:21
+msgid "A connection to a list of Coupon items."
+msgstr "Eine Verbindung zu einer Liste von Coupon-Elementen."
+
+#: src/Internal/Features/FeaturesController.php:434
+msgid "Send transactional emails asynchronously via Action Scheduler instead of during the current request."
+msgstr "Sende Transaktions-E-Mails asynchron über den Action Scheduler anstatt während der aktuellen Anfrage."
 
 #: src/Internal/Api/Autogenerated/GraphQLTypes/Output/Coupon.php:58
 msgid "The date the coupon was created."
@@ -328,10 +328,6 @@ msgstr "Die URL des externen Produkts."
 #: src/Internal/Api/Autogenerated/GraphQLTypes/Output/ExternalProduct.php:39
 msgid "The text for the external product button."
 msgstr "Der Text für den externen Produkt-Button."
-
-#: src/Internal/Api/Autogenerated/GraphQLTypes/Output/ProductAttribute.php:19
-msgid "A product attribute."
-msgstr "Eine Produkteigenschaft."
 
 #: src/Internal/Api/Autogenerated/GraphQLTypes/Output/ProductAttribute.php:23
 msgid "The attribute display name."
@@ -401,14 +397,6 @@ msgstr "Ob die Währungsformatierung angewendet werden soll."
 msgid "The sale price of the product."
 msgstr "Der Verkaufspreis für dieses Produkt."
 
-#: src/Internal/Api/Autogenerated/GraphQLTypes/Interfaces/Product.php:88
-#: src/Internal/Api/Autogenerated/GraphQLTypes/Output/ExternalProduct.php:96
-#: src/Internal/Api/Autogenerated/GraphQLTypes/Output/ProductVariation.php:97
-#: src/Internal/Api/Autogenerated/GraphQLTypes/Output/SimpleProduct.php:88
-#: src/Internal/Api/Autogenerated/GraphQLTypes/Output/VariableProduct.php:119
-msgid "When true, returns price with currency symbol."
-msgstr "Wenn wahr, wird der Preis mit Währungssymbol zurückgegeben."
-
 #: src/Internal/Api/Autogenerated/GraphQLTypes/Interfaces/Product.php:94
 #: src/Internal/Api/Autogenerated/GraphQLTypes/Output/ExternalProduct.php:102
 #: src/Internal/Api/Autogenerated/GraphQLTypes/Output/ProductVariation.php:103
@@ -441,14 +429,6 @@ msgstr "Die Produktbilder."
 msgid "The product attributes."
 msgstr "Die Produktattribute."
 
-#: src/Internal/Api/Autogenerated/GraphQLTypes/Interfaces/Product.php:118
-#: src/Internal/Api/Autogenerated/GraphQLTypes/Output/ExternalProduct.php:126
-#: src/Internal/Api/Autogenerated/GraphQLTypes/Output/ProductVariation.php:127
-#: src/Internal/Api/Autogenerated/GraphQLTypes/Output/SimpleProduct.php:118
-#: src/Internal/Api/Autogenerated/GraphQLTypes/Output/VariableProduct.php:149
-msgid "Customer reviews for this product."
-msgstr "Kundenbewertungen für dieses Produkt."
-
 #: src/Internal/Api/Autogenerated/GraphQLTypes/Interfaces/Product.php:122
 #: src/Internal/Api/Autogenerated/GraphQLTypes/Output/ExternalProduct.php:130
 #: src/Internal/Api/Autogenerated/GraphQLTypes/Output/ProductVariation.php:131
@@ -477,6 +457,26 @@ msgstr "Der Roh-Rabatttyp, wie er in WooCommerce gespeichert ist. Nützlich, wen
 msgid "The date the coupon was last modified."
 msgstr "Das Datum, an dem der Gutschein zuletzt geändert wurde."
 
+#: src/Internal/Api/Autogenerated/GraphQLTypes/Interfaces/Product.php:118
+#: src/Internal/Api/Autogenerated/GraphQLTypes/Output/ExternalProduct.php:126
+#: src/Internal/Api/Autogenerated/GraphQLTypes/Output/ProductVariation.php:127
+#: src/Internal/Api/Autogenerated/GraphQLTypes/Output/SimpleProduct.php:118
+#: src/Internal/Api/Autogenerated/GraphQLTypes/Output/VariableProduct.php:149
+msgid "Customer reviews for this product."
+msgstr "Kundenrezensionen für dieses Produkt."
+
+#: src/Internal/Api/Autogenerated/GraphQLTypes/Interfaces/Product.php:88
+#: src/Internal/Api/Autogenerated/GraphQLTypes/Output/ExternalProduct.php:96
+#: src/Internal/Api/Autogenerated/GraphQLTypes/Output/ProductVariation.php:97
+#: src/Internal/Api/Autogenerated/GraphQLTypes/Output/SimpleProduct.php:88
+#: src/Internal/Api/Autogenerated/GraphQLTypes/Output/VariableProduct.php:119
+msgid "When true, returns price with currency symbol."
+msgstr "Wenn „true“, wird der Preis mit Währungssymbol zurückgegeben."
+
+#: src/Internal/Api/Autogenerated/GraphQLTypes/Output/ProductAttribute.php:19
+msgid "A product attribute."
+msgstr "Ein Produktattribut."
+
 #: src/Internal/Api/Autogenerated/GraphQLTypes/Interfaces/ObjectWithId.php:24
 #: src/Internal/Api/Autogenerated/GraphQLTypes/Interfaces/Product.php:130
 #: src/Internal/Api/Autogenerated/GraphQLTypes/Output/Coupon.php:130
@@ -486,15 +486,6 @@ msgstr "Das Datum, an dem der Gutschein zuletzt geändert wurde."
 #: src/Internal/Api/Autogenerated/GraphQLTypes/Output/VariableProduct.php:161
 msgid "The unique numeric identifier."
 msgstr "Die eindeutige numerische Kennung."
-
-#: src/Internal/Api/Autogenerated/GraphQLTypes/Interfaces/Product.php:60
-#: src/Internal/Api/Autogenerated/GraphQLTypes/Output/Coupon.php:54
-#: src/Internal/Api/Autogenerated/GraphQLTypes/Output/ExternalProduct.php:68
-#: src/Internal/Api/Autogenerated/GraphQLTypes/Output/ProductVariation.php:69
-#: src/Internal/Api/Autogenerated/GraphQLTypes/Output/SimpleProduct.php:60
-#: src/Internal/Api/Autogenerated/GraphQLTypes/Output/VariableProduct.php:91
-msgid "The raw status as stored in WordPress. Useful when status is OTHER (e.g. plugin-added post statuses)."
-msgstr "Der Roh-Status wie er in WordPress gespeichert ist. Nützlich, wenn der Status OTHER lautet (z. B. durch ein Plugin hinzugefügte Beitragsstatus)."
 
 #: src/Internal/Api/Autogenerated/GraphQLTypes/Input/CreateCoupon.php:37
 #: src/Internal/Api/Autogenerated/GraphQLTypes/Input/UpdateCoupon.php:41
@@ -748,9 +739,14 @@ msgstr "Die ID des zu aktualisierenden Produkts."
 msgid "An object with a numeric ID."
 msgstr "Ein Objekt mit einer numerischen ID."
 
-#: src/Internal/Api/Autogenerated/GraphQLTypes/Enums/StockStatus.php:35
-msgid "The stock status is not one of the standard WooCommerce values (e.g. added by a plugin). Inspect raw_stock_status for the underlying value."
-msgstr "Der Lagerbestand ist nicht einer der standardmäßigen WooCommerce-Werte (z. B. durch ein Plugin hinzugefügt). Untersuche raw_stock_status für den zugrunde liegenden Wert."
+#: src/Internal/Api/Autogenerated/GraphQLTypes/Interfaces/Product.php:60
+#: src/Internal/Api/Autogenerated/GraphQLTypes/Output/Coupon.php:54
+#: src/Internal/Api/Autogenerated/GraphQLTypes/Output/ExternalProduct.php:68
+#: src/Internal/Api/Autogenerated/GraphQLTypes/Output/ProductVariation.php:69
+#: src/Internal/Api/Autogenerated/GraphQLTypes/Output/SimpleProduct.php:60
+#: src/Internal/Api/Autogenerated/GraphQLTypes/Output/VariableProduct.php:91
+msgid "The raw status as stored in WordPress. Useful when status is OTHER (e.g. plugin-added post statuses)."
+msgstr "Der Roh-Status, wie er in WordPress gespeichert ist. Nützlich, wenn der Status OTHER lautet (z. B. durch ein Plugin hinzugefügte Beitragsstatus)."
 
 #: src/Internal/Api/Autogenerated/GraphQLTypes/Input/CreateCoupon.php:21
 msgid "Data required to create a new coupon."
@@ -853,9 +849,13 @@ msgstr "Das Produkt ist vorrätig."
 msgid "The product is out of stock."
 msgstr "Das Produkt ist ausverkauft."
 
+#: src/Internal/Api/Autogenerated/GraphQLTypes/Enums/StockStatus.php:35
+msgid "The stock status is not one of the standard WooCommerce values (e.g. added by a plugin). Inspect raw_stock_status for the underlying value."
+msgstr "Der Lagerstatus gehört nicht zu den standardmäßigen WooCommerce-Werten (z. B. durch ein Plugin hinzugefügt). Untersuche raw_stock_status für den zugrundeliegenden Wert."
+
 #: src/Internal/Api/Autogenerated/GraphQLTypes/Enums/StockStatus.php:31
 msgid "The product is on backorder."
-msgstr "Das Produkt wurde nachbestellt."
+msgstr "Das Produkt ist im Lieferrückstand."
 
 #: src/Internal/Api/Autogenerated/GraphQLTypes/Enums/CouponStatus.php:47
 msgid "The coupon status is not one of the standard WordPress values (e.g. added by a plugin). Inspect raw_status for the underlying value."
@@ -934,10 +934,6 @@ msgstr "Die zu aktualisierenden Felder."
 msgid "Update an existing product."
 msgstr "Aktualisiere ein bestehendes Produkt."
 
-#: src/Internal/Api/Autogenerated/GraphQLQueries/GetCoupon.php:19
-msgid "Retrieve a single coupon by ID or code. Exactly one of the two arguments must be provided."
-msgstr "Rufe einen einzelnen Gutschein nach ID oder Code ab. Es muss genau eines der beiden Argumente angegeben werden."
-
 #: src/Internal/Api/Autogenerated/GraphQLQueries/GetCoupon.php:23
 msgid "The ID of the coupon to retrieve."
 msgstr "Die ID des abzurufenden Gutscheins."
@@ -954,41 +950,9 @@ msgstr "Ein einzelnes Produkt nach ID abrufen."
 msgid "The ID of the product to retrieve."
 msgstr "Die ID des abzurufenden Produkts."
 
-#: src/Internal/Api/Autogenerated/GraphQLQueries/ListCoupons.php:20
-msgid "List coupons with cursor-based pagination."
-msgstr "Liste Gutscheine mit cursorbasierter Seitennummerierung auf."
-
-#: src/Internal/Api/Autogenerated/GraphQLQueries/ListCoupons.php:24
-#: src/Internal/Api/Autogenerated/GraphQLQueries/ListProducts.php:26
-#: src/Internal/Api/Autogenerated/GraphQLTypes/Output/VariableProduct.php:43
-msgid "Return the first N results. Must be between 0 and 100."
-msgstr "Gib die ersten N Ergebnisse zurück. Muss zwischen 0 und 100 liegen."
-
-#: src/Internal/Api/Autogenerated/GraphQLQueries/ListCoupons.php:29
-#: src/Internal/Api/Autogenerated/GraphQLQueries/ListProducts.php:31
-#: src/Internal/Api/Autogenerated/GraphQLTypes/Output/VariableProduct.php:48
-msgid "Return the last N results. Must be between 0 and 100."
-msgstr "Gib die letzten N Ergebnisse zurück. Muss zwischen 0 und 100 liegen."
-
-#: src/Internal/Api/Autogenerated/GraphQLQueries/ListCoupons.php:34
-#: src/Internal/Api/Autogenerated/GraphQLQueries/ListProducts.php:36
-#: src/Internal/Api/Autogenerated/GraphQLTypes/Output/VariableProduct.php:53
-msgid "Return results after this cursor."
-msgstr "Gib Ergebnisse nach diesem Cursor zurück."
-
-#: src/Internal/Api/Autogenerated/GraphQLQueries/ListCoupons.php:39
-#: src/Internal/Api/Autogenerated/GraphQLQueries/ListProducts.php:41
-#: src/Internal/Api/Autogenerated/GraphQLTypes/Output/VariableProduct.php:58
-msgid "Return results before this cursor."
-msgstr "Gib Ergebnisse vor diesem Cursor zurück."
-
 #: src/Internal/Api/Autogenerated/GraphQLQueries/ListCoupons.php:44
 msgid "Filter by coupon status."
 msgstr "Nach Gutscheinstatus filtern."
-
-#: src/Internal/Api/Autogenerated/GraphQLQueries/ListProducts.php:22
-msgid "List products with cursor-based pagination and optional filtering."
-msgstr "Liste Produkte mit cursorbasierter Seitennummerierung und optionaler Filterung auf."
 
 #: src/Internal/Api/Autogenerated/GraphQLQueries/ListProducts.php:46
 #: src/Internal/Api/Autogenerated/GraphQLTypes/Input/ProductFilter.php:25
@@ -1032,6 +996,42 @@ msgstr "Die Veröffentlichung des Gutscheins ist für die Zukunft geplant."
 msgid "The coupon is in the trash."
 msgstr "Der Gutschein ist im Papierkorb."
 
+#: src/Internal/Api/Autogenerated/GraphQLQueries/ListCoupons.php:39
+#: src/Internal/Api/Autogenerated/GraphQLQueries/ListProducts.php:41
+#: src/Internal/Api/Autogenerated/GraphQLTypes/Output/VariableProduct.php:58
+msgid "Return results before this cursor."
+msgstr "Ergebnisse vor diesem Cursor zurückgeben."
+
+#: src/Internal/Api/Autogenerated/GraphQLQueries/ListCoupons.php:34
+#: src/Internal/Api/Autogenerated/GraphQLQueries/ListProducts.php:36
+#: src/Internal/Api/Autogenerated/GraphQLTypes/Output/VariableProduct.php:53
+msgid "Return results after this cursor."
+msgstr "Ergebnisse nach diesem Cursor zurückgeben."
+
+#: src/Internal/Api/Autogenerated/GraphQLQueries/ListCoupons.php:29
+#: src/Internal/Api/Autogenerated/GraphQLQueries/ListProducts.php:31
+#: src/Internal/Api/Autogenerated/GraphQLTypes/Output/VariableProduct.php:48
+msgid "Return the last N results. Must be between 0 and 100."
+msgstr "Die letzten N Ergebnisse zurückgeben. Der Wert muss zwischen 0 und 100 liegen."
+
+#: src/Internal/Api/Autogenerated/GraphQLQueries/ListCoupons.php:24
+#: src/Internal/Api/Autogenerated/GraphQLQueries/ListProducts.php:26
+#: src/Internal/Api/Autogenerated/GraphQLTypes/Output/VariableProduct.php:43
+msgid "Return the first N results. Must be between 0 and 100."
+msgstr "Die ersten N Ergebnisse zurückgeben. Der Wert muss zwischen 0 und 100 liegen."
+
+#: src/Internal/Api/Autogenerated/GraphQLQueries/ListProducts.php:22
+msgid "List products with cursor-based pagination and optional filtering."
+msgstr "Produkte mit cursorbasierter Seitennummerierung und optionaler Filterfunktion anzeigen."
+
+#: src/Internal/Api/Autogenerated/GraphQLQueries/ListCoupons.php:20
+msgid "List coupons with cursor-based pagination."
+msgstr "Gutscheine mit cursorbasierter Seitennummerierung auflisten."
+
+#: src/Internal/Api/Autogenerated/GraphQLQueries/GetCoupon.php:19
+msgid "Retrieve a single coupon by ID or code. Exactly one of the two arguments must be provided."
+msgstr "Einen einzelnen Gutschein anhand der ID oder des Codes abrufen. Es muss genau eines der beiden Argumente angegeben werden."
+
 #: src/Admin/Features/ShippingPartnerSuggestions/DefaultShippingPartners.php:249
 msgid "Save time and money by managing shipping right from your WooCommerce dashboard."
 msgstr "Spare Zeit und Geld, indem du den Versand direkt über dein WooCommerce-Dashboard verwaltest."
@@ -1043,10 +1043,6 @@ msgstr "Spare sofort bei USPS-, UPS-, FedEx- und DHL Express-Etiketten."
 #: src/Admin/Features/ShippingPartnerSuggestions/DefaultShippingPartners.php:257
 msgid "Access live rates across carriers to get the best prices for you and your customers."
 msgstr "Greife auf Live-Tarife aller Versanddienstleister zu, um die besten Preise für dich und deine Kunden zu erhalten."
-
-#: src/Admin/Features/ShippingPartnerSuggestions/DefaultShippingPartners.php:261
-msgid "Keep customers happy and informed every step of the way."
-msgstr "Sorge dafür, dass deine Kunden bei jedem Schritt zufrieden sind und auf dem Laufenden sind."
 
 #: src/Admin/Features/ShippingPartnerSuggestions/DefaultShippingPartners.php:265
 msgid "Free to install, with no markup or monthly fees."
@@ -1077,15 +1073,11 @@ msgstr "%1$sAnmelden%2$s"
 
 #: src/Blocks/BlockTypes/Reviews/ProductReviewForm.php:57
 msgid "Only customers who have purchased this product may leave a review."
-msgstr "Nur Kunden, die dieses Produkt gekauft haben, dürfen eine Bewertung abgeben."
+msgstr "Nur Kunden, die dieses Produkt gekauft haben, dürfen eine Rezension hinterlassen."
 
-#: includes/emails/class-wc-email-customer-review-request.php:67
-msgid "Review request emails are sent to customers a few days after their order is complete, inviting them to leave reviews for the products they purchased."
-msgstr "Bewertungs-Anfrage-E-Mails werden ein paar Tage nach Abschluss der Bestellung an Kunden gesendet und laden sie ein, Bewertungen für die von ihnen gekauften Produkte zu hinterlassen."
-
-#: includes/emails/class-wc-email-customer-review-request.php:70
-msgid "Invites customers to review the products from their completed order."
-msgstr "Lädt Kunden ein, die Produkte aus ihrer abgeschlossenen Bestellung zu bewerten."
+#: src/Admin/Features/ShippingPartnerSuggestions/DefaultShippingPartners.php:261
+msgid "Keep customers happy and informed every step of the way."
+msgstr "Sorge dafür, dass deine Kunden bei jedem Schritt zufrieden und auf dem Laufenden sind."
 
 #: includes/emails/class-wc-email-customer-review-request.php:154
 msgid "How was your order from {site_title}?"
@@ -1096,25 +1088,13 @@ msgstr "Wie war deine Bestellung bei {site_title}?"
 msgid "Rate your recent purchases"
 msgstr "Bewerte deine letzten Käufe"
 
-#: includes/emails/class-wc-email-customer-review-request.php:174
-msgid "Thanks again for shopping with us. If you have any questions, reply to this email and we'll help out."
-msgstr "Danke, dass du bei uns eingekauft hast. Falls du Fragen hast, kannst du auf diese E-Mail antworten. Wir helfen dir gern weiter."
-
 #: includes/emails/class-wc-email-customer-review-request.php:274
 msgid "Delay (days)"
 msgstr "Verzögerung (Tage)"
 
-#: includes/emails/class-wc-email-customer-review-request.php:51
-msgid "Review request"
-msgstr "Anfrage zur Bewertung"
-
 #: includes/rest-api/Controllers/Version2/class-wc-rest-orders-v2-controller.php:1856
 msgid "Fee total, excluding tax."
 msgstr "Gebühr insgesamt, ohne Steuern."
-
-#: includes/rest-api/Controllers/Version2/class-wc-rest-orders-v2-controller.php:1861
-msgid "Fee total tax."
-msgstr "Steuern insgesamt."
 
 #: includes/rest-api/Controllers/Version2/class-wc-rest-orders-v2-controller.php:2021
 msgid "Refund total, including tax."
@@ -1136,25 +1116,45 @@ msgstr "Gesamtsumme, inklusive Steuern."
 msgid "Whether prices included tax during checkout."
 msgstr "Ob die Preise beim Bezahlen Steuern enthielten."
 
-#: includes/rest-api/Controllers/Version2/class-wc-rest-orders-v2-controller.php:1533
-msgid "Line subtotal, excluding tax (before discounts)."
-msgstr "Zwischensumme, ohne Steuern (vor Rabatten)."
-
-#: includes/rest-api/Controllers/Version2/class-wc-rest-orders-v2-controller.php:1544
-msgid "Line total, excluding tax (after discounts)."
-msgstr "Gesamtsumme, ohne Steuern (nach Rabatten)."
-
-#: includes/rest-api/Controllers/Version2/class-wc-rest-orders-v2-controller.php:1764
-msgid "Shipping total, excluding tax."
-msgstr "Versandsumme, ohne Steuern."
-
 #: includes/rest-api/Controllers/Version2/class-wc-rest-orders-v2-controller.php:1769
 msgid "Shipping total tax."
 msgstr "Steuern für Versand gesamt"
 
+#: includes/rest-api/Controllers/Version2/class-wc-rest-orders-v2-controller.php:1764
+msgid "Shipping total, excluding tax."
+msgstr "Die Versandsumme, ohne Steuern."
+
+#: includes/emails/class-wc-email-customer-review-request.php:51
+msgid "Review request"
+msgstr "Rezensionsanfrage"
+
+#: includes/emails/class-wc-email-customer-review-request.php:70
+msgid "Invites customers to review the products from their completed order."
+msgstr "Lädt Kunden ein, die Produkte aus ihrer abgeschlossenen Bestellung zu rezensieren."
+
+#: includes/emails/class-wc-email-customer-review-request.php:67
+msgid "Review request emails are sent to customers a few days after their order is complete, inviting them to leave reviews for the products they purchased."
+msgstr "Rezensionsanfrage-E-Mails werden ein paar Tage nach Abschluss der Bestellung an Kunden gesendet und laden sie ein, Rezensionen für die von ihnen gekauften Produkte zu hinterlassen."
+
 #: includes/emails/class-wc-email-customer-review-request.php:276
 msgid "How many days after the order is marked complete before the review request email is sent."
-msgstr "Die Anzahl der Tage, die nach der Markierung der Bestellung als abgeschlossen vergehen, bevor die E-Mail mit der Aufforderung zur Bewertung versendet wird."
+msgstr "Die Anzahl der Tage, die nach der Markierung der Bestellung als abgeschlossen vergehen, bevor die E-Mail mit der Aufforderung für eine Rezension versendet wird."
+
+#: includes/emails/class-wc-email-customer-review-request.php:174
+msgid "Thanks again for shopping with us. If you have any questions, reply to this email and we'll help out."
+msgstr "Nochmals vielen Dank für deinen Einkauf bei uns. Solltest du Fragen haben, antworte einfach auf diese E-Mail. Wir helfen dir gerne weiter."
+
+#: includes/rest-api/Controllers/Version2/class-wc-rest-orders-v2-controller.php:1861
+msgid "Fee total tax."
+msgstr "Steuern auf Gebühren insgesamt."
+
+#: includes/rest-api/Controllers/Version2/class-wc-rest-orders-v2-controller.php:1544
+msgid "Line total, excluding tax (after discounts)."
+msgstr "Postensumme, ohne Steuern (nach Rabatten)."
+
+#: includes/rest-api/Controllers/Version2/class-wc-rest-orders-v2-controller.php:1533
+msgid "Line subtotal, excluding tax (before discounts)."
+msgstr "Posten-Zwischensumme, ohne Steuern (vor Rabatten)."
 
 #: includes/admin/class-wc-admin-assets.php:88
 msgid "Connection lost."
@@ -1492,11 +1492,6 @@ msgstr "Anbieter: %s"
 msgid "URL: %s"
 msgstr "URL: %s"
 
-#. translators: 1: fulfillment ID, 2: old status label, 3: new status label
-#: src/Admin/Features/Fulfillments/FulfillmentOrderNotes.php:250
-msgid "Fulfillment #%1$d status changed from %2$s to %3$s."
-msgstr "Status der Abwicklung Nr. %1$d von %2$s in %3$s geändert."
-
 #. translators: 1: old fulfillment status label, 2: new fulfillment status
 #. label
 #: src/Admin/Features/Fulfillments/FulfillmentOrderNotes.php:209
@@ -1549,6 +1544,11 @@ msgstr "Eines deiner Abonnements für <strong>%1$s</strong> ist abgelaufen. Dies
 msgid "Limit result to exclude items with specified customer ids."
 msgstr "Schließt Artikel mit bestimmten Kunden-IDs aus."
 
+#. translators: 1: fulfillment ID, 2: old status label, 3: new status label
+#: src/Admin/Features/Fulfillments/FulfillmentOrderNotes.php:250
+msgid "Fulfillment #%1$d status changed from %2$s to %3$s."
+msgstr "Status der Abwicklung Nr. %1$d von %2$s auf %3$s geändert."
+
 #: includes/emails/class-wc-email-customer-on-hold-order.php:56
 msgid "Notifies customers when their order is pending payment confirmation."
 msgstr "Benachrichtigt Kunden, wenn die Zahlungsbestätigung für ihre Bestellung aussteht."
@@ -1592,14 +1592,14 @@ msgstr "Das URL-Template für die Sendungsverfolgung muss eine gültige HTTP- od
 msgid "Could not create provider \"%s\" because its auto-generated slug conflicts with a built-in shipping provider. Please specify a different slug."
 msgstr "Der Anbieter „%s“ konnte nicht erstellt werden, da seine automatisch generierte Titelform mit einem integrierten Versanddienstleister in Konflikt steht. Gib eine andere Titelform an."
 
-#: includes/emails/class-wc-email-customer-on-hold-order.php:68
-msgid "Your order from {site_title} is on hold"
-msgstr "Deine Bestellung bei {site_title} ist in Wartestellung"
-
 #. translators: %s: URL to blog post about this change.
 #: includes/admin/views/html-notice-sync-on-read-disabled.php:20
 msgid "Compatibility mode for HPOS no longer pulls order changes made to the posts database back into your orders automatically. If your site uses custom code or plugins that modify orders outside of WooCommerce, this may affect how order data is handled. <a href=\"%s\">Learn more about this change and what to do</a>."
 msgstr "Der Kompatibilitätsmodus für HPOS zieht Bestelländerungen, die an der Beitragsdatenbank vorgenommen wurden, nicht mehr automatisch in deine Bestellungen zurück. Wenn deine Website individuellen Code oder Plugins verwendet, die Bestellungen außerhalb von WooCommerce ändern, kann dies Auswirkungen auf die Verarbeitung von Bestelldaten haben. <a href=\"%s\">Weitere Informationen zu dieser Änderung und was du tun kannst</a>."
+
+#: includes/emails/class-wc-email-customer-on-hold-order.php:68
+msgid "Your order from {site_title} is on hold"
+msgstr "Deine Bestellung bei {site_title} ist in Wartestellung"
 
 #. translators: %s: gateway title
 #: includes/emails/class-wc-email-admin-payment-gateway-enabled.php:293
@@ -1988,14 +1988,14 @@ msgstr "Benutzer, der die Erstattung erstellt hat."
 msgid "[Performance] Speeds up your store by caching product objects during each request, preventing duplicate product loads. Can improve page load times on product-heavy pages."
 msgstr "[Performance] Beschleunigt deinen Shop, indem Produktobjekte bei jeder Anfrage zwischengespeichert werden. So wird das Laden doppelter Produkte verhindert. Kann die Seitenladezeiten auf produktlastigen Seiten verbessern."
 
-#. translators: %1$s and %2$s are opening and closing <a> tags
-#: src/Internal/Features/FeaturesController.php:607
-msgid "Enable backend caching and cache control headers for REST API responses via the <code>RestApiCache</code> trait. ⚙️ %1$sConfiguration%2$s"
-msgstr "Aktiviere Backend-Caching und Cache-Steuerungsheader für REST-API-Antworten über die <code>RestApiCache</code>-Eigenschaft. ⚙️ %1$sKonfiguration%2$s"
-
 #: src/Internal/Features/FeaturesController.php:618
 msgid "Cache Product Objects"
 msgstr "Produktobjekte zwischenspeichern"
+
+#. translators: %1$s and %2$s are opening and closing <a> tags
+#: src/Internal/Features/FeaturesController.php:607
+msgid "Enable backend caching and cache control headers for REST API responses via the <code>RestApiCache</code> trait. ⚙️ %1$sConfiguration%2$s"
+msgstr "Aktiviere Backend-Caching und Cache-Steuerungsheader für REST-API-Antworten über den Trait <code>RestApiCache</code>. ⚙️ %1$sKonfiguration%2$s"
 
 #: src/Internal/Features/FeaturesController.php:604
 msgid "REST API Caching"
@@ -2162,14 +2162,14 @@ msgstr "Aktiviert das Einschließen von ETag- und Cache-Control-Headern und das 
 msgid "Tax configuration incomplete"
 msgstr "Steuerkonfiguration unvollständig"
 
-#. translators: 1: country code, 2: opening link tag, 3: closing link tag
-#: includes/admin/settings/class-wc-settings-tax.php:440
-msgid "You have enabled \"Prices entered with tax\" but have not configured a standard tax rate for your base location (%1$s). Please %2$sconfigure standard tax rates%3$s to ensure accurate tax calculations."
-msgstr "Du hast „Preise mit Steuer eingegeben“ aktiviert, aber keinen Standardsteuersatz für deinen Basisstandort (%1$s) konfiguriert. Bitte %2$skonfiguriere Standardsteuersätze%3$s, um korrekte Steuerberechnungen zu gewährleisten."
-
 #: includes/admin/settings/class-wc-settings-advanced.php:488
 msgid "Enables responses for REST API endpoints configured as cacheable. Requires an external object cache.<br/>This setting should be enabled only if no other plugins that handle caching are active."
 msgstr "Aktiviert Antworten für REST-API-Endpunkte, die als zwischenspeicherbar konfiguriert sind. Erfordert einen externen Objekt-Cache.<br/>Diese Einstellung sollte nur aktiviert werden, wenn keine anderen Plugins aktiv sind, die das Caching durchführen."
+
+#. translators: 1: country code, 2: opening link tag, 3: closing link tag
+#: includes/admin/settings/class-wc-settings-tax.php:440
+msgid "You have enabled \"Prices entered with tax\" but have not configured a standard tax rate for your base location (%1$s). Please %2$sconfigure standard tax rates%3$s to ensure accurate tax calculations."
+msgstr "Du hast „Preise mit Steuern eingeben“ aktiviert, aber keinen Standardsteuersatz für deinen Basisstandort (%1$s) konfiguriert. Bitte %2$skonfiguriere Standardsteuersätze%3$s, um korrekte Steuerberechnungen zu gewährleisten."
 
 #: includes/admin/settings/class-wc-settings-accounts.php:135
 msgid "Generate a login for the account using first and/or last name. If neither is usable (e.g. invalid or missing) the email address will be used. If this option is unchecked, customers will need to set a username during account creation"
@@ -2270,10 +2270,6 @@ msgstr "Gesamtsumme in Cent."
 #: src/StoreApi/Schemas/V1/Agentic/CheckoutSessionSchema.php:262
 msgid "Order totals breakdown."
 msgstr "Aufschlüsselung der Bestellsumme."
-
-#: src/StoreApi/Schemas/V1/Agentic/CheckoutSessionSchema.php:269
-msgid "Total type."
-msgstr "Gesamt-Typ."
 
 #: src/StoreApi/Schemas/V1/Agentic/CheckoutSessionSchema.php:273
 msgid "Display text."
@@ -2500,6 +2496,10 @@ msgstr "Bundesland/Region."
 msgid "Fulfillment/shipping address."
 msgstr "Abwicklungs-/Lieferadresse."
 
+#: src/StoreApi/Schemas/V1/Agentic/CheckoutSessionSchema.php:269
+msgid "Total type."
+msgstr "Summentyp."
+
 #: src/Internal/RestApi/Routes/V4/Settings/Tax/Schema/TaxSettingsSchema.php:209
 msgid "Manage your store’s tax setup."
 msgstr "Verwalte die Steuereinrichtung deines Shops."
@@ -2553,10 +2553,6 @@ msgstr "Du bist leider nicht berechtigt, Produkteinstellungen zu bearbeiten."
 msgid "Invalid weight unit. Valid units are: kg, g, lbs, oz."
 msgstr "Ungültige Gewichtseinheit. Gültige Einheiten sind: kg, g, lbs, oz."
 
-#: src/Internal/RestApi/Routes/V4/Settings/Products/Controller.php:268
-msgid "Invalid dimension unit. Valid units are: m, cm, mm, in, yd."
-msgstr "Ungültige Abmessungseinheit. Gültige Einheiten sind: m, cm, mm, in, yd."
-
 #: src/Internal/RestApi/Routes/V4/Settings/Products/Schema/ProductSettingsSchema.php:211
 msgid "Manage product settings including dimensions, weight units, and display options."
 msgstr "Verwalte Produkteinstellungen wie Abmessungen, Gewichtseinheiten und Anzeigeoptionen."
@@ -2577,6 +2573,10 @@ msgstr "Ungültiger Typ der Versandart."
 #: src/Internal/RestApi/Routes/V4/ShippingZoneMethod/Controller.php:324
 msgid "Shipping method does not belong to the specified zone."
 msgstr "Die Versandart gehört nicht zur angegebenen Zone."
+
+#: src/Internal/RestApi/Routes/V4/Settings/Products/Controller.php:268
+msgid "Invalid dimension unit. Valid units are: m, cm, mm, in, yd."
+msgstr "Ungültige Maßeinheit. Gültige Einheiten sind: m, cm, mm, in, yd."
 
 #: src/Internal/RestApi/Routes/V4/Settings/Account/Schema/AccountSettingsSchema.php:204
 msgid "Set options relating to customer accounts and data privacy."
@@ -2776,10 +2776,6 @@ msgstr "Verwalte die für deinen Shop verfügbaren Offline-Zahlungsarten."
 msgid "Bank account details for direct bank transfer."
 msgstr "Bankverbindung für Vorkasse-Zahlungen."
 
-#: src/Internal/RestApi/Routes/V4/Refunds/Schema/RefundSchema.php:255
-msgid "Tax ID."
-msgstr "Steuernummer."
-
 #: src/Internal/RestApi/Routes/V4/Settings/Account/Controller.php:109
 msgid "Sorry, you are not allowed to access account settings."
 msgstr "Du bist leider nicht berechtigt, auf Kontoeinstellungen zuzugreifen."
@@ -2804,10 +2800,6 @@ msgstr "Position nicht gefunden."
 #: src/Internal/RestApi/Routes/V4/Refunds/DataUtils.php:183
 msgid "Line item quantity cannot be greater than the item quantity (%s)."
 msgstr "Die Positionsmenge darf nicht größer sein als die Artikelmenge (%s)."
-
-#: src/Internal/RestApi/Routes/V4/Refunds/DataUtils.php:207
-msgid "Tax id and refund_total are required."
-msgstr "Steuernummer und refund_total sind erforderlich."
 
 #: src/Internal/RestApi/Routes/V4/Refunds/Schema/RefundSchema.php:99
 msgid "The ID of the order that was refunded."
@@ -2882,6 +2874,14 @@ msgstr "Eindeutige Kennung für die Erstattung."
 #: src/Internal/RestApi/Routes/V4/Refunds/Controller.php:338
 msgid "Cannot create order refund."
 msgstr "Die Erstattung für die Bestellung konnte nicht erstellt werden."
+
+#: src/Internal/RestApi/Routes/V4/Refunds/Schema/RefundSchema.php:255
+msgid "Tax ID."
+msgstr "Steuer-ID."
+
+#: src/Internal/RestApi/Routes/V4/Refunds/DataUtils.php:207
+msgid "Tax id and refund_total are required."
+msgstr "Steuer-ID und refund_total sind erforderlich."
 
 #: src/Internal/RestApi/Routes/V4/Orders/ActionController.php:38
 msgid "Marks the order as paid. Updates the order status and reduces line item stock if necessary."
@@ -3128,11 +3128,6 @@ msgstr "Bezahlvorgang abschließen"
 msgid ". Authorization ID: %1$s not found. Please log into your %2$sPayPal account%3$s to capture the payment"
 msgstr ". Autorisierungs-ID: %1$s nicht gefunden. Bitte melde dich bei deinem %2$sPayPal-Konto%3$s an, um die Zahlung zu erfassen"
 
-#. translators: %s: Link to PayPal sandbox testing guide page
-#: src/Blocks/Payments/Integrations/PayPal.php:106
-msgid "<strong>Sandbox mode enabled</strong>. Only sandbox test accounts can be used. See the <a href=\"%s\">PayPal Sandbox Testing Guide</a> for more details."
-msgstr "<strong>Sandbox-Modus aktiviert</strong>. Es können nur Sandbox-Testkonten verwendet werden. Weitere Informationen findest du im <a href=\"%s\">Ratgeber zu PayPal-Sandbox-Tests</a>."
-
 #: src/Gateways/PayPal/Notices.php:184
 msgid "PayPal Account Restricted"
 msgstr "PayPal-Konto eingeschränkt"
@@ -3146,6 +3141,11 @@ msgstr "Dein PayPal-Konto wurde von PayPal eingeschränkt. Dies kann Kunden dara
 #: src/Gateways/PayPal/Notices.php:213
 msgid "PayPal Standard does not support your store currency (%s)."
 msgstr "PayPal Standard unterstützt die Währung deines Shops (%s) nicht."
+
+#. translators: %s: Link to PayPal sandbox testing guide page
+#: src/Blocks/Payments/Integrations/PayPal.php:106
+msgid "<strong>Sandbox mode enabled</strong>. Only sandbox test accounts can be used. See the <a href=\"%s\">PayPal Sandbox Testing Guide</a> for more details."
+msgstr "<strong>Sandbox-Modus aktiviert</strong>. Es können nur Sandbox-Testkonten verwendet werden. Weitere Informationen findest du im <a href=\"%s\">PayPal-Sandbox-Testleitfaden</a>."
 
 #: includes/emails/class-wc-email-customer-reset-password.php:78
 msgid "Account password reset"
@@ -3180,17 +3180,9 @@ msgstr "Benachrichtigt Kunden, wenn du zu ihrer Bestellung eine Anmerkung hinzug
 msgid "Order on hold"
 msgstr "Bestellung in Wartestellung"
 
-#: includes/emails/class-wc-email-customer-pos-completed-order.php:60
-msgid "POS order complete"
-msgstr "POS-Bestellung fertig"
-
 #: includes/emails/class-wc-email-customer-processing-order.php:58
 msgid "Notifies customers when their order has been received and is being processed."
 msgstr "Benachrichtigt Kunden, wenn ihre Bestellung eingegangen ist und verarbeitet wird."
-
-#: includes/emails/class-wc-email.php:1256
-msgid "Preheader"
-msgstr "Pre-Header"
 
 #: includes/emails/class-wc-email-customer-pos-refunded-order.php:74
 msgid "POS order refunded"
@@ -3207,6 +3199,14 @@ msgstr "Benachrichtigt Kunden, wenn eine vollständige oder teilweise Erstattung
 #: includes/emails/class-wc-email-customer-pos-completed-order.php:61
 msgid "Notifies customers when their in-person (POS) order has been completed."
 msgstr "Benachrichtigt Kunden, wenn ihre Vor-Ort-Bestellung (POS) abgeschlossen wurde."
+
+#: includes/emails/class-wc-email-customer-pos-completed-order.php:60
+msgid "POS order complete"
+msgstr "POS-Bestellung abgeschlossen"
+
+#: includes/emails/class-wc-email.php:1256
+msgid "Preheader"
+msgstr "Vorschautext"
 
 #: includes/emails/class-wc-email-customer-failed-order.php:54
 msgid "Notifies customers when their order has failed."
@@ -3460,10 +3460,6 @@ msgstr "Unklare Liste der Versanddienstleister."
 msgid "Configure Permalinks"
 msgstr "Permalinks konfigurieren"
 
-#: src/Internal/Features/FeaturesController.php:671
-msgid "WordPress permalinks must be set to anything other than \"Plain\" for MCP to work."
-msgstr "WordPress-Permalinks müssen auf etwas Anderes als „Leer“ eingestellt sein, damit MCP funktioniert."
-
 #: src/Internal/Features/FeaturesController.php:670
 msgid "Configuration Required"
 msgstr "Konfiguration erforderlich"
@@ -3491,6 +3487,10 @@ msgstr "WooCommerce MCP"
 #: src/Internal/MCP/Transport/WooCommerceRestTransport.php:83
 msgid "X-MCP-API-Key header required. Format: consumer_key:consumer_secret"
 msgstr "Ein X-MCP-API-Schlüssel-Header ist erforderlich. Format: consumer_key:consumer_secret"
+
+#: src/Internal/Features/FeaturesController.php:671
+msgid "WordPress permalinks must be set to anything other than \"Plain\" for MCP to work."
+msgstr "WordPress-Permalinks müssen auf etwas anderes als „Einfach“ eingestellt sein, damit MCP funktioniert."
 
 #: src/Internal/Admin/EmailPreview/EmailPreview.php:723
 #: src/Internal/Admin/EmailPreview/EmailPreview.php:742
@@ -4959,6 +4959,18 @@ msgstr "Der Typ der Entität, für die die Abwicklung erstellt wird."
 msgid "Whether to notify the customer about the fulfillment update."
 msgstr "Ob der Kunde über die Aktualisierung der Abwicklung benachrichtigt werden soll."
 
+#: src/Admin/Features/Fulfillments/OrderFulfillmentsRestController.php:766
+#: src/Admin/Features/Fulfillments/OrderFulfillmentsRestController.php:824
+#: src/Admin/Features/Fulfillments/OrderFulfillmentsRestController.php:872
+#: src/Admin/Features/Fulfillments/OrderFulfillmentsRestController.php:912
+#: src/Admin/Features/Fulfillments/OrderFulfillmentsRestController.php:962
+#: src/Admin/Features/Fulfillments/OrderFulfillmentsRestController.php:1059
+#: src/Admin/Features/Fulfillments/OrderFulfillmentsRestController.php:1132
+#: src/Internal/RestApi/Routes/V4/Fulfillments/Controller.php:113
+#: src/Internal/RestApi/Routes/V4/Fulfillments/Schema/FulfillmentSchema.php:41
+msgid "Unique identifier for the fulfillment."
+msgstr "Eindeutige Kennung für die Abwicklung."
+
 #: src/Admin/Features/Fulfillments/OrderFulfillmentsRestController.php:522
 msgid "Fulfillment deleted successfully."
 msgstr "Die Abwicklung wurde erfolgreich gelöscht."
@@ -4996,18 +5008,6 @@ msgstr "Sie ist <mark class=\"fulfillment-status\">abgewickelt</mark>."
 #: src/Admin/Features/Fulfillments/FulfillmentsRenderer.php:460
 msgid "Filter by fulfillment"
 msgstr "Nach Abwicklung filtern"
-
-#: src/Admin/Features/Fulfillments/OrderFulfillmentsRestController.php:766
-#: src/Admin/Features/Fulfillments/OrderFulfillmentsRestController.php:824
-#: src/Admin/Features/Fulfillments/OrderFulfillmentsRestController.php:872
-#: src/Admin/Features/Fulfillments/OrderFulfillmentsRestController.php:912
-#: src/Admin/Features/Fulfillments/OrderFulfillmentsRestController.php:962
-#: src/Admin/Features/Fulfillments/OrderFulfillmentsRestController.php:1059
-#: src/Admin/Features/Fulfillments/OrderFulfillmentsRestController.php:1132
-#: src/Internal/RestApi/Routes/V4/Fulfillments/Controller.php:113
-#: src/Internal/RestApi/Routes/V4/Fulfillments/Schema/FulfillmentSchema.php:41
-msgid "Unique identifier for the fulfillment."
-msgstr "Eindeutige Kennung für die Abwicklung."
 
 #: src/Admin/Features/Fulfillments/FulfillmentsRenderer.php:259
 msgid "Mark as fulfilled"
@@ -5254,13 +5254,13 @@ msgstr "Produkt-Höchstpreis."
 msgid "Coupons lookup table"
 msgstr "Nachschlagetabelle für Gutscheine"
 
-#: includes/rest-api/Controllers/Version2/class-wc-rest-system-status-tools-v2-controller.php:157
-msgid "This tool will repair the coupons lookup table data with missing discount amounts. This process may take a while."
-msgstr "Dieses Werkzeug repariert die Daten für Beiträge mit fehlenden Rabattbeträgen in der Nachschlagetabelle für Gutscheine. Dieser Prozess kann eine Weile dauern."
-
 #: includes/emails/class-wc-email-customer-fulfillment-updated.php:62
 msgid "Fulfillment updated emails are sent to the customer when the merchant updates a fulfillment for the order. The notification isn’t sent for draft fulfillments."
 msgstr "E-Mails zu aktualisierten Abwicklungen werden an den Kunden gesendet, wenn der Händler eine Abwicklung für die Bestellung aktualisiert. Die Benachrichtigung wird nicht für Abwicklungsentwürfe gesendet."
+
+#: includes/rest-api/Controllers/Version2/class-wc-rest-system-status-tools-v2-controller.php:157
+msgid "This tool will repair the coupons lookup table data with missing discount amounts. This process may take a while."
+msgstr "Dieses Werkzeug repariert die Daten mit fehlenden Rabattbeträgen in der Nachschlagetabelle für Gutscheine. Dieser Prozess kann eine Weile dauern."
 
 #: includes/emails/class-wc-email-customer-fulfillment-deleted.php:96
 msgid "A shipment from {site_title} order {order_number} has been cancelled"
@@ -5444,10 +5444,6 @@ msgstr "Aktiviere die Point-of-Sale-Funktionalität in den WooCommerce-Mobil-App
 msgid "Order Admin URL"
 msgstr "Bestellung – Admin-URL"
 
-#: src/Internal/EmailEditor/PersonalizationTags/OrderTagsProvider.php:275
-msgid "Order View URL"
-msgstr "Bestellung – URL anzeigen"
-
 #: src/Internal/EmailEditor/PersonalizationTags/OrderTagsProvider.php:258
 msgid "Order Billing Address"
 msgstr "Bestellung – Rechnungsadresse"
@@ -5507,6 +5503,10 @@ msgstr "Bestellung – Lieferadresse"
 #: src/Internal/EmailEditor/PersonalizationTags/OrderTagsProvider.php:224
 msgid "Order Shipping Method"
 msgstr "Versandart der Bestellung"
+
+#: src/Internal/EmailEditor/PersonalizationTags/OrderTagsProvider.php:275
+msgid "Order View URL"
+msgstr "Bestellansicht-URL"
 
 #. translators: %s will be replaced by comma-separated email addresses. For
 #. example, "invalidemail1@example.com,invalidemail2@example.com".
@@ -5625,15 +5625,6 @@ msgstr "Deine Bestellung auf %1$s mit der Nr. %2$s wurde erstattet"
 msgid "Your %1$s order #%2$s has been partially refunded"
 msgstr "Deine Bestellung auf %1$s mit der Nr. %2$s wurde teilweise erstattet"
 
-#: includes/emails/class-wc-email-customer-pos-completed-order.php:117
-msgid "Thank you for your in-store purchase"
-msgstr "Vielen Dank für deinen Einkauf im Shop"
-
-#. translators: %1$s: Order number, %2$s: Store name
-#: includes/emails/class-wc-email-customer-pos-completed-order.php:107
-msgid "Your in-store purchase #%1$s at %2$s"
-msgstr "Dein Einkauf im Shop mit der Nr. %1$s bei %2$s"
-
 #: includes/emails/class-wc-email-customer-on-hold-order.php:51
 msgid "Send an email to customers notifying them when their order has been placed on hold"
 msgstr "Benachrichtige Kunden per E-Mail, wenn ihre Bestellung ausgesetzt wurde"
@@ -5645,6 +5636,15 @@ msgstr "Benachrichtige Kunden per E-Mail, wenn du einen Hinweis zu ihrer Bestell
 #: includes/emails/class-wc-email-customer-new-account.php:69
 msgid "Send an email to customers notifying them that they have created an account"
 msgstr "Benachrichtige Kunden per E-Mail, wenn sie ein Konto erstellt haben"
+
+#: includes/emails/class-wc-email-customer-pos-completed-order.php:117
+msgid "Thank you for your in-store purchase"
+msgstr "Vielen Dank für deinen Einkauf vor Ort"
+
+#. translators: %1$s: Order number, %2$s: Store name
+#: includes/emails/class-wc-email-customer-pos-completed-order.php:107
+msgid "Your in-store purchase #%1$s at %2$s"
+msgstr "Dein Vor-Ort-Einkauf Nr. %1$s bei %2$s"
 
 #: includes/emails/class-wc-email-customer-completed-order.php:49
 msgid "Send an email to customers notifying them that their order is complete and has been shipped"
@@ -5994,14 +5994,14 @@ msgid "Displays the contents of a product review."
 msgstr "Zeigt den Inhalt einer Produktrezension an."
 
 #: assets/client/blocks/product-review-rating/block.json
-msgctxt "block title"
-msgid "Review Rating"
-msgstr "Rezensions-Bewertung"
-
-#: assets/client/blocks/product-review-rating/block.json
 msgctxt "block description"
 msgid "Displays the rating of a product review."
 msgstr "Zeigt die Bewertung einer Produktrezension an."
+
+#: assets/client/blocks/product-review-rating/block.json
+msgctxt "block title"
+msgid "Review Rating"
+msgstr "Rezensionsbewertung"
 
 #: src/Internal/OrderReviews/SubmissionHandler.php:238
 #: assets/client/blocks/product-review-author-name.js:1
@@ -6632,10 +6632,6 @@ msgstr "Fälliges Wechselgeld:"
 msgid "Order complete emails are sent to customers when their POS orders are marked completed."
 msgstr "E-Mails über abgeschlossene Bestellungen werden an den Kunden gesendet, wenn seine POS-Bestellungen als „fertig“ markiert wurden."
 
-#: includes/emails/class-wc-email-customer-pos-completed-order.php:38
-msgid "POS completed order"
-msgstr "POS-Bestellung fertig"
-
 #. translators: %s = formatted cost with currency symbol.
 #: includes/class-wc-order-item.php:618
 msgid "Cost per unit: %s"
@@ -6651,10 +6647,6 @@ msgstr "Der Gutschein %1$s ist leider nicht auf diese Kategorien anwendbar: %2$s
 #: includes/class-wc-coupon.php:1241 includes/class-wc-discounts.php:982
 msgid "Sorry, coupon \"%1$s\" is not applicable to the products: %2$s."
 msgstr "Der Gutschein %1$s ist leider nicht auf die Produkte anwendbar: %2$s."
-
-#: includes/emails/class-wc-email-customer-pos-completed-order.php:54
-msgid "Let customers know once their POS order is complete."
-msgstr "Lass es Kunden wissen, wenn ihre POS-Bestellung fertig ist."
 
 #: includes/rest-api/Controllers/Version3/class-wc-rest-orders-controller.php:459
 #: src/Internal/RestApi/Routes/V4/Orders/CollectionQuery.php:78
@@ -6685,6 +6677,14 @@ msgstr "Wert der Kosten der verkauften Waren für den Erstattungsartikel."
 #: includes/emails/class-wc-email-customer-pos-refunded-order.php:68
 msgid "Let customers know when a full or partial refund is on its way to them for their POS order."
 msgstr "Informiere Kunden darüber, wenn für ihre POS-Bestellung eine vollständige oder teilweise Erstattung auf dem Weg zu ihnen ist."
+
+#: includes/emails/class-wc-email-customer-pos-completed-order.php:54
+msgid "Let customers know once their POS order is complete."
+msgstr "Benachrichtige Kunden, sobald ihre POS-Bestellung abgeschlossen ist."
+
+#: includes/emails/class-wc-email-customer-pos-completed-order.php:38
+msgid "POS completed order"
+msgstr "POS-Bestellung abgeschlossen"
 
 #. translators: %s: coupon code
 #: includes/class-wc-coupon.php:1224
@@ -12684,7 +12684,7 @@ msgstr "Lass dir die harte Arbeit für Kundenkonversion und -bindung von gezielt
 
 #: src/Admin/Features/MarketingRecommendations/DefaultMarketingRecommendations.php:187
 msgid "Send targeted campaigns, recover abandoned carts and more with Mailchimp."
-msgstr "Mit Mailchimp kannst du zielgerichtete Kampagnen versenden, verworfene Warenkörbe wiederherstellen und vieles mehr."
+msgstr "Mit Mailchimp kannst du zielgerichtete Kampagnen versenden, abgebrochene Warenkörbe wiederherstellen und vieles mehr."
 
 #: includes/admin/helper/class-wc-helper-orders-api.php:98
 msgid "Could not start the installation process. Reason: "
@@ -20540,10 +20540,6 @@ msgstr "Geringe Lagermenge für dieses Produkt."
 msgid "List of city names. Introduced in WooCommerce 5.3."
 msgstr "Liste der Städtenamen. Mit WooCommerce 5.3 eingeführt."
 
-#: includes/rest-api/Controllers/Version3/class-wc-rest-taxes-controller.php:95
-msgid "Postcode/ZIP, it doesn't support multiple values. Deprecated as of WooCommerce 5.3, 'postcodes' should be used instead."
-msgstr "Postleitzahl/PLZ unterstützt nicht mehrere Werte. Seit WooCommerce 5.3 veraltet, Postleitzahl sollte stattdessen werdet werden."
-
 #: includes/rest-api/Controllers/Version3/class-wc-rest-taxes-controller.php:77
 msgid "List of postcodes / ZIPs. Introduced in WooCommerce 5.3."
 msgstr "Liste der Postleitzahlen. Mit WooCommerce 5.3 eingeführt."
@@ -20571,6 +20567,10 @@ msgstr "Betrag, der für diese Steuer erstattet wird."
 #: includes/rest-api/Controllers/Version3/class-wc-rest-order-refunds-controller.php:133
 msgid "Amount that will be refunded for this line item (excluding taxes)."
 msgstr "Betrag, der für diese Position erstattet wird (ohne Steuern)."
+
+#: includes/rest-api/Controllers/Version3/class-wc-rest-taxes-controller.php:95
+msgid "Postcode/ZIP, it doesn't support multiple values. Deprecated as of WooCommerce 5.3, 'postcodes' should be used instead."
+msgstr "Postleitzahl/PLZ unterstützt nicht mehrere Werte. Seit WooCommerce 5.3 veraltet, Postleitzahl sollte stattdessen verwendet werden."
 
 #. translators: 1: page name 2: page ID
 #: includes/admin/class-wc-admin-settings.php:714
@@ -23022,10 +23022,6 @@ msgstr "4 Minuten"
 msgid "Item total amounts provided using the smallest unit of the currency."
 msgstr "Gesamtbeträge für die Artikel wird in der kleinsten Währungseinheit angegeben."
 
-#: src/StoreApi/Schemas/V1/ItemSchema.php:289
-msgid "Line subtotal (the price of the product before coupon discounts have been applied)."
-msgstr "Zwischensumme (der Preis des Produkts vor Abzug der Gutscheinrabatte)."
-
 #: src/StoreApi/Schemas/V1/ItemSchema.php:301
 msgid "Line total (the price of the product after coupon discounts have been applied)."
 msgstr "Gesamtbetrag (der Preis des Produkts nach Abzug der Gutscheinrabatte)."
@@ -23062,10 +23058,6 @@ msgstr "Wenn wahr, kann nur ein Artikel dieses Produkts bei einer einzelnen Best
 msgid "True if backorders are allowed past stock availability."
 msgstr "Wahr, wenn mehr Bestellungen aufgegeben können, als Waren vorrätig sind."
 
-#: src/StoreApi/Schemas/V1/ItemSchema.php:295
-msgid "Line subtotal tax."
-msgstr "Steuerzwischensumme."
-
 #: src/StoreApi/Schemas/V1/ItemSchema.php:246
 msgid "Raw unrounded product prices used in calculations. Provided using a higher unit of precision than the currency."
 msgstr "Rohpreis für ungerundete Produkte, die in Berechnungen verwendet werden. Wird mit einer höheren Genauigkeit als die Währung bereitgestellt."
@@ -23099,6 +23091,14 @@ msgstr "Produktpreisdaten der aktuellen Position, inklusive oder exklusive Steue
 #: src/StoreApi/Schemas/V1/CartShippingRateSchema.php:180
 msgid "Instance ID of the shipping method that provided the rate."
 msgstr "Instanz-ID der Versandart, die den Tarif bereitgestellt hat."
+
+#: src/StoreApi/Schemas/V1/ItemSchema.php:289
+msgid "Line subtotal (the price of the product before coupon discounts have been applied)."
+msgstr "Posten-Zwischensumme (der Preis des Produkts vor Abzug der Gutscheinrabatte)."
+
+#: src/StoreApi/Schemas/V1/ItemSchema.php:295
+msgid "Line subtotal tax."
+msgstr "Steuer auf Posten-Zwischensumme."
 
 #: src/StoreApi/Schemas/V1/CartShippingRateSchema.php:32
 msgid "The ID of the package the shipping rates belong to."
@@ -24265,7 +24265,7 @@ msgstr "Theme auswählen"
 
 #: src/Internal/Admin/RemoteFreeExtensions/DefaultFreeExtensions.php:201
 msgid "Send targeted campaigns, recover abandoned carts and much more with Mailchimp."
-msgstr "Mit Mailchimp kannst du zielgerichtete Kampagnen versenden, verworfene Warenkörbe wiederherstellen und vieles mehr."
+msgstr "Mit Mailchimp kannst du zielgerichtete Kampagnen versenden, abgebrochene Warenkörbe wiederherstellen und vieles mehr."
 
 #: src/Admin/Features/OnboardingTasks/Tasks/Payments.php:42
 msgid "Set up payments"
@@ -27726,22 +27726,22 @@ msgstr "Daten: %1$.2fMB + Index: %2$.2fMB + Engine %3$s"
 msgid "Drag and drop to set admin attribute order"
 msgstr "Drag-and-drop zum Festlegen der Reihenfolge der Admin-Attribute"
 
-#: includes/class-wc-install.php:1233
-msgid "Reduced rate"
-msgstr "Reduzierter Preis"
-
 #: includes/emails/class-wc-email-new-order.php:203
 msgid "Congratulations on the sale."
 msgstr "Herzlichen Glückwunsch zum Verkauf."
-
-#: includes/class-wc-install.php:1234
-msgid "Zero rate"
-msgstr "Steuerfreie"
 
 #: includes/emails/class-wc-email-customer-invoice.php:133
 #: includes/emails/class-wc-email-customer-processing-order.php:156
 msgid "Thanks for using {site_url}!"
 msgstr "Vielen Dank, dass du {site_url} verwendest!"
+
+#: includes/class-wc-install.php:1233
+msgid "Reduced rate"
+msgstr "Ermäßigter Steuersatz"
+
+#: includes/class-wc-install.php:1234
+msgid "Zero rate"
+msgstr "Nullsatz"
 
 #: includes/class-wc-countries.php:1632
 msgid "Town / Village"
@@ -28459,6 +28459,12 @@ msgstr "Die folgende Anmerkung wurde deiner Bestellung hinzugefügt:"
 msgid "An order has been created for you on %1$s. Your order details are below, with a link to make payment when you’re ready: %2$s"
 msgstr "Eine Bestellung wurde auf %1$s für dich erstellt. Nachstehend findest du deine Bestelldetails mit einem Link zur Zahlung, wenn du bereit bist: %2$s"
 
+#. translators: %s: Customer billing full name
+#: templates/emails/admin-new-order.php:32
+#: templates/emails/plain/admin-new-order.php:29
+msgid "You’ve received the following order from %s:"
+msgstr "Du hast die folgende Bestellung von %s erhalten:"
+
 #. translators: %s: Customer first name
 #. translators: %s: Customer username
 #: templates/emails/block/customer-cancelled-order.php:30
@@ -28500,12 +28506,6 @@ msgstr "Eine Bestellung wurde auf %1$s für dich erstellt. Nachstehend findest d
 #: templates/emails/plain/customer-review-request.php:28
 msgid "Hi %s,"
 msgstr "Hallo %s,"
-
-#. translators: %s: Customer billing full name
-#: templates/emails/admin-new-order.php:32
-#: templates/emails/plain/admin-new-order.php:29
-msgid "You’ve received the following order from %s:"
-msgstr "Du hast die folgende Bestellung von %s erhalten:"
 
 #: includes/emails/class-wc-email-customer-completed-order.php:156
 #: src/Internal/StockNotifications/Emails/CustomerStockNotificationEmail.php:70
@@ -29142,10 +29142,6 @@ msgstr "Es gibt keine Währungen, die diesen Parametern entsprechen."
 msgid "Shipping instance ID."
 msgstr "Versandinstanz-ID."
 
-#: includes/rest-api/Controllers/Version3/class-wc-rest-report-reviews-totals-controller.php:116
-msgid "Review type name."
-msgstr "Überprüfe den Typnamen."
-
 #: includes/rest-api/Controllers/Version3/class-wc-rest-report-products-totals-controller.php:117
 msgid "Product type name."
 msgstr "Name des Produkttyps."
@@ -29212,14 +29208,6 @@ msgstr "%1$s ist nicht gültig. Du kannst den richtigen Eircode <a target=\"_bla
 #: includes/rest-api/Controllers/Version3/class-wc-rest-product-reviews-controller.php:669
 msgid "The object cannot be deleted."
 msgstr "Das Objekt kann nicht gelöscht werden."
-
-#: includes/rest-api/Controllers/Version3/class-wc-rest-product-reviews-controller.php:581
-msgid "Updating review failed."
-msgstr "Aktualisierung der Überprüfung fehlgeschlagen."
-
-#: includes/rest-api/Controllers/Version3/class-wc-rest-product-reviews-controller.php:559
-msgid "Updating review status failed."
-msgstr "Aktualisierung des Überprüfungsstatus fehlgeschlagen."
 
 #: includes/rest-api/Controllers/Version3/class-wc-rest-setting-options-controller.php:182
 msgid "An identifier for the group this setting belongs to."
@@ -29335,10 +29323,6 @@ msgstr "Sicherstellen, dass in der Ergebnismenge Rezensionen ausgeschlossen sind
 msgid "Limit result set to reviews assigned to specific user IDs."
 msgstr "Ergebnismenge auf Rezensionen begrenzen, die bestimmten Benutzer-IDs zugewiesen sind."
 
-#: includes/rest-api/Controllers/Version3/class-wc-rest-product-reviews-controller.php:967
-msgid "Limit response to reviews published before a given ISO8601 compliant date."
-msgstr "Reaktionen auf Rezensionen vor einem bestimmten ISO8601-konformen Datum begrenzen."
-
 #: includes/rest-api/Controllers/Version3/class-wc-rest-product-reviews-controller.php:887
 msgid "Status of the review."
 msgstr "Der Status der Rezension."
@@ -29357,10 +29341,6 @@ msgstr "Ungültiger Rezensionsinhalt."
 #: includes/rest-api/Controllers/Version3/class-wc-rest-product-reviews-controller.php:575
 msgid "Product review field exceeds maximum length allowed."
 msgstr "Das Produktrezensionsfeld überschreitet die maximal zulässige Länge."
-
-#: includes/rest-api/Controllers/Version3/class-wc-rest-product-reviews-controller.php:380
-msgid "Cannot create existing product review."
-msgstr "Die vorhandene Produktrezension kann nicht erstellt werden."
 
 #: includes/rest-api/Controllers/Version3/class-wc-rest-product-reviews-controller.php:940
 #: src/StoreApi/Schemas/V1/ProductReviewSchema.php:144
@@ -29393,6 +29373,26 @@ msgstr "Avatar-URL mit einer Bildgröße von %d Pixel."
 #: src/Internal/RestApi/Routes/V4/Settings/PaymentGateways/Schema/AbstractPaymentGatewaySettingsSchema.php:98
 msgid "Supported features for this payment gateway."
 msgstr "Unterstützte Funktionen für diese Zahlungsschnittstelle."
+
+#: includes/rest-api/Controllers/Version3/class-wc-rest-report-reviews-totals-controller.php:116
+msgid "Review type name."
+msgstr "Name des Rezensionstyps."
+
+#: includes/rest-api/Controllers/Version3/class-wc-rest-product-reviews-controller.php:581
+msgid "Updating review failed."
+msgstr "Die Rezension konnte nicht aktualisiert werden."
+
+#: includes/rest-api/Controllers/Version3/class-wc-rest-product-reviews-controller.php:559
+msgid "Updating review status failed."
+msgstr "Der Rezensionsstatus konnte nicht aktualisiert werden."
+
+#: includes/rest-api/Controllers/Version3/class-wc-rest-product-reviews-controller.php:967
+msgid "Limit response to reviews published before a given ISO8601 compliant date."
+msgstr "Antwort auf Rezensionen vor einem bestimmten ISO8601-konformen Datum begrenzen."
+
+#: includes/rest-api/Controllers/Version3/class-wc-rest-product-reviews-controller.php:380
+msgid "Cannot create existing product review."
+msgstr "Eine bereits existierende Produktrezension kann nicht erstellt werden."
 
 #: includes/admin/settings/class-wc-settings-products.php:99
 msgid "Placeholder image"
@@ -29787,10 +29787,6 @@ msgstr "Kundeninformationen wie dein Name, E-Mail-Adresse, sowie Rechnungs- und 
 msgid "Members of our team have access to the information you provide us. For example, both Administrators and Shop Managers can access:"
 msgstr "Mitglieder unseres Teams haben Zugang zu den Informationen, die du uns zur Verfügung stellst. Zum Beispiel können sowohl Administratoren als auch Shop-Manager auf Folgendes zugreifen:"
 
-#: includes/class-wc-privacy.php:111
-msgid "We will also store comments or reviews, if you choose to leave them."
-msgstr "Wir speichern auch Kommentare oder Rezensionen, wenn du dich dazu entscheidest diese zu hinterlassen."
-
 #: includes/class-wc-privacy.php:118
 msgid "Our team members have access to this information to help fulfill orders, process refunds and support you."
 msgstr "Unsere Teammitglieder haben Zugriff auf diese Informationen, um Bestellungen abzuwickeln, Erstattungen vorzunehmen und dich zu unterstützen."
@@ -29798,6 +29794,10 @@ msgstr "Unsere Teammitglieder haben Zugriff auf diese Informationen, um Bestellu
 #: includes/class-wc-privacy.php:110
 msgid "We generally store information about you for as long as we need the information for the purposes for which we collect and use it, and we are not legally required to continue to keep it. For example, we will store order information for XXX years for tax and accounting purposes. This includes your name, email address and billing and shipping addresses."
 msgstr "Wir speichern Informationen über dich üblicherweise so lange, wie wir sie für den Zweck der Erfassung und Nutzung benötigen und verpflichtet sind, sie zu speichern. Beispielsweise speichern wir Bestellinformationen für XXX Jahre aus Steuer- und Abrechnungsgründen. Dazu gehört dein Name, deine E-Mail-Adresse sowie deine Rechnungs- und Lieferadresse."
+
+#: includes/class-wc-privacy.php:111
+msgid "We will also store comments or reviews, if you choose to leave them."
+msgstr "Wir speichern auch Kommentare oder Rezensionen, wenn du dich dazu entscheidest, diese zu hinterlassen."
 
 #: includes/class-wc-privacy.php:109
 msgid "If you create an account, we will store your name, address, email and phone number, which will be used to populate the checkout for future orders."
@@ -30941,14 +30941,14 @@ msgstr "Hilf WooCommerce, sich zu verbessern, indem du Nutzungsaufzeichnungen er
 msgid "Profile &rarr;"
 msgstr "Profil &rarr;"
 
-#: includes/customizer/class-wc-shop-customizer.php:647
-msgid "Image size used for products in the catalog."
-msgstr "Bildgröße für Produkte im Katalog verwendet."
-
 #. translators: 1: tools URL 2: regen thumbs url
 #: includes/customizer/class-wc-shop-customizer.php:587
 msgid "After publishing your changes, new image sizes may not be shown until you regenerate thumbnails. You can do this from the <a href=\"%1$s\" target=\"_blank\">tools section in WooCommerce</a> or by using a plugin such as <a href=\"%2$s\" target=\"_blank\">Regenerate Thumbnails</a>."
 msgstr "Nach dem Veröffentlichen deiner Änderungen werden neue Bildgrößen möglicherweise erst angezeigt, wenn du Vorschaubilder neu generierst. Du kannst das über den <a href=\"%1$s\" target=\"_blank\">Werkzeug-Bereich in WooCommerce</a> oder mithilfe eines Plugins wie <a href=\"%2$s\" target=\"_blank\">Regenerate Thumbnails</a>."
+
+#: includes/customizer/class-wc-shop-customizer.php:647
+msgid "Image size used for products in the catalog."
+msgstr "Bildgröße für Produkte im Katalog verwendet."
 
 #. translators: %s: regen thumbs url
 #: includes/customizer/class-wc-shop-customizer.php:590
@@ -34092,10 +34092,6 @@ msgctxt "Product Attribute"
 msgid "Product %s"
 msgstr "Produkt %s"
 
-#: includes/class-wc-post-types.php:151
-msgid "New tag name"
-msgstr "Neues Schlagwort"
-
 #: includes/class-wc-post-types.php:150
 msgid "Add new tag"
 msgstr "Neues Schlagwort hinzufügen"
@@ -34215,6 +34211,10 @@ msgstr "Produkt-Versandklassen"
 #: includes/class-wc-post-types.php:155
 msgid "Choose from the most used tags"
 msgstr "Aus den meistgenutzten Schlagwörtern auswählen"
+
+#: includes/class-wc-post-types.php:151
+msgid "New tag name"
+msgstr "Neuer Schlagwortname"
 
 #: includes/class-wc-install.php:2681
 msgid "Visit premium customer support"
@@ -34353,10 +34353,6 @@ msgstr "Das Attribut konnte nicht aktualisiert werden."
 msgid "The product review cannot be deleted."
 msgstr "Die Produktrezension kann nicht gelöscht werden."
 
-#: includes/rest-api/Controllers/Version1/class-wc-rest-product-reviews-v1-controller.php:409
-msgid "The product review does not support trashing."
-msgstr "Die Produktrezension unterstützt das Löschen nicht."
-
 #: includes/rest-api/Controllers/Version1/class-wc-rest-product-reviews-v1-controller.php:252
 msgid "Invalid product review ID."
 msgstr "Ungültige Produktrezensions-ID."
@@ -34369,6 +34365,10 @@ msgstr "Die Aktualisierung der Produktrezension ist fehlgeschlagen."
 #: includes/rest-api/Controllers/Version3/class-wc-rest-product-reviews-controller.php:466
 msgid "Creating product review failed."
 msgstr "Das Erstellen der Produktrezension ist fehlgeschlagen."
+
+#: includes/rest-api/Controllers/Version1/class-wc-rest-product-reviews-v1-controller.php:409
+msgid "The product review does not support trashing."
+msgstr "Die Produktrezension unterstützt das Verschieben in den Papierkorb nicht."
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-customers-v1-controller.php:461
 msgid "This resource cannot be created."
@@ -35689,12 +35689,6 @@ msgstr "Alarmmeldung"
 msgid "System status"
 msgstr "Systemstatus"
 
-#. translators: %s: review author
-#: includes/admin/class-wc-admin-dashboard.php:467
-#: templates/dashboard-widget-reviews.php:42
-msgid "reviewed by %s"
-msgstr "Bewertet von %s"
-
 #. translators: %s: rating
 #: includes/admin/class-wc-admin-dashboard.php:464
 msgid "%s out of 5"
@@ -35704,6 +35698,12 @@ msgstr "%s von 5"
 #: includes/admin/class-wc-admin-dashboard.php:220
 msgid "%s net sales this month"
 msgstr "%s Nettoumsatz in diesem Monat"
+
+#. translators: %s: review author
+#: includes/admin/class-wc-admin-dashboard.php:467
+#: templates/dashboard-widget-reviews.php:42
+msgid "reviewed by %s"
+msgstr "Rezensiert von %s"
 
 #: includes/admin/class-wc-admin-attributes.php:340
 msgid "(Public)"
@@ -35803,6 +35803,14 @@ msgstr "Rivers"
 msgid "Plateau"
 msgstr "Plateau"
 
+#: i18n/states.php:1402
+msgid "Oyo"
+msgstr "Oyo"
+
+#: i18n/states.php:1401
+msgid "Osun"
+msgstr "Osun"
+
 #: includes/rest-api/Controllers/Version1/class-wc-rest-products-v1-controller.php:1649
 #: includes/rest-api/Controllers/Version2/class-wc-rest-products-v2-controller.php:1091
 #: includes/rest-api/Controllers/Version2/class-wc-rest-products-v2-controller.php:1718
@@ -35812,14 +35820,6 @@ msgstr "Plateau"
 #: src/Internal/RestApi/Routes/V4/Products/Controller.php:834
 msgid "To manipulate product variations you should use the /products/&lt;product_id&gt;/variations/&lt;id&gt; endpoint."
 msgstr "Um Produktvarianten zu bearbeiten, solltest du den Endpunkt /products/&lt;product_id&gt;/variations/&lt;id&gt; verwenden."
-
-#: i18n/states.php:1402
-msgid "Oyo"
-msgstr "Oyo"
-
-#: i18n/states.php:1401
-msgid "Osun"
-msgstr "Osun"
 
 #: i18n/states.php:1400
 msgid "Ondo"
@@ -36081,11 +36081,6 @@ msgstr "Neuer Benutzername."
 msgid "The order ID."
 msgstr "Die Bestellnummer."
 
-#: includes/rest-api/Controllers/Version1/class-wc-rest-product-reviews-v1-controller.php:68
-#: includes/rest-api/Controllers/Version3/class-wc-rest-product-reviews-controller.php:61
-msgid "Review content."
-msgstr "Inhalt bewerten."
-
 #: includes/rest-api/Controllers/Version1/class-wc-rest-product-attribute-terms-v1-controller.php:64
 #: includes/rest-api/Controllers/Version1/class-wc-rest-product-attributes-v1-controller.php:73
 #: includes/rest-api/Controllers/Version3/class-wc-rest-terms-controller.php:64
@@ -36124,16 +36119,6 @@ msgstr "Eindeutige Kennung für den Webhook."
 msgid "Name of the reviewer."
 msgstr "Name des Rezensenten."
 
-#: includes/rest-api/Controllers/Version1/class-wc-rest-product-attribute-terms-v1-controller.php:47
-#: includes/rest-api/Controllers/Version1/class-wc-rest-product-attribute-terms-v1-controller.php:79
-#: includes/rest-api/Controllers/Version1/class-wc-rest-product-attribute-terms-v1-controller.php:115
-msgid "Unique identifier for the attribute of the terms."
-msgstr "Eindeutige Kennung für das Attribut der Begriffe."
-
-#: includes/rest-api/Controllers/Version1/class-wc-rest-customers-v1-controller.php:77
-msgid "New user password."
-msgstr "Neues Benutzer-Passwort."
-
 #: includes/rest-api/Controllers/Version1/class-wc-rest-product-reviews-v1-controller.php:46
 #: includes/rest-api/Controllers/Version1/class-wc-rest-product-reviews-v1-controller.php:88
 #: includes/rest-api/Controllers/Version2/class-wc-rest-product-reviews-v2-controller.php:45
@@ -36144,10 +36129,20 @@ msgstr "Neues Benutzer-Passwort."
 msgid "Unique identifier for the variable product."
 msgstr "Eindeutige Kennung für das variable Produkt."
 
+#: includes/rest-api/Controllers/Version1/class-wc-rest-customers-v1-controller.php:77
+msgid "New user password."
+msgstr "Neues Benutzer-Passwort."
+
 #: includes/rest-api/Controllers/Version1/class-wc-rest-product-reviews-v1-controller.php:78
 #: includes/rest-api/Controllers/Version3/class-wc-rest-product-reviews-controller.php:71
 msgid "Email of the reviewer."
 msgstr "E-Mail des Rezensenten."
+
+#: includes/rest-api/Controllers/Version1/class-wc-rest-product-attribute-terms-v1-controller.php:47
+#: includes/rest-api/Controllers/Version1/class-wc-rest-product-attribute-terms-v1-controller.php:79
+#: includes/rest-api/Controllers/Version1/class-wc-rest-product-attribute-terms-v1-controller.php:115
+msgid "Unique identifier for the attribute of the terms."
+msgstr "Eindeutige Kennung für das Attribut der Begriffe."
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-webhooks-v1-controller.php:73
 msgid "Webhook delivery URL."
@@ -36175,6 +36170,11 @@ msgstr "Beschränkt das Ergebnis auf bestimmte IDs."
 #: includes/rest-api/Controllers/Version2/class-wc-rest-product-variations-v2-controller.php:138
 msgid "Unique identifier for the variation."
 msgstr "Eindeutige Kennung für die Variante."
+
+#: includes/rest-api/Controllers/Version1/class-wc-rest-product-reviews-v1-controller.php:68
+#: includes/rest-api/Controllers/Version3/class-wc-rest-product-reviews-controller.php:61
+msgid "Review content."
+msgstr "Der Rezensionsinhalt."
 
 #. translators: %s: attachment id
 #. translators: %s: attachment ID
@@ -38460,13 +38460,17 @@ msgstr "Produkt Angebotspreis."
 msgid "Define if the order is paid. It will set the status to processing and reduce stock items."
 msgstr "Lege fest, ob die Bestellung bezahlt ist. Das setzt den Status auf „In Bearbeitung“ und reduziert den Lagerbestand entsprechend."
 
-#: includes/rest-api/Controllers/Version1/class-wc-rest-order-refunds-v1-controller.php:428
-#: includes/rest-api/Controllers/Version1/class-wc-rest-orders-v1-controller.php:1327
-#: includes/rest-api/Controllers/Version2/class-wc-rest-order-refunds-v2-controller.php:496
-#: includes/rest-api/Controllers/Version2/class-wc-rest-orders-v2-controller.php:1538
-#: src/Internal/RestApi/Routes/V4/Orders/Schema/OrderItemSchema.php:95
-msgid "Line subtotal tax (before discounts)."
-msgstr "Zwischensumme der Steuern (vor Preisnachlässen/Rabatten)."
+#: includes/rest-api/Controllers/Version1/class-wc-rest-orders-v1-controller.php:1605
+#: includes/rest-api/Controllers/Version2/class-wc-rest-orders-v2-controller.php:1943
+#: src/Internal/RestApi/Routes/V4/Orders/Schema/OrderCouponSchema.php:53
+msgid "Discount total."
+msgstr "Rabatt gesamt."
+
+#: includes/rest-api/Controllers/Version1/class-wc-rest-orders-v1-controller.php:1610
+#: includes/rest-api/Controllers/Version2/class-wc-rest-orders-v2-controller.php:1948
+#: src/Internal/RestApi/Routes/V4/Orders/Schema/OrderCouponSchema.php:59
+msgid "Discount total tax."
+msgstr "Rabatt Gesamtsteuer."
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-order-refunds-v1-controller.php:434
 #: includes/rest-api/Controllers/Version1/class-wc-rest-orders-v1-controller.php:1332
@@ -38494,18 +38498,6 @@ msgstr "Gesamtsumme (nach Preisnachlässen/Rabatten)."
 #: src/Internal/RestApi/Routes/V4/Orders/Schema/OrderShippingSchema.php:66
 msgid "Line total tax (after discounts)."
 msgstr "Gesamtsumme der Steuern (nach Preisnachlässen/Rabatten)."
-
-#: includes/rest-api/Controllers/Version1/class-wc-rest-orders-v1-controller.php:1605
-#: includes/rest-api/Controllers/Version2/class-wc-rest-orders-v2-controller.php:1943
-#: src/Internal/RestApi/Routes/V4/Orders/Schema/OrderCouponSchema.php:53
-msgid "Discount total."
-msgstr "Rabatt gesamt."
-
-#: includes/rest-api/Controllers/Version1/class-wc-rest-orders-v1-controller.php:1610
-#: includes/rest-api/Controllers/Version2/class-wc-rest-orders-v2-controller.php:1948
-#: src/Internal/RestApi/Routes/V4/Orders/Schema/OrderCouponSchema.php:59
-msgid "Discount total tax."
-msgstr "Rabatt Gesamtsteuer."
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-orders-v1-controller.php:1048
 #: includes/rest-api/Controllers/Version2/class-wc-rest-orders-v2-controller.php:1230
@@ -38657,13 +38649,6 @@ msgstr "Liste der Attribute."
 #: includes/rest-api/Controllers/Version2/class-wc-rest-products-v2-controller.php:2520
 msgid "Limit result set to products with a specific attribute term ID (required an assigned attribute)."
 msgstr "Beschränkt die Ergebnismenge auf Produkte mit einem bestimmten Attributsbegriff (erfordert ein zugewiesenes Attribut)."
-
-#: includes/rest-api/Controllers/Version1/class-wc-rest-order-refunds-v1-controller.php:422
-#: includes/rest-api/Controllers/Version1/class-wc-rest-orders-v1-controller.php:1322
-#: includes/rest-api/Controllers/Version2/class-wc-rest-order-refunds-v2-controller.php:490
-#: src/Internal/RestApi/Routes/V4/Orders/Schema/OrderItemSchema.php:90
-msgid "Line subtotal (before discounts)."
-msgstr "Zwischensumme (vor Rabatten)."
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-product-categories-v1-controller.php:238
 #: includes/rest-api/Controllers/Version1/class-wc-rest-products-v1-controller.php:2184
@@ -38818,6 +38803,21 @@ msgstr "Versandart-ID."
 #: src/StoreApi/Schemas/V1/CheckoutSchema.php:137
 msgid "Shipping address."
 msgstr "Lieferadresse."
+
+#: includes/rest-api/Controllers/Version1/class-wc-rest-order-refunds-v1-controller.php:422
+#: includes/rest-api/Controllers/Version1/class-wc-rest-orders-v1-controller.php:1322
+#: includes/rest-api/Controllers/Version2/class-wc-rest-order-refunds-v2-controller.php:490
+#: src/Internal/RestApi/Routes/V4/Orders/Schema/OrderItemSchema.php:90
+msgid "Line subtotal (before discounts)."
+msgstr "Posten-Zwischensumme (vor Rabatten)."
+
+#: includes/rest-api/Controllers/Version1/class-wc-rest-order-refunds-v1-controller.php:428
+#: includes/rest-api/Controllers/Version1/class-wc-rest-orders-v1-controller.php:1327
+#: includes/rest-api/Controllers/Version2/class-wc-rest-order-refunds-v2-controller.php:496
+#: includes/rest-api/Controllers/Version2/class-wc-rest-orders-v2-controller.php:1538
+#: src/Internal/RestApi/Routes/V4/Orders/Schema/OrderItemSchema.php:95
+msgid "Line subtotal tax (before discounts)."
+msgstr "Steuer auf Posten-Zwischensumme (vor Rabatten)."
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-order-refunds-v1-controller.php:380
 #: includes/rest-api/Controllers/Version1/class-wc-rest-orders-v1-controller.php:1283
@@ -39351,6 +39351,15 @@ msgstr "Eindeutige Kennung für das Objekt."
 msgid "Cannot create order note, please try again."
 msgstr "Bestellhinweis kann nicht erstellt werden. Bitte versuche es nochmal."
 
+#: includes/rest-api/Controllers/Version1/class-wc-rest-customers-v1-controller.php:1034
+msgid "Limit result set to resources with a specific email."
+msgstr "Ergebnismenge auf Ressourcen mit einer bestimmten E-Mail beschränken."
+
+#: includes/rest-api/Controllers/Version1/class-wc-rest-customers-v1-controller.php:1040
+#: src/Internal/RestApi/Routes/V4/Customers/CollectionQuery.php:97
+msgid "Limit result set to resources with a specific role."
+msgstr "Ergebnismenge auf Ressourcen mit einer bestimmten Rolle beschränken."
+
 #: includes/rest-api/Controllers/Version1/class-wc-rest-coupons-v1-controller.php:84
 #: includes/rest-api/Controllers/Version1/class-wc-rest-customer-downloads-v1-controller.php:48
 #: includes/rest-api/Controllers/Version1/class-wc-rest-customers-v1-controller.php:88
@@ -39434,15 +39443,6 @@ msgstr "Bestellhinweis kann nicht erstellt werden. Bitte versuche es nochmal."
 msgid "Unique identifier for the resource."
 msgstr "Eindeutige Kennung für die Ressource."
 
-#: includes/rest-api/Controllers/Version1/class-wc-rest-customers-v1-controller.php:1034
-msgid "Limit result set to resources with a specific email."
-msgstr "Ergebnismenge auf Ressourcen mit einer bestimmten E-Mail beschränken."
-
-#: includes/rest-api/Controllers/Version1/class-wc-rest-customers-v1-controller.php:1040
-#: src/Internal/RestApi/Routes/V4/Customers/CollectionQuery.php:97
-msgid "Limit result set to resources with a specific role."
-msgstr "Ergebnismenge auf Ressourcen mit einer bestimmten Rolle beschränken."
-
 #: includes/admin/views/html-notice-updating.php:20
 msgid "WooCommerce database update"
 msgstr "WooCommerce Datenbank-Aktualisierung"
@@ -39457,6 +39457,10 @@ msgstr "Bestellhinweis."
 #: src/Internal/RestApi/Routes/V4/OrderNotes/Schema/OrderNoteSchema.php:59
 msgid "The date the order note was created, in the site's timezone."
 msgstr "Das Datum, an dem der Bestellhinweis erstellt wurde (in der Zeitzone der Website)."
+
+#: includes/class-wc-rest-authentication.php:517
+msgid "Invalid nonce - nonce has already been used."
+msgstr "Ungültiger Nonce – Nonce wurde bereits verwendet."
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-order-notes-v1-controller.php:187
 #: includes/rest-api/Controllers/Version1/class-wc-rest-order-notes-v1-controller.php:227
@@ -39480,10 +39484,6 @@ msgstr "Das Datum, an dem der Bestellhinweis erstellt wurde (in der Zeitzone der
 #: src/StoreApi/Utilities/OrderAuthorizationTrait.php:69
 msgid "Invalid order ID."
 msgstr "Ungültige Bestell-ID."
-
-#: includes/class-wc-rest-authentication.php:517
-msgid "Invalid nonce - nonce has already been used."
-msgstr "Ungültiger Nonce – Nonce wurde bereits verwendet."
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-customers-v1-controller.php:796
 #: includes/rest-api/Controllers/Version2/class-wc-rest-customers-v2-controller.php:213
@@ -40179,20 +40179,6 @@ msgstr "Entschuldigung, du hast nicht die Berechtigung diese Ressource zu manipu
 msgid "Sorry, you cannot list resources."
 msgstr "Entschuldigung, es können keine Ressourcen aufgelistet werden."
 
-#: includes/rest-api/Controllers/Version1/class-wc-rest-customers-v1-controller.php:178
-#: includes/rest-api/Controllers/Version1/class-wc-rest-order-notes-v1-controller.php:137
-#: includes/rest-api/Controllers/Version1/class-wc-rest-product-reviews-v1-controller.php:167
-#: includes/rest-api/Controllers/Version1/class-wc-rest-tax-classes-v1-controller.php:111
-#: includes/rest-api/Controllers/Version1/class-wc-rest-taxes-v1-controller.php:156
-#: includes/rest-api/Controllers/Version1/class-wc-rest-webhooks-v1-controller.php:160
-#: includes/rest-api/Controllers/Version3/class-wc-rest-posts-controller.php:71
-#: includes/rest-api/Controllers/Version3/class-wc-rest-product-reviews-controller.php:172
-#: includes/rest-api/Controllers/Version3/class-wc-rest-shipping-zones-controller-base.php:83
-#: includes/rest-api/Controllers/Version3/class-wc-rest-terms-controller.php:161
-#: src/Admin/API/OnboardingTasks.php:248
-msgid "Sorry, you are not allowed to create resources."
-msgstr "Entschuldigung, du hast keine Berechtigung, um Ressourcen zu erstellen."
-
 #: includes/rest-api/Controllers/Version1/class-wc-rest-product-attributes-v1-controller.php:197
 #: includes/rest-api/Controllers/Version2/class-wc-rest-system-status-tools-v2-controller.php:116
 msgid "Sorry, you cannot update resource."
@@ -40391,6 +40377,20 @@ msgstr "Die Antwort auf Ressourcen beschränken, die vor einem bestimmten ISO 86
 #: src/Internal/RestApi/Routes/V4/Refunds/CollectionQuery.php:78
 msgid "Limit response to resources published after a given ISO8601 compliant date."
 msgstr "Die Antwort auf Ressourcen beschränken, die nach einem bestimmten ISO 8601-konformen Datum veröffentlicht wurden."
+
+#: includes/rest-api/Controllers/Version1/class-wc-rest-customers-v1-controller.php:178
+#: includes/rest-api/Controllers/Version1/class-wc-rest-order-notes-v1-controller.php:137
+#: includes/rest-api/Controllers/Version1/class-wc-rest-product-reviews-v1-controller.php:167
+#: includes/rest-api/Controllers/Version1/class-wc-rest-tax-classes-v1-controller.php:111
+#: includes/rest-api/Controllers/Version1/class-wc-rest-taxes-v1-controller.php:156
+#: includes/rest-api/Controllers/Version1/class-wc-rest-webhooks-v1-controller.php:160
+#: includes/rest-api/Controllers/Version3/class-wc-rest-posts-controller.php:71
+#: includes/rest-api/Controllers/Version3/class-wc-rest-product-reviews-controller.php:172
+#: includes/rest-api/Controllers/Version3/class-wc-rest-shipping-zones-controller-base.php:83
+#: includes/rest-api/Controllers/Version3/class-wc-rest-terms-controller.php:161
+#: src/Admin/API/OnboardingTasks.php:248
+msgid "Sorry, you are not allowed to create resources."
+msgstr "Du bist leider nicht berechtigt, Ressourcen zu erstellen."
 
 #: i18n/continents.php:15
 msgid "Africa"
@@ -45249,10 +45249,6 @@ msgstr "Steuern aktivieren"
 msgid "State code"
 msgstr "Bundesland-Code"
 
-#: includes/admin/settings/views/settings-tax.php:22
-msgid "Prices entered with tax"
-msgstr "Preise mit Steuern eingegeben"
-
 #: includes/admin/settings/class-wc-settings-advanced.php:86
 msgid "Cart page"
 msgstr "Warenkorb Seite"
@@ -45479,6 +45475,10 @@ msgstr "Gutscheine können von den Warenkorb- und Kassenseiten aus angewendet we
 #: includes/admin/settings/views/html-settings-tax.php:36
 msgid "Rate&nbsp;%"
 msgstr "Satz %"
+
+#: includes/admin/settings/views/settings-tax.php:22
+msgid "Prices entered with tax"
+msgstr "Preise mit Steuern eingeben"
 
 #: includes/admin/meta-boxes/views/html-variation-admin.php:279
 msgid "If managing stock, this controls whether or not backorders are allowed. If enabled, stock quantity can go below 0."
@@ -47156,10 +47156,6 @@ msgstr "Keine Kategorien"
 msgid "No restrictions"
 msgstr "Keine Einschränkungen"
 
-#: includes/admin/meta-boxes/class-wc-meta-box-coupon-data.php:294
-msgid "How many times this coupon can be used before it is void."
-msgstr "Wie oft dieser Gutschein angewendet werden kann, bevor er abläuft."
-
 #: includes/admin/meta-boxes/class-wc-meta-box-coupon-data.php:363
 msgid "Coupon code already exists - customers will use the latest coupon with this code."
 msgstr "Dieser Gutscheincode existiert bereits – Kunden werden den aktuellsten Gutschein mit diesem Code verwenden."
@@ -47902,6 +47898,10 @@ msgstr "Mehr erfahren"
 #: assets/client/admin/components/index.js:2
 msgid "N/A"
 msgstr "n. v."
+
+#: includes/admin/meta-boxes/class-wc-meta-box-coupon-data.php:294
+msgid "How many times this coupon can be used before it is void."
+msgstr "Wie oft dieser Gutschein angewendet werden kann, bevor er ungültig wird."
 
 #: includes/admin/class-wc-admin-post-types.php:138
 #: assets/client/admin/product-editor/index.js:2

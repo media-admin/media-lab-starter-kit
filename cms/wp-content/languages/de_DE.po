@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the WordPress - 7.0.x - Development package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-06-10 19:55:58+0000\n"
+"PO-Revision-Date: 2026-06-17 22:32:05+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -4399,7 +4399,7 @@ msgstr "Suchergebnisse"
 #: wp-includes/block-template-utils.php:204
 #: wp-includes/js/dist/block-library.js:25559
 msgid "Attachment Pages"
-msgstr "Anhang-Seiten"
+msgstr "Anhangseiten"
 
 #: wp-includes/block-template-utils.php:200
 msgctxt "Template name"
@@ -4646,7 +4646,7 @@ msgstr "Wenn du die Konstante %1$s benutzt, stelle sicher, dass du diese globale
 
 #: wp-includes/html-api/class-wp-html-tag-processor.php:4729
 msgid "The query argument must be an array or a tag name."
-msgstr "Das Abfrageargument muss ein Array oder ein Schlagwort-Name sein."
+msgstr "Das Abfrageargument muss ein Array oder ein Schlagwortname sein."
 
 #: wp-includes/html-api/class-wp-html-tag-processor.php:4346
 msgid "Invalid attribute name."
@@ -17410,7 +17410,7 @@ msgstr "Weitere Details bearbeiten"
 
 #: wp-includes/media-template.php:562
 msgid "View attachment page"
-msgstr "Anhang-Seite anzeigen"
+msgstr "Anhangseite anzeigen"
 
 #: wp-includes/media-template.php:456 wp-admin/includes/media.php:3370
 #: wp-admin/includes/media.php:3372
@@ -18599,7 +18599,7 @@ msgstr "Medien-Player einbetten"
 
 #: wp-includes/media-template.php:886
 msgid "Link to Attachment Page"
-msgstr "Anhang-Seite verlinken"
+msgstr "Anhangseite verlinken"
 
 #: wp-includes/media-template.php:879
 msgid "Link to Media File"
@@ -19070,7 +19070,7 @@ msgstr "Mediendatei"
 #: wp-includes/media-template.php:888 wp-includes/media-template.php:953
 #: wp-includes/media-template.php:1232 wp-admin/includes/media.php:2656
 msgid "Attachment Page"
-msgstr "Anhang-Seite"
+msgstr "Anhangseite"
 
 #: wp-includes/media-template.php:858 wp-includes/media-template.php:943
 #: wp-includes/media-template.php:1110 wp-includes/media-template.php:1225
@@ -19166,7 +19166,7 @@ msgstr "Neue Galerie erstellen"
 
 #: wp-includes/post.php:101
 msgid "View Attachment Page"
-msgstr "Anhang-Seite anzeigen"
+msgstr "Anhangseite anzeigen"
 
 #: wp-includes/media-template.php:266 wp-admin/includes/media.php:2276
 msgid "Select Files"
@@ -22212,7 +22212,7 @@ msgstr "Willst du dich wirklich <a href=\"%s\">abmelden</a>?"
 #. translators: %s: Site title.
 #: wp-includes/functions.php:3698
 msgid "You are attempting to log out of %s"
-msgstr "Du hast vor, dich von der Website %s abzumelden"
+msgstr "Du möchtest dich gerade von der Website %s abmelden"
 
 #. translators: %s: File name.
 #: wp-includes/functions.php:2966

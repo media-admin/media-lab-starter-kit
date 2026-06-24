@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the WordPress - 7.0.x - Development - Administration package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-06-10 19:51:24+0000\n"
+"PO-Revision-Date: 2026-06-17 23:11:38+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -5883,7 +5883,7 @@ msgstr "Du bist leider nicht berechtigt, die Ausführung dieses Plugins fortzuse
 #. translators: %s: WordPress Planet URL.
 #: wp-admin/index.php:97
 msgid "<strong>WordPress Events and News</strong> &mdash; Upcoming events near you as well as the latest news from the official WordPress project and the <a href=\"%s\">WordPress Planet</a>."
-msgstr "<strong>WordPress-Veranstaltungen und Neuigkeiten</strong> &ndash; Beinhaltet kommende Veranstaltungen in deiner Nähe sowie die neuesten Nachrichten aus dem offiziellen WordPress-Projekt und dem <a href=\"%s\">WordPress Planet</a>."
+msgstr "<strong>WordPress-Veranstaltungen und Neuigkeiten</strong> &ndash; Beinhaltet bevorstehende Veranstaltungen in deiner Nähe sowie die neuesten Nachrichten aus dem offiziellen WordPress-Projekt und dem <a href=\"%s\">WordPress Planet</a>."
 
 #. translators: 1: URL to WordPress release notes, 2: WordPress version number,
 #. 3: Minimum required MySQL version number, 4: Current MySQL version number.
@@ -7738,7 +7738,7 @@ msgstr "Footer-Widgets"
 
 #: wp-admin/includes/theme.php:352
 msgid "Grid Layout"
-msgstr "Raster-Layout"
+msgstr "Rasterlayout"
 
 #: wp-admin/includes/template.php:2729
 msgid "This will replace the current editor content with the last backup version. You can use undo and redo in the editor to get the old content back or to return to the restored version."

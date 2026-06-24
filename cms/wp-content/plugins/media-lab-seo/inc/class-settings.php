@@ -210,6 +210,23 @@ class MLT_Settings {
                             </div>
 
                             <div class="mlt-field">
+                                <label for="mlt_bing_verification">Bing Webmaster Tools – Verification Code</label>
+                                <input
+                                    type="text"
+                                    id="mlt_bing_verification"
+                                    name="mlt_bing_verification"
+                                    value="<?php echo esc_attr( get_option( 'mlt_bing_verification', '' ) ); ?>"
+                                    class="regular-text"
+                                    placeholder="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+                                />
+                                <p class="mlt-hint">
+                                    Wird als <code>&lt;meta name="msvalidate.01"&gt;</code> im <code>&lt;head&gt;</code> ausgegeben.
+                                    Nur den Wert aus dem <code>content</code>-Attribut eintragen, nicht den ganzen Tag.<br>
+                                    <a href="https://www.bing.com/webmasters" target="_blank" rel="noopener">→ Bing Webmaster Tools öffnen</a>
+                                </p>
+                            </div>
+
+                            <div class="mlt-field">
                                 <label>Open Graph – Fallback-Bild</label>
                                 <div class="mlt-media-field">
                                     <?php if ( $og_image_url ) : ?>
