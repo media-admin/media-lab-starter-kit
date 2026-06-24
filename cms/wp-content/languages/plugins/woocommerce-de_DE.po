@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - WooCommerce - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-06-22 20:06:50+0000\n"
+"PO-Revision-Date: 2026-06-23 19:35:09+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -1592,14 +1592,14 @@ msgstr "Das URL-Template für die Sendungsverfolgung muss eine gültige HTTP- od
 msgid "Could not create provider \"%s\" because its auto-generated slug conflicts with a built-in shipping provider. Please specify a different slug."
 msgstr "Der Anbieter „%s“ konnte nicht erstellt werden, da seine automatisch generierte Titelform mit einem integrierten Versanddienstleister in Konflikt steht. Gib eine andere Titelform an."
 
+#: includes/emails/class-wc-email-customer-on-hold-order.php:68
+msgid "Your order from {site_title} is on hold"
+msgstr "Deine Bestellung bei {site_title} ist in Wartestellung"
+
 #. translators: %s: URL to blog post about this change.
 #: includes/admin/views/html-notice-sync-on-read-disabled.php:20
 msgid "Compatibility mode for HPOS no longer pulls order changes made to the posts database back into your orders automatically. If your site uses custom code or plugins that modify orders outside of WooCommerce, this may affect how order data is handled. <a href=\"%s\">Learn more about this change and what to do</a>."
 msgstr "Der Kompatibilitätsmodus für HPOS zieht Bestelländerungen, die an der Beitragsdatenbank vorgenommen wurden, nicht mehr automatisch in deine Bestellungen zurück. Wenn deine Website individuellen Code oder Plugins verwendet, die Bestellungen außerhalb von WooCommerce ändern, kann dies Auswirkungen auf die Verarbeitung von Bestelldaten haben. <a href=\"%s\">Weitere Informationen zu dieser Änderung und was du tun kannst</a>."
-
-#: includes/emails/class-wc-email-customer-on-hold-order.php:68
-msgid "Your order from {site_title} is on hold"
-msgstr "Deine Bestellung bei {site_title} ist in Wartestellung"
 
 #. translators: %s: gateway title
 #: includes/emails/class-wc-email-admin-payment-gateway-enabled.php:293
@@ -3275,10 +3275,6 @@ msgstr "Bezahlung über %1$s (%2$s)."
 msgid "Order fulfilled"
 msgstr "Bestellung abgewickelt"
 
-#: src/Internal/Abilities/AbilitiesCategories.php:47
-msgid "REST API operations for WooCommerce resources including products, orders, and other store data."
-msgstr "REST-API-Vorgänge für WooCommerce-Ressourcen, einschließlich Produkte, Bestellungen und andere Shop-Daten."
-
 #: src/Internal/Abilities/AbilitiesCategories.php:46
 msgid "WooCommerce REST API"
 msgstr "WooCommerce-REST-API"
@@ -3549,10 +3545,6 @@ msgstr "Aktualisiere ein bestehendes Produkt, indem du dessen Attribute wie Prei
 #: src/Internal/Abilities/AbilitiesRestBridge.php:55
 msgid "Update Product"
 msgstr "Produkt aktualisieren"
-
-#: src/Internal/Abilities/AbilitiesRestBridge.php:50
-msgid "Create a new product in WooCommerce with name, price, description, and other product attributes."
-msgstr "Erstelle in WooCommerce ein neues Produkt mit Namen, Preis, Beschreibung und anderen Produkteigenschaften."
 
 #: src/Internal/Abilities/AbilitiesRestBridge.php:44
 msgid "Retrieve detailed information about a single product by ID, including price, description, images, and metadata."
@@ -7624,10 +7616,6 @@ msgstr "Enthält alle Einstellungen in WooCommerce | Einstellungen | Allgemein."
 #: src/Admin/Features/Blueprint/Exporters/ExportWCPaymentGateways.php:85
 msgid "Includes all settings in WooCommerce | Settings | Payments."
 msgstr "Enthält alle Einstellungen in WooCommerce | Einstellungen | Zahlungen."
-
-#: src/Admin/API/Settings.php:158
-msgid "Settings section."
-msgstr "Einstellungsabschnitt."
 
 #: src/Admin/API/Settings.php:152
 msgid "Settings tab."
@@ -27936,11 +27924,6 @@ msgstr "%1$d-Updates gefunden (%2$s)"
 #: includes/cli/class-wc-cli-update-command.php:59
 msgid "No updates required. Database version is %s"
 msgstr "Keine Updates erforderlich. Datenbankversion ist %s"
-
-#. Translators: %d stock amount
-#: includes/class-wc-ajax.php:1828
-msgid "Stock: %d"
-msgstr "Lager: %d"
 
 #. translators: %1$s: item name %2$s: stock change
 #: includes/class-wc-ajax.php:1519
