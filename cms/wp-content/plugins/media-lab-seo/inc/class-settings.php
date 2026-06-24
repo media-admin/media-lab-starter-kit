@@ -3,7 +3,7 @@
  * MLT_Settings
  *
  * Registriert die Admin-Einstellungsseite mit drei Bereichen:
- *  1. SEO         – GSC-Verifikation, OG-Fallback-Bild
+ *  1. SEO         – GSC-Verifikation, Bing-Verifikation, OG-Fallback-Bild, Standard-Zeitraum
  *  2. Analytics   – Toggle + Provider-Auswahl (GA4 / GTM) + Tracking-ID
  *  3. Report-Mail – Wöchentlicher HTML-Report via SMTP (Agency Core)
  *                   → Mehrere Empfänger (dynamische Liste)
@@ -64,6 +64,8 @@ class MLT_Settings {
     public function register_settings() {
         $options = [
             self::OPT_GSC_VERIFICATION,
+            'mlt_bing_verification',
+            'mlt_default_range',
             self::OPT_OG_IMAGE,
             self::OPT_ANALYTICS_ENABLED,
             self::OPT_ANALYTICS_PROVIDER,
@@ -143,6 +145,7 @@ class MLT_Settings {
         $analytics_prov = get_option( self::OPT_ANALYTICS_PROVIDER, 'ga4' );
         $analytics_id   = get_option( self::OPT_ANALYTICS_ID, '' );
         $report_on      = get_option( self::OPT_REPORT_ENABLED, 0 );
+        $default_range  = (int) get_option( 'mlt_default_range', 28 );
 
         // Empfänger: neue Liste, Fallback auf Legacy-Einzel-Feld
         $recipients = mlt_get_report_recipients();
@@ -224,6 +227,18 @@ class MLT_Settings {
                                     Nur den Wert aus dem <code>content</code>-Attribut eintragen, nicht den ganzen Tag.<br>
                                     <a href="https://www.bing.com/webmasters" target="_blank" rel="noopener">→ Bing Webmaster Tools öffnen</a>
                                 </p>
+                            </div>
+
+                            <div class="mlt-field">
+                                <label for="mlt_default_range">Standard-Zeitraum (Dashboard)</label>
+                                <select id="mlt_default_range" name="mlt_default_range" style="width:auto;">
+                                    <?php foreach ( [ 7 => '7 Tage', 28 => '28 Tage', 90 => '90 Tage', 365 => '365 Tage' ] as $val => $label ) : ?>
+                                    <option value="<?php echo esc_attr( $val ); ?>" <?php selected( $default_range, $val ); ?>>
+                                        <?php echo esc_html( $label ); ?>
+                                    </option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <p class="mlt-hint">Zeitraum der beim Öffnen des Dashboards standardmäßig angezeigt wird. Im Dashboard selbst kann jederzeit ein anderer Zeitraum gewählt werden.</p>
                             </div>
 
                             <div class="mlt-field">
@@ -623,7 +638,6 @@ class MLT_Settings {
         check_ajax_referer( 'mlt_test_mail', 'nonce' );
         if ( ! current_user_can( 'manage_options' ) ) wp_send_json_error( 'Keine Berechtigung.' );
 
-        // An ersten konfigurierten Empfänger senden
         $recipients = mlt_get_report_recipients();
         $to         = ! empty( $recipients ) ? $recipients[0] : get_option( 'admin_email' );
         $to         = sanitize_email( $_POST['email'] ?? $to );
@@ -664,9 +678,6 @@ class MLT_Settings {
 
     // ── WP-Cron: Scheduling ───────────────────────────────────────────────────
 
-    /**
-     * Wird aufgerufen wenn der Report-Toggle geändert wird.
-     */
     public function sync_cron( $old, $new ) {
         if ( $new && ! $old ) {
             if ( ! wp_next_scheduled( 'mlt_weekly_report' ) ) {
@@ -678,10 +689,6 @@ class MLT_Settings {
         }
     }
 
-    /**
-     * Wird aufgerufen wenn Wochentag, Uhrzeit oder Zeitzone geändert werden.
-     * Nur neu planen wenn Report aktiv ist.
-     */
     public function reschedule_cron() {
         if ( ! get_option( self::OPT_REPORT_ENABLED ) ) return;
         mlt_schedule_report_cron();
