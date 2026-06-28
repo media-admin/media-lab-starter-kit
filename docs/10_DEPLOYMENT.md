@@ -1,7 +1,7 @@
 # Deployment Guide
 
-**Version:** 1.4.0  
-**Letzte Aktualisierung:** 2026-03-04
+**Version:** 1.5.1  
+**Letzte Aktualisierung:** 2026-06-28
 
 Complete guide for deploying Media Lab Starter Kit to production.
 
@@ -102,20 +102,15 @@ ls -lh cms/wp-content/themes/custom-theme/assets/dist/js/
 ✅ SCSS Tokens aufgelöst
 ```
 
-npm install -g terser
-terser cms/wp-content/themes/custom-theme/assets/dist/*.js -o output.js -c -m
-```
-
 ### 3. WordPress Configuration
 ```php
-// wp-config.php for production
-define('WP_ENV', 'production');
+// wp-config-production.php
 define('WP_DEBUG', false);
 define('WP_DEBUG_LOG', false);
 define('WP_DEBUG_DISPLAY', false);
 define('SCRIPT_DEBUG', false);
 define('DISALLOW_FILE_EDIT', true);
-define('DISALLOW_FILE_MODS', false);  // Allow plugin updates
+define('DISALLOW_FILE_MODS', true);
 define('WP_MEMORY_LIMIT', '256M');
 define('WP_MAX_MEMORY_LIMIT', '512M');
 
@@ -131,6 +126,10 @@ define('MEDIALAB_SMTP_FROM_NAME', 'Firmenname');
 
 // Google Maps (falls genutzt)
 // define('GOOGLE_MAPS_API_KEY', 'AIza...');
+
+// Better Stack Logs (Logtail)
+// Token unter: https://logs.betterstack.com → Sources → Source Token
+define('LOGTAIL_SOURCE_TOKEN', 'LOGTAIL_PRODUCTION_TOKEN_HIER');
 ```
 
 ---
@@ -342,9 +341,10 @@ cd /var/www/example.com/cms
 
 # Activate in order
 wp plugin activate media-lab-agency-core
-wp plugin activate media-lab-project-starter
-wp plugin activate media-lab-analytics
 wp plugin activate media-lab-seo
+wp plugin activate media-lab-project-starter
+wp plugin activate media-lab-events
+# wp plugin activate media-lab-woocommerce  # Nur bei WooCommerce-Projekten
 ```
 
 ### 2. Verify Activation
@@ -353,9 +353,8 @@ wp plugin list --status=active
 
 # Should show:
 # media-lab-agency-core       active
-# media-lab-project-starter   active  
-# media-lab-analytics         active
-# media-lab-seo              active
+# media-lab-seo               active
+# media-lab-project-starter   active
 # advanced-custom-fields-pro  active
 ```
 
@@ -371,15 +370,10 @@ wp theme list --status=active
 
 ### 1. Analytics Setup
 ```bash
-# Via WP-CLI
-wp option update medialab_analytics_enabled 1
-wp option update medialab_analytics_ga4_id 'G-XXXXXXXXXX'
-wp option update medialab_analytics_gtm_id 'GTM-XXXXXXX'
-wp option update medialab_analytics_fb_pixel 'XXXXXXXXXXXXXXX'
-
-# Or via admin
-# Settings → Analytics
-# Enter tracking IDs
+# Via WP-Admin → SEO Toolkit → Analytics
+# oder via WP-CLI:
+wp option update medialab_seo_ga4_id 'G-XXXXXXXXXX'
+wp option update medialab_seo_gtm_id 'GTM-XXXXXXX'
 ```
 
 ### 2. SEO Setup
@@ -471,20 +465,12 @@ curl -I https://example.com | grep -i "strict-transport"
 
 ### 5. Monitoring Setup
 
-**Uptime Monitoring:**
-- UptimeRobot (free)
-- Pingdom
-- StatusCake
+**Uptime & Log Monitoring:**
+- [Better Stack Uptime](https://uptime.betterstack.com) — HTTP-Monitoring + Incident Management + Status Page
+- [Better Stack Logs](https://logs.betterstack.com) — Zentrales Log-Aggregation aus WordPress `debug.log`
 
 **Error Monitoring:**
-- Sentry
-- Rollbar
-- New Relic
-
-**Analytics:**
-- Google Analytics
-- Google Search Console
-- Matomo (self-hosted)
+- [Sentry](https://sentry.io) — JS/PHP-Fehler + Performance
 
 ---
 
@@ -571,17 +557,21 @@ tail -f /var/log/php8.0-fpm.log
 
 # WordPress debug log
 tail -f cms/wp-content/debug.log
+
+# Better Stack Logs (Logtail): https://logs.betterstack.com
 ```
 
 ### Performance Monitoring
 
-**New Relic APM:**
-```php
-// wp-config.php
-if (extension_loaded('newrelic')) {
-    newrelic_set_appname('Production Site');
-}
-```
+# New Relic APM (nur relevant bei eigenem Server mit PHP-Extension-Zugang,
+# nicht verfügbar auf Shared Hosting):
+#
+# ```php
+# // wp-config.php
+# if (extension_loaded('newrelic')) {
+#     newrelic_set_appname('Production Site');
+# }
+# ```
 
 **Query Monitor Plugin:**
 ```bash

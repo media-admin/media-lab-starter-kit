@@ -23,6 +23,8 @@
 - [ ] Verify https://your-domain.com
 - [ ] Monitor for 15 minutes
 - [ ] Check error logs
+- [ ] Better Stack Uptime: Monitor zeigt grün
+- [ ] Better Stack Logs: Keine auffälligen Errors in den ersten 15 Minuten
 
 ## 🔙 Rollback Procedure
 
@@ -43,5 +45,6 @@ wp cache flush
 
 - [ ] Update changelog
 - [ ] Notify team
-- [ ] Monitor error logs
+- [ ] Better Stack Logs auf Warns/Errors prüfen
+- [ ] Better Stack Uptime: Verfügbarkeit bestätigt
 - [ ] Check performance metrics

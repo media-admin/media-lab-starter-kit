@@ -1,6 +1,6 @@
 # Development Workflow
 
-**Version:** 1.4.0 | **Letzte Aktualisierung:** 2026-03-04
+**Version:** 1.5.0 | **Letzte Aktualisierung:** 2026-06-28
 
 ---
 
@@ -47,13 +47,13 @@ git push
 ## Commit-Konvention
 
 ```
-release: v1.4.0          Neues Release
-feat: hero-video Support  Neues Feature
+release: v1.4.0           Neues Release
+feat: hero-video Support   Neues Feature
 fix: modal schliesst nicht Bugfix
-security: nonce rotation  Security-Fix
-refactor: scss cleanup    Kein Feature-Change
-chore: deps aktualisiert  Dependencies, Cleanup
-docs: README aktualisiert Nur Dokumentation
+security: nonce rotation   Security-Fix
+refactor: scss cleanup     Kein Feature-Change
+chore: deps aktualisiert   Dependencies, Cleanup
+docs: README aktualisiert  Nur Dokumentation
 ```
 
 ---
@@ -61,10 +61,19 @@ docs: README aktualisiert Nur Dokumentation
 ## Release-Prozess
 
 ```bash
-# 1. Versionen bumpen (alle drei Stellen!)
-#    package.json                                          → "version": "X.Y.Z"
-#    themes/custom-theme/style.css                        → Version: X.Y.Z
-#    plugins/media-lab-agency-core/media-lab-agency-core.php → Version: X.Y.Z + Konstante
+# 1. Versionen bumpen – alle geänderten Komponenten!
+#
+#    package.json                                                    → "version": "X.Y.Z"
+#    cms/wp-content/themes/custom-theme/style.css                   → Version: X.Y.Z
+#
+#    Plugins (nur die mit Änderungen in diesem Release):
+#    plugins/media-lab-agency-core/media-lab-agency-core.php        → Version: + Konstante MEDIALAB_CORE_VERSION
+#    plugins/media-lab-seo/media-lab-seo.php                        → Version: + Konstante MLT_VERSION
+#    plugins/media-lab-backup/media-lab-backup.php                  → Version: + Konstante MLBKP_VERSION
+#    plugins/media-lab-bookings/media-lab-bookings.php              → Version: + Konstante MLB_VERSION
+#    plugins/media-lab-events/media-lab-events.php                  → Version: + Konstante MEDIA_LAB_EVENTS_VERSION
+#    plugins/media-lab-project-starter/media-lab-project-starter.php → Version: + Konstante MEDIALAB_PROJECT_VERSION
+#    plugins/media-lab-woocommerce/media-lab-woocommerce.php        → Version: + Konstante MEDIA_LAB_WC_VERSION
 
 # 2. CHANGELOG.md – neuen Abschnitt hinzufügen
 
@@ -90,7 +99,7 @@ git push origin main --follow-tags
 # 1. Repo klonen / forken
 # 2. media-lab-agency-core unverändert lassen
 # 3. custom-theme umbenennen und anpassen
-# 4. SMTP in wp-config.php konfigurieren
+# 4. SMTP in wp-config-production.php konfigurieren
 # 5. npm run build
 # 6. Deployment via scripts/deploy-production.js
 ```

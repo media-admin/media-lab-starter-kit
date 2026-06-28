@@ -7,35 +7,38 @@
 - **Purpose:** Error tracking & performance monitoring
 - **Alerts:** Email + Slack on new issues
 
-### UptimeRobot
-- **URL:** https://uptimerobot.com/dashboard
+### Better Stack – Uptime
+- **URL:** https://uptime.betterstack.com
+- **Purpose:** HTTP-Uptime-Monitoring + Incident Management + Status Page
 - **Monitors:**
-  - Production: https://your-domain.com (5 min interval)
-  - Staging: https://staging.your-domain.com (15 min interval)
-- **Alerts:** Email + SMS on downtime
+  - Production: https://your-domain.com (Interval: 3 Min.)
+  - Staging: https://staging.your-domain.com (Interval: 5 Min.)
+- **Alerts:** Email + SMS bei Ausfall
+- **Status Page:** https://status.your-domain.com
 
-### Better Stack Logs
+### Better Stack – Logs (Logtail)
 - **URL:** https://logs.betterstack.com
-- **Purpose:** Centralized log aggregation
-- **Retention:** 30 days
+- **Purpose:** Zentrales Log-Aggregation aus WordPress `debug.log`
+- **Retention:** 30 Tage
+- **Config:** `LOGTAIL_SOURCE_TOKEN` in `wp-config.php` setzen
 
 ## 🔔 Notifications
 
 ### Slack Channels
-- `#deployments` - Deployment notifications
-- `#errors` - Critical errors
-- `#monitoring` - Uptime alerts
+- `#deployments` – Deployment-Benachrichtigungen
+- `#errors` – Kritische Fehler
+- `#monitoring` – Uptime-Alerts
 
 ### Alert Thresholds
-- **Error Rate:** > 10 errors/minute
-- **Page Load:** > 3 seconds
-- **Database Query:** > 1 second
-- **Memory Usage:** > 80% of limit
-- **Uptime:** < 99.5%
+- **Error Rate:** > 10 Fehler/Minute
+- **Page Load:** > 3 Sekunden
+- **Database Query:** > 1 Sekunde
+- **Memory Usage:** > 80 % des Limits
+- **Uptime:** < 99,5 %
 
 ## 🔍 Debugging
 
-### Check Logs
+### Logs prüfen
 ```bash
 # Production
 ssh production "tail -100 /var/www/production/wp-content/debug.log"
@@ -44,12 +47,17 @@ ssh production "tail -100 /var/www/production/wp-content/debug.log"
 ssh staging "tail -100 /var/www/staging/wp-content/debug.log"
 ```
 
-### Check Sentry
-1. Go to Sentry dashboard
-2. Filter by environment (staging/production)
-3. Check error frequency and affected users
+### Better Stack Logs (Logtail)
+1. https://logs.betterstack.com öffnen
+2. Source auswählen
+3. Nach Level (`error`, `warn`) oder Stichwort filtern
 
-### Check Server Resources
+### Sentry prüfen
+1. Sentry Dashboard öffnen
+2. Nach Environment filtern (staging / production)
+3. Fehlerhäufigkeit und betroffene User prüfen
+
+### Server-Ressourcen prüfen
 ```bash
 ssh production "top -b -n 1 | head -20"
 ssh production "df -h"
@@ -57,9 +65,10 @@ ssh production "df -h"
 
 ## 📈 Weekly Review
 
-Every Monday:
-- [ ] Review Sentry error trends
-- [ ] Check uptime statistics
-- [ ] Review slow query logs
-- [ ] Check memory usage trends
-- [ ] Update this document if needed
+Jeden Montag:
+- [ ] Sentry: Fehler-Trends prüfen
+- [ ] Better Stack Uptime: Verfügbarkeitsstatistik der Woche
+- [ ] Better Stack Logs: Auffällige Warns/Errors durchsehen
+- [ ] Slow Query Logs prüfen
+- [ ] Memory-Usage-Trends prüfen
+- [ ] Dieses Dokument bei Bedarf aktualisieren
