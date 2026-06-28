@@ -44,13 +44,6 @@
 /cms/wp-content/plugins/wp-fastest-cache/
 /cms/wp-content/plugins/query-monitor/
 
-# Inaktive Plugins (noch nicht fertig entwickelt)
-# /cms/wp-content/plugins/media-lab-core/
-# /cms/wp-content/plugins/media-lab-analytics/
-# /cms/wp-content/plugins/media-lab-events/
-# /cms/wp-content/plugins/media-lab-project-starter/
-# /cms/wp-content/plugins/media-lab-woocommerce/
-
 # ============================================
 # THEMES – Standard WP Themes
 # ============================================
@@ -131,6 +124,20 @@ test-results/
 /.nyc_output/
 cypress/screenshots/
 cypress/videos/
+
+# ============================================
+# PERFORMANCE & AUDIT REPORTS
+# ============================================
+*.report.html
+backstop_data/bitmaps_test/
+backstop_data/html_report/
+
+# ============================================
+# WORDPRESS PLUGINS – Backups & Migration
+# ============================================
+/cms/wp-content/ai1wm-backups/
+/cms/wp-content/updraft/
+/cms/wp-content/backups/
 
 # ============================================
 # OS & IDE
