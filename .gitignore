@@ -103,6 +103,7 @@ composer.lock
 # ============================================
 *.log
 /cms/wp-content/debug.log
+/cms/wp-content/logtail-offset.txt
 error_log
 php_error.log
 
