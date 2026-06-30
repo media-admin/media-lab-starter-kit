@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - WooCommerce PayPal Payments - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-05-13 10:56:48+0000\n"
+"PO-Revision-Date: 2026-06-29 03:34:07+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -36,7 +36,7 @@ msgstr "Betrugsschutz ist jetzt erforderlich – jetzt aktivieren"
 msgid "All reCAPTCHA keys (v3 and v2) must be configured to enable this feature."
 msgstr "Alle reCAPTCHA-Schlüssel (v3 und v2) müssen konfiguriert werden, um diese Funktion zu aktivieren."
 
-#: modules/ppcp-wc-gateway/services.php:718
+#: modules/ppcp-wc-gateway/services.php:721
 msgid "Business loans from $1k to $230k for first-time borrowers. Looking to fuel your business growth? With a PayPal Working Capital loan, approved loans are funded in minutes and repaid as a share of your sales. Minimum payment required every 90 days. The lender for PayPal Working Capital is WebBank."
 msgstr "Unternehmenskredite von 1.000 bis 230.000 USD für Erstkreditnehmer. Möchtest du das Wachstum deines Unternehmens vorantreiben? Mit einem PayPal Working Capital-Kredit werden genehmigte Kredite in wenigen Minuten finanziert und als Anteil an deinem Umsatz zurückgezahlt. Mindestzahlung alle 90 Tage erforderlich. Der Kreditgeber für PayPal Working Capital ist WebBank."
 
@@ -60,7 +60,7 @@ msgstr "CAPTCHA-Verifizierung fehlgeschlagen. Bitte versuche es erneut."
 msgid "Please complete the CAPTCHA verification."
 msgstr "Bitte schließe die CAPTCHA-Verifizierung ab."
 
-#: modules/ppcp-wc-gateway/services.php:718
+#: modules/ppcp-wc-gateway/services.php:721
 msgid "PayPal Working Capital"
 msgstr "PayPal Working Capital"
 
@@ -76,23 +76,23 @@ msgstr "Das Plugin WooCommerce PayPal Payments wurde deaktiviert"
 msgid "Order ID is required"
 msgstr "Bestell-ID ist erforderlich"
 
-#: modules/ppcp-wc-gateway/src/WCGatewayModule.php:727
+#: modules/ppcp-wc-gateway/src/WCGatewayModule.php:750
 msgid "Other"
 msgstr "Andere"
 
-#: modules/ppcp-wc-gateway/services.php:628
+#: modules/ppcp-wc-gateway/services.php:631
 msgid "PayPal Payments is almost ready. To get started, connect your account with the Activate PayPal Payments button."
 msgstr "PayPal-Zahlungen ist fast fertig. Verbinde zunächst dein Konto mit dem Button „PayPal-Zahlungen aktivieren“."
 
-#: modules/ppcp-wc-gateway/services.php:628
+#: modules/ppcp-wc-gateway/services.php:631
 msgid "Connect PayPal to complete setup"
 msgstr "Verbinde PayPal, um die Einrichtung abzuschließen"
 
-#: modules/ppcp-settings/src/Data/Definition/FeaturesDefinition.php:131
+#: modules/ppcp-settings/src/Data/Definition/FeaturesDefinition.php:136
 msgid "terms and conditions"
 msgstr "Allgemeine Geschäftsbedingungen"
 
-#: modules/ppcp-settings/src/Data/Definition/FeaturesDefinition.php:128
+#: modules/ppcp-settings/src/Data/Definition/FeaturesDefinition.php:133
 msgid "Installments"
 msgstr "Raten"
 
@@ -100,8 +100,8 @@ msgstr "Raten"
 msgid "Enable Fastlane"
 msgstr "Fastlane aktivieren"
 
-#: modules/ppcp-settings/src/Data/Definition/FeaturesDefinition.php:128
-#: modules/ppcp-settings/src/Data/Definition/FeaturesDefinition.php:132
+#: modules/ppcp-settings/src/Data/Definition/FeaturesDefinition.php:133
+#: modules/ppcp-settings/src/Data/Definition/FeaturesDefinition.php:137
 msgid "Sign up"
 msgstr "Registrieren"
 
@@ -111,24 +111,29 @@ msgid "https://paypal.com/"
 msgstr "https://paypal.com/"
 
 #. translators: %s is fraud CVV message
-#: modules/ppcp-wc-gateway/src/Processor/CreditCardOrderInfoHandlingTrait.php:100
+#: modules/ppcp-wc-gateway/src/Processor/CreditCardOrderInfoHandlingTrait.php:106
 msgid "CVV: %s"
 msgstr "CVV: %s"
 
 #. translators: %1$s is card brand and %2$s card last 4 digits
-#: modules/ppcp-wc-gateway/src/Processor/CreditCardOrderInfoHandlingTrait.php:96
+#: modules/ppcp-wc-gateway/src/Processor/CreditCardOrderInfoHandlingTrait.php:102
 msgid "Card: %1$s (%2$s)"
 msgstr "Karte: %1$s (%2$s)"
 
-#: modules/ppcp-settings/src/Service/ScriptDataHandler.php:72
+#: modules/ppcp-compat/src/WooCommerceBlueprint/PayPalSettingsExporter.php:64
+#: assets/ppcp-settings-js-index.js:18
+msgid "PayPal Settings"
+msgstr "PayPal-Einstellungen"
+
+#: modules/ppcp-settings/src/Service/ScriptDataHandler.php:75
 msgid "Always require 3D Secure"
 msgstr "3D Secure immer erfordern"
 
-#: modules/ppcp-settings/src/Service/ScriptDataHandler.php:72
+#: modules/ppcp-settings/src/Service/ScriptDataHandler.php:75
 msgid "Only when required"
 msgstr "Nur wenn erforderlich"
 
-#: modules/ppcp-settings/src/Service/ScriptDataHandler.php:72
+#: modules/ppcp-settings/src/Service/ScriptDataHandler.php:75
 msgid "No 3D Secure"
 msgstr "Kein 3D Secure"
 
@@ -136,33 +141,33 @@ msgstr "Kein 3D Secure"
 msgid "Show logo"
 msgstr "Logo anzeigen"
 
-#: modules/ppcp-settings/src/Data/Definition/FeaturesDefinition.php:128
+#: modules/ppcp-settings/src/Data/Definition/FeaturesDefinition.php:133
 msgid "Domain registration"
 msgstr "Domain-Registrierung"
 
 #: modules/ppcp-fraud-protection/extensions.php:20
-#: modules/ppcp-settings/src/Data/Definition/FeaturesDefinition.php:128
-#: modules/ppcp-settings/src/Data/Definition/FeaturesDefinition.php:132
+#: modules/ppcp-settings/src/Data/Definition/FeaturesDefinition.php:133
+#: modules/ppcp-settings/src/Data/Definition/FeaturesDefinition.php:137
 #: assets/ppcp-settings-js-index.js:1
 msgid "Learn more"
 msgstr "Weitere Informationen"
 
-#: modules/ppcp-settings/src/Data/Definition/FeaturesDefinition.php:128
-#: modules/ppcp-settings/src/Data/Definition/FeaturesDefinition.php:132
+#: modules/ppcp-settings/src/Data/Definition/FeaturesDefinition.php:133
+#: modules/ppcp-settings/src/Data/Definition/FeaturesDefinition.php:137
 msgid "Configure"
 msgstr "Konfigurieren"
 
-#: modules/ppcp-wc-gateway/src/WCGatewayModule.php:742
+#: modules/ppcp-wc-gateway/src/WCGatewayModule.php:765
 #: assets/ppcp-settings-js-index.js:17
 msgid "Email address"
 msgstr "E-Mail-Adresse"
 
-#: modules/ppcp-wc-gateway/services.php:559
-#: modules/ppcp-wc-gateway/services.php:561
+#: modules/ppcp-wc-gateway/services.php:562
+#: modules/ppcp-wc-gateway/services.php:564
 msgid "Checkout block"
 msgstr "Bezahlen-Block"
 
-#: modules/ppcp-settings/src/SettingsModule.php:754
+#: modules/ppcp-settings/src/SettingsModule.php:753
 msgid "Return to payments"
 msgstr "Zurück zu den Zahlungen"
 
@@ -250,7 +255,7 @@ msgstr "Apple Pay (über PayPal) "
 msgid "Google Pay (via PayPal) "
 msgstr "Google Pay (über PayPal) "
 
-#: modules/ppcp-paypal-subscriptions/src/PayPalSubscriptionsModule.php:174
+#: modules/ppcp-paypal-subscriptions/src/PayPalSubscriptionsModule.php:140
 msgid "Cannot add this product to cart (invalid product)."
 msgstr "Dieses Produkt kann nicht zum Warenkorb hinzugefügt werden (ungültiges Produkt)."
 
@@ -267,7 +272,7 @@ msgstr "Artikel"
 msgid "<span class=\"highlight\">Important:</span> The <code>Cart</code> & <code>Classic Cart</code> <strong>Smart Button Locations</strong> cannot be disabled while <a href=\"%1$s\">Fastlane</a> is active."
 msgstr "<span class=\"highlight\">Wichtig:</span> Die <strong>Smart-Button-Positionen</strong> für den <code>Warenkorb</code> und den <code>klassischen Warenkorb</code> können nicht deaktiviert werden, während <a href=\"%1$s\">Fastlane</a> aktiv ist."
 
-#: modules/ppcp-wc-gateway/services.php:524
+#: modules/ppcp-wc-gateway/services.php:527
 msgid "Enable saving PayPal & Venmo"
 msgstr "Speichern von PayPal und Venmo aktivieren"
 
@@ -293,7 +298,7 @@ msgctxt "block title"
 msgid "Cart - PayPal Pay Later messaging"
 msgstr "Warenkorb – PayPal Später Bezahlen-Banner"
 
-#: modules/ppcp-wc-gateway/services.php:260
+#: modules/ppcp-wc-gateway/services.php:277
 msgctxt "Name of payment method"
 msgid "PayPal Pay Later"
 msgstr "PayPal Später Bezahlen"
@@ -304,7 +309,7 @@ msgstr "PayPal-Blöcke"
 
 #: modules/ppcp-googlepay/src/GooglePayGateway.php:85
 #: modules/ppcp-googlepay/src/GooglePayGateway.php:103
-#: modules/ppcp-settings/src/Data/Definition/FeaturesDefinition.php:128
+#: modules/ppcp-settings/src/Data/Definition/FeaturesDefinition.php:133
 #: modules/ppcp-settings/src/Data/Definition/PaymentMethodsDefinition.php:159
 #: modules/ppcp-status-report/src/StatusReportModule.php:73
 #: assets/ppcp-settings-js-index.js:1
@@ -331,19 +336,19 @@ msgstr "Fastlane Debit- und Kreditkarten"
 msgid "Fastlane"
 msgstr "Fastlane"
 
-#: modules/ppcp-wc-gateway/src/WCGatewayModule.php:696
+#: modules/ppcp-wc-gateway/src/WCGatewayModule.php:719
 msgid "PayPal email address"
 msgstr "PayPal-E-Mail-Adresse"
 
-#: modules/ppcp-wc-gateway/src/Gateway/PayUponInvoice/PayUponInvoiceGateway.php:177
+#: modules/ppcp-local-alternative-payment-methods/src/PayUponInvoice/PayUponInvoiceGateway.php:66
 msgid "Merchant name displayed in Ratepay's payment instructions. Should not exceed 127 characters."
 msgstr "Name des Händlers, der in den Zahlungsanweisungen von Ratepay angezeigt wird. Darf nicht länger als 127 Zeichen sein."
 
-#: modules/ppcp-wc-gateway/src/WCGatewayModule.php:500
+#: modules/ppcp-wc-gateway/src/WCGatewayModule.php:464
 msgid "Payment reauthorized."
 msgstr "Zahlung erneut autorisiert."
 
-#: modules/ppcp-wc-gateway/src/WCGatewayModule.php:496
+#: modules/ppcp-wc-gateway/src/WCGatewayModule.php:460
 msgid "Reauthorization with PayPal failed: "
 msgstr "Erneute Autorisierung mit PayPal fehlgeschlagen: "
 
@@ -382,8 +387,8 @@ msgctxt "block title"
 msgid "PayPal Pay Later messaging"
 msgstr "PayPal Später Bezahlen-Banner"
 
-#: modules/ppcp-wc-gateway/src/Gateway/CreditCardGateway.php:558
-#: modules/ppcp-wc-gateway/src/Gateway/CreditCardGateway.php:559
+#: modules/ppcp-wc-gateway/src/Gateway/CreditCardGateway.php:647
+#: modules/ppcp-wc-gateway/src/Gateway/CreditCardGateway.php:648
 msgid "Could not change payment."
 msgstr "Zahlungsmethode konnte nicht gewechselt werden."
 
@@ -393,7 +398,7 @@ msgid "Card number"
 msgstr "Kartennummer"
 
 #. translators: %1$s is the number of seconds remaining.
-#: modules/ppcp-settings/src/Endpoint/RefreshFeatureStatusEndpoint.php:80
+#: modules/ppcp-settings/src/Endpoint/RefreshFeatureStatusEndpoint.php:89
 #: modules/ppcp-wc-gateway/src/Endpoint/RefreshFeatureStatusEndpoint.php:76
 msgid "Wait %1$s seconds before trying again."
 msgstr "Warten %1$s Sekunden, bevor du es erneut versuchst."
@@ -402,7 +407,7 @@ msgstr "Warten %1$s Sekunden, bevor du es erneut versuchst."
 msgid "Expired request."
 msgstr "Abgelaufene Anforderung."
 
-#: modules/ppcp-save-payment-methods/src/SavePaymentMethodsModule.php:196
+#: modules/ppcp-save-payment-methods/src/SavePaymentMethodsModule.php:199
 msgid "Could not save payment method."
 msgstr "Zahlungsmethode konnte nicht gespeichert werden."
 
@@ -412,11 +417,11 @@ msgstr "Zahlungsmethode konnte nicht gespeichert werden."
 msgid "N/A"
 msgstr "n. a."
 
-#: modules/ppcp-wc-gateway/services.php:393
+#: modules/ppcp-wc-gateway/services.php:396
 msgid "Clicking \"Proceed to PayPal\" will redirect you to PayPal to complete your purchase."
 msgstr "Wenn du auf \"Weiter zu PayPal\" klickst, wirst du zu PayPal weitergeleitet, um deinen Kauf abzuschließen."
 
-#: modules/ppcp-wc-gateway/services.php:387
+#: modules/ppcp-wc-gateway/services.php:390
 msgid "Proceed to PayPal"
 msgstr "Weiter zu PayPal"
 
@@ -437,56 +442,56 @@ msgstr "Keine WC-Checkout-Formulardaten verwenden (Rechnungs- und Lieferadressen
 msgid "Use WC checkout form data (do not show shipping address fields)"
 msgstr "WC-Checkout-Formulardaten verwenden (keine Felder für die Lieferadresse anzeigen)"
 
-#: modules/ppcp-wc-gateway/services.php:603
+#: modules/ppcp-wc-gateway/services.php:606
 msgid "German (Luxembourg)"
 msgstr "Deutsch (Luxemburg)"
 
-#: modules/ppcp-wc-gateway/services.php:603
+#: modules/ppcp-wc-gateway/services.php:606
 msgid "German (Austria)"
 msgstr "Deutsch (Österreich)"
 
-#: modules/ppcp-wc-gateway/services.php:603
+#: modules/ppcp-wc-gateway/services.php:606
 msgid "German (Switzerland)"
 msgstr "Deutsch (Schweiz)"
 
-#: modules/ppcp-wc-gateway/services.php:603
+#: modules/ppcp-wc-gateway/services.php:606
 msgid "German (Germany)"
 msgstr "Deutsch (Deutschland)"
 
-#: modules/ppcp-wc-gateway/services.php:603
+#: modules/ppcp-wc-gateway/services.php:606
 msgid "Arabic (Saudi Arabia)"
 msgstr "Arabisch (Saudi-Arabien)"
 
-#: modules/ppcp-wc-gateway/services.php:603
+#: modules/ppcp-wc-gateway/services.php:606
 msgid "Arabic (Morocco)"
 msgstr "Arabisch (Marokko)"
 
-#: modules/ppcp-wc-gateway/services.php:603
+#: modules/ppcp-wc-gateway/services.php:606
 msgid "Arabic (Kuwait)"
 msgstr "Arabisch (Kuwait)"
 
-#: modules/ppcp-wc-gateway/services.php:603
+#: modules/ppcp-wc-gateway/services.php:606
 msgid "Arabic (Jordan)"
 msgstr "Arabisch (Jordanien)"
 
-#: modules/ppcp-wc-gateway/services.php:603
+#: modules/ppcp-wc-gateway/services.php:606
 msgid "Arabic (Egypt)"
 msgstr "Arabisch (Ägypten)"
 
-#: modules/ppcp-wc-gateway/services.php:603
+#: modules/ppcp-wc-gateway/services.php:606
 msgid "Arabic (Bahrain)"
 msgstr "Arabisch (Bahrain)"
 
-#: modules/ppcp-wc-gateway/services.php:603
+#: modules/ppcp-wc-gateway/services.php:606
 msgid "Arabic (Algeria)"
 msgstr "Arabisch (Algerien)"
 
-#: modules/ppcp-wc-gateway/services.php:573
+#: modules/ppcp-wc-gateway/services.php:576
 #: assets/ppcp-paylater-block-js-paylater-block.js:1
 msgid "Home"
 msgstr "Start"
 
-#: modules/ppcp-wc-gateway/services.php:573
+#: modules/ppcp-wc-gateway/services.php:576
 #: assets/ppcp-paylater-block-js-paylater-block.js:1
 msgid "Shop"
 msgstr "Shop"
@@ -552,17 +557,17 @@ msgstr "Die Gebühr, die PayPal für die Rückerstattungstransaktionen erhebt."
 msgid "PayPal Refund Fee:"
 msgstr "PayPal-Rückerstattungsgebühr:"
 
-#: modules/ppcp-wc-gateway/services.php:263
+#: modules/ppcp-wc-gateway/services.php:280
 msgctxt "Name of payment method"
 msgid "Apple Pay"
 msgstr "Apple Pay"
 
-#: modules/ppcp-wc-gateway/services.php:263
+#: modules/ppcp-wc-gateway/services.php:280
 msgctxt "Name of payment method"
 msgid "Google Pay"
 msgstr "Google Pay"
 
-#: modules/ppcp-settings/src/Data/Definition/FeaturesDefinition.php:128
+#: modules/ppcp-settings/src/Data/Definition/FeaturesDefinition.php:133
 #: assets/ppcp-settings-js-index.js:5 assets/ppcp-settings-js-index.js:17
 msgid "Alternative Payment Methods"
 msgstr "Alternative Zahlungsmethoden"
@@ -631,123 +636,123 @@ msgstr "Paketverfolgungsdaten mit PayPal teilen"
 msgid "Missing required information: "
 msgstr "Fehlende erforderliche Informationen: "
 
-#: modules/ppcp-wc-gateway/services.php:603
+#: modules/ppcp-wc-gateway/services.php:606
 msgid "Chinese (Traditional)"
 msgstr "Chinesisch (traditionell)"
 
-#: modules/ppcp-wc-gateway/services.php:603
+#: modules/ppcp-wc-gateway/services.php:606
 msgid "Chinese (Hong Kong)"
 msgstr "Chinesisch (Hongkong)"
 
-#: modules/ppcp-wc-gateway/services.php:603
+#: modules/ppcp-wc-gateway/services.php:606
 msgid "Chinese (Simplified)"
 msgstr "Chinesisch (vereinfacht)"
 
-#: modules/ppcp-wc-gateway/services.php:603
+#: modules/ppcp-wc-gateway/services.php:606
 msgid "Thai"
 msgstr "Thai"
 
-#: modules/ppcp-wc-gateway/services.php:603
+#: modules/ppcp-wc-gateway/services.php:606
 msgid "Swedish"
 msgstr "Schwedisch"
 
-#: modules/ppcp-wc-gateway/services.php:603
+#: modules/ppcp-wc-gateway/services.php:606
 msgid "Slovak"
 msgstr "Slowakisch"
 
-#: modules/ppcp-wc-gateway/services.php:603
+#: modules/ppcp-wc-gateway/services.php:606
 msgid "Russian"
 msgstr "Russisch"
 
-#: modules/ppcp-wc-gateway/services.php:603
+#: modules/ppcp-wc-gateway/services.php:606
 msgid "Portuguese (Portugal)"
 msgstr "Portugiesisch (Portugal)"
 
-#: modules/ppcp-wc-gateway/services.php:603
+#: modules/ppcp-wc-gateway/services.php:606
 msgid "Portuguese (Brazil)"
 msgstr "Portugiesisch (Brasilien)"
 
-#: modules/ppcp-wc-gateway/services.php:603
+#: modules/ppcp-wc-gateway/services.php:606
 msgid "Polish"
 msgstr "Polnisch"
 
-#: modules/ppcp-wc-gateway/services.php:603
+#: modules/ppcp-wc-gateway/services.php:606
 msgid "Dutch"
 msgstr "Niederländisch"
 
-#: modules/ppcp-wc-gateway/services.php:603
+#: modules/ppcp-wc-gateway/services.php:606
 msgid "Norwegian"
 msgstr "Norwegisch"
 
-#: modules/ppcp-wc-gateway/services.php:603
+#: modules/ppcp-wc-gateway/services.php:606
 msgid "Korean"
 msgstr "Koreanisch"
 
-#: modules/ppcp-wc-gateway/services.php:603
+#: modules/ppcp-wc-gateway/services.php:606
 msgid "Japanese"
 msgstr "Japanisch"
 
-#: modules/ppcp-wc-gateway/services.php:603
+#: modules/ppcp-wc-gateway/services.php:606
 msgid "Italian"
 msgstr "Italienisch"
 
-#: modules/ppcp-wc-gateway/services.php:603
+#: modules/ppcp-wc-gateway/services.php:606
 msgid "Indonesian"
 msgstr "Indonesisch"
 
-#: modules/ppcp-wc-gateway/services.php:603
+#: modules/ppcp-wc-gateway/services.php:606
 msgid "Hungarian"
 msgstr "Ungarisch"
 
-#: modules/ppcp-wc-gateway/services.php:603
+#: modules/ppcp-wc-gateway/services.php:606
 msgid "Hebrew"
 msgstr "Hebräisch"
 
-#: modules/ppcp-wc-gateway/services.php:603
+#: modules/ppcp-wc-gateway/services.php:606
 msgid "French (France)"
 msgstr "Französisch (Frankreich)"
 
-#: modules/ppcp-wc-gateway/services.php:603
+#: modules/ppcp-wc-gateway/services.php:606
 msgid "French (Canada)"
 msgstr "Französisch (Kanada)"
 
-#: modules/ppcp-wc-gateway/services.php:603
+#: modules/ppcp-wc-gateway/services.php:606
 msgid "Finnish"
 msgstr "Finnisch"
 
-#: modules/ppcp-wc-gateway/services.php:603
+#: modules/ppcp-wc-gateway/services.php:606
 msgid "Spanish (Mexico)"
 msgstr "Spanisch (Mexiko)"
 
-#: modules/ppcp-wc-gateway/services.php:603
+#: modules/ppcp-wc-gateway/services.php:606
 msgid "Spanish (Spain)"
 msgstr "Spanisch (Spanien)"
 
-#: modules/ppcp-wc-gateway/services.php:603
+#: modules/ppcp-wc-gateway/services.php:606
 msgid "English (United States)"
 msgstr "Englisch (Vereinigte Staaten)"
 
-#: modules/ppcp-wc-gateway/services.php:603
+#: modules/ppcp-wc-gateway/services.php:606
 msgid "English (United Kingdom)"
 msgstr "Englisch (Großbritannien)"
 
-#: modules/ppcp-wc-gateway/services.php:603
+#: modules/ppcp-wc-gateway/services.php:606
 msgid "English (Australia)"
 msgstr "Englisch (Australien)"
 
-#: modules/ppcp-wc-gateway/services.php:603
+#: modules/ppcp-wc-gateway/services.php:606
 msgid "Greek"
 msgstr "Griechisch"
 
-#: modules/ppcp-wc-gateway/services.php:603
+#: modules/ppcp-wc-gateway/services.php:606
 msgid "Danish"
 msgstr "Dänisch"
 
-#: modules/ppcp-wc-gateway/services.php:603
+#: modules/ppcp-wc-gateway/services.php:606
 msgid "Czech"
 msgstr "Tschechisch"
 
-#: modules/ppcp-wc-gateway/services.php:603 assets/ppcp-settings-js-index.js:18
+#: modules/ppcp-wc-gateway/services.php:606 assets/ppcp-settings-js-index.js:18
 msgid "Browser language"
 msgstr "Sprache des Browsers"
 
@@ -757,13 +762,13 @@ msgid "Continue"
 msgstr "Fortfahren"
 
 #: modules/ppcp-applepay/src/Assets/ApplePayButton.php:126
-#: modules/ppcp-applepay/src/Assets/ApplePayButton.php:154
+#: modules/ppcp-applepay/src/Assets/ApplePayButton.php:158
 msgid "Error processing cart"
 msgstr "Fehler bei der Verarbeitung des Warenkorbs"
 
 #: modules/ppcp-applepay/src/ApplePayGateway.php:86
 #: modules/ppcp-applepay/src/Assets/ApplePayButton.php:48
-#: modules/ppcp-settings/src/Data/Definition/FeaturesDefinition.php:128
+#: modules/ppcp-settings/src/Data/Definition/FeaturesDefinition.php:133
 #: modules/ppcp-settings/src/Data/Definition/PaymentMethodsDefinition.php:158
 #: modules/ppcp-status-report/src/StatusReportModule.php:73
 #: assets/ppcp-settings-js-index.js:1
@@ -787,49 +792,49 @@ msgid "Item amount mismatch. Extra line added."
 msgstr "Artikelmenge stimmt nicht überein. Zusätzliche Zeile hinzugefügt."
 
 #. translators: %1$s and %2$s are wrapper html tags.
-#: modules/ppcp-paypal-subscriptions/src/PayPalSubscriptionsModule.php:594
+#: modules/ppcp-paypal-subscriptions/src/PayPalSubscriptionsModule.php:630
 msgid "%1$sPlan Name%2$s"
 msgstr "%1$sName des Plans%2$s"
 
 #. translators: %1$s and %2$s are wrapper html tags.
-#: modules/ppcp-paypal-subscriptions/src/PayPalSubscriptionsModule.php:582
+#: modules/ppcp-paypal-subscriptions/src/PayPalSubscriptionsModule.php:618
 msgid "%1$sPlan%2$s"
 msgstr "%1$sPlan%2$s"
 
 #. translators: %1$s and %2$s are wrapper html tags.
-#: modules/ppcp-paypal-subscriptions/src/PayPalSubscriptionsModule.php:574
+#: modules/ppcp-paypal-subscriptions/src/PayPalSubscriptionsModule.php:610
 msgid "%1$sProduct%2$s"
 msgstr "%1$sProdukt%2$s"
 
 #. translators: %1$s and %2$s is open and closing paragraph tag.
-#: modules/ppcp-paypal-subscriptions/src/PayPalSubscriptionsModule.php:566
+#: modules/ppcp-paypal-subscriptions/src/PayPalSubscriptionsModule.php:602
 msgid "%1$sPlan unlinked successfully ✔️%2$s"
 msgstr "%1$sVerknüpfung des Plans erfolgreich aufgehoben ✔️%2$s"
 
 #. translators: %1$s and %2$s are button and wrapper html tags.
-#: modules/ppcp-paypal-subscriptions/src/PayPalSubscriptionsModule.php:560
+#: modules/ppcp-paypal-subscriptions/src/PayPalSubscriptionsModule.php:596
 msgid "%1$sUnlink PayPal Subscription Plan%2$s"
 msgstr "%1$sVerknüpfung des PayPal-Abonnementplans aufheben%2$s"
 
-#: modules/ppcp-paypal-subscriptions/src/PayPalSubscriptionsModule.php:551
+#: modules/ppcp-paypal-subscriptions/src/PayPalSubscriptionsModule.php:587
 msgid "Create a subscription product and plan to bill customers at regular intervals. Be aware that certain subscription settings cannot be modified once the PayPal Subscription is linked to this product. Unlink the product to edit disabled fields."
 msgstr "Erstelle ein Abonnementprodukt und plane, Kunden in regelmäßigen Abständen Rechnungen zu stellen. Beachte, dass bestimmte Abonnementeinstellungen nicht mehr geändert werden können, sobald das PayPal-Abonnement mit diesem Produkt verknüpft ist. Hebe die Verknüpfung des Produkts auf, um deaktivierte Felder zu bearbeiten."
 
 #. translators: %1$s and %2$s are label open and close tags.
-#: modules/ppcp-paypal-subscriptions/src/PayPalSubscriptionsModule.php:547
+#: modules/ppcp-paypal-subscriptions/src/PayPalSubscriptionsModule.php:583
 msgid "%1$sConnect Product to PayPal Subscriptions Plan%2$s"
 msgstr "%1$sProdukt mit PayPal-Abonnementplan verbinden%2$s"
 
 #. translators: %1$s and %2$s are label open and close tags.
-#: modules/ppcp-paypal-subscriptions/src/PayPalSubscriptionsModule.php:539
+#: modules/ppcp-paypal-subscriptions/src/PayPalSubscriptionsModule.php:575
 msgid "%1$sConnect to PayPal%2$s"
 msgstr "%1$sMit PayPal verbinden%2$s"
 
-#: modules/ppcp-paypal-subscriptions/src/PayPalSubscriptionsModule.php:460
+#: modules/ppcp-paypal-subscriptions/src/PayPalSubscriptionsModule.php:426
 msgid "Subscription:"
 msgstr "Abonnement:"
 
-#: modules/ppcp-paypal-subscriptions/src/PayPalSubscriptionsModule.php:459
+#: modules/ppcp-paypal-subscriptions/src/PayPalSubscriptionsModule.php:425
 msgid "This subscription is linked to a PayPal Subscription, Cancel it to unlink."
 msgstr "Dieses Abonnement ist mit einem PayPal-Abonnement verknüpft, kündige es, um die Verknüpfung aufzuheben."
 
@@ -870,37 +875,37 @@ msgstr "PayPal-Vault aktiviert"
 msgid "You are currently paying with %3$s. %4$s%1$sChoose another payment method%2$s."
 msgstr "Du bezahlst derzeit mit %3$s. %4$s %1$s Wähle eine andere Zahlungsmethode%2$s."
 
-#: modules/ppcp-button/src/Assets/SmartButton.php:721
+#: modules/ppcp-button/src/Assets/SmartButton.php:742
 msgid "Card payment details are missing. Please fill in all required fields."
 msgstr "Es fehlen Angaben zur Kartenzahlung. Bitte fülle alle Pflichtfelder aus."
 
-#: modules/ppcp-wc-gateway/services.php:248
+#: modules/ppcp-wc-gateway/services.php:265
 msgid "Disable PayPal for subscriptions"
 msgstr "Deaktivieren von PayPal für Abonnements"
 
-#: modules/ppcp-wc-gateway/services.php:248
+#: modules/ppcp-wc-gateway/services.php:265
 msgid "PayPal Subscriptions"
 msgstr "PayPal-Abonnements"
 
-#: modules/ppcp-wc-gateway/services.php:257
+#: modules/ppcp-wc-gateway/services.php:274
 msgid "Utilize PayPal Vaulting for flexible subscription processing with saved payment methods, create “PayPal Subscriptions” to bill customers at regular intervals, or disable PayPal for subscription-type products."
 msgstr "Verwende PayPal-Vaulting für eine flexible Abonnementabwicklung mit gespeicherten Zahlungsmethoden, erstelle \"PayPal-Abonnements\", um Kunden in regelmäßigen Abständen Rechnungen zu stellen, oder deaktiviere PayPal für abonnementartige Produkte."
 
 #: modules/ppcp-status-report/src/StatusReportModule.php:73
-#: modules/ppcp-wc-gateway/services.php:257
+#: modules/ppcp-wc-gateway/services.php:274
 msgid "Subscriptions Mode"
 msgstr "Abonnementmodus"
 
-#: modules/ppcp-wc-payment-tokens/src/WcPaymentTokensModule.php:158
+#: modules/ppcp-wc-payment-tokens/src/WcPaymentTokensModule.php:174
 msgid "Could not delete payment token. "
 msgstr "Das Zahlungstoken konnte nicht gelöscht werden. "
 
-#: modules/ppcp-wc-payment-tokens/src/WcPaymentTokensModule.php:149
+#: modules/ppcp-wc-payment-tokens/src/WcPaymentTokensModule.php:165
 msgid "Invalid payment method."
 msgstr "Ungültige Zahlungsart."
 
-#: modules/ppcp-paypal-subscriptions/src/PayPalSubscriptionsModule.php:276
-#: modules/ppcp-paypal-subscriptions/src/PayPalSubscriptionsModule.php:457
+#: modules/ppcp-paypal-subscriptions/src/PayPalSubscriptionsModule.php:242
+#: modules/ppcp-paypal-subscriptions/src/PayPalSubscriptionsModule.php:423
 msgid "PayPal Subscription"
 msgstr "PayPal-Abonnement"
 
@@ -929,18 +934,18 @@ msgid "%s (via PayPal)"
 msgstr "%s (über PayPal)"
 
 #: modules/ppcp-applepay/services.php:293
-#: modules/ppcp-wc-gateway/services.php:509
-#: modules/ppcp-wc-gateway/services.php:522
-#: modules/ppcp-wc-gateway/services.php:539
+#: modules/ppcp-wc-gateway/services.php:512
+#: modules/ppcp-wc-gateway/services.php:525
+#: modules/ppcp-wc-gateway/services.php:542
 msgid "Status: Available"
 msgstr "Status: Verfügbar"
 
 #. translators: %1$s and %2$s are the opening and closing of HTML <a> tag.
-#: modules/ppcp-wc-gateway/services.php:474
+#: modules/ppcp-wc-gateway/services.php:477
 msgid "Required when %1$sPay upon Invoice%2$s is used."
 msgstr "Erforderlich, wenn %1$sZahlung auf Rechnung%2$s verwendet wird."
 
-#: modules/ppcp-wc-gateway/services.php:260
+#: modules/ppcp-wc-gateway/services.php:277
 msgctxt "Name of payment method"
 msgid "Trustly"
 msgstr "Trustly"
@@ -955,20 +960,16 @@ msgstr "Bitte gib einen gültigen Benutzernamen ein."
 
 #: modules/ppcp-button/src/Validation/CheckoutFormValidator.php:58
 msgid "An account is already registered with your email address. <a href=\"#\" class=\"showlogin\">Please log in.</a>"
-msgstr "Für deine E-Mail-Adresse existiert bereits ein Kundenkonto. <a href=\"#\" class=\"showlogin\">Bitte melde dich an.</a>"
+msgstr "Mit deiner E-Mail-Adresse ist bereits ein Konto registriert. <a href=\"#\" class=\"showlogin\">Bitte melde dich an.</a>"
 
 #. translators: %1$s and %2$s are the opening and closing of HTML <a> tag.
-#: modules/ppcp-wc-gateway/services.php:467
+#: modules/ppcp-wc-gateway/services.php:470
 msgid "Manage online risk with %1$sFraudNet%2$s."
 msgstr "Online-Risiken verwalten mit %1$sFraudNet%2$s."
 
-#: modules/ppcp-wc-gateway/src/Processor/OrderProcessor.php:101
+#: modules/ppcp-wc-gateway/src/Processor/OrderProcessor.php:103
 msgid "Could not retrieve PayPal order."
 msgstr "PayPal-Bestellung konnte nicht abgerufen werden."
-
-#: modules/ppcp-wc-gateway/src/Gateway/OXXO/OXXOGateway.php:128
-msgid "OXXO is a Mexican chain of convenience stores.<br />*Get PayPal account permission to use OXXO payment functionality by contacting us at (+52) 800-925-0304"
-msgstr "OXXO ist eine mexikanische Kette von Convenience-Stores.<br />*Hole dir die PayPal-Kontoerlaubnis zur Nutzung der OXXO-Zahlungsfunktion, indem du uns unter (+52) 800-925-0304 kontaktierst"
 
 #: modules/ppcp-wc-gateway/src/Gateway/CardButtonGateway.php:144
 msgid "Enable Standard Card Button gateway"
@@ -979,7 +980,7 @@ msgstr "Standard-Karten-Button-Gateway aktivieren"
 msgid "Pay Later"
 msgstr "Später Bezahlen"
 
-#: modules/ppcp-settings/src/SettingsModule.php:404
+#: modules/ppcp-settings/src/SettingsModule.php:403
 msgid "Enable Advanced Card Processing"
 msgstr "Erweiterte Kartenverarbeitung aktivieren"
 
@@ -987,24 +988,24 @@ msgstr "Erweiterte Kartenverarbeitung aktivieren"
 msgid "Standard Card Button"
 msgstr "Standard-Karten-Button"
 
-#: modules/ppcp-wc-gateway/services.php:543
+#: modules/ppcp-wc-gateway/services.php:546
 msgid "Enable Pay upon Invoice"
 msgstr "Rechnungskauf aktivieren"
 
-#: modules/ppcp-wc-gateway/services.php:511
+#: modules/ppcp-wc-gateway/services.php:514
 msgid "Enable Advanced Card Payments"
 msgstr "Erweiterte Kartenzahlungen aktivieren"
 
 #: modules/ppcp-applepay/services.php:294
-#: modules/ppcp-wc-gateway/services.php:510
-#: modules/ppcp-wc-gateway/services.php:523
-#: modules/ppcp-wc-gateway/services.php:540
+#: modules/ppcp-wc-gateway/services.php:513
+#: modules/ppcp-wc-gateway/services.php:526
+#: modules/ppcp-wc-gateway/services.php:543
 msgid "Status: Not yet enabled"
 msgstr "Status: Noch nicht aktiviert"
 
 #. translators: %1$s, %2$s, %3$s and %4$s are the opening and closing of HTML
 #. <a> tag.
-#: modules/ppcp-wc-gateway/services.php:419
+#: modules/ppcp-wc-gateway/services.php:422
 msgid "This will disable all %1$sPay Later%2$s features and %3$sAlternative Payment Methods%4$s on your site."
 msgstr "Dadurch werden alle %1$sSpäter bezahlen%2$s-Funktionen und %3$sAlternative Zahlungsmethoden%4$s auf deiner Website deaktiviert."
 
@@ -1028,12 +1029,12 @@ msgstr "Eine Funktion anfordern"
 msgid "Documentation"
 msgstr "Dokumentation"
 
-#: modules/ppcp-wc-gateway/src/Gateway/PayUponInvoice/PayUponInvoice.php:219
+#: modules/ppcp-local-alternative-payment-methods/src/PayUponInvoice/PayUponInvoiceIntegration.php:215
 msgid "Phone field cannot be empty."
 msgstr "Das Feld „Telefon“ darf nicht leer sein."
 
-#: modules/ppcp-wc-gateway/src/Gateway/PayUponInvoice/PayUponInvoice.php:168
-#: modules/ppcp-wc-gateway/src/WCGatewayModule.php:760
+#: modules/ppcp-local-alternative-payment-methods/src/PayUponInvoice/PayUponInvoiceIntegration.php:163
+#: modules/ppcp-wc-gateway/src/WCGatewayModule.php:783
 msgid "Phone"
 msgstr "Telefon"
 
@@ -1069,30 +1070,26 @@ msgstr "Die Zahlungsinitiierung war erfolgreich und wartet darauf, dass der Käu
 msgid "%1$s cannot be used without the PayPal gateway. <a href=\"%2$s\">Enable the PayPal gateway</a>."
 msgstr "%1$s kann nicht ohne das PayPal-Gateway verwendet werden. <a href=\"%2$s\">Aktiviere das PayPal-Gateway</a>."
 
-#: modules/ppcp-wc-gateway/src/Gateway/PayPalGateway.php:404
+#: modules/ppcp-wc-gateway/src/Gateway/PayPalGateway.php:450
 msgid "Payer action required, possibly overcharge."
 msgstr "Maßnahmen des Zahlers erforderlich, mögliche Überberechnung."
 
-#: modules/ppcp-wc-gateway/src/Gateway/OXXO/OXXOGateway.php:148
+#: modules/ppcp-local-alternative-payment-methods/src/OXXOGateway.php:43
 msgid "Enable/Disable OXXO payment gateway."
 msgstr "Aktivieren/Deaktivieren des OXXO-Zahlungs-Gateways."
 
-#: modules/ppcp-wc-gateway/src/Gateway/OXXO/OXXOGateway.php:130
-msgid "OXXO allows you to pay bills and online purchases in-store with cash."
-msgstr "OXXO ermöglicht es dir, Rechnungen und Online-Einkäufe im Geschäft mit Bargeld zu bezahlen."
-
-#: modules/ppcp-wc-gateway/src/Gateway/OXXO/OXXO.php:160
+#: modules/ppcp-local-alternative-payment-methods/src/OXXOIntegration.php:98
 msgid "OXXO Voucher/Ticket"
 msgstr "OXXO-Gutschein/Ticket"
 
-#: modules/ppcp-wc-gateway/src/Gateway/OXXO/OXXO.php:141
+#: modules/ppcp-local-alternative-payment-methods/src/OXXOIntegration.php:79
 msgid "OXXO voucher has expired or the buyer didn't complete the payment successfully."
 msgstr "Der OXXO-Gutschein ist abgelaufen oder der Käufer hat die Zahlung nicht erfolgreich abgeschlossen."
 
-#: modules/ppcp-wc-gateway/src/Gateway/OXXO/OXXO.php:111
-#: modules/ppcp-wc-gateway/src/Gateway/OXXO/OXXO.php:132
-#: modules/ppcp-wc-gateway/src/Gateway/OXXO/OXXO.php:161
-#: modules/ppcp-wc-gateway/src/Gateway/OXXO/OXXO.php:171
+#: modules/ppcp-local-alternative-payment-methods/src/OXXOIntegration.php:49
+#: modules/ppcp-local-alternative-payment-methods/src/OXXOIntegration.php:70
+#: modules/ppcp-local-alternative-payment-methods/src/OXXOIntegration.php:99
+#: modules/ppcp-local-alternative-payment-methods/src/OXXOIntegration.php:109
 msgid "See OXXO voucher"
 msgstr "OXXO-Gutschein ansehen"
 
@@ -1105,10 +1102,10 @@ msgid "Enable/Disable the separate payment gateway with the card button."
 msgstr "Aktiviere/Deaktiviere das separate Zahlungsgateway mit dem Karten-Button."
 
 #: modules/ppcp-settings/src/Data/SettingsProvider.php:661
-#: modules/ppcp-wc-gateway/services.php:164
-#: modules/ppcp-wc-gateway/services.php:435
+#: modules/ppcp-wc-gateway/services.php:181
+#: modules/ppcp-wc-gateway/services.php:438
 #: modules/ppcp-wc-gateway/src/Gateway/CardButtonGateway.php:124
-#: modules/ppcp-wc-gateway/src/Gateway/CreditCardGateway.php:220
+#: modules/ppcp-wc-gateway/src/Gateway/CreditCardGateway.php:223
 #: modules/ppcp-wc-gateway/src/Helper/CardPaymentsConfiguration.php:290
 msgid "Debit & Credit Cards"
 msgstr "Debit- und Kreditkarten"
@@ -1117,115 +1114,112 @@ msgstr "Debit- und Kreditkarten"
 msgid "The separate payment gateway with the card button. If disabled, the button is included in the PayPal gateway."
 msgstr "Das separate Zahlungs-Gateway mit dem Standard-Karten-Button. Wenn deaktiviert, ist dieser Button im PayPal-Gateway enthalten."
 
+#: modules/ppcp-local-alternative-payment-methods/src/OXXOGateway.php:43
 #: modules/ppcp-settings/src/Data/Definition/PaymentMethodsDefinition.php:171
-#: modules/ppcp-wc-gateway/src/Gateway/OXXO/OXXOGateway.php:127
-#: modules/ppcp-wc-gateway/src/Gateway/OXXO/OXXOGateway.php:148
 msgid "OXXO"
 msgstr "OXXO"
 
-#: modules/ppcp-button/src/Assets/SmartButton.php:738
+#: modules/ppcp-button/src/Assets/SmartButton.php:759
 msgctxt "checkout-validation"
 msgid "Shipping %s"
 msgstr "Versand %s"
 
-#: modules/ppcp-button/src/Assets/SmartButton.php:736
+#: modules/ppcp-button/src/Assets/SmartButton.php:757
 msgctxt "checkout-validation"
 msgid "Billing %s"
 msgstr "Rechnung %s"
 
-#: modules/ppcp-button/src/Assets/SmartButton.php:725
+#: modules/ppcp-button/src/Assets/SmartButton.php:746
 msgid "%s is a required field."
 msgstr "%s ist ein Pflichtfeld."
 
-#: modules/ppcp-button/src/Assets/SmartButton.php:723
+#: modules/ppcp-button/src/Assets/SmartButton.php:744
 msgid "Required form fields are not filled."
 msgstr "Erforderliche Formularfelder sind nicht ausgefüllt."
 
-#: modules/ppcp-wc-gateway/src/WCGatewayModule.php:261
+#: modules/ppcp-local-alternative-payment-methods/src/LocalAlternativePaymentMethodsModule.php:77
 msgid "Could not process WC order because PAYMENT.CAPTURE.COMPLETED webhook not received."
 msgstr "Die Bestellung konnte nicht bearbeitet werden, da der Webhook PAYMENT.CAPTURE.COMPLETED nicht empfangen wurde."
 
-#: modules/ppcp-wc-gateway/src/Processor/OrderProcessor.php:120
+#: modules/ppcp-wc-gateway/src/Processor/OrderProcessor.php:122
 msgid "The payment is not ready for processing yet."
 msgstr "Die Zahlung ist noch nicht zur Bearbeitung bereit."
 
-#: modules/ppcp-wc-gateway/src/Gateway/PayUponInvoice/PayUponInvoiceGateway.php:212
+#: modules/ppcp-local-alternative-payment-methods/src/PayUponInvoice/PayUponInvoiceGateway.php:103
 msgid "Awaiting Pay upon Invoice payment."
 msgstr "Warten auf Rechnungskauf-Zahlung."
 
-#: modules/ppcp-wc-gateway/src/Gateway/PayUponInvoice/PayUponInvoiceGateway.php:177
+#: modules/ppcp-local-alternative-payment-methods/src/PayUponInvoice/PayUponInvoiceGateway.php:66
 msgid "Customer service instructions to be presented on Ratepay's payment instructions."
 msgstr "Kundendienstanweisungen werden in den Ratepay-Zahlungsanweisungen dargestellt."
 
+#: modules/ppcp-local-alternative-payment-methods/src/PayUponInvoice/PayUponInvoiceGateway.php:66
 #: modules/ppcp-settings/src/Data/Definition/PaymentMethodsDefinition.php:183
 #: modules/ppcp-settings/src/Data/Definition/PaymentMethodsDefinition.php:203
-#: modules/ppcp-wc-gateway/src/Gateway/PayUponInvoice/PayUponInvoiceGateway.php:177
 msgid "Customer service instructions"
 msgstr "Kundendienstanweisungen"
 
-#: modules/ppcp-wc-gateway/src/Gateway/PayUponInvoice/PayUponInvoiceGateway.php:177
+#: modules/ppcp-local-alternative-payment-methods/src/PayUponInvoice/PayUponInvoiceGateway.php:66
 msgid "Logo to be presented on Ratepay's payment instructions."
 msgstr "Logo für die Ratepay-Zahlungsanweisungen."
 
+#: modules/ppcp-local-alternative-payment-methods/src/PayUponInvoice/PayUponInvoiceGateway.php:66
 #: modules/ppcp-settings/src/Data/Definition/PaymentMethodsDefinition.php:183
 #: modules/ppcp-settings/src/Data/Definition/PaymentMethodsDefinition.php:203
-#: modules/ppcp-wc-gateway/src/Gateway/PayUponInvoice/PayUponInvoiceGateway.php:177
 msgid "Logo URL"
 msgstr "Logo-URL"
 
+#: modules/ppcp-local-alternative-payment-methods/src/PayUponInvoice/PayUponInvoiceGateway.php:66
 #: modules/ppcp-settings/src/Data/Definition/PaymentMethodsDefinition.php:183
 #: modules/ppcp-settings/src/Data/Definition/PaymentMethodsDefinition.php:203
-#: modules/ppcp-wc-gateway/src/Gateway/PayUponInvoice/PayUponInvoiceGateway.php:177
 #: assets/ppcp-settings-js-index.js:18
 msgid "Brand name"
 msgstr "Markenname"
 
-#: modules/ppcp-wc-gateway/src/Gateway/PayUponInvoice/PayUponInvoiceGateway.php:177
+#: modules/ppcp-local-alternative-payment-methods/src/PayUponInvoice/PayUponInvoiceGateway.php:66
 msgid "Specify brand name, logo and customer service instructions to be presented on Ratepay's payment instructions."
 msgstr "Bestimme Markenname, Logo, und Kundendienstanweisung für die Ratepay-Zahlungsanweisungen."
 
-#: modules/ppcp-wc-gateway/src/Gateway/PayUponInvoice/PayUponInvoiceGateway.php:177
+#: modules/ppcp-local-alternative-payment-methods/src/PayUponInvoice/PayUponInvoiceGateway.php:66
 msgid "Experience Context"
 msgstr "Erfahrungskontext"
 
-#: modules/ppcp-wc-gateway/src/Gateway/PayUponInvoice/PayUponInvoiceGateway.php:177
+#: modules/ppcp-local-alternative-payment-methods/src/PayUponInvoice/PayUponInvoiceGateway.php:66
 msgid "Enable/Disable Pay upon Invoice payment gateway."
 msgstr "Zahlungsmethode \"Rechnungskauf\" aktivieren/deaktivieren."
 
-#: modules/ppcp-settings/src/Data/Definition/FeaturesDefinition.php:132
+#: modules/ppcp-local-alternative-payment-methods/src/PayUponInvoice/PayUponInvoiceGateway.php:66
+#: modules/ppcp-settings/src/Data/Definition/FeaturesDefinition.php:137
 #: modules/ppcp-settings/src/Data/Definition/PaymentMethodsDefinition.php:171
-#: modules/ppcp-wc-gateway/src/Gateway/PayUponInvoice/PayUponInvoiceGateway.php:150
-#: modules/ppcp-wc-gateway/src/Gateway/PayUponInvoice/PayUponInvoiceGateway.php:177
 msgid "Pay upon Invoice"
 msgstr "Rechnungskauf"
 
-#: modules/ppcp-wc-gateway/src/Gateway/PayUponInvoice/PayUponInvoiceGateway.php:154
+#: modules/ppcp-local-alternative-payment-methods/src/PayUponInvoice/PayUponInvoiceGateway.php:46
 msgid "Once you place an order, pay within 30 days. Our payment partner Ratepay will send you payment instructions."
 msgstr "Sobald die Bestellung aufgegeben wurde, zahle innerhalb von 30 Tagen. Unser Partner Ratepay wird dir Zahlungsanweisungen zukommen lassen."
 
 #: modules/ppcp-settings/src/Data/Definition/PaymentMethodsDefinition.php:171
-#: modules/ppcp-wc-gateway/src/Gateway/PayUponInvoice/PayUponInvoiceGateway.php:151
 msgid "Pay upon Invoice is an invoice payment method in Germany. It is a local buy now, pay later payment method that allows the buyer to place an order, receive the goods, try them, verify they are in good order, and then pay the invoice within 30 days."
 msgstr "Rechnungskauf ist eine Zahlungsmethode für Rechnungen in Deutschland. Es handelt sich um eine lokale Zahlungsmethode, die es dem Käufer ermöglicht, eine Bestellung aufzugeben, die Ware zu erhalten, sie zu testen, zu überprüfen, ob sie in Ordnung ist, und dann die Rechnung innerhalb von 30 Tagen zu bezahlen."
 
-#: modules/ppcp-wc-gateway/src/Gateway/PayUponInvoice/PayUponInvoice.php:272
+#: modules/ppcp-local-alternative-payment-methods/src/PayUponInvoice/PayUponInvoiceIntegration.php:268
 msgid "RatePay payment instructions"
 msgstr "Ratepay-Zahlungsanweisungen"
 
-#: modules/ppcp-wc-gateway/src/Gateway/PayUponInvoice/PayUponInvoice.php:224
+#: modules/ppcp-local-alternative-payment-methods/src/PayUponInvoice/PayUponInvoiceIntegration.php:220
 msgid "Phone number size must be between 1 and 14"
 msgstr "Die Telefonnummer muss zwischen 1 und 14 Ziffern haben"
 
-#: modules/ppcp-wc-gateway/src/Gateway/PayUponInvoice/PayUponInvoice.php:214
+#: modules/ppcp-local-alternative-payment-methods/src/PayUponInvoice/PayUponInvoiceIntegration.php:209
 msgid "Invalid birth date."
 msgstr "Ungültiges Geburtsdatum."
 
-#: modules/ppcp-wc-gateway/src/Gateway/PayUponInvoice/PayUponInvoice.php:209
+#: modules/ppcp-local-alternative-payment-methods/src/PayUponInvoice/PayUponInvoiceIntegration.php:204
 msgid "Billing country not available."
 msgstr "Rechnungsland nicht verfügbar."
 
 #. translators: %s is the id of the order.
-#: modules/ppcp-button/src/Endpoint/ApproveOrderEndpoint.php:182
+#: modules/ppcp-button/src/Endpoint/ApproveOrderEndpoint.php:198
 msgid "Order %s is not ready for processing yet."
 msgstr "Die Bestellung %s ist noch nicht zur Bearbeitung bereit."
 
@@ -1234,7 +1228,7 @@ msgid "%s is not a valid email address."
 msgstr "%s ist keine gültige E-Mail-Adresse."
 
 #. translators: %s is fraud AVS message
-#: modules/ppcp-wc-gateway/src/Processor/CreditCardOrderInfoHandlingTrait.php:98
+#: modules/ppcp-wc-gateway/src/Processor/CreditCardOrderInfoHandlingTrait.php:104
 msgid "AVS: %s"
 msgstr "AVS: %s"
 
@@ -1277,7 +1271,7 @@ msgstr "PayPal-Gebühr:"
 msgid "Venmo"
 msgstr "Venmo"
 
-#: modules/ppcp-wc-gateway/services.php:260
+#: modules/ppcp-wc-gateway/services.php:277
 msgctxt "Name of payment method"
 msgid "BLIK"
 msgstr "BLIK"
@@ -1322,22 +1316,22 @@ msgstr "Ob PayPal die Standard-Währung des Shops unterstützt oder nicht."
 msgid "WooCommerce currency supported"
 msgstr "WooCommerce-Währung unterstützt"
 
-#: modules/ppcp-button/src/Assets/SmartButton.php:721
+#: modules/ppcp-button/src/Assets/SmartButton.php:742
 msgid "Cardholder's first and last name are required, please fill the checkout form required fields."
 msgstr "Vor- und Nachname des Karteninhabers sind erforderlich, bitte fülle die erforderlichen Felder des Kaufabwicklungs-Formulars aus."
 
 #. translators: %1$s - PENDING, DENIED, ... %2$s - text explaining the reason,
 #. ...
-#: modules/ppcp-wc-gateway/src/Processor/PaymentsStatusHandlingTrait.php:125
+#: modules/ppcp-wc-gateway/src/Processor/PaymentsStatusHandlingTrait.php:132
 msgid "PayPal order payment is set to %1$s status, details: %2$s"
 msgstr "Die PayPal-Bestellung hat den Status %1$s, Details: %2$s"
 
-#: modules/ppcp-wc-gateway/src/Processor/PaymentsStatusHandlingTrait.php:110
+#: modules/ppcp-wc-gateway/src/Processor/PaymentsStatusHandlingTrait.php:117
 msgid "Could not get the payment authorization."
 msgstr "Die Zahlungsautorisierung konnte nicht abgerufen werden."
 
-#: modules/ppcp-wc-gateway/src/Processor/PaymentsStatusHandlingTrait.php:77
-#: modules/ppcp-wc-gateway/src/WCGatewayModule.php:305
+#: modules/ppcp-wc-gateway/src/Processor/PaymentsStatusHandlingTrait.php:82
+#: modules/ppcp-wc-gateway/src/WCGatewayModule.php:296
 msgid "Could not capture the payment."
 msgstr "Die Zahlung konnte nicht erfasst werden."
 
@@ -1419,7 +1413,7 @@ msgstr "Webhooks konnten nicht geladen werden."
 msgid "No webhooks found."
 msgstr "Keine Webhooks gefunden."
 
-#: modules/ppcp-wc-gateway/src/Gateway/PayPalGateway.php:404
+#: modules/ppcp-wc-gateway/src/Gateway/PayPalGateway.php:450
 msgid "Instrument declined."
 msgstr "Das (Zahlungs-)Mittel wurde abgelehnt."
 
@@ -1463,39 +1457,39 @@ msgstr "Ob das PayPal-Konto korrekt konfiguriert ist oder nicht."
 msgid "Onboarded"
 msgstr "Eingebunden"
 
-#: modules/ppcp-wc-gateway/services.php:718
+#: modules/ppcp-wc-gateway/services.php:721
 msgid "Learn More"
 msgstr "Weitere Informationen"
 
 #. Translators: placeholder is the gateway name.
-#: modules/ppcp-compat/services.php:21
+#: modules/ppcp-compat/services.php:24
 msgid "%s (Legacy)"
 msgstr "%s (veraltet)"
 
-#: modules/ppcp-button/src/Assets/SmartButton.php:721
+#: modules/ppcp-button/src/Assets/SmartButton.php:742
 msgid "MM/YY"
 msgstr "MM/JJ"
 
 #. translators: %1$s and %2$s are the opening and closing of HTML <a> tag.
-#: modules/ppcp-wc-gateway/services.php:408
+#: modules/ppcp-wc-gateway/services.php:411
 msgid " To use vaulting features, you must %1$senable vaulting on your account%2$s."
 msgstr " Um Vaulting nutzen zu können, musst du %1$sVaulting erst für dein Konto aktivieren%2$s."
 
-#: modules/ppcp-wc-gateway/services.php:260
+#: modules/ppcp-wc-gateway/services.php:277
 msgctxt "Name of payment method"
 msgid "Venmo"
 msgstr "Venmo"
 
-#: modules/ppcp-settings/src/Data/Definition/FeaturesDefinition.php:128
+#: modules/ppcp-settings/src/Data/Definition/FeaturesDefinition.php:133
 #: assets/ppcp-settings-js-index.js:18
 msgid "Pay Later Messaging"
 msgstr "„Später Bezahlen“-Nachrichten"
 
-#: modules/ppcp-wc-gateway/services.php:248
+#: modules/ppcp-wc-gateway/services.php:265
 msgid "PayPal Vaulting"
 msgstr "PayPal Vaulting"
 
-#: modules/ppcp-button/src/Assets/SmartButton.php:257
+#: modules/ppcp-button/src/Assets/SmartButton.php:259
 msgid "Save your Credit Card"
 msgstr "Deine Kreditkarte speichern"
 
@@ -1503,15 +1497,16 @@ msgstr "Deine Kreditkarte speichern"
 msgid "WooCommerce PayPal Payments requires PHP 7.4 or above."
 msgstr "WooCommerce PayPal Payments erfordert PHP 7.4 oder höher."
 
-#: modules/ppcp-wc-gateway/services.php:260
+#: modules/ppcp-wc-gateway/services.php:277
 msgctxt "Name of payment method"
 msgid "PayPal"
 msgstr "PayPal"
 
-#: modules/ppcp-api-client/src/Endpoint/OrderEndpoint.php:242
-#: modules/ppcp-api-client/src/Endpoint/OrderEndpoint.php:281
-#: modules/ppcp-wc-gateway/src/Processor/PaymentsStatusHandlingTrait.php:78
-#: modules/ppcp-wc-gateway/src/Processor/PaymentsStatusHandlingTrait.php:111
+#: modules/ppcp-api-client/src/Endpoint/OrderEndpoint.php:244
+#: modules/ppcp-api-client/src/Endpoint/OrderEndpoint.php:284
+#: modules/ppcp-api-client/src/Entity/FraudProcessorResponse.php:182
+#: modules/ppcp-wc-gateway/src/Processor/PaymentsStatusHandlingTrait.php:84
+#: modules/ppcp-wc-gateway/src/Processor/PaymentsStatusHandlingTrait.php:118
 msgid "Payment provider declined the payment, please use a different payment method."
 msgstr "Zahlungsanbieter hat die Zahlung abgelehnt, bitte benutze eine andere Zahlungsart."
 
@@ -1527,8 +1522,8 @@ msgstr "Zahlung bereits erfasst."
 msgid "Could not retrieve information. Try again later."
 msgstr "Informationen konnten nicht abgerufen werden. Versuche es später erneut."
 
-#: modules/ppcp-wc-gateway/src/Processor/PaymentsStatusHandlingTrait.php:81
-#: modules/ppcp-wc-gateway/src/Processor/PaymentsStatusHandlingTrait.php:103
+#: modules/ppcp-wc-gateway/src/Processor/PaymentsStatusHandlingTrait.php:88
+#: modules/ppcp-wc-gateway/src/Processor/PaymentsStatusHandlingTrait.php:110
 msgid "Awaiting payment."
 msgstr "Die Bezahlung ist ausstehend."
 
@@ -1559,101 +1554,101 @@ msgid "Pay with your credit card."
 msgstr "Bezahle mit deiner Kreditkarte."
 
 #: modules/ppcp-settings/src/Data/SettingsProvider.php:657
-#: modules/ppcp-wc-gateway/src/Gateway/PayPalGateway.php:288
+#: modules/ppcp-wc-gateway/src/Gateway/PayPalGateway.php:314
 #: modules/ppcp-wc-gateway/src/Settings/Settings.php:151
 msgid "Pay via PayPal."
 msgstr "Mit PayPal zahlen."
 
-#: modules/ppcp-wc-gateway/src/Gateway/PayPalGateway.php:286
+#: modules/ppcp-wc-gateway/src/Gateway/PayPalGateway.php:312
 msgid "Accept PayPal, Pay Later and alternative payment types."
 msgstr "Akzeptiere PayPal, Später Bezahlen und alternative Zahlungstypen."
 
-#: modules/ppcp-wc-gateway/src/Gateway/PayPalGateway.php:267
+#: modules/ppcp-wc-gateway/src/Gateway/PayPalGateway.php:293
 msgid "In order to use PayPal or Advanced Card Processing, you need to enable the Gateway."
 msgstr "Um PayPal oder die erweiterte Karten-Verarbeitung zu benutzen, musst du das Gateway aktivieren."
 
-#: modules/ppcp-wc-gateway/src/Gateway/CreditCardGateway.php:221
+#: modules/ppcp-wc-gateway/src/Gateway/CreditCardGateway.php:224
 #: modules/ppcp-wc-gateway/src/Helper/CardPaymentsConfiguration.php:305
 msgid "Accept debit and credit cards, and local payment methods with PayPal’s latest solution."
 msgstr "Akzeptiere Debit- und Kreditkarten sowie lokale Zahlungsarten mit PayPals neuester Lösung."
 
-#: modules/ppcp-wc-gateway/src/Gateway/PayPalGateway.php:413
+#: modules/ppcp-wc-gateway/src/Gateway/PayPalGateway.php:459
 msgid "Please use a different payment method."
 msgstr "Bitte benutze eine andere Zahlungsart."
 
-#: modules/ppcp-settings/src/Service/ScriptDataHandler.php:71
-#: modules/ppcp-wc-gateway/services.php:105
+#: modules/ppcp-settings/src/Service/ScriptDataHandler.php:74
+#: modules/ppcp-wc-gateway/services.php:107
 msgctxt "Name of credit card"
 msgid "Hiper"
 msgstr "Hiper"
 
-#: modules/ppcp-settings/src/Service/ScriptDataHandler.php:71
-#: modules/ppcp-wc-gateway/services.php:105
+#: modules/ppcp-settings/src/Service/ScriptDataHandler.php:74
+#: modules/ppcp-wc-gateway/services.php:107
 msgctxt "Name of credit card"
 msgid "Elo"
 msgstr "Elo"
 
-#: modules/ppcp-settings/src/Service/ScriptDataHandler.php:71
-#: modules/ppcp-wc-gateway/services.php:105
+#: modules/ppcp-settings/src/Service/ScriptDataHandler.php:74
+#: modules/ppcp-wc-gateway/services.php:107
 msgctxt "Name of credit card"
 msgid "JCB"
 msgstr "JCB"
 
-#: modules/ppcp-settings/src/Service/ScriptDataHandler.php:71
-#: modules/ppcp-wc-gateway/services.php:105
+#: modules/ppcp-settings/src/Service/ScriptDataHandler.php:74
+#: modules/ppcp-wc-gateway/services.php:107
 msgctxt "Name of credit card"
 msgid "Discover"
 msgstr "Discover"
 
-#: modules/ppcp-settings/src/Service/ScriptDataHandler.php:71
-#: modules/ppcp-wc-gateway/services.php:105
+#: modules/ppcp-settings/src/Service/ScriptDataHandler.php:74
+#: modules/ppcp-wc-gateway/services.php:107
 msgctxt "Name of credit card"
 msgid "American Express"
 msgstr "American Express"
 
-#: modules/ppcp-settings/src/Service/ScriptDataHandler.php:71
-#: modules/ppcp-wc-gateway/services.php:105
+#: modules/ppcp-settings/src/Service/ScriptDataHandler.php:74
+#: modules/ppcp-wc-gateway/services.php:107
 msgctxt "Name of credit card"
 msgid "Mastercard"
 msgstr "Mastercard"
 
-#: modules/ppcp-settings/src/Service/ScriptDataHandler.php:71
-#: modules/ppcp-wc-gateway/services.php:105
+#: modules/ppcp-settings/src/Service/ScriptDataHandler.php:74
+#: modules/ppcp-wc-gateway/services.php:107
 msgctxt "Name of credit card"
 msgid "Visa"
 msgstr "Visa"
 
-#: modules/ppcp-wc-gateway/services.php:260
+#: modules/ppcp-wc-gateway/services.php:277
 msgctxt "Name of payment method"
 msgid "Przelewy24"
 msgstr "Przelewy24"
 
-#: modules/ppcp-wc-gateway/services.php:260
+#: modules/ppcp-wc-gateway/services.php:277
 msgctxt "Name of payment method"
 msgid "MyBank"
 msgstr "MyBank"
 
-#: modules/ppcp-wc-gateway/services.php:260
+#: modules/ppcp-wc-gateway/services.php:277
 msgctxt "Name of payment method"
 msgid "iDEAL"
 msgstr "iDEAL"
 
-#: modules/ppcp-wc-gateway/services.php:260
+#: modules/ppcp-wc-gateway/services.php:277
 msgctxt "Name of payment method"
 msgid "eps"
 msgstr "eps"
 
-#: modules/ppcp-wc-gateway/services.php:260
+#: modules/ppcp-wc-gateway/services.php:277
 msgctxt "Name of payment method"
 msgid "Bancontact"
 msgstr "Bancontact"
 
-#: modules/ppcp-wc-gateway/services.php:260
+#: modules/ppcp-wc-gateway/services.php:277
 msgctxt "Name of payment method"
 msgid "SEPA-Lastschrift"
 msgstr "SEPA-Lastschrift"
 
-#: modules/ppcp-wc-gateway/services.php:260
+#: modules/ppcp-wc-gateway/services.php:277
 msgctxt "Name of payment method"
 msgid "Credit or debit cards"
 msgstr "Kredit- oder Debitkarten"
@@ -1666,12 +1661,12 @@ msgstr "Kredit- oder Debitkarten"
 #: modules/ppcp-local-alternative-payment-methods/src/IDealGateway.php:85
 #: modules/ppcp-local-alternative-payment-methods/src/MultibancoGateway.php:85
 #: modules/ppcp-local-alternative-payment-methods/src/MyBankGateway.php:85
+#: modules/ppcp-local-alternative-payment-methods/src/OXXOGateway.php:43
 #: modules/ppcp-local-alternative-payment-methods/src/P24Gateway.php:85
+#: modules/ppcp-local-alternative-payment-methods/src/PayUponInvoice/PayUponInvoiceGateway.php:66
 #: modules/ppcp-local-alternative-payment-methods/src/PWCGateway.php:88
 #: modules/ppcp-local-alternative-payment-methods/src/TrustlyGateway.php:85
 #: modules/ppcp-wc-gateway/src/Gateway/CardButtonGateway.php:144
-#: modules/ppcp-wc-gateway/src/Gateway/OXXO/OXXOGateway.php:148
-#: modules/ppcp-wc-gateway/src/Gateway/PayUponInvoice/PayUponInvoiceGateway.php:177
 msgid "This controls the description which the user sees during checkout."
 msgstr "Dies steuert die Beschreibung, die der Benutzer beim Bezahlvorgang sieht."
 
@@ -1683,16 +1678,16 @@ msgstr "Dies steuert die Beschreibung, die der Benutzer beim Bezahlvorgang sieht
 #: modules/ppcp-local-alternative-payment-methods/src/IDealGateway.php:85
 #: modules/ppcp-local-alternative-payment-methods/src/MultibancoGateway.php:85
 #: modules/ppcp-local-alternative-payment-methods/src/MyBankGateway.php:85
+#: modules/ppcp-local-alternative-payment-methods/src/OXXOGateway.php:43
 #: modules/ppcp-local-alternative-payment-methods/src/P24Gateway.php:85
+#: modules/ppcp-local-alternative-payment-methods/src/PayUponInvoice/PayUponInvoiceGateway.php:66
 #: modules/ppcp-local-alternative-payment-methods/src/PWCGateway.php:88
 #: modules/ppcp-local-alternative-payment-methods/src/TrustlyGateway.php:85
 #: modules/ppcp-wc-gateway/src/Gateway/CardButtonGateway.php:144
-#: modules/ppcp-wc-gateway/src/Gateway/OXXO/OXXOGateway.php:148
-#: modules/ppcp-wc-gateway/src/Gateway/PayUponInvoice/PayUponInvoiceGateway.php:177
 msgid "Description"
 msgstr "Beschreibung"
 
-#: modules/ppcp-settings/src/SettingsModule.php:404
+#: modules/ppcp-settings/src/SettingsModule.php:403
 msgid "Once enabled, the Credit Card option will show up in the checkout."
 msgstr "Sobald aktiviert, wird die Kreditkarten-Option im Checkout angezeigt."
 
@@ -1705,21 +1700,21 @@ msgstr "Sobald aktiviert, wird die Kreditkarten-Option im Checkout angezeigt."
 #: modules/ppcp-local-alternative-payment-methods/src/IDealGateway.php:85
 #: modules/ppcp-local-alternative-payment-methods/src/MultibancoGateway.php:85
 #: modules/ppcp-local-alternative-payment-methods/src/MyBankGateway.php:85
+#: modules/ppcp-local-alternative-payment-methods/src/OXXOGateway.php:43
 #: modules/ppcp-local-alternative-payment-methods/src/P24Gateway.php:85
+#: modules/ppcp-local-alternative-payment-methods/src/PayUponInvoice/PayUponInvoiceGateway.php:66
 #: modules/ppcp-local-alternative-payment-methods/src/PWCGateway.php:88
 #: modules/ppcp-local-alternative-payment-methods/src/TrustlyGateway.php:85
-#: modules/ppcp-settings/src/SettingsModule.php:404
+#: modules/ppcp-settings/src/SettingsModule.php:403
 #: modules/ppcp-wc-gateway/src/Gateway/CardButtonGateway.php:144
-#: modules/ppcp-wc-gateway/src/Gateway/OXXO/OXXOGateway.php:148
-#: modules/ppcp-wc-gateway/src/Gateway/PayPalGateway.php:267
-#: modules/ppcp-wc-gateway/src/Gateway/PayUponInvoice/PayUponInvoiceGateway.php:177
+#: modules/ppcp-wc-gateway/src/Gateway/PayPalGateway.php:293
 msgid "Enable/Disable"
 msgstr "Aktivieren/Deaktivieren"
 
 #. Author of the plugin
 #: woocommerce-paypal-payments.php
 #: modules/ppcp-settings/src/Data/Definition/PaymentMethodsDefinition.php:141
-#: modules/ppcp-settings/src/SettingsModule.php:753
+#: modules/ppcp-settings/src/SettingsModule.php:752
 #: modules/ppcp-wc-gateway/src/Settings/Settings.php:151
 #: assets/ppcp-settings-js-index.js:1
 msgid "PayPal"
@@ -1733,12 +1728,12 @@ msgstr "PayPal"
 #: modules/ppcp-local-alternative-payment-methods/src/IDealGateway.php:85
 #: modules/ppcp-local-alternative-payment-methods/src/MultibancoGateway.php:85
 #: modules/ppcp-local-alternative-payment-methods/src/MyBankGateway.php:85
+#: modules/ppcp-local-alternative-payment-methods/src/OXXOGateway.php:43
 #: modules/ppcp-local-alternative-payment-methods/src/P24Gateway.php:85
+#: modules/ppcp-local-alternative-payment-methods/src/PayUponInvoice/PayUponInvoiceGateway.php:66
 #: modules/ppcp-local-alternative-payment-methods/src/PWCGateway.php:88
 #: modules/ppcp-local-alternative-payment-methods/src/TrustlyGateway.php:85
 #: modules/ppcp-wc-gateway/src/Gateway/CardButtonGateway.php:144
-#: modules/ppcp-wc-gateway/src/Gateway/OXXO/OXXOGateway.php:148
-#: modules/ppcp-wc-gateway/src/Gateway/PayUponInvoice/PayUponInvoiceGateway.php:177
 msgid "This controls the title which the user sees during checkout."
 msgstr "Dies steuert den Titel, den der Benutzer beim Bezahlvorgang sieht."
 
@@ -1750,12 +1745,12 @@ msgstr "Dies steuert den Titel, den der Benutzer beim Bezahlvorgang sieht."
 #: modules/ppcp-local-alternative-payment-methods/src/IDealGateway.php:85
 #: modules/ppcp-local-alternative-payment-methods/src/MultibancoGateway.php:85
 #: modules/ppcp-local-alternative-payment-methods/src/MyBankGateway.php:85
+#: modules/ppcp-local-alternative-payment-methods/src/OXXOGateway.php:43
 #: modules/ppcp-local-alternative-payment-methods/src/P24Gateway.php:85
+#: modules/ppcp-local-alternative-payment-methods/src/PayUponInvoice/PayUponInvoiceGateway.php:66
 #: modules/ppcp-local-alternative-payment-methods/src/PWCGateway.php:88
 #: modules/ppcp-local-alternative-payment-methods/src/TrustlyGateway.php:85
 #: modules/ppcp-wc-gateway/src/Gateway/CardButtonGateway.php:144
-#: modules/ppcp-wc-gateway/src/Gateway/OXXO/OXXOGateway.php:148
-#: modules/ppcp-wc-gateway/src/Gateway/PayUponInvoice/PayUponInvoiceGateway.php:177
 msgid "Title"
 msgstr "Titel"
 
@@ -1766,7 +1761,7 @@ msgstr "Titel"
 msgid "Payment successfully captured."
 msgstr "Zahlung erfolgreich erfasst."
 
-#: modules/ppcp-button/src/Assets/SmartButton.php:728
+#: modules/ppcp-button/src/Assets/SmartButton.php:749
 #: modules/ppcp-button/src/Endpoint/CreateOrderEndpoint.php:487
 msgid "Please read and accept the terms and conditions to proceed with your order."
 msgstr "Bitte lies und akzeptiere die Allgemeinen Geschäftsbedingungen, um mit deiner Bestellung fortzufahren."
@@ -1775,15 +1770,15 @@ msgstr "Bitte lies und akzeptiere die Allgemeinen Geschäftsbedingungen, um mit 
 msgid "Order not found"
 msgstr "Bestellung nicht gefunden"
 
-#: modules/ppcp-button/src/Endpoint/ApproveOrderEndpoint.php:269
+#: modules/ppcp-button/src/Endpoint/ApproveOrderEndpoint.php:289
 msgid "Unfortunately, we can't accept your card. Please choose a different payment method."
 msgstr "Leider können wir deine Karte nicht akzeptieren. Bitte wähle eine andere Zahlungsart."
 
-#: modules/ppcp-button/src/Endpoint/ApproveOrderEndpoint.php:266
+#: modules/ppcp-button/src/Endpoint/ApproveOrderEndpoint.php:286
 msgid "Something went wrong. Please try again."
 msgstr "Irgendwas ist schief gelaufen. Bitte versuche es erneut."
 
-#: modules/ppcp-button/src/Endpoint/ApproveOrderEndpoint.php:167
+#: modules/ppcp-button/src/Endpoint/ApproveOrderEndpoint.php:183
 msgid "Unfortunately, we do not accept this card."
 msgstr "Leider können wir diese Karte nicht akzeptieren."
 
@@ -1799,36 +1794,37 @@ msgstr "Etwas ist schief gelaufen. Aktion abgebrochen"
 msgid "Necessary fields not defined. Action aborted."
 msgstr "Benötigte Felder nicht definiert. Aktion abgebrochen."
 
-#: modules/ppcp-button/src/Assets/SmartButton.php:722
-#: modules/ppcp-save-payment-methods/src/SavePaymentMethodsModule.php:196
+#: modules/ppcp-button/src/Assets/SmartButton.php:743
+#: modules/ppcp-save-payment-methods/src/SavePaymentMethodsModule.php:199
 msgid "Something went wrong. Please try again or choose another payment source."
 msgstr "Irgendwas ist schief gelaufen. Bitte versuche es erneut oder wähle eine andere Zahlungsquelle."
 
-#: modules/ppcp-button/src/Assets/SmartButton.php:721
+#: modules/ppcp-button/src/Assets/SmartButton.php:742
 msgid "Unfortunately, we do not support your credit card."
 msgstr "Leider unterstützen wir deine Kreditkarte nicht."
 
-#: modules/ppcp-button/src/Assets/SmartButton.php:721
+#: modules/ppcp-button/src/Assets/SmartButton.php:742
 msgid "Unfortunately, your credit card details are not valid."
 msgstr "Leider sind deine Kreditkarten-Daten nicht gültig."
 
-#: modules/ppcp-wc-gateway/src/Gateway/CreditCardGateway.php:261
-#: modules/ppcp-wc-gateway/src/Gateway/CreditCardGateway.php:277
+#: modules/ppcp-wc-gateway/src/Gateway/CreditCardGateway.php:264
+#: modules/ppcp-wc-gateway/src/Gateway/CreditCardGateway.php:280
 #: assets/ppcp-blocks-js-advanced-card-checkout-block.js:1
 msgid "CVV"
 msgstr "CVV"
 
-#: modules/ppcp-button/src/Assets/SmartButton.php:621
+#: modules/ppcp-button/src/Assets/SmartButton.php:623
 msgid "Pay for order"
 msgstr "Bestellung bezahlen"
 
 #: modules/ppcp-axo/src/Assets/AxoManager.php:133
-#: modules/ppcp-button/src/Assets/SmartButton.php:621
-#: modules/ppcp-wc-gateway/src/Gateway/PayUponInvoice/PayUponInvoice.php:178
+#: modules/ppcp-button/src/Assets/SmartButton.php:623
+#: modules/ppcp-local-alternative-payment-methods/src/PayUponInvoice/PayUponInvoiceIntegration.php:173
+#: modules/ppcp-local-alternative-payment-methods/src/PayUponInvoice/PUIPaymentMethod.php:48
 msgid "Place order"
 msgstr "Zahlungspflichtig bestellen"
 
-#: modules/ppcp-blocks/src/AdvancedCardPaymentMethod.php:98
+#: modules/ppcp-blocks/src/AdvancedCardPaymentMethod.php:103
 msgid "Save your card"
 msgstr "Karte speichern"
 
@@ -1843,11 +1839,11 @@ msgstr "%1$s %2$s"
 msgid "Error"
 msgstr "Fehler"
 
-#: modules/ppcp-api-client/src/Repository/PartnerReferralsData.php:67
+#: modules/ppcp-api-client/src/Repository/PartnerReferralsData.php:59
 msgid "Return to your shop."
 msgstr "Zurück zu deinem Shop."
 
-#: modules/ppcp-api-client/src/Endpoint/OrderEndpoint.php:264
+#: modules/ppcp-api-client/src/Endpoint/OrderEndpoint.php:267
 msgid "Could not authorize order."
 msgstr "Bestellung konnte nicht autorisiert werden."
 
@@ -1867,7 +1863,7 @@ msgstr "Verweis konnte nicht erstellt werden."
 msgid "Could not create identity token."
 msgstr "Identitätstoken konnte nicht erstellt werden."
 
-#: modules/ppcp-api-client/src/Endpoint/PartnersEndpoint.php:125
+#: modules/ppcp-api-client/src/Endpoint/PartnersEndpoint.php:161
 msgid "Could not fetch sellers status."
 msgstr "Verkäuferstatus konnte nicht empfangen werden."
 
@@ -1879,7 +1875,6 @@ msgstr "Autorisierte Zahlungsinformation konnte nicht abgerufen werden."
 msgid "No token found."
 msgstr "Es wurde kein Token gefunden."
 
-#: modules/ppcp-api-client/src/Authentication/PayPalBearer.php:137
 #: modules/ppcp-api-client/src/Endpoint/LoginSeller.php:100
 msgid "Could not create token."
 msgstr "Token konnte nicht erstellt werden."
@@ -1893,9 +1888,9 @@ msgid "Could not fetch credentials."
 msgstr "Zugangsdaten konnten nicht abgerufen werden."
 
 #: modules/ppcp-applepay/services.php:295
-#: modules/ppcp-wc-gateway/services.php:511
-#: modules/ppcp-wc-gateway/services.php:524
-#: modules/ppcp-wc-gateway/services.php:543 woocommerce-paypal-payments.php:150
+#: modules/ppcp-wc-gateway/services.php:514
+#: modules/ppcp-wc-gateway/services.php:527
+#: modules/ppcp-wc-gateway/services.php:546 woocommerce-paypal-payments.php:150
 #: assets/ppcp-paylater-block-js-paylater-block.js:1
 #: assets/ppcp-settings-js-index.js:18
 msgid "Settings"

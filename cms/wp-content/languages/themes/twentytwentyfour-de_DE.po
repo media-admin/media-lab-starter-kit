@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Themes - Twenty Twenty-Four package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-04-25 19:53:26+0000\n"
+"PO-Revision-Date: 2026-05-28 17:53:04+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -97,11 +97,6 @@ msgstr "Ein Bild, Titel, Absatz und ein Handlungsaufforderungs-Button zur Beschr
 msgctxt "Pattern description"
 msgid "A full portfolio page with a section for project description, project details, a full screen image, and a gallery section with two images."
 msgstr "Eine vollständige Portfolio-Seite mit einem Abschnitt für Projektbeschreibung, Projektdetails, einem ganzseitigen Bild und einer Galerie mit zwei Bildern."
-
-#: patterns/page-home-blogging.php
-msgctxt "Pattern description"
-msgid "A blogging home page with a hero section, a text section, a blog section, and a CTA section."
-msgstr "Eine Blog-Homepage mit einem Hero-Abschnitt, einem Textabschnitt, einem Blog-Abschnitt und einem Abschnitt mit Handlungsaufforderung."
 
 #: patterns/page-home-portfolio-gallery.php
 msgctxt "Pattern description"
@@ -217,6 +212,11 @@ msgstr "Eine Unternehmens-Homepage mit einem Hero-Abschnitt, einem Textabschnitt
 msgctxt "Pattern description"
 msgid "A business about page with a hero section, a text section, a services section, a team section, a clients section, a FAQ section, and a CTA section."
 msgstr "Eine Informationsseite für Unternehmen mit einem Hero-Abschnitt, einem Textabschnitt, einem Dienstleistungsabschnitt, einem Team-Abschnitt, einem Kundenabschnitt, einem FAQ-Abschnitt und einem Abschnitt mit Handlungsaufforderung."
+
+#: patterns/page-home-blogging.php
+msgctxt "Pattern description"
+msgid "A blogging home page with a hero section, a text section, a blog section, and a CTA section."
+msgstr "Eine Blog-Homepage mit einem Hero-Abschnitt, einem Textabschnitt, einem Blogabschnitt und einem Abschnitt mit Handlungsaufforderung."
 
 #: patterns/footer.php:96
 msgid "Twitter/X"
@@ -1698,11 +1698,6 @@ msgctxt "Sample content"
 msgid "Experience the fusion of imagination and expertise with Études Architectural Solutions."
 msgstr "Erlebe die Verschmelzung von Fantasie und Fachwissen mit den architektonischen Lösungen von Études."
 
-#: patterns/text-project-details.php:35 patterns/text-project-details.php:43
-msgctxt "Descriptive text for the feature area"
-msgid "The revitalized Art Gallery is set to redefine the cultural landscape of Toronto, serving as a nexus of artistic expression, community engagement, and architectural marvel. The expansion and renovation project pay homage to the Art Gallery's rich history while embracing the future, ensuring that the gallery remains a beacon of inspiration."
-msgstr "Die modernisierte Kunstgalerie wird die kulturelle Landschaft Torontos neu definieren und als Knotenpunkt für künstlerischen Ausdruck sowie gesellschaftliches Engagement fungieren und zudem als architektonisches Wunderwerk dienen. Das Erweiterungs- und Renovierungsprojekt ist eine Hommage an die reiche Geschichte der Kunstgalerie und gleichzeitig ein Blick in die Zukunft, damit die Galerie ein Leuchtturm der Inspiration bleibt."
-
 #: styles/ember.json
 msgctxt "Style variation name"
 msgid "Ember"
@@ -1716,6 +1711,11 @@ msgstr "Soziale Netzwerke"
 msgctxt "Sample heading"
 msgid "Enhance your architectural journey with the Études Architect app."
 msgstr "Bereichere deine architektonische Vision mit der Architekten-App von Études."
+
+#: patterns/text-project-details.php:35 patterns/text-project-details.php:43
+msgctxt "Descriptive text for the feature area"
+msgid "The revitalized Art Gallery is set to redefine the cultural landscape of Toronto, serving as a nexus of artistic expression, community engagement, and architectural marvel. The expansion and renovation project pay homage to the Art Gallery's rich history while embracing the future, ensuring that the gallery remains a beacon of inspiration."
+msgstr "Die modernisierte Kunstgalerie wird die kulturelle Landschaft Torontos neu definieren und als Knotenpunkt für künstlerischen Ausdruck sowie gesellschaftliches Engagement fungieren und zudem als architektonisches Wunderwerk dienen. Das Erweiterungs- und Renovierungsprojekt ist eine Hommage an die reiche Geschichte der Kunstgalerie und gleichzeitig ein Blick in die Zukunft, damit die Galerie ein Leuchtturm der Inspiration bleibt."
 
 #: patterns/cta-subscribe-centered.php:20
 msgctxt "Sample text for Subscriber Heading with numbers"

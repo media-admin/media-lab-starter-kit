@@ -41,7 +41,7 @@ function customtheme_check_required_plugins() {
     }
 }
 add_action('after_setup_theme', 'customtheme_check_required_plugins');
-
+mysql -u media-admin -p'Tr1-I7ad#1n' -h localhost media-lab-starter-kit_dev -e "SELECT option_value FROM cLW6t3p_options WHERE option_name='active_plugins';"
 /**
  * Theme Setup
  */

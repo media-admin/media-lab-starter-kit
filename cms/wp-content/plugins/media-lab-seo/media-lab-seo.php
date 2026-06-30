@@ -14,7 +14,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define( 'MLT_VERSION',  '1.2.0' );
+define( 'MLT_VERSION',  '1.3.0' );
 define( 'MLT_FILE',     __FILE__ );
 define( 'MLT_PATH',     plugin_dir_path( __FILE__ ) );
 define( 'MLT_URL',      plugin_dir_url( __FILE__ ) );
@@ -53,6 +53,7 @@ function mlt_init() {
     require_once MLT_PATH . 'inc/class-schema.php';
     require_once MLT_PATH . 'inc/class-breadcrumbs.php';
     require_once MLT_PATH . 'inc/class-redirects.php';
+    require_once MLT_PATH . 'inc/class-consent-stats.php';
     require_once MLT_PATH . 'inc/class-seo-dashboard.php';
     require_once MLT_PATH . 'inc/class-report-template.php';
     require_once MLT_PATH . 'inc/class-report-mailer.php';

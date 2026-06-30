@@ -7,6 +7,11 @@
  *  - Freier Datepicker (von/bis)
  *  - Default aus Einstellungen (mlt_default_range)
  *  - Zeitraum wird als URL-Parameter übergeben (?mlt_range=90 oder ?mlt_start=...&mlt_end=...)
+ *
+ * Consent-Rate (seit 1.3.0):
+ *  - Eigene Card mit Umschalter: "Letzte 30 Tage" / "Woche vs. Vorwoche"
+ *  - Liest read-only aus Agency Core Tabelle wp_mlt_consent_log via
+ *    MLT_Consent_Stats – kein Schreibzugriff, kein eigener Tracking-Code hier.
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
@@ -282,6 +287,9 @@ class MLT_SEO_Dashboard {
                 </div>
                 <?php endif; ?>
 
+                <!-- Consent-Rate -->
+                <?php $this->render_consent_card(); ?>
+
             </div>
 
             <?php if ( $has_gsc ) : ?>
@@ -334,6 +342,48 @@ class MLT_SEO_Dashboard {
             border-color: #2271b1;
             background: #f0f6fc;
         }
+        .mlt-consent-toggle {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 14px;
+        }
+        .mlt-consent-toggle .button { font-size: 12px; padding: 2px 10px; height: auto; line-height: 1.8; }
+        .mlt-consent-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        .mlt-consent-row:last-child { border-bottom: none; }
+        .mlt-consent-row__label { font-size: 13px; color: #374151; }
+        .mlt-consent-row__bar {
+            flex: 1;
+            height: 6px;
+            background: #f3f4f6;
+            border-radius: 3px;
+            margin: 0 12px;
+            overflow: hidden;
+        }
+        .mlt-consent-row__fill {
+            height: 100%;
+            background: #16a34a;
+            border-radius: 3px;
+        }
+        .mlt-consent-row__rate {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1a1a2e;
+            width: 48px;
+            text-align: right;
+        }
+        .mlt-consent-row__delta {
+            font-size: 11px;
+            margin-left: 6px;
+            font-weight: 600;
+        }
+        .mlt-consent-row__delta--up   { color: #16a34a; }
+        .mlt-consent-row__delta--down { color: #dc2626; }
         </style>
 
         <script>
@@ -378,6 +428,22 @@ class MLT_SEO_Dashboard {
 
                 window.location.href = baseUrl + '&mlt_start=' + encodeURIComponent(start) + '&mlt_end=' + encodeURIComponent(end);
             });
+
+            // Consent-Rate Umschalter
+            var consentToggleBtns = document.querySelectorAll('[data-consent-mode]');
+            var consentPanels     = document.querySelectorAll('[data-consent-panel]');
+            consentToggleBtns.forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    var mode = btn.getAttribute('data-consent-mode');
+                    consentToggleBtns.forEach(function (b) {
+                        b.classList.toggle('button-primary', b === btn);
+                        b.classList.toggle('button-secondary', b !== btn);
+                    });
+                    consentPanels.forEach(function (p) {
+                        p.style.display = p.getAttribute('data-consent-panel') === mode ? '' : 'none';
+                    });
+                });
+            });
         });
         </script>
         <?php
@@ -388,6 +454,90 @@ class MLT_SEO_Dashboard {
         echo '<div class="mlt-kpi__value">' . ( is_numeric( $value ) ? number_format( (float) $value, 0, ',', '.' ) : esc_html( $value ) ) . '</div>';
         echo '<div class="mlt-kpi__label">' . esc_html( $label ) . '</div>';
         echo '</div>';
+    }
+
+    // ── Consent-Rate Card ─────────────────────────────────────────────────────
+
+    private function render_consent_card() {
+        if ( ! class_exists( 'MLT_Consent_Stats' ) || ! MLT_Consent_Stats::is_available() ) return;
+
+        // Zeitraum 1: letzte 30 Tage rollierend
+        $r30_start = gmdate( 'Y-m-d', strtotime( '-30 days' ) );
+        $r30_end   = gmdate( 'Y-m-d', strtotime( '-1 day' ) );
+        $rates_30  = MLT_Consent_Stats::get_rates( $r30_start, $r30_end );
+
+        // Zeitraum 2: aktuelle Woche (Mo–heute) vs. Vorwoche (Mo–So)
+        $this_week_start = gmdate( 'Y-m-d', strtotime( 'monday this week' ) );
+        $this_week_end   = gmdate( 'Y-m-d' );
+        $prev_week_start = gmdate( 'Y-m-d', strtotime( 'monday last week' ) );
+        $prev_week_end   = gmdate( 'Y-m-d', strtotime( 'sunday last week' ) );
+
+        $comparison = MLT_Consent_Stats::get_comparison(
+            $this_week_start, $this_week_end,
+            $prev_week_start, $prev_week_end
+        );
+        ?>
+        <div class="mlt-card">
+            <div class="mlt-card__header">
+                <span class="mlt-card__icon">🍪</span>
+                <h2>Consent-Rate</h2>
+            </div>
+            <div class="mlt-card__body">
+
+                <div class="mlt-consent-toggle">
+                    <button type="button" class="button button-primary" data-consent-mode="30days">Letzte 30 Tage</button>
+                    <button type="button" class="button button-secondary" data-consent-mode="week">Woche vs. Vorwoche</button>
+                </div>
+
+                <!-- 30-Tage-Ansicht -->
+                <div data-consent-panel="30days">
+                    <?php foreach ( MLT_Consent_Stats::CATEGORIES as $key => $label ) :
+                        $data = $rates_30[ $key ];
+                    ?>
+                    <div class="mlt-consent-row">
+                        <span class="mlt-consent-row__label"><?php echo esc_html( $label ); ?></span>
+                        <span class="mlt-consent-row__bar">
+                            <span class="mlt-consent-row__fill" style="width:<?php echo esc_attr( $data['rate'] ); ?>%"></span>
+                        </span>
+                        <span class="mlt-consent-row__rate"><?php echo esc_html( $data['rate'] ); ?>%</span>
+                    </div>
+                    <?php endforeach; ?>
+                    <p class="mlt-hint" style="margin-top:10px"><?php echo esc_html( wp_date( 'd.m.Y', strtotime( $r30_start ) ) . ' – ' . wp_date( 'd.m.Y', strtotime( $r30_end ) ) ); ?></p>
+                </div>
+
+                <!-- Wochenvergleich -->
+                <div data-consent-panel="week" style="display:none">
+                    <?php foreach ( MLT_Consent_Stats::CATEGORIES as $key => $label ) :
+                        $cur   = $comparison['current'][ $key ];
+                        $prev  = $comparison['previous'][ $key ];
+                        $delta = round( $cur['rate'] - $prev['rate'], 1 );
+                        $delta_class = $delta > 0 ? 'up' : ( $delta < 0 ? 'down' : '' );
+                        $delta_sign  = $delta > 0 ? '+' : '';
+                    ?>
+                    <div class="mlt-consent-row">
+                        <span class="mlt-consent-row__label"><?php echo esc_html( $label ); ?></span>
+                        <span class="mlt-consent-row__bar">
+                            <span class="mlt-consent-row__fill" style="width:<?php echo esc_attr( $cur['rate'] ); ?>%"></span>
+                        </span>
+                        <span class="mlt-consent-row__rate">
+                            <?php echo esc_html( $cur['rate'] ); ?>%
+                            <?php if ( $prev['total'] > 0 ) : ?>
+                                <span class="mlt-consent-row__delta mlt-consent-row__delta--<?php echo esc_attr( $delta_class ); ?>">
+                                    <?php echo esc_html( $delta_sign . $delta ); ?>%
+                                </span>
+                            <?php endif; ?>
+                        </span>
+                    </div>
+                    <?php endforeach; ?>
+                    <p class="mlt-hint" style="margin-top:10px">
+                        Diese Woche: <?php echo esc_html( wp_date( 'd.m.', strtotime( $this_week_start ) ) . ' – ' . wp_date( 'd.m.', strtotime( $this_week_end ) ) ); ?>
+                        &nbsp;·&nbsp; Vorwoche: <?php echo esc_html( wp_date( 'd.m.', strtotime( $prev_week_start ) ) . ' – ' . wp_date( 'd.m.', strtotime( $prev_week_end ) ) ); ?>
+                    </p>
+                </div>
+
+            </div>
+        </div>
+        <?php
     }
 
     // ── WP-Dashboard-Widget ───────────────────────────────────────────────────
