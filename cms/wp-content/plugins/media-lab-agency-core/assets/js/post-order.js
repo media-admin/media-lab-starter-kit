@@ -1,14 +1,24 @@
 /**
  * Drag & Drop Post Order
- * Macht die Admin-Tabelle sortierbar via jQuery UI Sortable.
- * Keine Änderung zur Vorgängerversion erforderlich.
+ *
+ * Unterstützt zwei Modi:
+ *   'post' – Admin-Listenansicht für Posts/CPTs (edit.php)
+ *   'term' – Admin-Listenansicht für Taxonomy-Terms (edit-tags.php)
+ *
+ * Der Modus wird vom PHP via wp_localize_script als medialabPostOrder.mode übergeben.
+ *
+ * @since 1.16.0
  */
 (function ($) {
 	'use strict';
 
 	$(function () {
 		var $tbody = $('#the-list');
-		if (!$tbody.length) return;
+		if ( ! $tbody.length ) return;
+
+		var mode = medialabPostOrder.mode; // 'post' | 'term'
+
+		// ── Feedback-Notice ──────────────────────────────────────────────────
 
 		var $notice = $('<div id="medialab-order-notice" style="display:none;"></div>');
 		$('#wpbody-content').prepend($notice);
@@ -19,61 +29,96 @@
 				.html('<p>' + msg + '</p>')
 				.show();
 
-			// Dismiss-Button WP-Standard
+			// WP-Standard Dismiss-Handler aktivieren
 			$(document).trigger('wp-updates-notice-added', [$notice]);
 		}
 
+		// ── Drag Handles einfügen ────────────────────────────────────────────
+
+		$tbody.find('tr').each(function () {
+			var $firstTd = $(this).find('td:first');
+			$firstTd.prepend(
+				'<span class="medialab-drag-handle dashicons dashicons-menu" ' +
+				'title="Ziehen zum Sortieren"></span>'
+			);
+		});
+
+		// ── Sortable initialisieren ───────────────────────────────────────────
+
 		$tbody.sortable({
-			items:            'tr',
-			axis:             'y',
-			handle:           '.medialab-drag-handle',
-			cursor:           'grabbing',
-			placeholder:      'medialab-sort-placeholder',
+			items:               'tr',
+			axis:                'y',
+			handle:              '.medialab-drag-handle',
+			cursor:              'grabbing',
+			placeholder:         'medialab-sort-placeholder',
 			forcePlaceholderSize: true,
+
 			helper: function (e, ui) {
-				// Spaltenbreiten beim Drag erhalten
+				// Spaltenbreiten beim Drag beibehalten
 				ui.children().each(function () {
 					$(this).width($(this).width());
 				});
 				return ui;
 			},
+
 			start: function (e, ui) {
-				ui.placeholder.html('<td colspan="' + ui.item.find('td').length + '"></td>');
+				ui.placeholder.html(
+					'<td colspan="' + ui.item.find('td').length + '"></td>'
+				);
 			},
+
 			stop: function () {
 				saveOrder();
 			}
 		});
 
-		// Drag-Handle in erste Spalte jeder Zeile einfügen
-		$tbody.find('tr').each(function () {
-			var $firstTd = $(this).find('td:first');
-			$firstTd.prepend('<span class="medialab-drag-handle dashicons dashicons-menu" title="' +
-				'Ziehen zum Sortieren' + '"></span>');
-		});
+		// ── ID-Extraktion (Post oder Term) ────────────────────────────────────
+
+		function getIds() {
+			var ids = [];
+
+			$tbody.find('tr').each(function () {
+				var rowId = $(this).attr('id');
+				if ( ! rowId ) return;
+
+				var parsed;
+				if ( mode === 'term' ) {
+					// WP Term-Listenansicht: id="tag-{term_id}"
+					parsed = parseInt(rowId.replace('tag-', ''), 10);
+				} else {
+					// WP Post-Listenansicht: id="post-{post_id}"
+					parsed = parseInt(rowId.replace('post-', ''), 10);
+				}
+
+				if ( ! isNaN(parsed) && parsed > 0 ) {
+					ids.push(parsed);
+				}
+			});
+
+			return ids;
+		}
+
+		// ── AJAX-Speicherung ──────────────────────────────────────────────────
 
 		function saveOrder() {
 			showNotice(medialabPostOrder.i18n.saving, 'info');
 
-			var order = [];
-			$tbody.find('tr').each(function () {
-				var id = $(this).attr('id');
-				if (id) {
-					// WP-Standard: ID ist z.B. "post-42"
-					var postId = parseInt(id.replace('post-', ''), 10);
-					if (!isNaN(postId)) {
-						order.push(postId);
-					}
-				}
-			});
+			var ids  = getIds();
+			var data = {
+				nonce: medialabPostOrder.nonce,
+				order: ids,
+			};
 
-			$.post(medialabPostOrder.ajaxUrl, {
-				action:    'medialab_update_post_order',
-				nonce:     medialabPostOrder.nonce,
-				post_type: medialabPostOrder.postType,
-				order:     order
-			}, function (response) {
-				if (response.success) {
+			if ( mode === 'term' ) {
+				data.action   = 'medialab_update_term_order';
+				data.taxonomy = medialabPostOrder.taxonomy;
+			} else {
+				data.action    = 'medialab_update_post_order';
+				data.post_type = medialabPostOrder.postType;
+			}
+
+			$.post(medialabPostOrder.ajaxUrl, data, function (response) {
+				if ( response.success ) {
 					showNotice(medialabPostOrder.i18n.saved, 'success');
 				} else {
 					showNotice(medialabPostOrder.i18n.error, 'error');
