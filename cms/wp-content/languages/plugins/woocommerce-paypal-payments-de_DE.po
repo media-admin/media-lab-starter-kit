@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - WooCommerce PayPal Payments - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-06-29 03:34:07+0000\n"
+"PO-Revision-Date: 2026-07-01 17:30:50+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -10,6 +10,16 @@ msgstr ""
 "X-Generator: GlotPress/4.0.3\n"
 "Language: de\n"
 "Project-Id-Version: Plugins - WooCommerce PayPal Payments - Stable (latest release)\n"
+
+#. translators: %1$s: card brand, %2$s: card last 4 digits.
+#: modules/ppcp-wc-gateway/src/Helper/PaymentMethodTitleEnricher.php:84
+msgid "%1$s ending in %2$s"
+msgstr "%1$s endet auf %2$s"
+
+#: modules/ppcp-applepay/src/Assets/ApplePayButton.php:382
+#: modules/ppcp-applepay/src/Assets/ResponsesToApple.php:129
+msgid "Discount"
+msgstr "Rabatt"
 
 #: modules/ppcp-fraud-protection/services.php:32
 msgid "Help protect your store and maintain compliance."
@@ -150,7 +160,7 @@ msgstr "Domain-Registrierung"
 #: modules/ppcp-settings/src/Data/Definition/FeaturesDefinition.php:137
 #: assets/ppcp-settings-js-index.js:1
 msgid "Learn more"
-msgstr "Weitere Informationen"
+msgstr "Mehr erfahren"
 
 #: modules/ppcp-settings/src/Data/Definition/FeaturesDefinition.php:133
 #: modules/ppcp-settings/src/Data/Definition/FeaturesDefinition.php:137
@@ -265,7 +275,7 @@ msgstr "Gib oben deine E-Mail-Adresse ein, um fortzufahren."
 
 #: modules/ppcp-button/src/Helper/WooCommerceOrderCreator.php:216
 msgid "Items"
-msgstr "Artikel"
+msgstr "Positionen"
 
 #. translators: %1$s: URL to the Checkout edit page.
 #: modules/ppcp-axo/services.php:137
@@ -415,7 +425,7 @@ msgstr "Zahlungsmethode konnte nicht gespeichert werden."
 #: modules/ppcp-wc-gateway/src/Processor/CreditCardOrderInfoHandlingTrait.php:84
 #: modules/ppcp-wc-payment-tokens/src/WooCommercePaymentTokens.php:181
 msgid "N/A"
-msgstr "n. a."
+msgstr "n. v."
 
 #: modules/ppcp-wc-gateway/services.php:396
 msgid "Clicking \"Proceed to PayPal\" will redirect you to PayPal to complete your purchase."
@@ -1122,12 +1132,12 @@ msgstr "OXXO"
 #: modules/ppcp-button/src/Assets/SmartButton.php:759
 msgctxt "checkout-validation"
 msgid "Shipping %s"
-msgstr "Versand %s"
+msgstr "Lieferung: %s"
 
 #: modules/ppcp-button/src/Assets/SmartButton.php:757
 msgctxt "checkout-validation"
 msgid "Billing %s"
-msgstr "Rechnung %s"
+msgstr "Rechnung: %s"
 
 #: modules/ppcp-button/src/Assets/SmartButton.php:746
 msgid "%s is a required field."
@@ -1459,7 +1469,7 @@ msgstr "Eingebunden"
 
 #: modules/ppcp-wc-gateway/services.php:721
 msgid "Learn More"
-msgstr "Weitere Informationen"
+msgstr "Mehr erfahren"
 
 #. Translators: placeholder is the gateway name.
 #: modules/ppcp-compat/services.php:24
@@ -1598,7 +1608,7 @@ msgstr "JCB"
 #: modules/ppcp-wc-gateway/services.php:107
 msgctxt "Name of credit card"
 msgid "Discover"
-msgstr "Discover"
+msgstr "Entdecken"
 
 #: modules/ppcp-settings/src/Service/ScriptDataHandler.php:74
 #: modules/ppcp-wc-gateway/services.php:107
@@ -1764,7 +1774,7 @@ msgstr "Zahlung erfolgreich erfasst."
 #: modules/ppcp-button/src/Assets/SmartButton.php:749
 #: modules/ppcp-button/src/Endpoint/CreateOrderEndpoint.php:487
 msgid "Please read and accept the terms and conditions to proceed with your order."
-msgstr "Bitte lies und akzeptiere die Allgemeinen Geschäftsbedingungen, um mit deiner Bestellung fortzufahren."
+msgstr "Bitte lies und akzeptiere die Allgemeinen Geschäftsbedingungen, um mit deiner Bestellung fortfahren zu können."
 
 #: modules/ppcp-button/src/Endpoint/CreateOrderEndpoint.php:246
 msgid "Order not found"
@@ -1776,7 +1786,7 @@ msgstr "Leider können wir deine Karte nicht akzeptieren. Bitte wähle eine ande
 
 #: modules/ppcp-button/src/Endpoint/ApproveOrderEndpoint.php:286
 msgid "Something went wrong. Please try again."
-msgstr "Irgendwas ist schief gelaufen. Bitte versuche es erneut."
+msgstr "Es ist ein Fehler aufgetreten. Bitte versuche es erneut."
 
 #: modules/ppcp-button/src/Endpoint/ApproveOrderEndpoint.php:183
 msgid "Unfortunately, we do not accept this card."
@@ -1815,7 +1825,7 @@ msgstr "CVV"
 
 #: modules/ppcp-button/src/Assets/SmartButton.php:623
 msgid "Pay for order"
-msgstr "Bestellung bezahlen"
+msgstr "Für Bestellung bezahlen"
 
 #: modules/ppcp-axo/src/Assets/AxoManager.php:133
 #: modules/ppcp-button/src/Assets/SmartButton.php:623
@@ -1863,7 +1873,7 @@ msgstr "Verweis konnte nicht erstellt werden."
 msgid "Could not create identity token."
 msgstr "Identitätstoken konnte nicht erstellt werden."
 
-#: modules/ppcp-api-client/src/Endpoint/PartnersEndpoint.php:161
+#: modules/ppcp-api-client/src/Endpoint/PartnersEndpoint.php:182
 msgid "Could not fetch sellers status."
 msgstr "Verkäuferstatus konnte nicht empfangen werden."
 

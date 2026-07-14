@@ -1663,12 +1663,6 @@ msgctxt "Pattern title"
 msgid "Project details"
 msgstr "Projektdetails"
 
-#: patterns/text-faq.php:27 patterns/text-faq.php:38 patterns/text-faq.php:49
-#: patterns/text-faq.php:60
-msgctxt "Answer in the FAQ pattern"
-msgid "Études offers comprehensive consulting, management, design, and research solutions. Our vision is to be at the forefront of architectural innovation, fostering a global community of architects and enthusiasts united by a passion for creating spaces. Every architectural endeavor is an opportunity to shape the future."
-msgstr "Études bietet umfassende Beratungs-, Management-, Design- und Forschungslösungen. Unsere Vision ist es, an der Spitze der architektonischen Innovation zu stehen und eine globale Gemeinschaft von Architekten und Enthusiasten zu fördern, die durch ihre Leidenschaft für die Gestaltung von Räumen vereint sind. Jedes architektonische Vorhaben ist eine Chance, die Zukunft zu gestalten."
-
 #: styles/rust.json
 msgctxt "Gradient name"
 msgid "Vertical hard transparent rust to beige"
@@ -1693,10 +1687,21 @@ msgctxt "Sample feature content"
 msgid "Experience the fusion of imagination and expertise with Études Architectural Solutions."
 msgstr "Erlebe die Verschmelzung von Fantasie und Fachwissen mit den architektonischen Lösungen von Études."
 
+#: patterns/text-faq.php:27 patterns/text-faq.php:38 patterns/text-faq.php:49
+#: patterns/text-faq.php:60
+msgctxt "Answer in the FAQ pattern"
+msgid "Études offers comprehensive consulting, management, design, and research solutions. Our vision is to be at the forefront of architectural innovation, fostering a global community of architects and enthusiasts united by a passion for creating spaces. Every architectural endeavor is an opportunity to shape the future."
+msgstr "Études bietet umfassende Beratungs-, Management-, Design- und Forschungslösungen. Unsere Vision ist es, an der Spitze der architektonischen Innovation zu stehen und eine globale Gemeinschaft von Architekten und Enthusiasten zu fördern, die durch ihre Leidenschaft für die Gestaltung von Räumen vereint sind. Jedes architektonische Vorhaben ist eine Chance, die Zukunft zu gestalten."
+
 #: patterns/text-feature-grid-3-col.php:112
 msgctxt "Sample content"
 msgid "Experience the fusion of imagination and expertise with Études Architectural Solutions."
 msgstr "Erlebe die Verschmelzung von Fantasie und Fachwissen mit den architektonischen Lösungen von Études."
+
+#: patterns/text-project-details.php:35 patterns/text-project-details.php:43
+msgctxt "Descriptive text for the feature area"
+msgid "The revitalized Art Gallery is set to redefine the cultural landscape of Toronto, serving as a nexus of artistic expression, community engagement, and architectural marvel. The expansion and renovation project pay homage to the Art Gallery's rich history while embracing the future, ensuring that the gallery remains a beacon of inspiration."
+msgstr "Die modernisierte Kunstgalerie wird die kulturelle Landschaft Torontos neu definieren und als Knotenpunkt für künstlerischen Ausdruck sowie gesellschaftliches Engagement fungieren und zudem als architektonisches Wunderwerk dienen. Das Erweiterungs- und Renovierungsprojekt ist eine Hommage an die reiche Geschichte der Kunstgalerie und gleichzeitig ein Blick in die Zukunft, damit die Galerie ein Leuchtturm der Inspiration bleibt."
 
 #: styles/ember.json
 msgctxt "Style variation name"
@@ -1711,11 +1716,6 @@ msgstr "Soziale Netzwerke"
 msgctxt "Sample heading"
 msgid "Enhance your architectural journey with the Études Architect app."
 msgstr "Bereichere deine architektonische Vision mit der Architekten-App von Études."
-
-#: patterns/text-project-details.php:35 patterns/text-project-details.php:43
-msgctxt "Descriptive text for the feature area"
-msgid "The revitalized Art Gallery is set to redefine the cultural landscape of Toronto, serving as a nexus of artistic expression, community engagement, and architectural marvel. The expansion and renovation project pay homage to the Art Gallery's rich history while embracing the future, ensuring that the gallery remains a beacon of inspiration."
-msgstr "Die modernisierte Kunstgalerie wird die kulturelle Landschaft Torontos neu definieren und als Knotenpunkt für künstlerischen Ausdruck sowie gesellschaftliches Engagement fungieren und zudem als architektonisches Wunderwerk dienen. Das Erweiterungs- und Renovierungsprojekt ist eine Hommage an die reiche Geschichte der Kunstgalerie und gleichzeitig ein Blick in die Zukunft, damit die Galerie ein Leuchtturm der Inspiration bleibt."
 
 #: patterns/cta-subscribe-centered.php:20
 msgctxt "Sample text for Subscriber Heading with numbers"

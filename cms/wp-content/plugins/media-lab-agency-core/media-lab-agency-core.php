@@ -67,6 +67,8 @@ function medialab_core_init() {
     require_once MEDIALAB_CORE_PATH . 'inc/hcaptcha.php';
     require_once MEDIALAB_CORE_PATH . 'inc/honeypot.php';
     require_once MEDIALAB_CORE_PATH . 'inc/turnstile.php';
+    require_once MEDIALAB_CORE_PATH . 'inc/class-mla-security-scanner.php';
+    MLA_Security_Scanner::instance();
 
     require_once MEDIALAB_CORE_PATH . 'inc/smtp-oauth.php';
     $GLOBALS['medialab_smtp_oauth'] = new MediaLab_SMTP_OAuth();

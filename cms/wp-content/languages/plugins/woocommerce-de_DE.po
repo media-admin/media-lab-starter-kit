@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - WooCommerce - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-06-30 15:55:38+0000\n"
+"PO-Revision-Date: 2026-07-14 00:16:43+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -72,11 +72,11 @@ msgstr "Anzahl der Elemente, die derzeit in der Liste sind."
 
 #: src/StoreApi/Schemas/V1/ShopperListSchema.php:69
 msgid "The date the list was created, as GMT."
-msgstr "Das Datum, an dem die Liste erstellt wurde, als UTC."
+msgstr "Das Datum, an dem die Liste erstellt wurde, in UTC."
 
 #: src/StoreApi/Schemas/V1/ShopperListItemSchema.php:202
 msgid "The date the item was saved, as GMT."
-msgstr "Das Datum, an dem das Element gespeichert wurde, als UTC."
+msgstr "Das Datum, an dem das Element gespeichert wurde, in UTC."
 
 #: src/StoreApi/Schemas/V1/ShopperListItemSchema.php:196
 msgid "Product thumbnail as a fully-formed <img> element with srcset, sizes, alt, and lazy-loading attributes. Falls back to the configured placeholder image when the product has no image or no longer exists."
@@ -84,7 +84,7 @@ msgstr "Produkt-Vorschaubild als vollständig geformtes <img>-Element mit den At
 
 #: src/StoreApi/Schemas/V1/ShopperListItemSchema.php:190
 msgid "Live product price as HTML, formatted via wc_price including sale/discount markup. Empty when the product no longer exists."
-msgstr "Live-Produktpreis als HTML, formatiert über wc_price einschließlich Sale-/Rabatt-Markup. Leer, wenn das Produkt nicht mehr existiert."
+msgstr "Live-Produktpreis als HTML, formatiert über wc_price einschließlich Angebots-/Rabatt-Markup. Leer, wenn das Produkt nicht mehr existiert."
 
 #: src/StoreApi/Schemas/V1/ShopperListItemSchema.php:161
 msgid "Live product prices. Omitted when the product no longer exists."
@@ -334,15 +334,15 @@ msgstr "Ergebnismenge auf Produkte mit einem der angegebenen Lagerstatus beschr�
 
 #: src/Internal/RestApi/Routes/V4/Orders/Schema/OrderShippingSchema.php:74
 msgid "Whether the shipping line can be refunded, based on remaining refundable amount."
-msgstr "Ob die Versandposition erstattet werden kann, basierend auf dem verbleibenden erstattbaren Betrag."
+msgstr "Ob die Versandposition erstattet werden kann, basierend auf dem verbleibenden erstattungsfähigen Betrag."
 
 #: src/Internal/RestApi/Routes/V4/Orders/Schema/OrderSchema.php:552
 msgid "Whether the order can be refunded, based on its status and remaining refundable amount."
-msgstr "Ob die Bestellung erstattet werden kann, basierend auf ihrem Status und dem verbleibenden erstattbaren Betrag."
+msgstr "Ob die Bestellung erstattet werden kann, basierend auf ihrem Status und dem verbleibenden erstattungsfähigen Betrag."
 
 #: src/Internal/RestApi/Routes/V4/Orders/Schema/OrderItemSchema.php:128
 msgid "Whether the line item can be refunded. True when the item has a product and its ordered quantity has not been fully refunded."
-msgstr "Ob der Posten erstattet werden kann. „true“, wenn der Artikel ein Produkt hat und die bestellte Menge nicht vollständig erstattet wurde."
+msgstr "Ob die Position erstattet werden kann. „true“, wenn der Artikel ein Produkt hat und die bestellte Menge nicht vollständig erstattet wurde."
 
 #: src/Internal/RestApi/Routes/V4/Orders/Schema/OrderFeeSchema.php:75
 msgid "Whether the fee can be refunded, based on remaining refundable amount."
@@ -390,19 +390,19 @@ msgstr "Farbwert"
 msgid "Swatch type"
 msgstr "Mustertyp"
 
-#: src/Internal/Features/FeaturesController.php:657
+#: src/Internal/Features/FeaturesController.php:659
 msgid "Let shoppers save products to a wishlist from product pages. Requires the Add to Cart + Options block on the single-product template."
 msgstr "Erlaube Käufern, Produkte von Produktseiten auf einer Wunschliste zu speichern. Erfordert den Block „In den Warenkorb legen mit Optionen“ auf dem Einzelprodukt-Template."
 
-#: src/Internal/Features/FeaturesController.php:656
+#: src/Internal/Features/FeaturesController.php:658
 msgid "Wishlists"
 msgstr "Wunschlisten"
 
-#: src/Internal/Features/FeaturesController.php:644
+#: src/Internal/Features/FeaturesController.php:646
 msgid "Let shoppers save cart items to a list to purchase later."
 msgstr "Erlaube Käufern, Warenkorbartikel in einer Liste zu speichern, um sie später zu kaufen."
 
-#: src/Internal/Features/FeaturesController.php:643
+#: src/Internal/Features/FeaturesController.php:645
 msgid "Save for Later in Cart"
 msgstr "Im Warenkorb für später speichern"
 
@@ -597,11 +597,11 @@ msgstr "Bearbeitungen von Text auf Blockebene, gekürzt auf 120 Zeichen pro Sei
 
 #: src/Internal/EmailEditor/EmailApiController.php:582
 msgid "Blocks that would be removed from the merchant post if the update were applied (in post, not in core). Same fields as `added_blocks`; `path` is the post-side index path."
-msgstr "Blöcke, die aus dem Händlerbeitrag entfernt würden, wenn die Aktualisierung angewendet würde (im Beitrag, nicht im Core). Dieselben Felder wie `added_blocks`; `path` ist der beitragsseitige Indexpfad."
+msgstr "Blöcke, die aus der Version des Händlers entfernt würden, wenn die Aktualisierung angewendet würde (im Beitrag, nicht im Core). Dieselben Felder wie `added_blocks`; `path` ist der beitragsseitige Indexpfad."
 
 #: src/Internal/EmailEditor/EmailApiController.php:566
 msgid "Blocks that would be added to the merchant post if the update were applied (in core, not in post). `name` is the post-alias-normalized block name (e.g. `core/heading`); `label` is its humanized form for display; `path` is the core-side index path through the parsed block tree."
-msgstr "Blöcke, die dem Händlerbeitrag hinzugefügt würden, wenn die Aktualisierung angewendet würde (im Core, nicht im Beitrag). `name` ist der nach dem Alias normalisierte Blockname (z. B. `core/heading`); `label` ist seine menschenlesbare Form für die Anzeige; `path` ist der Indexpfad auf der Core-Seite durch den analysierten Blockbaum."
+msgstr "Blöcke, die der Version des Händlers hinzugefügt würden, wenn die Aktualisierung angewendet würde (im Core, nicht im Beitrag). `name` ist der nach dem Alias normalisierte Blockname (z. B. `core/heading`); `label` ist seine menschenlesbare Form für die Anzeige; `path` ist der Indexpfad auf der Core-Seite durch den analysierten Blockbaum."
 
 #: src/Internal/EmailEditor/EmailApiController.php:561
 msgid "The current core template version recorded in the sync registry."
@@ -704,7 +704,7 @@ msgid "Endpoint URL"
 msgstr "Endpunkt-URL"
 
 #. translators: %s: exception message.
-#: src/Internal/Admin/Settings/SettingsUIRequestContext.php:387
+#: src/Internal/Admin/Settings/SettingsUIRequestContext.php:391
 msgid "Settings UI script handles could not be resolved: %s"
 msgstr "Einstellungs-UI-Skript-Handles konnten nicht aufgelöst werden: %s"
 
@@ -1397,7 +1397,7 @@ msgstr "Nicht unterstützte Webhook-API-Version. Bitte bearbeite diesen Webhook,
 msgid "%s (unsupported)"
 msgstr "%s (nicht unterstützt)"
 
-#: includes/admin/settings/class-wc-settings-page.php:362
+#: includes/admin/settings/class-wc-settings-page.php:402
 msgid "Settings UI schema generation failed."
 msgstr "Die Generierung des UI-Schemas für die Einstellungen ist fehlgeschlagen."
 
@@ -1887,7 +1887,7 @@ msgstr "Die Produktbilder."
 #: src/Internal/Api/Autogenerated/GraphQLTypes/Output/SimpleProduct.php:98
 #: src/Internal/Api/Autogenerated/GraphQLTypes/Output/VariableProduct.php:129
 msgid "The raw stock status as stored in WooCommerce. Useful when stock_status is OTHER (e.g. plugin-added statuses)."
-msgstr "Der Roh-Bestandsstatus, wie er in WooCommerce gespeichert ist. Nützlich, wenn stock_status OTHER lautet (z. B. durch Plugins hinzugefügte Status)."
+msgstr "Der Roh-Lagerstatus, wie er in WooCommerce gespeichert ist. Nützlich, wenn stock_status OTHER lautet (z. B. durch Plugins hinzugefügte Status)."
 
 #: src/Internal/Api/Autogenerated/GraphQLTypes/Interfaces/Product.php:94
 #: src/Internal/Api/Autogenerated/GraphQLTypes/Output/ExternalProduct.php:102
@@ -1911,7 +1911,7 @@ msgstr "Wenn „true“, wird der Preis mit Währungssymbol zurückgegeben."
 #: src/Internal/Api/Autogenerated/GraphQLTypes/Output/SimpleProduct.php:83
 #: src/Internal/Api/Autogenerated/GraphQLTypes/Output/VariableProduct.php:114
 msgid "The sale price of the product."
-msgstr "Der Verkaufspreis für dieses Produkt."
+msgstr "Der Angebotspreis des Produkts."
 
 #: src/Internal/Api/Autogenerated/GraphQLTypes/Interfaces/Product.php:77
 #: src/Internal/Api/Autogenerated/GraphQLTypes/Output/ExternalProduct.php:85
@@ -2032,7 +2032,7 @@ msgstr "Ob der Bestand verwaltet werden soll."
 #: src/Internal/Api/Autogenerated/GraphQLTypes/Input/CreateProduct.php:58
 #: src/Internal/Api/Autogenerated/GraphQLTypes/Input/UpdateProduct.php:62
 msgid "The sale price."
-msgstr "Der Verkaufspreis."
+msgstr "Der Angebotspreis."
 
 #: src/Internal/Api/Autogenerated/GraphQLTypes/Input/CreateProduct.php:54
 #: src/Internal/Api/Autogenerated/GraphQLTypes/Input/UpdateProduct.php:58
@@ -2624,7 +2624,7 @@ msgstr "Produkt veröffentlicht"
 #. present)
 #: includes/admin/meta-boxes/views/html-variation-admin.php:181
 msgid "Sale price (%1$s%2$s)"
-msgstr "Verkaufspreis (%1$s%2$s)"
+msgstr "Angebotspreis (%1$s%2$s)"
 
 #. translators: 1: currency symbol, 2: tax label (prefixed with space if
 #. present)
@@ -2923,7 +2923,7 @@ msgstr "Eines deiner Abonnements für <strong>%1$s</strong> ist abgelaufen. Dies
 
 #: src/Admin/Features/MarketingRecommendations/DefaultMarketingRecommendations.php:112
 msgid "Find new customers by reaching an untapped audience using Snapchat for WooCommerce."
-msgstr "Finde neue Kunden, indem du mit Snapchat für WooCommerce eine ungenutzte Zielgruppe erreichst."
+msgstr "Gewinne neue Kunden, indem du mit Snapchat für WooCommerce eine unerschlossene Zielgruppe erreichst."
 
 #: src/Admin/Features/MarketingRecommendations/DefaultMarketingRecommendations.php:78
 msgid "Seamlessly sync your products to find new customers using Reddit Ads."
@@ -3226,11 +3226,11 @@ msgstr "N-Genius Online von Network"
 
 #: src/Internal/Admin/RemoteFreeExtensions/DefaultFreeExtensions.php:598
 msgid "Find New Customers with Reddit Ads"
-msgstr "Mit Reddit-Werbung neue Kunden finden"
+msgstr "Mit Reddit Ads neue Kunden finden"
 
 #: src/Internal/Admin/RemoteFreeExtensions/DefaultFreeExtensions.php:591
 msgid "Find New Customers with Snapchat Ads"
-msgstr "Mit Snapchat-Werbung neue Kunden finden"
+msgstr "Mit Snapchat Ads neue Kunden finden"
 
 #: src/Internal/Admin/RemoteFreeExtensions/DefaultFreeExtensions.php:471
 #: src/Internal/Admin/RemoteFreeExtensions/DefaultFreeExtensions.php:600
@@ -3244,11 +3244,11 @@ msgstr "Werbung auf Reddit"
 #: src/Internal/Admin/RemoteFreeExtensions/DefaultFreeExtensions.php:463
 #: src/Internal/Admin/RemoteFreeExtensions/DefaultFreeExtensions.php:593
 msgid "Reach an untapped audience on Snapchat and drive more sales."
-msgstr "Erreiche auf Snapchat eine neue Zielgruppe und steigere deine Umsätze."
+msgstr "Erreiche auf Snapchat eine unerschlossene Zielgruppe und steigere deinen Umsatz."
 
 #: src/Internal/Admin/RemoteFreeExtensions/DefaultFreeExtensions.php:462
 msgid "Snapchat Ads"
-msgstr "Werbung auf Snapchat"
+msgstr "Snapchat Ads"
 
 #. translators: %1$s: New invoice ID
 #: src/Gateways/PayPal/Request.php:482
@@ -3305,7 +3305,7 @@ msgstr "%1$sEntdecke Lösungen%2$s, die dir bei der Berechnung von Steuern, der 
 #. translators: %1$s: opening link tag, %2$s: closing link tag
 #: includes/admin/views/html-admin-settings.php:77
 msgid "%1$sExplore solutions%2$s that help highlight products and drive more sales."
-msgstr "%1$sEntdecke Lösungen%2$s, mit denen du Produkte hervorheben und deine Umsätze steigern kannst."
+msgstr "%1$sEntdecke Lösungen%2$s, mit denen du Produkte hervorheben und deinen Umsatz steigern kannst."
 
 #. translators: 1: home URL
 #: includes/admin/helper/class-wc-woo-helper-connection.php:65
@@ -3426,11 +3426,11 @@ msgid "The filter must return an array of providers."
 msgstr "Der Filter muss ein Array von Anbietern zurückgeben."
 
 #: src/Internal/PushNotifications/Controllers/PushTokenRestController.php:379
-#: src/Internal/PushNotifications/PushNotifications.php:107
+#: src/Internal/PushNotifications/PushNotifications.php:106
 msgid "Push Token"
 msgstr "Push-Token"
 
-#: src/Internal/PushNotifications/PushNotifications.php:106
+#: src/Internal/PushNotifications/PushNotifications.php:105
 msgid "Push Tokens"
 msgstr "Push-Token"
 
@@ -3453,20 +3453,20 @@ msgstr "Feed-Datei kann nicht zum Schreiben geöffnet werden: %s"
 msgid "An error occurred while generating the feed."
 msgstr "Beim Generieren des Feeds ist ein Fehler aufgetreten."
 
-#: src/Internal/Features/FeaturesController.php:668
+#: src/Internal/Features/FeaturesController.php:670
 msgid "[Performance] Speeds up your store by caching product objects during each request, preventing duplicate product loads. Can improve page load times on product-heavy pages."
 msgstr "[Performance] Beschleunigt deinen Shop, indem Produktobjekte bei jeder Anfrage zwischengespeichert werden. So wird das Laden doppelter Produkte verhindert. Kann die Seitenladezeiten auf produktlastigen Seiten verbessern."
 
-#: src/Internal/Features/FeaturesController.php:667
+#: src/Internal/Features/FeaturesController.php:669
 msgid "Cache Product Objects"
 msgstr "Produktobjekte zwischenspeichern"
 
 #. translators: %1$s and %2$s are opening and closing <a> tags
-#: src/Internal/Features/FeaturesController.php:632
+#: src/Internal/Features/FeaturesController.php:634
 msgid "Enable backend caching and cache control headers for REST API responses via the <code>RestApiCache</code> trait. ⚙️ %1$sConfiguration%2$s"
 msgstr "Aktiviere Backend-Caching und Cache-Steuerungsheader für REST-API-Antworten über den Trait <code>RestApiCache</code>. ⚙️ %1$sKonfiguration%2$s"
 
-#: src/Internal/Features/FeaturesController.php:629
+#: src/Internal/Features/FeaturesController.php:631
 msgid "REST API Caching"
 msgstr "REST-API-Caching"
 
@@ -3582,11 +3582,11 @@ msgstr "Diese Funktion sollte nicht aufgerufen werden, bevor die WooCommerce-Sit
 
 #: includes/rest-api/Controllers/Version3/class-wc-rest-products-controller.php:1966
 msgid "Limit result set to products visible in Point of Sale."
-msgstr "Beschränkt die Ergebnismenge auf Produkte, die am Verkaufsort sichtbar sind."
+msgstr "Beschränkt die Ergebnismenge auf Produkte, die im Kassensystem sichtbar sind."
 
 #: includes/rest-api/Controllers/Version3/class-wc-rest-product-variations-controller.php:1284
 msgid "Limit result set to variations visible in Point of Sale."
-msgstr "Beschränkt die Ergebnismenge auf Varianten, die am Verkaufsort sichtbar sind."
+msgstr "Beschränkt die Ergebnismenge auf Varianten, die im Kassensystem sichtbar sind."
 
 #: includes/rest-api/Controllers/Version2/class-wc-rest-system-status-v2-controller.php:211
 msgid "The WordPress environment type."
@@ -3595,7 +3595,7 @@ msgstr "Der WordPress-Umgebungstyp."
 #: includes/class-wc-post-types.php:238
 msgctxt "Taxonomy name"
 msgid "POS Product visibility"
-msgstr "POS-Produkt-Sichtbarkeit"
+msgstr "POS-Produktsichtbarkeit"
 
 #. translators: %d: order item ID
 #: includes/class-wc-order-item-fee.php:211
@@ -3684,7 +3684,7 @@ msgstr "Dieser Produkttyp wird derzeit nicht unterstützt."
 
 #: includes/admin/meta-boxes/views/html-product-data-advanced.php:75
 msgid "Controls whether this product appears in the Point of Sale system."
-msgstr "Steuert, ob dieses Produkt im Point-of-Sale-System angezeigt wird."
+msgstr "Steuert, ob dieses Produkt im Kassensystem angezeigt wird."
 
 #: includes/admin/meta-boxes/views/html-product-data-advanced.php:73
 msgid "Available for POS"
@@ -4404,7 +4404,7 @@ msgstr "Der Titel der Bestellnotizgruppe."
 
 #: src/Internal/RestApi/Routes/V4/Customers/CustomerSchema.php:254
 msgid "When the customer was last active, as GMT."
-msgstr "Wann der Kunde zuletzt aktiv war (in UTC)."
+msgstr "Wann der Kunde zuletzt aktiv war, in UTC."
 
 #: src/Internal/RestApi/Routes/V4/Customers/CustomerSchema.php:247
 msgid "When the customer was last active in the site's timezone."
@@ -4934,19 +4934,19 @@ msgstr "WooCommerce-MCP-Server"
 msgid "Ambiguous shipping providers list."
 msgstr "Unklare Liste der Versanddienstleister."
 
-#: src/Internal/Features/FeaturesController.php:722
+#: src/Internal/Features/FeaturesController.php:724
 msgid "Configure Permalinks"
 msgstr "Permalinks konfigurieren"
 
-#: src/Internal/Features/FeaturesController.php:720
+#: src/Internal/Features/FeaturesController.php:722
 msgid "WordPress permalinks must be set to anything other than \"Plain\" for MCP to work."
 msgstr "WordPress-Permalinks müssen auf etwas anderes als „Einfach“ eingestellt sein, damit MCP funktioniert."
 
-#: src/Internal/Features/FeaturesController.php:719
+#: src/Internal/Features/FeaturesController.php:721
 msgid "Configuration Required"
 msgstr "Konfiguration erforderlich"
 
-#: src/Internal/Features/FeaturesController.php:711
+#: src/Internal/Features/FeaturesController.php:713
 msgid "Enable WooCommerce MCP (Model Context Protocol) for AI-powered store operations. AI-generated results and actions can be unpredictable - please review before executing in your store."
 msgstr "Aktiviere WooCommerce MCP (Model Context Protocol) für KI-gestützte Shop-Vorgänge. KI-generierte Ergebnisse und Aktionen können unvorhersehbar sein – bitte überprüfe sie, bevor du sie in deinem Shop ausführst."
 
@@ -5276,27 +5276,27 @@ msgstr "E-Mail-Design"
 
 #: includes/admin/settings/class-wc-settings-emails.php:180
 msgid "\"Reply-to\" address"
-msgstr "„Antworten-an“-Adresse"
+msgstr "„Antwort an“-Adresse"
 
 #: includes/admin/settings/class-wc-settings-emails.php:169
 msgid "\"Reply-to\" name"
-msgstr "„Antworten-an“-Name"
+msgstr "„Antwort an“-Name"
 
 #: includes/admin/settings/class-wc-settings-emails.php:160
 msgid "Add \"Reply-to\" email"
-msgstr "„Antworten-an“-E-Mail-Adresse hinzufügen"
+msgstr "„Antwort an“-E-Mail-Adresse hinzufügen"
 
 #: src/Internal/RestApi/Routes/V4/Settings/Email/Controller.php:353
 msgid "Please enter a valid reply-to email address."
-msgstr "Bitte gib eine gültige „Antworten-an“-E-Mail-Adresse ein."
+msgstr "Bitte gib eine gültige „Antwort an“-E-Mail-Adresse ein."
 
 #: src/Internal/RestApi/Routes/V4/Settings/Email/Controller.php:342
 msgid "Reply-to name cannot be empty when reply-to is enabled."
-msgstr "Der „Antworten-an“-Name darf nicht leer sein, wenn „Antworten-an“ aktiviert ist."
+msgstr "Der „Antwort an“-Name darf nicht leer sein, wenn „Antwort an“ aktiviert ist."
 
 #: src/Internal/RestApi/Routes/V4/Settings/Email/Controller.php:331
 msgid "Reply-to enabled must be a boolean value."
-msgstr "Die Aktivierung von „Antworten-an“ muss ein boolescher Wert sein."
+msgstr "Die Aktivierung von „Antwort an“ muss ein boolescher Wert sein."
 
 #: src/Internal/RestApi/Routes/V4/Settings/Email/Controller.php:307
 msgid "Email sender name cannot be empty."
@@ -6930,7 +6930,7 @@ msgstr "Ungültige Benutzer-ID."
 
 #: src/Internal/Features/FeaturesController.php:542
 msgid "Enable Point of Sale functionality in the WooCommerce mobile apps."
-msgstr "Aktiviere die Point-of-Sale-Funktionalität in den WooCommerce-Mobil-Apps."
+msgstr "Aktiviere die Kassensystem-Funktionalität in den WooCommerce-Mobil-Apps."
 
 #: src/Internal/EmailEditor/PersonalizationTags/OrderTagsProvider.php:309
 msgid "Order Custom Field"
@@ -7186,7 +7186,7 @@ msgstr "Physische Adresse"
 
 #: includes/admin/settings/class-wc-settings-point-of-sale.php:76
 msgid "The name of your physical store."
-msgstr "Der Name deines physischen Shops."
+msgstr "Der Name deines Ladengeschäfts."
 
 #: includes/admin/settings/class-wc-settings-point-of-sale.php:75
 msgid "Store name"
@@ -7445,7 +7445,7 @@ msgstr "Produktfilter"
 #: assets/client/blocks/product-filter-clear-button/block.json
 msgctxt "block title"
 msgid "Clear filters"
-msgstr "Filter löschen"
+msgstr "Filter zurücksetzen"
 
 #: assets/client/blocks/product-description/block.json
 msgctxt "block description"
@@ -7936,7 +7936,7 @@ msgstr "Mit WooCommerce Shipping beim Versand Geld sparen"
 #: src/Internal/Features/FeaturesController.php:541
 #: src/Internal/Traits/OrderAttributionMeta.php:318
 msgid "Point of Sale"
-msgstr "Verkaufsort (POS)"
+msgstr "Kassensystem (POS)"
 
 #: src/Internal/Admin/Notes/EmailImprovements.php:78
 #: assets/client/admin/chunks/homescreen.js:1
@@ -8503,7 +8503,7 @@ msgstr "1"
 #: assets/client/blocks/product-filter-clear-button/block.json
 msgctxt "block keyword"
 msgid "clear filters"
-msgstr "Filter löschen"
+msgstr "Filter zurücksetzen"
 
 #: assets/client/blocks/product-details/block.json
 msgctxt "block description"
@@ -8575,7 +8575,7 @@ msgstr "Kaufe eines von %1$s für %2$s"
 #: src/Blocks/BlockTypes/AddToCartWithOptions/GroupedProductItemSelector.php:133
 #: templates/single-product/add-to-cart/grouped.php:71
 msgid "Buy one of %1$s on sale for %2$s, original price was %3$s"
-msgstr "Kaufe eines von %1$s im Angebot für %2$s, ursprünglicher Preis war %3$s"
+msgstr "Kaufe ein Exemplar von %1$s im Angebot für %2$s (regulärer Preis: %3$s)"
 
 #. translators: 1: order number, 2: order date
 #. translators: %1$s: Order ID. %2$s: Order date
@@ -9873,7 +9873,7 @@ msgstr "Stripe"
 
 #: src/Internal/Admin/Suggestions/PaymentsExtensionSuggestions.php:3772
 msgid "Securely accept credit and debit cards with one low rate, no surprise fees (custom rates available). Sell in store and track sales and inventory in one place."
-msgstr "Du kannst Kredit- und Debitkarten mit einer einheitlichen niedrigen Rate und ohne versteckte Zusatzkosten akzeptieren (individuelle Raten möglich). Verkaufe im Shop und verwalte deine Verkäufe sowie dein Inventar an einem Ort."
+msgstr "Du kannst Kredit- und Debitkarten sicher zu einem festen niedrigen Tarif und ohne versteckte Zusatzkosten akzeptieren (individuelle Tarife möglich). Verkaufe im Geschäft und verfolge Verkäufe sowie deine Bestände an einem Ort."
 
 #: src/Internal/Admin/Suggestions/PaymentsExtensionSuggestions.php:3706
 msgid "Enable PayU's exclusive plugin for WooCommerce to start accepting payments in 100+ payment methods available in India including credit cards, debit cards, UPI, & more!"
@@ -10633,7 +10633,7 @@ msgstr "Es tut uns leid, aber %1$s kann für einen Benutzer mit der Rolle „%2$
 #: assets/client/blocks/product-filter-status/block.json
 msgctxt "block description"
 msgid "Let shoppers filter products by choosing stock status."
-msgstr "Ermöglicht es Käufern, Produkte nach Lagerbestand zu filtern."
+msgstr "Ermöglicht es Käufern, Produkte nach Lagerstatus zu filtern."
 
 #: assets/client/blocks/product-filter-removable-chips/block.json
 msgctxt "block description"
@@ -11573,12 +11573,12 @@ msgstr "Remote-Protokollierung"
 
 #: src/Internal/Admin/RemoteFreeExtensions/DefaultFreeExtensions.php:584
 msgid "Drive sales with Google for WooCommerce"
-msgstr "Kurble deine Umsätze an mit Google für WooCommerce"
+msgstr "Steigere deinen Umsatz mit Google für WooCommerce"
 
 #. translators: 1: opening product link tag. 2: closing link tag
 #: src/Internal/Admin/RemoteFreeExtensions/DefaultFreeExtensions.php:117
 msgid "Drive sales with %1$sGoogle for WooCommerce%2$s"
-msgstr "Kurble deine Umsätze an mit %1$sGoogle für WooCommerce%2$s"
+msgstr "Steigere deinen Umsatz mit %1$sGoogle für WooCommerce%2$s"
 
 #: src/Internal/Admin/RemoteFreeExtensions/DefaultFreeExtensions.php:114
 #: src/Internal/Admin/RemoteFreeExtensions/DefaultFreeExtensions.php:137
@@ -11795,7 +11795,7 @@ msgstr "Deine Lieblingsplatten zu rekordverdächtigen Preisen."
 
 #: patterns/banner.php:11
 msgid "Holiday Sale"
-msgstr "Weihnachtsangebote"
+msgstr "Feiertagsangebote"
 
 #: patterns/banner.php:9
 msgid "Up to 60% off"
@@ -13630,13 +13630,13 @@ msgstr "Wenn du mithilfe von Cross-Sells (Querverkäufen) ergänzende Produkte i
 
 #: src/Internal/Features/ProductBlockEditor/ProductTemplates/SimpleProductTemplate.php:1156
 msgid "Tip: Upsells are products that are extra profitable or better quality or more expensive. Experiment with combinations to boost sales."
-msgstr "Tipp: Upsells (Zusatzverkäufe) sind Produkte, die besonders profitabel, von besserer Qualität oder teurer sind. Du solltest Kombinationen ausprobieren, um den Umsatz zu steigern."
+msgstr "Tipp: Upsells (Zusatzverkäufe) sind Produkte, die besonders profitabel, von besserer Qualität oder teurer sind. Probiere verschiedene Kombinationen aus, um den Umsatz zu steigern."
 
 #. translators: %1$s: "Learn more about linked products" link opening tag.
 #. %2$s: "Learn more about linked products" link closing tag.
 #: src/Internal/Features/ProductBlockEditor/ProductTemplates/SimpleProductTemplate.php:1141
 msgid "Upsells are typically products that are extra profitable or better quality or more expensive. Experiment with combinations to boost sales. %1$sLearn more about linked products%2$s"
-msgstr "Upsells (Zusatzverkäufe) sind Produkte, die besonders profitabel, von besserer Qualität oder teurer sind. Du solltest Kombinationen ausprobieren, um den Umsatz zu steigern. %1$sWeitere Informationen zu verknüpften Produkten%2$s"
+msgstr "Upsells (Zusatzverkäufe) sind Produkte, die besonders profitabel, von besserer Qualität oder teurer sind. Probiere verschiedene Kombinationen aus, um den Umsatz zu steigern. %1$sMehr über verknüpfte Produkte erfahren%2$s"
 
 #: src/Internal/Features/ProductBlockEditor/ProductTemplates/DownloadableProductTrait.php:44
 msgid "Include downloads"
@@ -13862,7 +13862,7 @@ msgstr "Sammle und präsentiere verifizierte Rezensionen, denen Verbraucher vert
 
 #: src/Admin/Features/MarketingRecommendations/DefaultMarketingRecommendations.php:255
 msgid "Delight customers and boost organic sales with a special WooCommerce birthday email (and coupon!) on their special day."
-msgstr "Erfreue Kunden und steigere deinen organischen Umsatz mit einer besonderen WooCommerce-Geburtstags-E-Mail und einem Gutschein an ihrem Ehrentag."
+msgstr "Erfreue Kunden und steigere deinen organischen Umsatz mit einer besonderen WooCommerce-Geburtstags-E-Mail (und einem Gutschein!) an ihrem Ehrentag."
 
 #: src/Admin/Features/MarketingRecommendations/DefaultMarketingRecommendations.php:237
 msgid "Boost your organic sales by adding a customer referral program to your WooCommerce store."
@@ -14269,7 +14269,7 @@ msgstr "Vereinfachter Versand mit: "
 
 #: patterns/hero-product-split.php:29
 msgid "Shop the sale"
-msgstr "Profitiere vom Rabatt"
+msgstr "Jetzt Angebote entdecken"
 
 #: includes/admin/helper/class-wc-helper-subscriptions-api.php:387
 msgid "There was an error getting the install URL for this product."
@@ -15768,7 +15768,7 @@ msgstr "WooPayments"
 
 #: src/Internal/Admin/RemoteFreeExtensions/DefaultFreeExtensions.php:621
 msgid "Automatically calculate how much sales tax should be collected – by city, country, or state."
-msgstr "Kalkuliere automatisch die zu berechnende Umsatzsteuer – nach Stadt, Land oder Bundesstaat."
+msgstr "Berechne automatisch die anfallende Umsatzsteuer – nach Stadt, Land oder Bundesland."
 
 #: src/Internal/Admin/RemoteFreeExtensions/DefaultFreeExtensions.php:619
 msgid "Get automated tax rates with WooCommerce Tax"
@@ -16430,7 +16430,7 @@ msgstr "Produktabschnitt"
 #: assets/client/admin/product-editor/blocks/product-fields/sale-price/block.json
 msgctxt "block keyword"
 msgid "price"
-msgstr "price"
+msgstr "Preis"
 
 #: assets/client/admin/product-editor/blocks/generic/pricing/block.json
 #: assets/client/admin/product-editor/blocks/generic/product-pricing-field/block.json
@@ -16599,13 +16599,13 @@ msgstr "Zeitplan"
 #: assets/client/admin/product-editor/blocks/product-fields/schedule-sale/block.json
 msgctxt "block description"
 msgid "The product schedule sale fields."
-msgstr "Die Felder zur Planung des Produktverkaufs."
+msgstr "Die Felder zur Planung des Angebotszeitraums."
 
 #: assets/client/admin/product-editor/blocks/product-fields/product-schedule-sale-fields/block.json
 #: assets/client/admin/product-editor/blocks/product-fields/schedule-sale/block.json
 msgctxt "block title"
 msgid "Product schedule sale fields"
-msgstr "Felder zur Planung des Produktverkaufs"
+msgstr "Felder zur Planung des Angebotszeitraums"
 
 #: assets/client/admin/product-editor/blocks/generic/product-radio-field/block.json
 #: assets/client/admin/product-editor/blocks/generic/product-toggle-field/block.json
@@ -17266,7 +17266,7 @@ msgid "Charge sales tax on"
 msgstr "Umsatzsteuer erheben für"
 
 #. translators: 1: line break tag.
-#: src/Internal/Features/FeaturesController.php:1484
+#: src/Internal/Features/FeaturesController.php:1486
 msgid ""
 "%1$s This navigation will soon become unavailable while we make necessary improvements.\n"
 "\t\t\t\t\t\t\t\t\tIf you turn it off now, you will not be able to turn it back on."
@@ -17993,62 +17993,62 @@ msgid "Product quantity"
 msgstr "Produktmenge"
 
 #. translators: %s = name of a WooCommerce feature
-#: src/Internal/Features/FeaturesController.php:1982
+#: src/Internal/Features/FeaturesController.php:1984
 msgid "Incompatible with '%s'"
 msgstr "Mit „%s“ inkompatibel"
 
-#: src/Internal/Features/FeaturesController.php:1980
+#: src/Internal/Features/FeaturesController.php:1982
 msgid "Incompatible with WooCommerce features"
 msgstr "Mit WooCommerce-Funktionen inkompatibel"
 
-#: src/Internal/Features/FeaturesController.php:1868
+#: src/Internal/Features/FeaturesController.php:1870
 msgid "Manage WooCommerce features"
 msgstr "WooCommerce-Funktionen verwalten"
 
-#: src/Internal/Features/FeaturesController.php:1861
+#: src/Internal/Features/FeaturesController.php:1863
 msgid "⚠ This plugin is incompatible with the enabled WooCommerce features '%1$s', '%2$s' and %3$d more, it shouldn't be activated."
 msgstr "⚠ Dieses Plugin ist nicht mit den aktivierten WooCommerce-Funktionen „%1$s“, „%2$s“ und %3$d weiteren kompatibel und sollte nicht aktiviert werden."
 
-#: src/Internal/Features/FeaturesController.php:1854
+#: src/Internal/Features/FeaturesController.php:1856
 msgid "⚠ This plugin is incompatible with the enabled WooCommerce features '%1$s' and '%2$s', it shouldn't be activated."
 msgstr "⚠ Dieses Plugin ist nicht mit den aktivierten WooCommerce-Funktionen „%1$s“ und „%2$s“ kompatibel und sollte nicht aktiviert werden."
 
 #. translators: %s = printable plugin name
-#: src/Internal/Features/FeaturesController.php:1848
+#: src/Internal/Features/FeaturesController.php:1850
 msgid "⚠ This plugin is incompatible with the enabled WooCommerce feature '%s', it shouldn't be activated."
 msgstr "⚠ Dieses Plugin ist nicht mit der aktivierten WooCommerce-Funktion „%s“ kompatibel und sollte nicht aktiviert werden."
 
-#: src/Internal/Features/FeaturesController.php:1762
+#: src/Internal/Features/FeaturesController.php:1764
 msgid "<a href='%1$s'>View all plugins</a> - <a href='%2$s'>Manage WooCommerce features</a>"
 msgstr "<a href='%1$s'>Alle Plugins anzeigen</a> – <a href='%2$s'>WooCommerce-Funktionen verwalten</a>"
 
 #. translators: %s is a feature name.
-#: src/Internal/Features/FeaturesController.php:1756
+#: src/Internal/Features/FeaturesController.php:1758
 msgid "You are viewing the active plugins that are incompatible with the '%s' feature."
 msgstr "Dir werden die aktiven Plugins angezeigt, die mit der Funktion „%s“ nicht kompatibel sind."
 
-#: src/Internal/Features/FeaturesController.php:1753
+#: src/Internal/Features/FeaturesController.php:1755
 msgid "You are viewing active plugins that are incompatible with currently enabled WooCommerce features."
 msgstr "Dir werden aktive Plugins angezeigt, die mit den derzeit aktivierten WooCommerce-Funktionen nicht kompatibel sind."
 
-#: src/Internal/Features/FeaturesController.php:1710
+#: src/Internal/Features/FeaturesController.php:1712
 msgid "WooCommerce has detected that some of your active plugins are incompatible with currently enabled WooCommerce features. Please <a>review the details</a>."
 msgstr "WooCommerce hat festgestellt, dass einige deiner aktiven Plugins nicht mit den derzeit aktivierten WooCommerce-Funktionen kompatibel sind. Sieh dir bitte die <a>Details</a> an."
 
-#: src/Internal/Features/FeaturesController.php:1480
+#: src/Internal/Features/FeaturesController.php:1482
 msgid "WooCommerce Admin has been disabled"
 msgstr "WooCommerce Admin wurde deaktiviert"
 
-#: src/Internal/Features/FeaturesController.php:1407
+#: src/Internal/Features/FeaturesController.php:1409
 msgid "These features are either experimental or incomplete, enable them at your own risk!"
 msgstr "Diese Funktionen sind entweder experimentell oder unvollständig. Die Aktivierung erfolgt auf eigene Gefahr!"
 
-#: src/Internal/Features/FeaturesController.php:1405
+#: src/Internal/Features/FeaturesController.php:1407
 msgid "Experimental features"
 msgstr "Experimentelle Funktionen"
 
 #. translators: 1: class::method 2: before_woocommerce_init
-#: src/Internal/Features/FeaturesController.php:966
+#: src/Internal/Features/FeaturesController.php:968
 msgid "%1$s should be called inside the %2$s action."
 msgstr "%1$s sollte innerhalb der Aktion %2$s aufgerufen werden."
 
@@ -18076,7 +18076,7 @@ msgstr "Es wurden keine Bestellungen synchronisiert."
 #: assets/client/blocks/stock-filter/block.json
 msgctxt "block description"
 msgid "Enable customers to filter the product grid by stock status."
-msgstr "Ermöglicht es Kunden, das Produktraster nach Lagerbestand zu filtern."
+msgstr "Ermöglicht es Kunden, das Produktraster nach Lagerstatus zu filtern."
 
 #: assets/client/blocks/filter-wrapper/block.json
 msgctxt "block title"
@@ -19120,7 +19120,7 @@ msgstr "Admin"
 
 #: src/Internal/Admin/RemoteFreeExtensions/DefaultFreeExtensions.php:396
 msgid "Grow your online sales by promoting your products on TikTok to over one billion monthly active users around the world."
-msgstr "Steiger deine Online-Verkäufe, indem du deine Produkte auf TikTok bei über einer Milliarde aktiven Benutzern pro Monat auf der ganzen Welt bewirbst."
+msgstr "Steigere deine Online-Verkäufe, indem du deine Produkte auf TikTok bei über einer Milliarde aktiven Benutzern pro Monat auf der ganzen Welt bewirbst."
 
 #: src/Internal/Admin/RemoteFreeExtensions/DefaultFreeExtensions.php:393
 #: src/Internal/Admin/RemoteFreeExtensions/DefaultFreeExtensions.php:449
@@ -21186,7 +21186,7 @@ msgstr "Schneller und sicherer mit %1$sJetpack%2$s"
 #. translators: 1: opening product link tag. 2: closing link tag
 #: src/Internal/Admin/RemoteFreeExtensions/DefaultFreeExtensions.php:353
 msgid "Get automated sales tax with %1$sWooCommerce Tax%2$s"
-msgstr "Profitiere von einer automatisierter Umsatzsteuer mit %1$sWooCommerce Tax%2$s"
+msgstr "Profitiere von einer automatisierten Umsatzsteuer mit %1$sWooCommerce Tax%2$s"
 
 #. translators: 1: opening product link tag. 2: closing link tag
 #: src/Internal/Admin/RemoteFreeExtensions/DefaultFreeExtensions.php:293
@@ -21279,12 +21279,12 @@ msgstr "Telefonnummer für Versand"
 msgid "Billing Phone Number"
 msgstr "Telefonnummer für Rechnung"
 
-#: includes/class-wc-install.php:1165
+#: includes/class-wc-install.php:1168
 msgctxt "Page title"
 msgid "Refund and Returns Policy"
 msgstr "Richtlinie für Erstattungen und Rückgaben"
 
-#: includes/class-wc-install.php:1164
+#: includes/class-wc-install.php:1167
 msgctxt "Page slug"
 msgid "refund_returns"
 msgstr "erstattungen_rueckgaben"
@@ -22123,7 +22123,7 @@ msgstr "Titelform-Kennung für die Ressource."
 
 #. translators: 1: line break tag, 2: open link to WordPress update link, 3:
 #. close link tag.
-#: src/Internal/Features/FeaturesController.php:1496
+#: src/Internal/Features/FeaturesController.php:1498
 msgid "%1$s %2$sUpdate WordPress to enable the new navigation%3$s"
 msgstr "%1$s %2$sAktualisiere WordPress, um die neue Navigation zu verwenden%3$s"
 
@@ -23829,7 +23829,7 @@ msgstr "Adrar"
 
 #: includes/admin/views/html-quick-edit-product.php:201
 msgid "This will change the stock status of all variations."
-msgstr "Dadurch wird der Bestandsstatus aller Varianten geändert."
+msgstr "Dadurch wird der Lagerstatus aller Varianten geändert."
 
 #: includes/admin/class-wc-admin-assets.php:810
 msgid "Are you sure you want to run this tool?"
@@ -23941,11 +23941,11 @@ msgctxt "Taxonomy name"
 msgid "Product type"
 msgstr "Produkttyp"
 
-#: includes/class-wc-install.php:2505
+#: includes/class-wc-install.php:2508
 msgid "Community support"
 msgstr "Community-Support"
 
-#: includes/class-wc-install.php:2505
+#: includes/class-wc-install.php:2508
 msgid "Visit community forums"
 msgstr "Community-Foren besuchen"
 
@@ -24123,12 +24123,12 @@ msgstr "Ungültiger Admin-Hinweis"
 msgid "Browse store"
 msgstr "Shop durchstöbern"
 
-#: includes/class-wc-install.php:3069 src/Blocks/BlockTypes/Cart.php:107
+#: includes/class-wc-install.php:3072 src/Blocks/BlockTypes/Cart.php:107
 #: assets/client/blocks/cart.js:23
 msgid "New in store"
 msgstr "Neu im Shop"
 
-#: includes/class-wc-install.php:3061 src/Blocks/BlockTypes/Cart.php:97
+#: includes/class-wc-install.php:3064 src/Blocks/BlockTypes/Cart.php:97
 #: src/Blocks/BlockTypes/MiniCart.php:949 assets/client/blocks/cart.js:23
 #: assets/client/blocks/checkout-frontend.js:5
 msgid "Your cart is currently empty!"
@@ -25174,12 +25174,12 @@ msgstr "Bomet"
 msgid "Baringo"
 msgstr "Baringo"
 
-#: src/Internal/Features/FeaturesController.php:1364
+#: src/Internal/Features/FeaturesController.php:1366
 msgid "Start using new features that are being progressively rolled out to improve the store management experience."
 msgstr "Verwende neue Features, die wir nach und nach einführen, um die Verwaltung deines Shops benutzerfreundlicher zu gestalten."
 
-#: src/Internal/Features/FeaturesController.php:1337
-#: src/Internal/Features/FeaturesController.php:1362
+#: src/Internal/Features/FeaturesController.php:1339
+#: src/Internal/Features/FeaturesController.php:1364
 msgid "Features"
 msgstr "Funktionen"
 
@@ -25515,7 +25515,7 @@ msgstr "Zahlungen einrichten"
 
 #: src/Admin/Features/PaymentGatewaySuggestions/DefaultPaymentGateways.php:602
 msgid "Securely accept credit and debit cards with one low rate, no surprise fees (custom rates available). Sell online and in store and track sales and inventory in one place."
-msgstr "Du kannst Kredit- und Debitkarten mit einer einheitlichen niedrigen Rate und ohne versteckte Zusatzkosten akzeptieren (individuelle Raten möglich). Verkaufe online sowie im Shop und verwalte deine Verkäufe sowie dein Inventar an einem Ort."
+msgstr "Du kannst Kredit- und Debitkarten sicher zu einem festen niedrigen Tarif und ohne versteckte Zusatzkosten akzeptieren (individuelle Tarife möglich). Verkaufe online sowie im Geschäft und verfolge Verkäufe sowie deine Bestände an einem Ort."
 
 #: src/Admin/Features/PaymentGatewaySuggestions/DefaultPaymentGateways.php:217
 #: src/Admin/Features/PaymentGatewaySuggestions/DefaultPaymentGateways.php:241
@@ -26069,7 +26069,7 @@ msgstr "Anzahl der Bestellungen."
 
 #: src/Admin/API/Reports/Customers/Controller.php:378
 msgid "Date last active GMT."
-msgstr "Datum der letzten Aktivität in GMT."
+msgstr "Datum der letzten Aktivität, in UTC."
 
 #: src/Admin/API/Reports/Customers/Controller.php:372
 msgid "Date last active."
@@ -26077,7 +26077,7 @@ msgstr "Datum des letzten aktiven Vorgangs."
 
 #: src/Admin/API/Reports/Customers/Controller.php:366
 msgid "Date registered GMT."
-msgstr "Registrierungsdatum GMT."
+msgstr "Registrierungsdatum, in UTC."
 
 #: src/Admin/API/Reports/Customers/Controller.php:360
 msgid "Date registered."
@@ -26214,7 +26214,7 @@ msgstr "Nettoumsatz insgesamt."
 
 #: src/Admin/API/Reports/Orders/Controller.php:155
 msgid "Date the order was created, as GMT."
-msgstr "Das Datum, an dem die Bestellung erstellt wurde, gemäß GMT."
+msgstr "Das Datum, an dem die Bestellung erstellt wurde, in UTC."
 
 #: src/Admin/API/Reports/Orders/Controller.php:149
 msgid "Date the order was created, in the site's timezone."
@@ -26343,7 +26343,7 @@ msgstr "Bestellnummer."
 
 #: src/Admin/API/Reports/Downloads/Controller.php:156
 msgid "The date of the download, as GMT."
-msgstr "Das Datum des Downloads, in GMT."
+msgstr "Das Datum des Downloads, in UTC."
 
 #: src/Admin/API/Reports/Downloads/Controller.php:150
 msgid "The date of the download, in the site's timezone."
@@ -26373,7 +26373,7 @@ msgstr "Bestand verwalten."
 
 #: src/Admin/API/Reports/Stock/Controller.php:390
 msgid "Stock status."
-msgstr "Lagerbestand."
+msgstr "Lagerstatus."
 
 #. translators: Allowed values is a list of stat endpoints.
 #: src/Admin/API/Reports/PerformanceIndicators/Controller.php:667
@@ -26697,7 +26697,7 @@ msgstr "Zeitintervall für Buckets in den ausgegebenen Daten."
 #: src/Admin/API/Reports/Downloads/Stats/Controller.php:171
 #: src/Admin/API/Reports/GenericStatsController.php:188
 msgid "The date the report end, as GMT."
-msgstr "Das Datum, an dem der Bericht endet, gemäß GMT."
+msgstr "Das Datum, an dem der Bericht endet, in UTC."
 
 #: src/Admin/API/Reports/Downloads/Stats/Controller.php:165
 #: src/Admin/API/Reports/GenericStatsController.php:181
@@ -26707,7 +26707,7 @@ msgstr "Das Datum, an dem der Bericht endet, in der Zeitzone der Website."
 #: src/Admin/API/Reports/Downloads/Stats/Controller.php:159
 #: src/Admin/API/Reports/GenericStatsController.php:174
 msgid "The date the report start, as GMT."
-msgstr "Das Datum, an dem der Bericht beginnt, gemäß GMT."
+msgstr "Das Datum, an dem der Bericht beginnt, in UTC."
 
 #: src/Admin/API/Reports/Downloads/Stats/Controller.php:153
 #: src/Admin/API/Reports/GenericStatsController.php:167
@@ -26781,7 +26781,7 @@ msgstr "Gutschein-Rabatttyp."
 
 #: src/Admin/API/Reports/Coupons/Controller.php:163
 msgid "Coupon expiration date in GMT."
-msgstr "Ablaufdatum des Gutscheins in GMT."
+msgstr "Ablaufdatum des Gutscheins, in UTC."
 
 #: src/Admin/API/Reports/Coupons/Controller.php:157
 msgid "Coupon expiration date."
@@ -26789,7 +26789,7 @@ msgstr "Ablaufdatum des Gutscheins."
 
 #: src/Admin/API/Reports/Coupons/Controller.php:151
 msgid "Coupon creation date in GMT."
-msgstr "Erstellungsdatum des Gutscheins in GMT."
+msgstr "Erstellungsdatum des Gutscheins, in UTC."
 
 #: src/Admin/API/Reports/Coupons/Controller.php:145
 msgid "Coupon creation date."
@@ -28187,7 +28187,7 @@ msgstr "Du MUSST auf der Seite <a href=\"%1$s\"> MaxMind-Integrationseinstellung
 msgid "Geolocation has not been configured."
 msgstr "Geolocation wurde nicht konfiguriert."
 
-#: includes/class-wc-install.php:1061
+#: includes/class-wc-install.php:1064
 msgid "Every 15 Days"
 msgstr "Alle 15 Tage"
 
@@ -28982,12 +28982,12 @@ msgstr "Gutscheincode generieren"
 msgid "Drag and drop to set admin attribute order"
 msgstr "Drag-and-drop zum Festlegen der Reihenfolge der Admin-Attribute"
 
-#: includes/class-wc-install.php:1233
+#: includes/class-wc-install.php:1236
 #: assets/client/admin/chunks/experimental-products-app-variation-view-main.js:1
 msgid "Zero rate"
 msgstr "Nullsatz"
 
-#: includes/class-wc-install.php:1232
+#: includes/class-wc-install.php:1235
 #: assets/client/admin/chunks/experimental-products-app-variation-view-main.js:1
 msgid "Reduced rate"
 msgstr "Ermäßigter Steuersatz"
@@ -29072,7 +29072,7 @@ msgstr "Erfahre, wie du ein Upgrade installierst"
 
 #: includes/admin/meta-boxes/views/html-product-data-general.php:98
 msgid "The sale will start at 00:00:00 of \"From\" date and end at 23:59:59 of \"To\" date."
-msgstr "Der Verkauf beginnt um 00:00:00 Uhr des „Von“-Datums und endet um 23:59:59 Uhr des „Bis“-Datums."
+msgstr "Das Angebot beginnt um 00:00:00 Uhr des „Von“-Datums und endet um 23:59:59 Uhr des „Bis“-Datums."
 
 #: includes/wc-order-functions.php:919
 msgid "Order fully refunded."
@@ -31294,13 +31294,13 @@ msgid "Payment complete event failed."
 msgstr "Zahlungsabschlussereignis fehlgeschlagen."
 
 #. translators: user role
-#: includes/class-wc-install.php:2201
+#: includes/class-wc-install.php:2204
 msgctxt "User role"
 msgid "Shop manager"
 msgstr "Shop-Manager"
 
 #. translators: user role
-#: includes/class-wc-install.php:2199
+#: includes/class-wc-install.php:2202
 msgctxt "User role"
 msgid "Customer"
 msgstr "Kunde"
@@ -32467,7 +32467,7 @@ msgid "Buy &ldquo;%s&rdquo;"
 msgstr "&#8222;%s&#8220; kaufen"
 
 #: includes/admin/class-wc-admin-taxonomies.php:341
-#: includes/class-wc-install.php:1594 includes/class-wc-install.php:1600
+#: includes/class-wc-install.php:1597 includes/class-wc-install.php:1603
 msgctxt "Default category slug"
 msgid "Uncategorized"
 msgstr "Unkategorisiert"
@@ -32605,7 +32605,7 @@ msgstr "Bezahlt am %1$s um %2$s Uhr"
 #: assets/client/blocks/products-by-attribute.js:12
 #: assets/client/blocks/stock-filter.js:8
 msgid "Filter by stock status"
-msgstr "Nach Lagerbestand filtern"
+msgstr "Nach Lagerstatus filtern"
 
 #: includes/admin/list-tables/class-wc-admin-list-table-products.php:344
 #: includes/admin/reports/class-wc-report-stock.php:116
@@ -32731,7 +32731,7 @@ msgstr "Direkte Zahlungen an die E-Mail-Adresse:"
 #. translators: %s: URL
 #: includes/admin/class-wc-admin-setup-wizard.php:1431
 msgid "Securely accept credit and debit cards with one low rate, no surprise fees (custom rates available). Sell online and in store and track sales and inventory in one place. <a href=\"%s\" target=\"_blank\">Learn more about Square</a>."
-msgstr "Akzeptiere sicher Kredit- und Debitkarten mit einem niedrigen Tarif, keine Überraschungsgebühren (Sondertarife verfügbar). Verkaufe online und im Geschäft und verfolge Verkäufe und Bestände an einem Ort. <a href=\"%s\" target=\"_blank\">Erfahre hier mehr über Square</a>."
+msgstr "Du kannst Kredit- und Debitkarten sicher zu einem festen niedrigen Tarif und ohne versteckte Zusatzkosten akzeptieren (individuelle Tarife möglich). Verkaufe online sowie im Geschäft und verfolge Verkäufe und Bestände an einem Ort. <a href=\"%s\" target=\"_blank\">Erfahre hier mehr über Square</a>."
 
 #. translators: %s: URL
 #: includes/admin/class-wc-admin-setup-wizard.php:1426
@@ -32784,7 +32784,7 @@ msgstr "Bestimmt, wie die Werte dieses Attributs angezeigt werden."
 
 #: includes/admin/class-wc-admin-assets.php:491
 msgid "This product has produced sales and may be linked to existing orders. Are you sure you want to delete it?"
-msgstr "Dieses Produkt hat Umsatz generiert und kann mit bestehenden Aufträgen verknüpft sein. Möchtest du es wirklich löschen?"
+msgstr "Dieses Produkt hat Umsatz generiert und kann mit bestehenden Bestellungen verknüpft sein. Möchtest du es wirklich löschen?"
 
 #. translators: %s: Product title
 #: includes/abstracts/abstract-wc-product.php:2199
@@ -32991,7 +32991,7 @@ msgstr "Dieser Schlüssel ist ungültig oder wurde bereits verwendet. Bitte setz
 #: includes/rest-api/Controllers/Version2/class-wc-rest-product-variations-v2-controller.php:848
 #: includes/rest-api/Controllers/Version2/class-wc-rest-products-v2-controller.php:1966
 msgid "End date of sale price, as GMT."
-msgstr "Enddatum des Angebotspreises, als GMT (Greenwich Mean Time)."
+msgstr "Enddatum des Angebotspreises, in UTC."
 
 #: includes/rest-api/Controllers/Version2/class-wc-rest-product-variations-v2-controller.php:859
 msgid "Define if the variation is visible on the product's page."
@@ -33094,7 +33094,7 @@ msgstr "Relevanz"
 #. translators: 1: wc_load_cart 2: woocommerce_init
 #. translators: 1: class::method 2: plugins_loaded
 #: includes/wc-core-functions.php:2522
-#: src/Internal/Features/FeaturesController.php:1177
+#: src/Internal/Features/FeaturesController.php:1179
 msgid "%1$s should not be called before the %2$s action."
 msgstr "%1$s sollte nicht vor der %2$s Aktion aufgerufen werden."
 
@@ -33458,7 +33458,7 @@ msgstr "Weitere Gründe dafür, weshalb du Jetpack lieben wirst"
 
 #: includes/admin/class-wc-admin-setup-wizard.php:2169
 msgid "By connecting your site you agree to our fascinating <a href=\"%1$s\" target=\"_blank\">Terms of Service</a> and to <a href=\"%2$s\" target=\"_blank\">share details</a> with WordPress.com"
-msgstr "Indem du deine Website verbindest, erklärst du dich mit unseren faszinierenden <a href=\"%1$s\" target=\"_blank\">Nutzungsbedingungen</a> und mit der <a href=\"%2$s\" target=\"_blank\">Weitergabe detaillierterer Informationen</a> an WordPress.com einverstanden."
+msgstr "Durch die Verknüpfung deiner Website erklärst du dich mit unseren faszinierenden <a href=\"%1$s\" target=\"_blank\">Geschäftsbedingungen</a> einverstanden und stimmst zu, <a href=\"%2$s\" target=\"_blank\">Daten</a> an WordPress.com weiterzugeben."
 
 #: includes/admin/class-wc-admin-setup-wizard.php:2162
 msgid "Finish setting up your store"
@@ -35485,7 +35485,7 @@ msgstr "Ungültige Varianten-ID"
 msgid "Invalid tax class"
 msgstr "Ungültige Steuerklasse"
 
-#: includes/class-wc-install.php:2509
+#: includes/class-wc-install.php:2512
 msgid "Visit premium customer support"
 msgstr "Besuche den Premium-Kundensupport"
 
@@ -35620,14 +35620,14 @@ msgstr "Das Attribut konnte nicht aktualisiert werden."
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-customers-v1-controller.php:821
 msgid "The date of the customer last order, as GMT."
-msgstr "Das Datum der letzten Bestellung des Kunden, als GMT."
+msgstr "Das Datum der letzten Bestellung des Kunden, in UTC."
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-customers-v1-controller.php:762
 #: includes/rest-api/Controllers/Version2/class-wc-rest-customers-v2-controller.php:167
 #: includes/rest-api/Controllers/Version3/class-wc-rest-customers-controller.php:64
 #: src/Internal/RestApi/Routes/V4/Customers/CustomerSchema.php:49
 msgid "The date the customer was created, as GMT."
-msgstr "Das Datum, an dem der Kunde erstellt wurde, als GMT."
+msgstr "Das Datum, an dem der Kunde erstellt wurde, in UTC."
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-customers-v1-controller.php:525
 #: includes/rest-api/Controllers/Version1/class-wc-rest-order-notes-v1-controller.php:275
@@ -35646,15 +35646,15 @@ msgstr "Diese Ressource kann nicht erstellt werden."
 
 #: includes/rest-api/Controllers/Version2/class-wc-rest-webhooks-v2-controller.php:172
 msgid "The date the webhook was last modified, as GMT."
-msgstr "Das Datum, an dem der Webhook zuletzt geändert wurde, als GMT."
+msgstr "Das Datum, an dem der Webhook zuletzt geändert wurde, in UTC."
 
 #: includes/rest-api/Controllers/Version2/class-wc-rest-webhooks-v2-controller.php:160
 msgid "The date the webhook was created, as GMT."
-msgstr "Das Datum, an dem der Webhook erstellt wurde, als GMT."
+msgstr "Das Datum, an dem der Webhook erstellt wurde, in UTC."
 
 #: includes/rest-api/Controllers/Version2/class-wc-rest-webhook-deliveries-v2-controller.php:143
 msgid "The date the webhook delivery was logged, as GMT."
-msgstr "Das Datum, an dem der Webhook erstellt wurde, als GMT."
+msgstr "Das Datum, an dem der Webhook erstellt wurde, in UTC."
 
 #: includes/rest-api/Controllers/Version2/class-wc-rest-system-status-tools-v2-controller.php:675
 msgid "There was an error calling this tool. There is no callback present."
@@ -36079,13 +36079,13 @@ msgstr "Liste der Varianten-IDs."
 #: includes/rest-api/Controllers/Version3/class-wc-rest-products-controller.php:1226
 #: src/Internal/RestApi/Routes/V4/Products/Controller.php:1496
 msgid "The date the product was last modified, as GMT."
-msgstr "Das Datum, an dem das Produkt zuletzt geändert wurde, als GMT."
+msgstr "Das Datum, an dem das Produkt zuletzt geändert wurde, in UTC."
 
 #: includes/rest-api/Controllers/Version2/class-wc-rest-products-v2-controller.php:1875
 #: includes/rest-api/Controllers/Version3/class-wc-rest-products-controller.php:1215
 #: src/Internal/RestApi/Routes/V4/Products/Controller.php:1485
 msgid "The date the product was created, as GMT."
-msgstr "Das Datum, an dem das Produkt erstellt wurde, als GMT."
+msgstr "Das Datum, an dem das Produkt erstellt wurde, in UTC."
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-products-v1-controller.php:1921
 #: includes/rest-api/Controllers/Version1/class-wc-rest-products-v1-controller.php:2398
@@ -36124,7 +36124,7 @@ msgstr "Enddatum des Angebotspreises, in der Zeitzone der Website."
 #: includes/rest-api/Controllers/Version3/class-wc-rest-products-controller.php:1300
 #: src/Internal/RestApi/Routes/V4/Products/Controller.php:1570
 msgid "Start date of sale price, as GMT."
-msgstr "Startdatum des Angebotspreises, als GMT (Greenwich Mean Time)."
+msgstr "Startdatum des Angebotspreises, in UTC."
 
 #: includes/rest-api/Controllers/Version2/class-wc-rest-product-variations-v2-controller.php:833
 #: includes/rest-api/Controllers/Version2/class-wc-rest-products-v2-controller.php:1951
@@ -36138,7 +36138,7 @@ msgstr "Startdatum des Angebotspreises, in der Zeitzone der Website."
 #: includes/rest-api/Controllers/Version3/class-wc-rest-product-reviews-controller.php:864
 #: src/StoreApi/Schemas/V1/ProductReviewSchema.php:70
 msgid "The date the review was created, as GMT."
-msgstr "Das Datum, an dem die Rezension erstellt wurde, als GMT."
+msgstr "Das Datum, an dem die Rezension erstellt wurde, in UTC."
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-product-reviews-v1-controller.php:555
 #: includes/rest-api/Controllers/Version2/class-wc-rest-product-reviews-v2-controller.php:159
@@ -36155,7 +36155,7 @@ msgstr "Der Inhalt der Rezension."
 #: includes/rest-api/Controllers/Version3/class-wc-rest-products-controller.php:1682
 #: src/Internal/RestApi/Routes/V4/Products/Controller.php:1952
 msgid "The date the image was last modified, as GMT."
-msgstr "Das Datum, an dem das Bild zuletzt geändert wurde, als GMT."
+msgstr "Das Datum, an dem das Bild zuletzt geändert wurde, in UTC."
 
 #: includes/rest-api/Controllers/Version2/class-wc-rest-product-categories-v2-controller.php:161
 #: includes/rest-api/Controllers/Version2/class-wc-rest-product-variations-v2-controller.php:1026
@@ -36165,7 +36165,7 @@ msgstr "Das Datum, an dem das Bild zuletzt geändert wurde, als GMT."
 #: includes/rest-api/Controllers/Version3/class-wc-rest-products-controller.php:1670
 #: src/Internal/RestApi/Routes/V4/Products/Controller.php:1940
 msgid "The date the image was created, as GMT."
-msgstr "Das Datum, an dem das Bild erstellt wurde, als GMT."
+msgstr "Das Datum, an dem das Bild erstellt wurde, in UTC."
 
 #: includes/rest-api/Controllers/Version2/class-wc-rest-payment-gateways-v2-controller.php:447
 #: includes/rest-api/Controllers/Version2/class-wc-rest-setting-options-v2-controller.php:609
@@ -36285,18 +36285,18 @@ msgstr "Die ID der Zahlungsschnittstelle."
 #: includes/rest-api/Controllers/Version2/class-wc-rest-orders-v2-controller.php:1452
 #: src/Internal/RestApi/Routes/V4/Orders/Schema/OrderSchema.php:437
 msgid "The date the order was completed, as GMT."
-msgstr "Das Datum, an dem die Bestellung abgeschlossen wurde (in GMT)."
+msgstr "Das Datum, an dem die Bestellung abgeschlossen wurde, in UTC."
 
 #: includes/rest-api/Controllers/Version2/class-wc-rest-orders-v2-controller.php:1440
 #: src/Internal/RestApi/Routes/V4/Orders/Schema/OrderSchema.php:423
 msgid "The date the order was paid, as GMT."
-msgstr "Das Datum, an dem die Bestellung bezahlt wurde, als GMT."
+msgstr "Das Datum, an dem die Bestellung bezahlt wurde, in UTC."
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-orders-v1-controller.php:1036
 #: includes/rest-api/Controllers/Version2/class-wc-rest-orders-v2-controller.php:1224
 #: src/Internal/RestApi/Routes/V4/Orders/Schema/OrderSchema.php:188
 msgid "The date the order was last modified, as GMT."
-msgstr "Das Datum an dem die Bestellung zuletzt geändert wurde, als GMT."
+msgstr "Das Datum an dem die Bestellung zuletzt geändert wurde, in UTC."
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-orders-v1-controller.php:1018
 #: includes/rest-api/Controllers/Version2/class-wc-rest-orders-v2-controller.php:1186
@@ -36330,7 +36330,7 @@ msgstr "Wenn aktiv wird die Notiz für den Kunden sichtbar und er wird benachric
 #: includes/rest-api/Controllers/Version3/class-wc-rest-order-notes-controller.php:140
 #: src/Internal/RestApi/Routes/V4/OrderNotes/Schema/OrderNoteSchema.php:66
 msgid "The date the order note was created, as GMT."
-msgstr "Das Datum, an dem die Bestellanmerkung erstellt wurde, als GMT."
+msgstr "Das Datum, an dem der Bestellhinweis erstellt wurde, in UTC."
 
 #: includes/rest-api/Controllers/Version2/class-wc-rest-customers-v2-controller.php:341
 #: includes/rest-api/Controllers/Version3/class-wc-rest-customers-controller.php:243
@@ -36343,17 +36343,17 @@ msgstr "Ist der Kunde ein zahlender Kunde?"
 #: includes/rest-api/Controllers/Version3/class-wc-rest-customers-controller.php:76
 #: src/Internal/RestApi/Routes/V4/Customers/CustomerSchema.php:61
 msgid "The date the customer was last modified, as GMT."
-msgstr "Das Datum, an dem der Kunde zuletzt geändert wurde, als GMT."
+msgstr "Das Datum, an dem der Kunde zuletzt geändert wurde, in UTC."
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-orders-v1-controller.php:1030
 #: includes/rest-api/Controllers/Version2/class-wc-rest-orders-v2-controller.php:1212
 #: src/Internal/RestApi/Routes/V4/Orders/Schema/OrderSchema.php:174
 msgid "The date the order was created, as GMT."
-msgstr "Das Datum an dem die Bestellung erstellt wurde, als GMT."
+msgstr "Das Datum an dem die Bestellung erstellt wurde, in UTC."
 
 #: includes/rest-api/Controllers/Version2/class-wc-rest-customer-downloads-v2-controller.php:135
 msgid "The date when download access expires, as GMT."
-msgstr "Datum, an dem der Zugriff auf den Download abläuft, als GMT."
+msgstr "Datum, an dem der Zugriff auf den Download abläuft, in UTC."
 
 #: includes/rest-api/Controllers/Version2/class-wc-rest-coupons-v2-controller.php:524
 #: includes/rest-api/Controllers/Version2/class-wc-rest-customers-v2-controller.php:372
@@ -36413,7 +36413,7 @@ msgstr "Liste der Benutzer-IDs (oder Gast-E-Mail-Adressen), die den Gutschein ve
 #: includes/rest-api/Controllers/Version1/class-wc-rest-coupons-v1-controller.php:528
 #: includes/rest-api/Controllers/Version2/class-wc-rest-coupons-v2-controller.php:484
 msgid "If true, this coupon will not be applied to items that have sale prices."
-msgstr "Wenn dies der Fall ist, wird dieser Gutschein nicht auf Produkte/Artikel mit Angebotspreisen (Sale) angewendet."
+msgstr "Wenn „true“, wird dieser Gutschein nicht auf Artikel im Angebot angewendet."
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-coupons-v1-controller.php:506
 #: includes/rest-api/Controllers/Version2/class-wc-rest-coupons-v2-controller.php:462
@@ -36432,7 +36432,7 @@ msgstr "Wenn aktiv kann dieser Gutschein nur einzeln benutzt werden. Andere ange
 
 #: includes/rest-api/Controllers/Version2/class-wc-rest-coupons-v2-controller.php:414
 msgid "The date the coupon expires, as GMT."
-msgstr "Das Datum, an dem der Gutschein abläuft, als UTC."
+msgstr "Das Datum, an dem der Gutschein abläuft, in UTC."
 
 #: includes/rest-api/Controllers/Version2/class-wc-rest-coupons-v2-controller.php:409
 msgid "The date the coupon expires, in the site's timezone."
@@ -36444,7 +36444,7 @@ msgstr "Das Datum, an dem der Gutschein zuletzt geändert wurde, in UTC."
 
 #: includes/rest-api/Controllers/Version2/class-wc-rest-coupons-v2-controller.php:379
 msgid "The date the coupon was created, as GMT."
-msgstr "Das Datum, an dem der Gutschein erstellt wurde, als UTC."
+msgstr "Das Datum, an dem der Gutschein erstellt wurde, in UTC."
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-coupons-v1-controller.php:453
 #: includes/rest-api/Controllers/Version2/class-wc-rest-coupons-v2-controller.php:363
@@ -36468,11 +36468,11 @@ msgstr "Auf regulären Preis gesenkt um (fester Betrag oder %):"
 
 #: includes/admin/views/html-bulk-edit-product.php:58
 msgid "Decrease existing sale price by (fixed amount or %):"
-msgstr "Verringern des bestehenden Angebotspreises um (fester Betrag oder %):"
+msgstr "Bestehenden Angebotspreis verringern um (fester Betrag oder %):"
 
 #: includes/admin/views/html-bulk-edit-product.php:57
 msgid "Increase existing sale price by (fixed amount or %):"
-msgstr "Erhöhen des bestehenden Angebotspreises um (fester Betrag oder %):"
+msgstr "Bestehenden Angebotspreis erhöhen um (fester Betrag oder %):"
 
 #: includes/admin/views/html-bulk-edit-product.php:31
 #: includes/admin/views/html-bulk-edit-product.php:55
@@ -36657,7 +36657,7 @@ msgstr "Dies bestimmt, wie der Lagerbestand im Frontend angezeigt wird."
 
 #: includes/admin/settings/class-wc-settings-products.php:327
 msgid "When product stock reaches this amount the stock status will change to \"out of stock\" and you will be notified via email. This setting does not affect existing \"in stock\" products."
-msgstr "Wenn der Produkt-Bestand diese Menge erreicht, wird der Lagerbestand auf „Nicht auf Lager“ geändert und du wirst per E-Mail benachrichtigt. Diese Einstellung beeinflusst bestehende „auf Lager“-Produkte nicht."
+msgstr "Wenn der Produkt-Bestand diese Menge erreicht, wird der Lagerstatus auf „Nicht auf Lager“ geändert und du wirst per E-Mail benachrichtigt. Diese Einstellung beeinflusst bestehende „auf Lager“-Produkte nicht."
 
 #: includes/admin/settings/class-wc-settings-products.php:311
 msgid "When product stock reaches this amount you will be notified via email."
@@ -38295,7 +38295,7 @@ msgid "No &quot;%s&quot; found"
 msgstr "Kein &quot;%s&quot; gefunden"
 
 #. translators: 1: plugin name, 2: URL to WP plugin page.
-#: includes/class-wc-install.php:2669
+#: includes/class-wc-install.php:2672
 msgid "%1$s was installed but could not be activated. <a href=\"%2$s\">Please activate it manually by clicking here.</a>"
 msgstr "%1$s wurde installiert, konnte aber nicht aktiviert werden. <a href=\"%2$s\">Bitte aktiviere es manuell, indem du hier klickst.</a>"
 
@@ -38303,7 +38303,7 @@ msgstr "%1$s wurde installiert, konnte aber nicht aktiviert werden. <a href=\"%2
 #. manually.
 #. translators: 1: theme slug, 2: error message, 3: URL to install theme
 #. manually.
-#: includes/class-wc-install.php:2641 includes/class-wc-install.php:2749
+#: includes/class-wc-install.php:2644 includes/class-wc-install.php:2752
 msgid "%1$s could not be installed (%2$s). <a href=\"%3$s\">Please install it manually by clicking here.</a>"
 msgstr "%1$s konnte nicht installiert werden (%2$s). <a href=\"%3$s\">Bitte installiere es manuell, indem du hier klickst.</a>"
 
@@ -38541,12 +38541,12 @@ msgstr "Gesamtanzahl der Verkäufe."
 #. translators: %s: date format
 #: includes/rest-api/Controllers/Version1/class-wc-rest-report-sales-v1-controller.php:389
 msgid "Return sales for a specific end date, the date need to be in the %s format."
-msgstr "Gibt Verkäufe für ein bestimmtes Enddatum zurück, das Datum muss im %s Format übergeben werden."
+msgstr "Gibt Verkäufe für ein bestimmtes Enddatum zurück. Das Datum muss im %s-Format übergeben werden."
 
 #. translators: %s: date format
 #: includes/rest-api/Controllers/Version1/class-wc-rest-report-sales-v1-controller.php:381
 msgid "Return sales for a specific start date, the date need to be in the %s format."
-msgstr "Gibt Verkäufe für ein bestimmtes Startdatum zurück, das Datum muss im %s Format übergeben werden."
+msgstr "Gibt den Umsatz für ein bestimmtes Startdatum zurück. Das Datum muss im %s-Format übergeben werden."
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-report-sales-v1-controller.php:373
 msgid "Report period."
@@ -38562,7 +38562,7 @@ msgstr "Gruppentyp."
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-report-sales-v1-controller.php:338
 msgid "Total of coupons used."
-msgstr "Gesamtsumme der benutzen Gutscheine."
+msgstr "Gesamtsumme der verwendeten Gutscheine."
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-report-sales-v1-controller.php:332
 msgid "Total of refunded orders."
@@ -38570,11 +38570,11 @@ msgstr "Gesamtsumme der erstatteten Bestellungen."
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-report-sales-v1-controller.php:326
 msgid "Total charged for shipping."
-msgstr "Gesamtbetrag aller verrechneten Versandkosten."
+msgstr "Gesamtbetrag aller berechneten Versandkosten."
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-report-sales-v1-controller.php:320
 msgid "Total charged for taxes."
-msgstr "Gesamtbetrag aller verrechneten Steuern."
+msgstr "Gesamtbetrag aller berechneten Steuern."
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-report-sales-v1-controller.php:314
 msgid "Total of items purchased."
@@ -38737,7 +38737,7 @@ msgstr "Zeigt an, ob die Variante gekauft werden kann."
 #: includes/rest-api/Controllers/Version2/class-wc-rest-product-variations-v2-controller.php:853
 #: includes/rest-api/Controllers/Version3/class-wc-rest-product-variations-controller.php:643
 msgid "Shows if the variation is on sale."
-msgstr "Zeigt an, ob die Variante im Angebot (Sale) ist."
+msgstr "Zeigt an, ob die Variante im Angebot ist."
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-products-v1-controller.php:2323
 #: includes/rest-api/Controllers/Version2/class-wc-rest-product-variations-v2-controller.php:828
@@ -38749,7 +38749,7 @@ msgstr "Angebotspreis der Variante."
 #: includes/rest-api/Controllers/Version2/class-wc-rest-product-variations-v2-controller.php:823
 #: includes/rest-api/Controllers/Version3/class-wc-rest-product-variations-controller.php:613
 msgid "Variation regular price."
-msgstr "Listenpreis der Variante."
+msgstr "Regulärer Preis der Variante."
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-products-v1-controller.php:2312
 #: includes/rest-api/Controllers/Version2/class-wc-rest-product-variations-v2-controller.php:817
@@ -39172,7 +39172,7 @@ msgstr "Zeigt an, ob das Produkt gekauft werden kann."
 #: includes/rest-api/Controllers/Version3/class-wc-rest-products-controller.php:1321
 #: src/Internal/RestApi/Routes/V4/Products/Controller.php:1591
 msgid "Shows if the product is on sale."
-msgstr "Zeigt an, ob das Produkt im Angebot (Sale) ist."
+msgstr "Zeigt an, ob das Produkt im Angebot ist."
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-products-v1-controller.php:1854
 #: includes/rest-api/Controllers/Version2/class-wc-rest-products-v2-controller.php:1971
@@ -39196,7 +39196,7 @@ msgstr "Startdatum für den Angebotspreis."
 #: includes/rest-api/Controllers/Version3/class-wc-rest-products-controller.php:1290
 #: src/Internal/RestApi/Routes/V4/Products/Controller.php:1560
 msgid "Product sale price."
-msgstr "Produkt Angebotspreis."
+msgstr "Der Angebotspreis des Produkts."
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-products-v1-controller.php:1834
 #: includes/rest-api/Controllers/Version2/class-wc-rest-products-v2-controller.php:1941
@@ -41641,7 +41641,7 @@ msgstr "Du bist leider nicht berechtigt, Ressourcen zu erstellen."
 #: src/Admin/API/OnboardingProfile.php:155
 #: src/Internal/RestApi/Routes/V4/Settings/OfflinePaymentMethods/Controller.php:105
 msgid "Sorry, you cannot list resources."
-msgstr "Entschuldigung, es können keine Ressourcen aufgelistet werden."
+msgstr "Du bist leider nicht berechtigt, Ressourcen aufzulisten."
 
 #: includes/rest-api/Controllers/Version3/class-wc-rest-controller.php:540
 msgid "List of delete resources."
@@ -41940,12 +41940,12 @@ msgstr "Durchschnittlicher Bruttoumsatz-Betrag"
 #. translators: %s: average total sales
 #: includes/admin/reports/class-wc-report-sales-by-date.php:475
 msgid "%s average gross monthly sales"
-msgstr "%s durchschnittliche Brutto-Monatsumsätze"
+msgstr "%s durchschnittlicher Brutto-Monatsumsatz"
 
 #. translators: %s: average total sales
 #: includes/admin/reports/class-wc-report-sales-by-date.php:462
 msgid "%s average gross daily sales"
-msgstr "%s durchschnittliche Brutto-Tagesumsätze"
+msgstr "%s durchschnittlicher Brutto-Tagesumsatz"
 
 #: includes/admin/class-wc-admin-permalink-settings.php:42
 msgid "Product permalinks"
@@ -42045,7 +42045,7 @@ msgctxt "shop_order post type singular name"
 msgid "Order"
 msgstr "Bestellung"
 
-#: includes/class-wc-install.php:1057
+#: includes/class-wc-install.php:1060
 msgid "Monthly"
 msgstr "Monatlich"
 
@@ -42590,7 +42590,7 @@ msgstr "Kasse"
 msgid "No products in the cart."
 msgstr "Es befinden sich keine Produkte im Warenkorb."
 
-#: includes/class-wc-install.php:2995 templates/cart/cross-sells.php:24
+#: includes/class-wc-install.php:2998 templates/cart/cross-sells.php:24
 msgid "You may be interested in&hellip;"
 msgstr "Das interessiert dich vielleicht …"
 
@@ -44646,42 +44646,42 @@ msgctxt "Admin menu name"
 msgid "Categories"
 msgstr "Kategorien"
 
-#: includes/class-wc-install.php:2509
+#: includes/class-wc-install.php:2512
 msgid "Premium support"
 msgstr "Premium-Support"
 
-#: includes/class-wc-install.php:2504
+#: includes/class-wc-install.php:2507
 msgid "API docs"
 msgstr "API-Dokumentation"
 
-#: includes/class-wc-install.php:2504
+#: includes/class-wc-install.php:2507
 msgid "View WooCommerce API docs"
 msgstr "Zur WooCommerce API-Dokumentation"
 
-#: includes/class-wc-install.php:2503
+#: includes/class-wc-install.php:2506
 msgid "View WooCommerce documentation"
 msgstr "Zur WooCommerce-Dokumentation"
 
-#: includes/class-wc-install.php:2455
+#: includes/class-wc-install.php:2458
 msgid "View WooCommerce settings"
 msgstr "Zu den WooCommerce-Einstellungen"
 
-#: includes/class-wc-install.php:1159
+#: includes/class-wc-install.php:1162
 msgctxt "Page slug"
 msgid "my-account"
 msgstr "mein-konto"
 
-#: includes/class-wc-install.php:1154
+#: includes/class-wc-install.php:1157
 msgctxt "Page slug"
 msgid "checkout"
 msgstr "kasse"
 
-#: includes/class-wc-install.php:1149
+#: includes/class-wc-install.php:1152
 msgctxt "Page slug"
 msgid "cart"
 msgstr "warenkorb"
 
-#: includes/class-wc-install.php:1144
+#: includes/class-wc-install.php:1147
 msgctxt "Page slug"
 msgid "shop"
 msgstr "shop"
@@ -45268,7 +45268,7 @@ msgstr "Produkte anzeigen"
 
 #: includes/class-wc-auth.php:93
 msgid "View orders and sales reports"
-msgstr "Bestell- und Verkaufberichte anzeigen"
+msgstr "Bestell- und Verkaufsberichte anzeigen"
 
 #: includes/class-wc-auth.php:92
 msgid "View customers"
@@ -46945,7 +46945,7 @@ msgstr "Produkte mit höchstem Umsatz"
 
 #: includes/admin/reports/class-wc-report-sales-by-product.php:286
 msgid "Top freebies"
-msgstr "Meistverkaufte Gratisprodukte"
+msgstr "Top-Gratisprodukte"
 
 #: includes/admin/reports/class-wc-report-sales-by-product.php:281
 #: includes/admin/reports/class-wc-report-sales-by-product.php:333
@@ -46994,12 +46994,12 @@ msgstr "Zeige Berichte für:"
 #. translators: %s: total items purchased
 #: includes/admin/reports/class-wc-report-sales-by-product.php:130
 msgid "%s purchases for the selected items"
-msgstr "%s Ankäufe für die ausgewählten Produkte/Artikel"
+msgstr "%s Käufe für die ausgewählten Artikel"
 
 #. translators: %s: total items sold
 #: includes/admin/reports/class-wc-report-sales-by-product.php:123
 msgid "%s sales for the selected items"
-msgstr "%s Verkäufe für die ausgewählten Produkte/Artikel"
+msgstr "%s Verkäufe für die ausgewählten Artikel"
 
 #: includes/admin/reports/class-wc-report-sales-by-date.php:773
 msgid "Net sales amount"
@@ -47011,7 +47011,7 @@ msgstr "Bruttoumsatz-Betrag"
 
 #: includes/admin/reports/class-wc-report-sales-by-date.php:753
 msgid "Shipping amount"
-msgstr "Versandkostenanteil"
+msgstr "Versandkosten"
 
 #: includes/admin/reports/class-wc-report-sales-by-date.php:733
 msgid "Average net sales amount"
@@ -47071,19 +47071,19 @@ msgstr "%s Bruttoumsatz in diesem Zeitraum"
 #. translators: %s: average sales
 #: includes/admin/reports/class-wc-report-sales-by-date.php:480
 msgid "%s average net monthly sales"
-msgstr "%s durchschnittliche Netto-Monatsumsätze"
+msgstr "%s durchschnittlicher Netto-Monatsumsatz"
 
 #. translators: %s: average sales
 #: includes/admin/reports/class-wc-report-sales-by-date.php:467
 msgid "%s average net daily sales"
-msgstr "%s durchschnittliche Netto-Tagesumsätze"
+msgstr "%s durchschnittlicher Netto-Tagesumsatz"
 
 #: includes/admin/helper/class-wc-helper.php:477
 #: includes/admin/reports/class-wc-report-sales-by-category.php:230
 #: includes/widgets/class-wc-widget-brand-thumbnails.php:210
 #: src/Internal/Admin/Orders/ListTable.php:664
 #: src/Internal/Admin/Orders/ListTable.php:1819
-#: src/Internal/Features/FeaturesController.php:1986
+#: src/Internal/Features/FeaturesController.php:1988
 #: assets/client/admin/chunks/analytics-report-orders.js:1
 #: assets/client/admin/chunks/dashboard-charts.js:1
 #: assets/client/admin/components/index.js:2
@@ -47943,9 +47943,9 @@ msgstr "Standard-Formularwerte"
 #: src/Internal/Admin/Notes/SellingOnlineCourses.php:78
 #: src/Internal/Admin/Notes/UnsecuredReportFiles.php:50
 #: src/Internal/Admin/Notes/WooCommercePayments.php:121
-#: src/Internal/Features/FeaturesController.php:728
-#: src/Internal/Features/FeaturesController.php:737
-#: src/Internal/Features/FeaturesController.php:1543
+#: src/Internal/Features/FeaturesController.php:730
+#: src/Internal/Features/FeaturesController.php:739
+#: src/Internal/Features/FeaturesController.php:1545
 #: src/Internal/StockNotifications/Admin/Templates/html-admin-notifications.php:43
 #: assets/client/admin/chunks/2863.js:1
 #: assets/client/admin/chunks/homescreen.js:1
@@ -48166,7 +48166,7 @@ msgstr "Bestimmt, ob das Produkt in der Besucheransicht (Frontend) als „vorrä
 #: assets/client/admin/product-editor/index.js:2
 #: assets/client/blocks/product-query.js:12
 msgid "Stock status"
-msgstr "Lagerbestand"
+msgstr "Lagerstatus"
 
 #: includes/admin/meta-boxes/views/html-variation-admin.php:291
 msgid "If managing stock, this controls whether or not backorders are allowed. If enabled, stock quantity can go below 0."
@@ -48767,7 +48767,7 @@ msgstr "Nach einem Produkt suchen&hellip;"
 
 #: includes/admin/meta-boxes/class-wc-meta-box-coupon-data.php:180
 msgid "Check this box if the coupon should not apply to items on sale. Per-item coupons will only work if the item is not on sale. Per-cart coupons will only work if there are items in the cart that are not on sale."
-msgstr "Aktiviere diese Option, wenn der Gutschein nicht für Produkte gelten soll, die im Angebot sind. Gutscheine pro Produkt/Artikel funktionieren nur, wenn das Produkt nicht im Angebot ist. Gutscheine, die pro Warenkorb gelten, sind nur einlösbar, wenn der Warenkorb keine Produkte enthält, die im Angebot sind."
+msgstr "Aktiviere diese Option, wenn der Gutschein nicht für Produkte gelten soll, die im Angebot sind. Gutscheine pro Artikel funktionieren nur, wenn das Produkt nicht im Angebot ist. Gutscheine für den gesamten Warenkorb funktionieren nur, wenn sich im Warenkorb Artikel befinden, die nicht im Angebot sind."
 
 #: includes/admin/meta-boxes/class-wc-meta-box-coupon-data.php:179
 #: assets/client/blocks/coupon-code.js:1
@@ -48844,7 +48844,7 @@ msgstr "Nutzungseinschränkung"
 #: includes/admin/meta-boxes/class-wc-meta-box-order-data.php:314
 #: includes/admin/meta-boxes/class-wc-meta-box-product-data.php:81
 #: includes/admin/settings/class-wc-settings-general.php:47
-#: includes/admin/settings/class-wc-settings-page.php:315
+#: includes/admin/settings/class-wc-settings-page.php:355
 #: includes/admin/settings/class-wc-settings-products.php:60
 #: src/Admin/Features/Blueprint/Exporters/ExportWCSettings.php:80
 #: src/Admin/Features/Blueprint/Exporters/ExportWCSettingsGeneral.php:34
@@ -48920,7 +48920,7 @@ msgstr "Danke, dass du für deinen Shop WooCommerce verwendest."
 msgid "Thanks :)"
 msgstr "Danke :)"
 
-#: includes/class-wc-install.php:2503
+#: includes/class-wc-install.php:2506
 msgid "Docs"
 msgstr "Dokumentation"
 
@@ -49324,22 +49324,22 @@ msgstr "Diesen Schritt überspringen"
 msgid "Continue"
 msgstr "Fortfahren"
 
-#: includes/class-wc-install.php:1160
+#: includes/class-wc-install.php:1163
 msgctxt "Page title"
 msgid "My account"
 msgstr "Mein Konto"
 
-#: includes/class-wc-install.php:1155
+#: includes/class-wc-install.php:1158
 msgctxt "Page title"
 msgid "Checkout"
 msgstr "Kasse"
 
-#: includes/class-wc-install.php:1150
+#: includes/class-wc-install.php:1153
 msgctxt "Page title"
 msgid "Cart"
 msgstr "Warenkorb"
 
-#: includes/class-wc-install.php:1145
+#: includes/class-wc-install.php:1148
 msgctxt "Page title"
 msgid "Shop"
 msgstr "Shop"
@@ -51139,12 +51139,12 @@ msgstr "Änderungen vor dem Verlassen der Seite speichern?"
 #: includes/admin/class-wc-admin-assets.php:584
 #: assets/client/admin/product-editor/index.js:2
 msgid "Sale end date (YYYY-MM-DD format or leave blank)"
-msgstr "Angebots-Enddatum (JJJJ-MM-TT Format oder leer lassen)"
+msgstr "Angebots-Enddatum (Format JJJJ-MM-TT oder leer lassen)"
 
 #: includes/admin/class-wc-admin-assets.php:583
 #: assets/client/admin/product-editor/index.js:2
 msgid "Sale start date (YYYY-MM-DD format or leave blank)"
-msgstr "Angebots-Startdatum (JJJJ-MM-TT Format oder leer lassen)"
+msgstr "Angebots-Startdatum (Format JJJJ-MM-TT oder leer lassen)"
 
 #: includes/admin/class-wc-admin-assets.php:582
 msgid "Are you sure you want to remove this variation?"
@@ -51274,7 +51274,7 @@ msgstr "Keine Übereinstimmung gefunden"
 #: includes/admin/class-wc-admin-notices.php:254
 #: includes/admin/class-wc-admin-status.php:310
 #: includes/emails/class-wc-email.php:1543
-#: src/Internal/Features/FeaturesController.php:2031
+#: src/Internal/Features/FeaturesController.php:2033
 msgid "Action failed. Please refresh the page and retry."
 msgstr "Die Aktion ist fehlgeschlagen. Bitte aktualisiere die Seite und versuche es erneut."
 
@@ -51424,7 +51424,7 @@ msgstr "Bewertet mit %s von 5"
 #: includes/wc-template-functions.php:4387
 msgctxt "min_price"
 msgid "From:"
-msgstr "Ab:"
+msgstr "Von:"
 
 #: includes/abstracts/abstract-wc-product.php:2371
 #: includes/admin/class-wc-admin-reports.php:196
@@ -51664,7 +51664,7 @@ msgstr "Im Lieferrückstand"
 
 #: includes/admin/class-wc-admin-menus.php:125
 #: includes/admin/views/html-admin-page-status-report.php:688
-#: includes/class-wc-install.php:2455
+#: includes/class-wc-install.php:2458
 #: includes/react-admin/connect-existing-pages.php:35
 #: src/Internal/Admin/Analytics.php:719
 #: src/Internal/Admin/Logging/PageController.php:212
@@ -55204,7 +55204,7 @@ msgstr "Honduras"
 
 #: i18n/countries.php:113
 msgid "Heard Island and McDonald Islands"
-msgstr "Heard und McDonaldinseln"
+msgstr "Heard- und McDonaldinseln"
 
 #: i18n/countries.php:112
 msgid "Haiti"

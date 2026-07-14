@@ -1530,6 +1530,25 @@ msgstr "Preistabelle, 3 Spalten"
 msgid "Get a free tote bag."
 msgstr "Erhalte eine kostenlose Tragetasche."
 
+#: patterns/hidden-sidebar.php:38 patterns/page-portfolio-home.php:65
+#: patterns/page-portfolio-home.php:87 patterns/page-portfolio-home.php:121
+#: patterns/page-portfolio-home.php:154 patterns/page-portfolio-home.php:176
+#: patterns/page-portfolio-home.php:203 patterns/template-home-news-blog.php:40
+#: patterns/template-home-posts-grid-news-blog.php:35
+#: patterns/template-home-posts-grid-news-blog.php:60
+#: patterns/template-home-posts-grid-news-blog.php:78
+#: patterns/template-home-posts-grid-news-blog.php:103
+#: patterns/template-home-with-sidebar-news-blog.php:62
+#: patterns/template-home-with-sidebar-news-blog.php:119
+#: patterns/template-query-loop-news-blog.php:55
+#: patterns/template-query-loop-photo-blog.php:22
+#: patterns/template-query-loop-text-blog.php:19
+#: patterns/template-query-loop-vertical-header-blog.php:47
+#: patterns/template-query-loop.php:31
+msgctxt "Message explaining that there are no results returned from a search."
+msgid "Sorry, but nothing was found. Please try a search with different keywords."
+msgstr "Es wurde leider nichts gefunden. Bitte versuche eine Suche mit anderen Suchbegriffen."
+
 #: patterns/banner-poster.php:51
 msgid "Let’s hear them."
 msgstr "Hören wir sie uns an."
@@ -1562,25 +1581,6 @@ msgstr "%s ist ein Blumenversand- und Abonnement-Unternehmen. Mit Sitz in der EU
 msgctxt "Pattern title"
 msgid "Centered link and social links"
 msgstr "Zentrierter Link und soziale Links"
-
-#: patterns/hidden-sidebar.php:38 patterns/page-portfolio-home.php:65
-#: patterns/page-portfolio-home.php:87 patterns/page-portfolio-home.php:121
-#: patterns/page-portfolio-home.php:154 patterns/page-portfolio-home.php:176
-#: patterns/page-portfolio-home.php:203 patterns/template-home-news-blog.php:40
-#: patterns/template-home-posts-grid-news-blog.php:35
-#: patterns/template-home-posts-grid-news-blog.php:60
-#: patterns/template-home-posts-grid-news-blog.php:78
-#: patterns/template-home-posts-grid-news-blog.php:103
-#: patterns/template-home-with-sidebar-news-blog.php:62
-#: patterns/template-home-with-sidebar-news-blog.php:119
-#: patterns/template-query-loop-news-blog.php:55
-#: patterns/template-query-loop-photo-blog.php:22
-#: patterns/template-query-loop-text-blog.php:19
-#: patterns/template-query-loop-vertical-header-blog.php:47
-#: patterns/template-query-loop.php:31
-msgctxt "Message explaining that there are no results returned from a search."
-msgid "Sorry, but nothing was found. Please try a search with different keywords."
-msgstr "Es wurde leider nichts gefunden. Bitte versuche eine Suche mit anderen Suchbegriffen."
 
 #: patterns/contact-centered-social-link.php
 msgctxt "Pattern description"
@@ -1787,15 +1787,15 @@ msgctxt "Pattern placeholder text."
 msgid "I’m Nora, a dedicated public interest attorney based in Denver. I’m a graduate of Stanford University."
 msgstr "Ich bin Nora, eine engagierte Anwältin für öffentliches Interesse mit Sitz in Denver. Ich habe an der Stanford University studiert."
 
-#: patterns/page-link-in-bio-with-tight-margins.php
-msgctxt "Pattern description"
-msgid "A full-width, full-height link in bio section with an image, a paragraph and social links."
-msgstr "Ein Link in voller Breite und Höhe im Biografie-Abschnitt mit einem Bild, einem Absatz und sozialen Links."
-
 #: patterns/page-cv-bio.php:31
 msgctxt "Pattern placeholder text."
 msgid "My name is Nora Winslow Keene, and I’m a committed public interest attorney. Living in Denver, Colorado, I’ve spent years championing the rights of underrepresented workers. A graduate of Stanford University, I played a key role in securing critical protections for agricultural laborers, ensuring better wages and access to healthcare. My work has focused on advocating for environmental justice and improving the quality of life for rural communities. Every case I take on is driven by the belief that everyone deserves dignity and fair treatment in the workplace."
 msgstr "Mein Name ist Nora Winslow Keene und ich bin eine engagierte Anwältin für öffentliches Interesse. Ich lebe in Denver, Colorado, und setze mich seit Jahren für die Rechte von unterrepräsentierten Arbeitnehmern ein. Als Absolventin der Stanford University spielte ich eine Schlüsselrolle bei der Durchsetzung wichtiger Schutzmaßnahmen für Landarbeiter, die bessere Löhne und Zugang zu medizinischer Versorgung gewährleisten. Meine Arbeit konzentriert sich auf das Eintreten für Umweltgerechtigkeit und die Verbesserung der Lebensqualität in ländlichen Gemeinden. Jeder Fall, den ich übernehme, ist von der Überzeugung getragen, dass jeder Mensch Würde und eine faire Behandlung am Arbeitsplatz verdient."
+
+#: patterns/page-link-in-bio-with-tight-margins.php
+msgctxt "Pattern description"
+msgid "A full-width, full-height link in bio section with an image, a paragraph and social links."
+msgstr "Ein Link in voller Breite und Höhe im Biografie-Abschnitt mit einem Bild, einem Absatz und sozialen Links."
 
 #: patterns/page-link-in-bio-with-tight-margins.php:27
 msgid "Black and white photo focusing on a woman and a child from afar."
@@ -2205,6 +2205,11 @@ msgstr "Mitgliedschaft auswählen"
 msgid "The Stories Book, a fine collection of moments in time featuring photographs from Louis Fleckenstein, Paul Strand and Asahachi Kōno, is available for pre-order"
 msgstr "The Stories Book, eine schöne Sammlung von Momentaufnahmen mit Fotografien von Louis Fleckenstein, Paul Strand und Asahachi Kōno, kann jetzt vorbestellt werden"
 
+#: patterns/heading-and-paragraph-with-image.php:27
+msgctxt "Event Overview Text."
+msgid "Held over a weekend, the event is structured around a series of exhibitions, workshops, and panel discussions. The exhibitions showcase a curated selection of photographs that tell compelling stories from various corners of the globe, each image accompanied by detailed narratives that provide context and deeper insight into the historical significance of the scenes depicted. These photographs are drawn from the archives of renowned photographers, as well as emerging talents, ensuring a blend of both classical and contemporary perspectives."
+msgstr "Die Veranstaltung findet an einem Wochenende statt und besteht aus einer Reihe von Ausstellungen, Workshops und Podiumsdiskussionen. Die Ausstellungen zeigen eine kuratierte Auswahl von Fotografien, die fesselnde Geschichten aus verschiedenen Teilen der Welt erzählen. Jedes Bild wird von ausführlichen Erzählungen begleitet, die den Kontext und tiefere Einblicke in die historische Bedeutung der abgebildeten Szenen liefern. Die Fotografien stammen aus den Archiven renommierter Fotografen und aufstrebender Talente, sodass eine Mischung aus klassischen und zeitgenössischen Perspektiven entsteht."
+
 #: patterns/page-link-in-bio-heading-paragraph-links-image.php
 msgctxt "Pattern description"
 msgid "A link in bio landing page with a heading, paragraph, links and a full height image."
@@ -2219,11 +2224,6 @@ msgstr "Link in der Biografie: Überschrift, Absatz, Links und Bild in voller H�
 msgctxt "Pattern title"
 msgid "Link in bio with tight margins"
 msgstr "Link in der Biografie mit schmalen Außenabständen"
-
-#: patterns/heading-and-paragraph-with-image.php:27
-msgctxt "Event Overview Text."
-msgid "Held over a weekend, the event is structured around a series of exhibitions, workshops, and panel discussions. The exhibitions showcase a curated selection of photographs that tell compelling stories from various corners of the globe, each image accompanied by detailed narratives that provide context and deeper insight into the historical significance of the scenes depicted. These photographs are drawn from the archives of renowned photographers, as well as emerging talents, ensuring a blend of both classical and contemporary perspectives."
-msgstr "Die Veranstaltung findet an einem Wochenende statt und besteht aus einer Reihe von Ausstellungen, Workshops und Podiumsdiskussionen. Die Ausstellungen zeigen eine kuratierte Auswahl von Fotografien, die fesselnde Geschichten aus verschiedenen Teilen der Welt erzählen. Jedes Bild wird von ausführlichen Erzählungen begleitet, die den Kontext und tiefere Einblicke in die historische Bedeutung der abgebildeten Szenen liefern. Die Fotografien stammen aus den Archiven renommierter Fotografen und aufstrebender Talente, sodass eine Mischung aus klassischen und zeitgenössischen Perspektiven entsteht."
 
 #: patterns/services-team-photos.php:38
 msgid "Portrait of a nurse"

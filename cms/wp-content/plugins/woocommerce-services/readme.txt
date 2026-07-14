@@ -7,7 +7,7 @@ Requires Plugins: woocommerce
 Tested up to: 7.0
 WC requires at least: 10.7
 WC tested up to: 10.9
-Stable tag: 3.6.6
+Stable tag: 3.6.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -69,6 +69,9 @@ This plugin relies on the following external services:
 2. Checking on the health of WooCommerce Tax
 
 == Changelog ==
+
+= 3.6.7 - 2026-07-06 =
+* Fix   - Prevent fatal error on Atomic sites caused by incorrect path resolution when loading the API client class.
 
 = 3.6.6 - 2026-06-22 =
 * Tweak - WooCommerce 10.9 Compatibility.
