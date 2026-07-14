@@ -6,20 +6,47 @@
   "description": "Einzelne Folie innerhalb des Slider-Blocks: Bild, Überschrift, Text, Button. Nur innerhalb von medialab/slider einfügbar.",
   "category": "design",
   "icon": "format-image",
-  "parent": ["medialab/slider"],
+  "parent": [
+    "medialab/slider"
+  ],
   "textdomain": "media-lab-agency-core",
-  "editorScript": "file:../../assets/dist/js/blocks.js",
-  "style": "file:../../assets/dist/css/blocks.css",
   "attributes": {
-    "imageId": { "type": "number", "default": 0 },
-    "imageUrl": { "type": "string", "default": "" },
-    "imageAlt": { "type": "string", "default": "" },
-    "heading": { "type": "string", "default": "" },
-    "text": { "type": "string", "default": "" },
-    "buttonText": { "type": "string", "default": "" },
-    "buttonUrl": { "type": "string", "default": "" },
-    "buttonTarget": { "type": "boolean", "default": false },
-    "customClass": { "type": "string", "default": "" }
+    "imageId": {
+      "type": "number",
+      "default": 0
+    },
+    "imageUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "imageAlt": {
+      "type": "string",
+      "default": ""
+    },
+    "heading": {
+      "type": "string",
+      "default": ""
+    },
+    "text": {
+      "type": "string",
+      "default": ""
+    },
+    "buttonText": {
+      "type": "string",
+      "default": ""
+    },
+    "buttonUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "buttonTarget": {
+      "type": "boolean",
+      "default": false
+    },
+    "customClass": {
+      "type": "string",
+      "default": ""
+    }
   },
   "supports": {
     "html": false,

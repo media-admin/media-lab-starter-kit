@@ -6,26 +6,61 @@
   "description": "Hintergrundbild mit Parallax-Scrolleffekt. Beliebiger Inhalt wird als Blöcke direkt im Canvas darüber platziert.",
   "category": "design",
   "icon": "image-rotate",
-  "keywords": ["parallax", "hero", "hintergrund", "scroll"],
+  "keywords": [
+    "parallax",
+    "hero",
+    "hintergrund",
+    "scroll"
+  ],
   "textdomain": "media-lab-agency-core",
-  "editorScript": "file:../../assets/dist/js/blocks.js",
-  "editorStyle": "file:../../assets/dist/css/blocks-editor.css",
-  "style": "file:../../assets/dist/css/blocks.css",
   "attributes": {
-    "imageId": { "type": "number", "default": 0 },
-    "imageUrl": { "type": "string", "default": "" },
-    "imageAlt": { "type": "string", "default": "" },
-    "speed": { "type": "number", "default": 40 },
-    "overlayColor": { "type": "string", "default": "#000000" },
-    "overlayOpacity": { "type": "number", "default": 30 },
-    "minHeight": { "type": "number", "default": 400 },
-    "contentAlign": { "type": "string", "default": "center" },
-    "contentWidth": { "type": "string", "default": "medium" }
+    "imageId": {
+      "type": "number",
+      "default": 0
+    },
+    "imageUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "imageAlt": {
+      "type": "string",
+      "default": ""
+    },
+    "speed": {
+      "type": "number",
+      "default": 40
+    },
+    "overlayColor": {
+      "type": "string",
+      "default": "#000000"
+    },
+    "overlayOpacity": {
+      "type": "number",
+      "default": 30
+    },
+    "minHeight": {
+      "type": "number",
+      "default": 400
+    },
+    "contentAlign": {
+      "type": "string",
+      "default": "center"
+    },
+    "contentWidth": {
+      "type": "string",
+      "default": "medium"
+    }
   },
   "supports": {
     "anchor": true,
-    "align": ["wide", "full"],
-    "spacing": { "margin": true, "padding": true }
+    "align": [
+      "wide",
+      "full"
+    ],
+    "spacing": {
+      "margin": true,
+      "padding": true
+    }
   },
   "example": {
     "attributes": {

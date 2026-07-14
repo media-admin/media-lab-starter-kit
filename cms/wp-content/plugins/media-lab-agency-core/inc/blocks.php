@@ -152,6 +152,24 @@ function medialab_enqueue_block_editor_styles(): void {
             filemtime( $editor_css )
         );
     }
+
+    // Strukturelles CSS für Parallax + Slider (native Blocks seit 1.16.0) –
+    // wird sonst nur im Frontend geladen (has_block()-Gate in
+    // medialab_enqueue_block_frontend_assets()), fehlt aber im Editor-Iframe,
+    // wodurch z.B. das Parallax-Hintergrundbild dort unsichtbar bleibt
+    // (fehlendes position:absolute etc.). Im Editor immer laden, da hier
+    // has_block() für einen gerade erst eingefügten Block ohnehin unzuverlässig ist.
+    foreach ( [ 'block-parallax', 'block-slider' ] as $handle_suffix ) {
+        $css_file = $plugin_dir . "assets/css/{$handle_suffix}.css";
+        if ( file_exists( $css_file ) ) {
+            wp_enqueue_style(
+                "medialab-{$handle_suffix}-editor",
+                $plugin_uri . "assets/css/{$handle_suffix}.css",
+                [],
+                filemtime( $css_file )
+            );
+        }
+    }
 }
 
 // =============================================================================

@@ -16,7 +16,7 @@ wp.domReady( function () {
 
     const { registerBlockType } = wp.blocks;
     const { __ }                = wp.i18n;
-    const { el }                = wp.element;
+    const { createElement: el, Fragment } = wp.element; // wp.element exportiert kein "el" – Alias auf createElement
     const {
         RichText,
         InspectorControls,
@@ -27,6 +27,7 @@ wp.domReady( function () {
         InnerBlocks,
         MediaUpload,
         MediaUploadCheck,
+        useBlockProps,
     } = wp.blockEditor;
     const {
         PanelBody,
@@ -53,7 +54,12 @@ wp.domReady( function () {
                 white:     '#ffffff',
             };
 
-            return el( 'div', null,
+            const blockProps = useBlockProps( {
+                className: `ml-block-cta-banner ml-cta-banner--${bgColor} ml-cta-banner--${textAlign}`,
+                style: { backgroundColor: bgMap[ bgColor ] },
+            } );
+
+            return el( Fragment, null,
                 el( InspectorControls, null,
                     el( PanelBody, { title: __( 'Einstellungen', 'media-lab-agency-core' ), initialOpen: true },
                         el( SelectControl, {
@@ -79,10 +85,7 @@ wp.domReady( function () {
                         } ),
                     ),
                 ),
-                el( 'section', {
-                        className: `ml-block-cta-banner ml-cta-banner--${bgColor} ml-cta-banner--${textAlign}`,
-                        style: { backgroundColor: bgMap[ bgColor ] },
-                    },
+                el( 'section', blockProps,
                     el( 'div', { className: 'ml-cta-banner__inner container' },
                         el( RichText, {
                             tagName:     'h2',
@@ -122,7 +125,10 @@ wp.domReady( function () {
 
         save( { attributes } ) {
             const { title, text, buttonText, buttonUrl, buttonStyle, bgColor, textAlign } = attributes;
-            return el( 'section', { className: `ml-block-cta-banner ml-cta-banner--${bgColor} ml-cta-banner--${textAlign}` },
+            const blockProps = useBlockProps.save( {
+                className: `ml-block-cta-banner ml-cta-banner--${bgColor} ml-cta-banner--${textAlign}`,
+            } );
+            return el( 'section', blockProps,
                 el( 'div', { className: 'ml-cta-banner__inner container' },
                     el( RichText.Content, { tagName: 'h2', className: 'ml-cta-banner__title', value: title } ),
                     text && el( RichText.Content, { tagName: 'p', className: 'ml-cta-banner__text', value: text } ),
@@ -144,7 +150,9 @@ wp.domReady( function () {
         edit( { attributes, setAttributes, clientId } ) {
             const { title, allowMultiple } = attributes;
 
-            return el( 'div', null,
+            const blockProps = useBlockProps( { className: 'ml-block-accordion' } );
+
+            return el( Fragment, null,
                 el( InspectorControls, null,
                     el( PanelBody, { title: __( 'Einstellungen', 'media-lab-agency-core' ) },
                         el( ToggleControl, {
@@ -154,7 +162,7 @@ wp.domReady( function () {
                         } ),
                     ),
                 ),
-                el( 'div', { className: 'ml-block-accordion' },
+                el( 'div', blockProps,
                     el( RichText, {
                         tagName:     'h2',
                         className:   'ml-accordion__title',
@@ -171,10 +179,11 @@ wp.domReady( function () {
 
         save( { attributes } ) {
             const { title, allowMultiple } = attributes;
-            return el( 'div', {
-                    className:             'ml-block-accordion',
-                    'data-allow-multiple': allowMultiple ? 'true' : 'false',
-                },
+            const blockProps = useBlockProps.save( {
+                className: 'ml-block-accordion',
+                'data-allow-multiple': allowMultiple ? 'true' : 'false',
+            } );
+            return el( 'div', blockProps,
                 title && el( RichText.Content, { tagName: 'h2', className: 'ml-accordion__title', value: title } ),
                 el( 'div', { className: 'ml-accordion__items' }, null ),
             );
@@ -194,7 +203,9 @@ wp.domReady( function () {
                 { label: __( 'Icon links', 'media-lab-agency-core' ), value: 'left' },
             ];
 
-            return el( 'div', null,
+            const blockProps = useBlockProps( { className: `ml-block-icon-text ml-icon-text--${layout}` } );
+
+            return el( Fragment, null,
                 el( InspectorControls, null,
                     el( PanelBody, { title: __( 'Icon-Einstellungen', 'media-lab-agency-core' ) },
                         el( TextControl, {
@@ -217,7 +228,7 @@ wp.domReady( function () {
                         } ),
                     ),
                 ),
-                el( 'div', { className: `ml-block-icon-text ml-icon-text--${layout}` },
+                el( 'div', blockProps,
                     el( 'div', {
                             className: 'ml-icon-text__icon',
                             style: iconColor ? { color: iconColor } : {},
@@ -246,7 +257,8 @@ wp.domReady( function () {
 
         save( { attributes } ) {
             const { icon, title, text, iconColor, layout } = attributes;
-            return el( 'div', { className: `ml-block-icon-text ml-icon-text--${layout}` },
+            const blockProps = useBlockProps.save( { className: `ml-block-icon-text ml-icon-text--${layout}` } );
+            return el( 'div', blockProps,
                 el( 'div', {
                         className:    'ml-icon-text__icon',
                         style:        iconColor ? { color: iconColor } : {},
@@ -288,7 +300,12 @@ wp.domReady( function () {
 
             const onRemoveImage = () => setAttributes( { imageId: 0, imageUrl: '', imageAlt: '' } );
 
-            return el( 'div', null,
+            const blockProps = useBlockProps( {
+                className: `ml-block-parallax ml-parallax--align-${contentAlign} ml-parallax--width-${contentWidth}`,
+                style: { minHeight: minHeight + 'px', position: 'relative' },
+            } );
+
+            return el( Fragment, null,
                 el( InspectorControls, null,
                     el( PanelBody, { title: __( 'Hintergrundbild', 'media-lab-agency-core' ), initialOpen: true },
                         el( MediaUploadCheck, null,
@@ -298,6 +315,18 @@ wp.domReady( function () {
                                 value:        imageId,
                                 render( { open } ) {
                                     return el( 'div', null,
+                                        imageUrl && el( 'img', {
+                                            src: imageUrl,
+                                            alt: imageAlt,
+                                            style: {
+                                                width: '100%',
+                                                height: 'auto',
+                                                borderRadius: '2px',
+                                                marginBottom: '8px',
+                                                cursor: 'pointer',
+                                            },
+                                            onClick: open,
+                                        } ),
                                         el( Button, { onClick: open, variant: 'secondary', style: { marginBottom: '8px' } },
                                             imageUrl
                                                 ? __( 'Bild ändern', 'media-lab-agency-core' )
@@ -362,10 +391,7 @@ wp.domReady( function () {
                         } ),
                     ),
                 ),
-                el( 'section', {
-                        className: `ml-block-parallax ml-parallax--align-${contentAlign} ml-parallax--width-${contentWidth}`,
-                        style: { minHeight: minHeight + 'px', position: 'relative' },
-                    },
+                el( 'section', blockProps,
                     el( 'div', {
                         className: 'ml-parallax__bg',
                         'aria-hidden': 'true',
@@ -400,11 +426,13 @@ wp.domReady( function () {
             const dataAttrs = { 'data-parallax-speed': speed };
             if ( imageUrl ) dataAttrs[ 'data-parallax-img' ] = imageUrl;
 
-            return el( 'section', Object.assign( {
-                    className: `ml-block-parallax ml-parallax--align-${contentAlign} ml-parallax--width-${contentWidth}`,
-                    style: { minHeight: minHeight + 'px' },
-                    'aria-label': __( 'Parallax-Sektion', 'media-lab-agency-core' ),
-                }, dataAttrs ),
+            const blockProps = useBlockProps.save( Object.assign( {
+                className: `ml-block-parallax ml-parallax--align-${contentAlign} ml-parallax--width-${contentWidth}`,
+                style: { minHeight: minHeight + 'px' },
+                'aria-label': __( 'Parallax-Sektion', 'media-lab-agency-core' ),
+            }, dataAttrs ) );
+
+            return el( 'section', blockProps,
                 el( 'div', {
                     className: 'ml-parallax__bg',
                     'aria-hidden': 'true',
@@ -442,7 +470,9 @@ wp.domReady( function () {
                 effect, speed, slidesPerView, spaceBetween, centered,
             } = attributes;
 
-            return el( 'div', null,
+            const blockProps = useBlockProps( { className: 'ml-block-slider ml-block-slider--editor' } );
+
+            return el( Fragment, null,
                 el( InspectorControls, null,
                     el( PanelBody, { title: __( 'Wiedergabe', 'media-lab-agency-core' ), initialOpen: true },
                         el( ToggleControl, {
@@ -511,7 +541,7 @@ wp.domReady( function () {
                         } ),
                     ),
                 ),
-                el( 'div', { className: 'ml-block-slider ml-block-slider--editor' },
+                el( 'div', blockProps,
                     el( 'p', { className: 'ml-slider__editor-hint', style: { color: '#6b7280', fontSize: '.8125rem', margin: '0 0 8px' } },
                         __( 'Folien über den Block-Inserter (+) unten hinzufügen, per Drag & Drop sortieren. Die Swiper-Vorschau (Pfeile/Autoplay) erscheint im Frontend.', 'media-lab-agency-core' )
                     ),
@@ -555,7 +585,9 @@ wp.domReady( function () {
                 pagination !== 'none' ? 'ml-slider--has-pagination' : '',
             ].filter( Boolean ).join( ' ' );
 
-            return el( 'div', { className: classes },
+            const blockProps = useBlockProps.save( { className: classes } );
+
+            return el( 'div', blockProps,
                 el( 'div', {
                         className: 'swiper ml-slider__swiper',
                         'data-swiper': JSON.stringify( swiperConfig ),
@@ -589,8 +621,9 @@ wp.domReady( function () {
                 } );
             };
             const onRemoveImage = () => setAttributes( { imageId: 0, imageUrl: '', imageAlt: '' } );
+            const blockProps = useBlockProps( { className: 'ml-slider__slide ml-slider__slide--editor' } );
 
-            return el( 'div', { className: 'ml-slider__slide ml-slider__slide--editor' },
+            return el( 'div', blockProps,
                 el( InspectorControls, null,
                     el( PanelBody, { title: __( 'Folie', 'media-lab-agency-core' ), initialOpen: true },
                         el( TextControl, {
@@ -668,8 +701,9 @@ wp.domReady( function () {
             const { imageUrl, imageAlt, heading, text, buttonText, buttonUrl, buttonTarget, customClass } = attributes;
             const hasContent = heading || text || buttonText;
             const classes = [ 'swiper-slide', 'ml-slider__slide', customClass ].filter( Boolean ).join( ' ' );
+            const blockProps = useBlockProps.save( { className: classes } );
 
-            return el( 'div', { className: classes },
+            return el( 'div', blockProps,
                 imageUrl && el( 'div', { className: 'ml-slider__slide-media' },
                     el( 'img', {
                         src: imageUrl, alt: imageAlt,
