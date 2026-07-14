@@ -4,10 +4,21 @@
  *
  * Ansatz:
  *   ACF Blocks  – PHP-Rendering, ACF-Felder, kein Build-Step
- *                 Hero, Testimonial, Team-Mitglied, Logo-Leiste, Logo-Slider
+ *                 Hero, Testimonial, Team-Mitglied, Logo-Leiste, Logo-Slider,
+ *                 Social-Share, Inhaltsverzeichnis, Vorher/Nachher
  *
  *   Native Blocks – block.json + JS (Vite-Build), InnerBlocks-fähig
- *                   CTA-Banner, Accordion/FAQ, Icon+Text
+ *                   CTA-Banner, Accordion/FAQ, Icon+Text, Parallax-Sektion,
+ *                   Slider (+ Folie als Kind-Block)
+ *
+ * Migration (seit 1.17.0):
+ *   Parallax und Slider waren ACF-PHP-Blöcke – ACF rendert Feldgruppen
+ *   IMMER in der Inspector-Sidebar, unabhängig von mode/position. Als
+ *   native Blocks liegen Inspector-Controls weiterhin in der Sidebar
+ *   (WordPress-Konvention), aber der eigentliche Inhalt (Bild, Text,
+ *   Folien) ist jetzt direkt im Editor-Canvas sichtbar und bearbeitbar
+ *   statt nur als Platzhalter – inkl. InnerBlocks-Unterstützung, die bei
+ *   ACF-PHP-Blöcken nicht zuverlässig funktioniert.
  *
  * Neue Blöcke hinzufügen:
  *   1. Ordner unter blocks/{name}/ anlegen
@@ -55,9 +66,7 @@ function medialab_register_acf_blocks(): void {
         'logo-slider',
         'social-share',
         'table-of-contents',
-        'parallax',
         'before-after',
-        'slider',
     ];
 
     foreach ( $acf_blocks as $block ) {
@@ -79,6 +88,9 @@ function medialab_register_native_blocks(): void {
         'cta-banner',
         'accordion',
         'icon-text',
+        'parallax',
+        'slider',
+        'slide',
     ];
 
     foreach ( $native_blocks as $block ) {
