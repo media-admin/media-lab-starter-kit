@@ -25,7 +25,6 @@
 /cms/wp-content/cache/
 /cms/wp-content/w3tc-config/
 /cms/wp-content/advanced-cache.php
-/cms/wp-content/object-cache.php
 /cms/wp-content/db.php
 
 # ============================================
@@ -56,9 +55,12 @@ node_modules/
 npm-debug.log*
 yarn-error.log*
 yarn.lock
-package-lock.json
-/vendor/
-composer.lock
+
+# HINWEIS: vendor/ und package-lock.json werden bewusst NICHT ignoriert:
+# - vendor/ wird committed, da auf Shared-Hosting (Hetzner/IONOS/Magenta)
+#   kein serverseitiges Composer läuft
+# - package-lock.json wird committed, um Build-Ergebnisse (Vite/rolldown)
+#   reproduzierbar zu pinnen
 
 # Build-Output (wird generiert, nicht versionieren)
 /cms/wp-content/themes/custom-theme/assets/dist/
