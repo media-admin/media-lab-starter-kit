@@ -246,6 +246,15 @@ class MediaLab_Post_Order {
 					<?php esc_html_e( 'Die Reihenfolge wird über das Feld menu_order gespeichert und automatisch im Frontend angewendet.', 'media-lab-core' ); ?>
 				</p>
 
+				<?php if ( ! empty( $selectable_types ) ) : ?>
+				<p>
+					<label>
+						<input type="checkbox" id="mlpo-select-all-types">
+						<?php esc_html_e( 'Alle Post Types aktivieren', 'media-lab-core' ); ?>
+					</label>
+				</p>
+				<?php endif; ?>
+
 				<table class="wp-list-table widefat striped medialab-post-order-table" style="max-width:700px;margin-bottom:2em;">
 					<thead>
 						<tr>
@@ -322,6 +331,15 @@ class MediaLab_Post_Order {
 					<?php esc_html_e( 'Die Term-Reihenfolge wird in term_meta (menu_order) gespeichert. Nach der ersten Sortierung wird die Reihenfolge automatisch im Frontend angewendet.', 'media-lab-core' ); ?>
 				</p>
 
+				<?php if ( ! empty( $selectable_taxos ) ) : ?>
+				<p>
+					<label>
+						<input type="checkbox" id="mlpo-select-all-taxos">
+						<?php esc_html_e( 'Alle Taxonomien aktivieren', 'media-lab-core' ); ?>
+					</label>
+				</p>
+				<?php endif; ?>
+
 				<table class="wp-list-table widefat striped medialab-post-order-table" style="max-width:700px;margin-bottom:2em;">
 					<thead>
 						<tr>
@@ -394,6 +412,53 @@ class MediaLab_Post_Order {
 				<li><?php esc_html_e( 'Seiten (page) sind immer sortierbar und erscheinen daher nicht in der Auswahl.', 'media-lab-core' ); ?></li>
 			</ul>
 		</div>
+		<script>
+		( function () {
+			'use strict';
+
+			/**
+			 * Verdrahtet eine "Alle aktivieren"-Checkbox mit einer Gruppe von
+			 * Checkboxen (per name-Attribut). Klick auf die Sammel-Checkbox
+			 * setzt/entfernt alle Häkchen; der Zustand der Sammel-Checkbox wird
+			 * umgekehrt (checked/indeterminate) aus den Einzel-Checkboxen abgeleitet.
+			 */
+			function wireSelectAll( selectAllId, groupName ) {
+				var selectAll = document.getElementById( selectAllId );
+				if ( ! selectAll ) return;
+
+				var boxes = document.querySelectorAll( 'input[type="checkbox"][name="' + groupName + '[]"]' );
+				if ( ! boxes.length ) return;
+
+				function syncSelectAllState() {
+					var total   = boxes.length;
+					var checked = 0;
+					boxes.forEach( function ( box ) {
+						if ( box.checked ) checked++;
+					} );
+
+					selectAll.checked       = checked === total;
+					selectAll.indeterminate = checked > 0 && checked < total;
+				}
+
+				selectAll.addEventListener( 'change', function () {
+					boxes.forEach( function ( box ) {
+						if ( box.disabled ) return; // z. B. die fixe "page"-Zeile
+						box.checked = selectAll.checked;
+					} );
+					syncSelectAllState();
+				} );
+
+				boxes.forEach( function ( box ) {
+					box.addEventListener( 'change', syncSelectAllState );
+				} );
+
+				syncSelectAllState();
+			}
+
+			wireSelectAll( 'mlpo-select-all-types', '<?php echo esc_js( self::OPTION_KEY ); ?>' );
+			wireSelectAll( 'mlpo-select-all-taxos', '<?php echo esc_js( self::OPTION_KEY_TERMS ); ?>' );
+		} )();
+		</script>
 		<?php
 	}
 
