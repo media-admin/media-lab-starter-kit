@@ -6,6 +6,120 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ---
 
+## [1.22.4] - 2026-07-16
+
+### media-lab-agency-core 1.17.3
+
+#### Added
+- **Post Navigation – zweiter paralleler Einstiegspunkt im Block Editor**
+  (`assets/js/post-navigation.js`) – zusätzlich zum Toolbar-Icon (siehe
+  1.17.2) erscheint die Prev/Next-Navigation jetzt wieder als eigenes Panel
+  im „Dokument"-Tab der Standard-Seitenleiste (`PluginDocumentSettingPanel`),
+  parallel zum `PluginSidebar`-Icon. Beide SlotFills sind unabhängige
+  Registrierungen ohne Konflikt.
+
+---
+
+## [1.22.3] - 2026-07-16
+
+### media-lab-agency-core 1.17.2
+
+#### Changed
+- **Post Navigation im Block Editor** (`assets/js/post-navigation.js`) – von
+  `PluginDocumentSettingPanel` auf `PluginSidebar` umgestellt: Die
+  Prev/Next-Navigation bekommt jetzt ein eigenes, dauerhaft sichtbares Icon
+  in der oberen Block-Editor-Toolbar (zusätzlich per Menüeintrag im
+  „⋮"-More-Menu erreichbar) statt versteckt im „Dokument"-Tab der Seitenleiste
+  gesucht werden zu müssen.
+
+#### Known limitation
+- Der klassische Prev/Next-Button-Bereich (`edit_form_top`, `inc/post-
+  navigation.php`) gehört zum Classic-Editor-Template
+  (`wp-admin/edit-form-advanced.php`) und wird im Block Editor grundsätzlich
+  nicht mit gerendert. Er greift daher nur bei Post Types, die tatsächlich
+  den Classic Editor nutzen; für Block-Editor-Screens ist das
+  Gutenberg-Toolbar-Icon (siehe oben) der primäre Einstiegspunkt.
+
+---
+
+## [1.22.2] - 2026-07-16
+
+### media-lab-agency-core 1.17.1
+
+#### Fixed
+- **Drag-Handle überlappt Thumbnail in schmalen Spalten** (`assets/js/post-order.js`,
+  `assets/css/post-order.css`) – der vorherige Ansatz (Flex-Layout innerhalb von
+  `td.column-thumb`) hat nicht zuverlässig funktioniert, da die Spalte fix und
+  schmal ist und Handle + Thumbnail sich weiterhin überlappt/umgebrochen haben
+  (z. B. WooCommerce-Produktübersicht). Stattdessen bekommt der Drag-Handle
+  jetzt eine eigene, dedizierte `<td class="medialab-drag-handle-cell">` als
+  erste Zelle jeder Zeile statt in eine bestehende Spalte hinein gerendert zu
+  werden. Kopf- und Fußzeile der Tabelle werden per JS um eine passende leere
+  `<th>` ergänzt, damit die Spaltenanzahl übereinstimmt. Die alten
+  `column-title`/`column-thumb`-Flex-Regeln in `post-order.css` wurden entfernt
+  und durch Styles für die neue Handle-Spalte ersetzt.
+
+---
+
+## [1.22.1] - 2026-07-16
+
+### media-lab-agency-core 1.17.0
+
+#### Added
+- **Post Navigation** (`inc/post-navigation.php`, `assets/js/post-navigation.js`,
+  `assets/css/post-navigation.css`) – neue "Voriger/Nächster"-Navigation direkt
+  auf der Post-/Page-/CPT- sowie Taxonomy-Term-Detailseite im Backend, analog zu
+  Drittanbieter-Plugins wie "Post Navigation", aber für alle Inhaltstypen inkl.
+  Taxonomien und mit Anbindung an die bestehende Post-Order-Funktion:
+  - Reihenfolge: menu_order bei aktiver Post Order (`MediaLab_Post_Order`),
+    sonst Fallback auf WP-Standard (hierarchische Post Types: Titel A–Z, sonst
+    Datum absteigend; Taxonomien: Name A–Z).
+  - Berücksichtigt den Filter-/Suchkontext der Ausgangs-Listenansicht (Suche,
+    Status, Autor, Monatsarchiv, Taxonomie-Filter), erkannt über den
+    HTTP-Referer bzw. über den mitgeführten Query-Param `mlpn_ctx`, der über
+    mehrere Navigationsschritte hinweg erhalten bleibt.
+  - UI kombiniert klassischen Button-Bereich oberhalb des Titelfelds
+    (funktioniert in Classic Editor UND Block Editor via `edit_form_top`) mit
+    einem zusätzlichen Gutenberg-Sidebar-Panel ("Document Settings") für Post
+    Types mit Block Editor; für Taxonomy-Terms via
+    `"{$taxonomy}_term_edit_form_top"`.
+  - Erweiterbar über die Filter `medialab_post_navigation_excluded_post_types`,
+    `medialab_post_navigation_excluded_taxonomies` und
+    `medialab_post_navigation_max_items`.
+
+#### Changed
+- **Post Order Einstellungsseite** (`inc/post-order.php`) – neue "Alle Post
+  Types aktivieren" / "Alle Taxonomien aktivieren" Checkboxen oberhalb der
+  jeweiligen Tabelle; togglen alle Einzel-Checkboxen der Gruppe (die fixe,
+  deaktivierte "page"-Zeile bleibt unangetastet) und zeigen bei Teilauswahl
+  einen `indeterminate`-Zustand.
+- **Post Order Thumbnail-Spalte** (`assets/css/post-order.css`) – `td.column-
+  thumb` (z. B. WooCommerce-Produktübersicht) rendert Drag-Handle und
+  Thumbnail jetzt über `display:flex` nebeneinander statt überlappend in
+  derselben Zelle.
+
+---
+
+## [1.22.0] - 2026-07-16
+
+### custom-theme (Starter-Kit-Theme)
+
+#### Fixed
+- **Fatal Error in `customtheme_webp_picture_element()`** (`inc/performance.php`)
+  – der 5. Parameter (`$attr`) hatte den strikten Type-Hint `array`. Core ruft
+  `wp_get_attachment_image()` aber mit dem Default `$attr = ''` (leerer
+  String) auf, wenn kein Attribut-Array übergeben wird – z. B.
+  `WC_Meta_Box_Product_Images::output()` im WooCommerce-Produkt-Editor. Das
+  führte zu einem TypeError, der die Seite ab dieser Stelle abbrach (z. B.
+  WooCommerce-Produkt-Edit-Screen zeigte nur noch die halbe Seite). Type-Hint
+  entfernt, Default-Wert `array()` ergänzt (`$attr` wird im Funktionskörper
+  ohnehin nicht verwendet). Weitere `wp_get_attachment_image*`-Filter-Callbacks
+  im Theme geprüft (`grep`) – keine weiteren betroffen, da
+  `wp_get_attachment_image_attributes` erst nach Normalisierung durch Core
+  feuert.
+
+---
+
 ## [1.21.1] - 2026-06-11
 
 ### media-lab-backup 1.3.1
