@@ -21,6 +21,26 @@ add_action( 'wp_ajax_nopriv_janecka_filter_products', 'mlwf_ajax_filter_products
 function mlwf_ajax_filter_products(): void {
 	check_ajax_referer( 'mlwf_filter_nonce', 'nonce' );
 
+	// ── GZD Loop-Hooks bei AJAX-Pagination entfernen ────────────────────────
+	//
+	// Projekte, die die GZD-Tax-/Shipping-/Delivery-Info manuell im
+	// Product-Card-Template rendern, deaktivieren die GZD-Standard-Loop-Hooks
+	// üblicherweise über den 'wp'-Action-Hook im Theme (da 'woocommerce_init'
+	// zu früh ist). Der 'wp'-Hook feuert aber NICHT bei admin-ajax.php-
+	// Requests, wodurch die GZD-Hooks hier weiterhin aktiv wären und die
+	// Info bei AJAX-paginierten Seiten (paged >= 2) doppelt ausgegeben würde.
+	// Projekte, die die GZD-Standard-Loop-Ausgabe ausdrücklich behalten
+	// wollen, können dies per
+	// add_filter( 'mlwf_remove_gzd_loop_hooks_on_ajax', '__return_false' )
+	// deaktivieren.
+	if ( function_exists( 'WC_germanized' ) && apply_filters( 'mlwf_remove_gzd_loop_hooks_on_ajax', true ) ) {
+		remove_action( 'woocommerce_after_shop_loop_item', 'woocommerce_gzd_template_loop_tax_info', 6 );
+		remove_action( 'woocommerce_after_shop_loop_item', 'woocommerce_gzd_template_loop_shipping_costs_info', 7 );
+		remove_action( 'woocommerce_after_shop_loop_item', 'woocommerce_gzd_template_loop_delivery_time_info', 8 );
+		remove_action( 'woocommerce_after_shop_loop_item', 'woocommerce_gzd_template_loop_product_units', 9 );
+		remove_action( 'woocommerce_after_shop_loop_item_title', 'woocommerce_gzd_template_loop_product_units', 9 );
+	}
+
 	$category_slug = sanitize_text_field( $_POST['category']      ?? '' );
 	$brand_slug    = sanitize_text_field( $_POST['brand']         ?? '' );
 	$subcat_slug   = sanitize_text_field( $_POST['subcat']        ?? '' );
