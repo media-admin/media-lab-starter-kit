@@ -238,6 +238,16 @@ class MLA_Security_Scanner {
 				continue;
 			}
 
+			// version.php wird bei lokalisierten Core-Paketen (z.B. de_AT,
+			// de_DE) offiziell um $wp_local_package ergänzt - siehe
+			// get_locale() im WP-Core selbst. Das ist ein bekannter,
+			// harmloser Unterschied zur (englischen) Checksumme und kein
+			// Sicherheitsproblem. Bei rein englischen Installationen greift
+			// die Prüfung trotzdem, da dort kein Unterschied besteht.
+			if ( 'wp-includes/version.php' === $rel_path ) {
+				continue;
+			}
+
 			$full_path = ABSPATH . $rel_path;
 
 			if ( ! file_exists( $full_path ) ) {
@@ -379,6 +389,14 @@ class MLA_Security_Scanner {
 
 			// node_modules etc. überspringen für Performance.
 			if ( in_array( $entry, array( 'node_modules', '.git', 'cache' ), true ) ) {
+				continue;
+			}
+
+			// WP-Core-Verzeichnisse überspringen: werden bereits über
+			// check_core_integrity() per Checksum geprüft und enthalten
+			// legitime Core-Ordnernamen (z.B. wp-includes/blocks/archives),
+			// die sonst die Namens-Heuristik fälschlich triggern.
+			if ( 0 === $depth && in_array( $entry, array( 'wp-admin', 'wp-includes' ), true ) ) {
 				continue;
 			}
 
