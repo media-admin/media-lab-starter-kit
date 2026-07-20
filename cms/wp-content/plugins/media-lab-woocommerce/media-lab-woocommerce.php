@@ -31,6 +31,7 @@ add_action( 'plugins_loaded', function () {
     if ( ! class_exists( 'WooCommerce' ) ) return;
 
     require_once MEDIA_LAB_WC_PATH . 'inc/enqueue.php';
+    require_once MEDIA_LAB_WC_PATH . 'inc/hpos-product-type-cache-fix.php';
     require_once MEDIA_LAB_WC_PATH . 'inc/catalog-mode.php';
     require_once MEDIA_LAB_WC_PATH . 'inc/configurator/class-configurator.php';
 
