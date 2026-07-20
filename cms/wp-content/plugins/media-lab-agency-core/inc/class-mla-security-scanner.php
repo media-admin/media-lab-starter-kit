@@ -509,14 +509,19 @@ class MLA_Security_Scanner {
 	 * ------------------------------------------------------------- */
 
 	public function run_health_checks() {
-		return array(
+		$checks = array(
 			$this->check_disallow_file_edit(),
 			$this->check_uploads_php_blocked(),
 			$this->check_wp_debug_not_public(),
 			$this->check_xmlrpc(),
 			$this->check_directory_listing(),
 			$this->check_file_editor_capability(),
+			$this->check_subdirectory_htaccess_fix(),
 		);
+
+		// null-Einträge entfernen (z.B. Subdirectory-Check, wenn das
+		// Projekt gar kein site_url/home_url-Mismatch hat).
+		return array_values( array_filter( $checks ) );
 	}
 
 	/**
@@ -704,6 +709,71 @@ class MLA_Security_Scanner {
 				? 'Keine anderen Rollen mit Datei-Bearbeitungsrechten gefunden.'
 				: 'Folgende Rollen haben zusätzlich edit_files-Rechte: ' . implode( ', ', $unexpected ),
 			'fix' => 'Rolle(n) prüfen und Capability über ein Rollen-Management-Plugin oder Code entfernen.',
+		);
+	}
+
+	/**
+	 * Prüft bei Subdirectory-Setups (site_url ≠ home_url, z.B. WP-Core
+	 * liegt in /cms/, ausgeliefert wird aber von der Root-Domain), ob
+	 * die nötige Rewrite-Regel im Root-.htaccess vorhanden ist. Ohne
+	 * sie laufen root-relative Referenzen auf wp-content/wp-includes
+	 * (z.B. aus DB-Migrationen oder hartkodierten Plugin-Pfaden) ins
+	 * Leere, da diese Ordner am Root physisch nicht existieren.
+	 *
+	 * Gibt null zurück, wenn das Projekt kein Subdirectory-Setup nutzt
+	 * - der Check ist dann schlicht nicht relevant und wird aus der
+	 * Checkliste ausgeblendet statt fälschlich als "ok" zu erscheinen.
+	 */
+	private function check_subdirectory_htaccess_fix() {
+		$site_path = (string) wp_parse_url( site_url(), PHP_URL_PATH );
+		$home_path = (string) wp_parse_url( home_url(), PHP_URL_PATH );
+
+		$site_path = '/' . trim( $site_path, '/' );
+		$home_path = '/' . trim( $home_path, '/' );
+
+		if ( $site_path === $home_path ) {
+			return null;
+		}
+
+		// ABSPATH ist der Subdirectory-Ordner (z.B. .../public_html/cms/),
+		// das Docroot liegt eine Ebene höher.
+		$root_dir      = dirname( untrailingslashit( ABSPATH ) );
+		$root_htaccess = $root_dir . '/.htaccess';
+		$display_path  = str_replace( ABSPATH, '', $root_htaccess );
+
+		$fix_snippet = "<IfModule mod_rewrite.c>\nRewriteEngine On\nRewriteCond %{REQUEST_FILENAME} !-f\nRewriteCond %{REQUEST_FILENAME} !-d\nRewriteRule ^wp-content/(.*)\$ /cms/wp-content/\$1 [L]\nRewriteCond %{REQUEST_FILENAME} !-f\nRewriteCond %{REQUEST_FILENAME} !-d\nRewriteRule ^wp-includes/(.*)\$ /cms/wp-includes/\$1 [L]\n</IfModule>\n\n(Muss VOR dem \"# BEGIN WordPress\"-Block stehen. Vollständiges Snippet: stubs/htaccess-subdirectory-staging.snippet im Starter Kit.)";
+
+		if ( ! file_exists( $root_htaccess ) ) {
+			return array(
+				'id'          => 'subdirectory_htaccess_fix',
+				'label'       => 'Subdirectory-Fix für wp-content/wp-includes',
+				'status'      => 'fail',
+				'description' => sprintf(
+					'site_url (%s) weicht von home_url (%s) ab, aber kein Root-.htaccess unter %s gefunden.',
+					$site_path,
+					$home_path,
+					$display_path
+				),
+				'fix' => $fix_snippet,
+			);
+		}
+
+		$content = @file_get_contents( $root_htaccess );
+		$has_fix = false !== $content && false !== strpos( $content, 'Media Lab Subdirectory-Fix' );
+
+		return array(
+			'id'          => 'subdirectory_htaccess_fix',
+			'label'       => 'Subdirectory-Fix für wp-content/wp-includes',
+			'status'      => $has_fix ? 'ok' : 'fail',
+			'description' => $has_fix
+				? sprintf( 'site_url (%s) weicht von home_url (%s) ab, Rewrite-Regel ist im Root-.htaccess vorhanden.', $site_path, $home_path )
+				: sprintf(
+					'site_url (%s) weicht von home_url (%s) ab, aber die Rewrite-Regel fehlt in %s. Root-relative Links auf wp-content/wp-includes laufen dadurch ins Leere.',
+					$site_path,
+					$home_path,
+					$display_path
+				),
+			'fix' => $fix_snippet,
 		);
 	}
 

@@ -1,0 +1,42 @@
+# ─────────────────────────────────────────────────────────────────
+# Media Lab Agency Starter Kit
+# WordPress-Subdirectory-Fix für Staging/Setups mit
+# site_url = /cms, home_url = / (WP-Core liegt in /cms/,
+# ausgeliefert wird aber von der Root-Domain).
+#
+# Problem: Root-relative Referenzen auf /wp-content/... oder
+# /wp-includes/... (z.B. aus DB-Migrationen, hartkodierten
+# Plugin-Pfaden, oder Tools die den WP-Standardpfad erwarten)
+# laufen ins Leere, weil diese Ordner am Root physisch nicht
+# existieren - nur unter /cms/.
+#
+# Diese Regel rewrited (kein sichtbarer Redirect, URL bleibt
+# unverändert) solche Requests intern auf den echten Pfad.
+#
+# WICHTIG:
+#  - Muss VOR dem Standard-"# BEGIN WordPress"-Block stehen,
+#    da Apache-Regeln von oben nach unten verarbeitet werden
+#    und der WP-Block sonst alles vorher an index.php durchreicht.
+#  - "/cms/" an den tatsächlichen Subdirectory-Namen anpassen,
+#    falls ein Projekt eine andere Konvention nutzt.
+#  - Nur einsetzen, wenn site_url() ≠ home_url() im jeweiligen
+#    Projekt - bei Standard-Installationen (WP im Root) NICHT
+#    einbinden, da dort wp-content/wp-includes ohnehin schon
+#    am richtigen Ort liegen und die Regel unnötig wäre.
+# ─────────────────────────────────────────────────────────────────
+<IfModule mod_rewrite.c>
+RewriteEngine On
+
+# Nur rewriten, wenn die Datei am Root NICHT bereits physisch existiert -
+# schützt Setups, die aus irgendeinem Grund doch beides haben.
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^wp-content/(.*)$ /cms/wp-content/$1 [L]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^wp-includes/(.*)$ /cms/wp-includes/$1 [L]
+</IfModule>
+# ─────────────────────────────────────────────────────────────────
+# ENDE Media Lab Subdirectory-Fix
+# ─────────────────────────────────────────────────────────────────

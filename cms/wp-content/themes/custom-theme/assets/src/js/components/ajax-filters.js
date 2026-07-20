@@ -3,6 +3,16 @@
  * 
  * Supports multiple instances on the same page.
  * Each container is isolated with its own state.
+ *
+ * Taxonomy-Button-Gruppen unterstützen zwei Modi:
+ *  - Standard (Multi-Select, wie eine Checkbox): mehrere Terms
+ *    gleichzeitig aktivierbar, Toggle per Klick.
+ *  - Radio-Modus (data-filter-mode="radio" auf dem Gruppen-Container):
+ *    nur ein Term ODER der "Alle"-Button gleichzeitig aktiv. Der
+ *    "Alle"-Button trägt die Klasse
+ *    "ajax-filters__taxonomy-button--all" und kein data-term.
+ *    Wird die aktuell aktive Kategorie erneut geklickt (= deaktiviert),
+ *    aktiviert sich "Alle" automatisch wieder.
  */
 
 export default class AjaxFilters {
@@ -112,10 +122,22 @@ export default class AjaxFilters {
     buttons.forEach(button => {
       button.addEventListener('click', (e) => {
         e.preventDefault();
-        button.classList.toggle('is-active');
-        const taxonomy = button.dataset.taxonomy;
-        const term = button.dataset.term;
-        this.toggleTaxonomyTerm(container, taxonomy, term);
+
+        // Radio-Modus: Button steckt in einer Gruppe mit
+        // data-filter-mode="radio" (z.B. Projekt-Kategorien) -
+        // nur ein Term oder "Alle" gleichzeitig aktiv.
+        const radioGroup = button.closest('[data-filter-mode="radio"]');
+
+        if (radioGroup) {
+          this.handleRadioButtonClick(container, radioGroup, button);
+        } else {
+          // Standard-Verhalten: Multi-Select wie eine Checkbox.
+          button.classList.toggle('is-active');
+          const taxonomy = button.dataset.taxonomy;
+          const term = button.dataset.term;
+          this.toggleTaxonomyTerm(container, taxonomy, term);
+        }
+
         container.currentPage = 1;
         this.loadResults(container);
       });
@@ -158,6 +180,53 @@ export default class AjaxFilters {
     } else {
       container.activeFilters.taxonomies[taxonomy].push(term);
     }
+  }
+
+  /**
+   * Radio-Verhalten für Taxonomie-Button-Gruppen: nur ein Term ODER
+   * der "Alle"-Button gleichzeitig aktiv.
+   *
+   * Regeln:
+   *  - Klick auf "Alle" (Klasse .ajax-filters__taxonomy-button--all,
+   *    kein data-term) → Taxonomie-Filter wird komplett geleert,
+   *    "Alle" wird aktiv, alle anderen Buttons inaktiv.
+   *  - Klick auf eine Kategorie, die noch nicht aktiv war → diese
+   *    Kategorie wird zum einzigen aktiven Term, "Alle" und alle
+   *    anderen Kategorien werden deaktiviert.
+   *  - Klick auf die aktuell AKTIVE Kategorie (= Abwählen) →
+   *    Taxonomie-Filter wird geleert UND "Alle" automatisch wieder
+   *    aktiviert, damit nie "nichts" ausgewählt ist.
+   */
+  handleRadioButtonClick(container, group, clickedButton) {
+    const taxonomy = clickedButton.dataset.taxonomy;
+    const term = clickedButton.dataset.term || '';
+    const isAllButton = clickedButton.classList.contains('ajax-filters__taxonomy-button--all');
+    const wasActive = clickedButton.classList.contains('is-active');
+    const groupButtons = group.querySelectorAll('.ajax-filters__taxonomy-button');
+
+    // Zunächst alle Buttons dieser Gruppe deaktivieren.
+    groupButtons.forEach(btn => btn.classList.remove('is-active'));
+
+    if (isAllButton) {
+      clickedButton.classList.add('is-active');
+      delete container.activeFilters.taxonomies[taxonomy];
+      return;
+    }
+
+    if (wasActive) {
+      // Aktive Kategorie wurde erneut geklickt → abwählen und
+      // automatisch auf "Alle" zurückfallen.
+      const allButton = group.querySelector('.ajax-filters__taxonomy-button--all');
+      if (allButton) {
+        allButton.classList.add('is-active');
+      }
+      delete container.activeFilters.taxonomies[taxonomy];
+      return;
+    }
+
+    // Neue Kategorie aktivieren - alle anderen (inkl. "Alle") bleiben inaktiv.
+    clickedButton.classList.add('is-active');
+    container.activeFilters.taxonomies[taxonomy] = [term];
   }
   
   // ============================================
@@ -237,6 +306,14 @@ export default class AjaxFilters {
     });
     container.querySelectorAll('.ajax-filters__taxonomy-button').forEach(btn => {
       btn.classList.remove('is-active');
+    });
+    // Radio-Gruppen: "Alle"-Button beim Reset wieder aktivieren,
+    // statt die Gruppe ohne aktive Auswahl zurückzulassen.
+    container.querySelectorAll('[data-filter-mode="radio"]').forEach(group => {
+      const allButton = group.querySelector('.ajax-filters__taxonomy-button--all');
+      if (allButton) {
+        allButton.classList.add('is-active');
+      }
     });
     container.querySelectorAll('.ajax-filters__taxonomy-select').forEach(sel => {
       sel.selectedIndex = 0;
@@ -584,6 +661,14 @@ export default class AjaxFilters {
           this.toggleTaxonomyTerm(container, btn.dataset.taxonomy, btn.dataset.term);
           container.querySelectorAll(`.ajax-filters__taxonomy-checkbox[data-taxonomy="${btn.dataset.taxonomy}"][value="${btn.dataset.term}"]`).forEach(cb => cb.checked = false);
           container.querySelectorAll(`.ajax-filters__taxonomy-button[data-taxonomy="${btn.dataset.taxonomy}"][data-term="${btn.dataset.term}"]`).forEach(b => b.classList.remove('is-active'));
+
+          // Falls es sich um eine Radio-Gruppe handelt, "Alle" wieder aktivieren.
+          const removedButton = container.querySelector(`.ajax-filters__taxonomy-button[data-taxonomy="${btn.dataset.taxonomy}"][data-term="${btn.dataset.term}"]`);
+          const radioGroup = removedButton ? removedButton.closest('[data-filter-mode="radio"]') : null;
+          if (radioGroup) {
+            const allButton = radioGroup.querySelector('.ajax-filters__taxonomy-button--all');
+            if (allButton) allButton.classList.add('is-active');
+          }
         }
         this.loadResults(container);
       });
