@@ -15,6 +15,7 @@ class MLBKP_Backup_Runner {
     private array   $settings;
     private string  $temp_dir;
     private array   $log = [];
+    private ?int $caffeinate_pid = null;
 
     public function __construct() {
         $this->settings = mlbkp_get_settings();
@@ -45,6 +46,8 @@ class MLBKP_Backup_Runner {
     private function execute( int $log_id, string $type ): array {
         @set_time_limit( 0 );
         @ini_set( 'memory_limit', '512M' );
+
+        $this->maybe_start_caffeinate();
 
         $this->log( "▶ Backup gestartet [Typ: {$type}]" );
         $this->log( '🖥  Site: ' . get_site_url() );
@@ -202,7 +205,37 @@ class MLBKP_Backup_Runner {
         return $dir;
     }
 
+    /**
+     * macOS-only: verhindert System-/Display-Sleep für die Dauer des Backups.
+     * Auf Production (Linux) ist diese Methode ein No-Op.
+     */
+    private function maybe_start_caffeinate(): void {
+        if ( PHP_OS_FAMILY !== 'Darwin' ) return;
+        if ( ! function_exists( 'shell_exec' ) ) return;
+        // WICHTIG: nohup ist notwendig! Ein einfaches "caffeinate ... &" wird
+        // per SIGHUP beendet, sobald die von shell_exec() gestartete Subshell
+        // terminiert — der Prozess würde sofort wieder sterben, bevor das
+        // eigentliche Backup überhaupt fertig ist.
+        $pid = trim( (string) @shell_exec( 'nohup caffeinate -d -i -s > /dev/null 2>&1 & echo $!' ) );
+        if ( ctype_digit( $pid ) ) {
+            $this->caffeinate_pid = (int) $pid;
+            $this->log( "☕ caffeinate gestartet (PID {$this->caffeinate_pid}) — verhindert Sleep während des Backups." );
+        } else {
+            $this->log( "⚠ caffeinate konnte nicht gestartet werden (Rückgabe: '{$pid}')." );
+        }
+    }
+
+    private function maybe_stop_caffeinate(): void {
+        if ( $this->caffeinate_pid === null ) return;
+        if ( function_exists( 'shell_exec' ) ) {
+            @shell_exec( 'kill ' . (int) $this->caffeinate_pid . ' 2>/dev/null' );
+        }
+        $this->caffeinate_pid = null;
+    }
+
     private function cleanup(): void {
+        $this->maybe_stop_caffeinate();
+
         $this->log( '🧹 Temp-Dateien aufräumen …' );
         $files = glob( $this->temp_dir . '*.{sql,sql.gz,zip}', GLOB_BRACE );
         foreach ( (array) $files as $file ) {

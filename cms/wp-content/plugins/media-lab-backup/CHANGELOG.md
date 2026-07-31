@@ -6,6 +6,25 @@ Versionierung: [Semantic Versioning](https://semver.org/)
 
 ---
 
+## [1.3.2] — 2026-07-31
+
+### Fixed
+- **macOS-Sleep unterbricht lokale Backups (Laravel Valet)** — größere
+  `wp-content`-Backups (mehrere GB, zehntausende Dateien) können 30–90+
+  Minuten dauern. macOS legt den Rechner nach der konfigurierten Sleep-Zeit
+  (oft 15 Min. Inaktivität) automatisch schlafen und unterbricht den
+  PHP-Prozess mitten im Backup ("Unable to write X bytes" bzw.
+  240-Minuten-Job-Timeout). Auf Production (Linux) tritt das nicht auf, da
+  dort kein Sleep-Modus existiert.
+  `MLBKP_Backup_Runner::execute()` startet jetzt via `maybe_start_caffeinate()`
+  einen `caffeinate -d -i -s`-Prozess über `nohup … & echo $!` (nohup ist
+  zwingend nötig, da sonst SIGHUP den Prozess sofort mit der Subshell
+  beendet). `cleanup()` — welches bei Erfolg, Abbruch und Fehler garantiert
+  läuft — beendet den Prozess wieder über `maybe_stop_caffeinate()`.
+  Auf Production (Linux) ist die Methode ein reines No-Op (`PHP_OS_FAMILY`-Check).
+
+---
+
 ## [1.3.0] — 2026-05-20
 
 ### Added
