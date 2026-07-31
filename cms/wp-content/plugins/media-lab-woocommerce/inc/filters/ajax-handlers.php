@@ -199,6 +199,7 @@ function mlwf_ajax_filter_products(): void {
 		'found_posts' => $query->found_posts,
 		'max_pages'   => $query->max_num_pages,
 		'current'     => $paged,
+		'per_page'    => (int) get_option( 'posts_per_page_shop', 12 ),
 	] );
 }
 
