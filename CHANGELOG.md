@@ -6,6 +6,30 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ---
 
+## [1.22.5] - 2026-08-03
+
+### media-lab-agency-core 1.17.5
+
+#### Added
+- **WP All Import Integration** (`inc/integrations/wp-all-import-timeout.php`,
+  `inc/integrations/wp-all-import-custom-download.php`) – Zwei Fixes für
+  Bilder-Downloads bei WP-All-Import-Importen:
+  - Timeout-Fix: `pmxi_image_download_timeout`-Filter erhöht den
+    Bilder-Download-Timeout von 5s auf 30s (überschreibbar via
+    `mlac_wpai_image_timeout_seconds`).
+  - `custom_file_download()`-Helper: Umgeht User-Agent-basiertes Blocking
+    durch CDNs/WAFs, die den erkennbaren WP-All-Import-UA stillschweigend
+    droppen (Symptom: `cURL error 28`, TCP/TLS-Handshake erfolgreich, aber
+    0 bytes empfangen – Tarpitting statt 403). Lädt stattdessen über
+    `wp_remote_get()` mit Standard-WordPress-UA herunter.
+  - **Erfordert manuelle Einrichtung pro Import-Template**: Bild-Feld auf
+    `[custom_file_download({Bildfeld}, "ext")]` umstellen und die Image-Option
+    "Use images currently uploaded in wp-content/uploads/wpallimport/files/"
+    aktivieren. Backport aus dem Janecka-Projekt (union-glashuette.com
+    blockte den Standard-UA).
+
+---
+
 ## [1.22.4] - 2026-07-16
 
 ### media-lab-agency-core 1.17.3

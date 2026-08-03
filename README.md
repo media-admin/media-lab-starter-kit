@@ -2,7 +2,7 @@
 
 **Professional WordPress Agency Framework** – Modulares Plugin-System für skalierbare Kundenprojekte.
 
-[![Version](https://img.shields.io/badge/version-1.18.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.22.5-blue.svg)](CHANGELOG.md)
 [![PHP](https://img.shields.io/badge/PHP-8.0+-purple.svg)](https://php.net)
 [![WordPress](https://img.shields.io/badge/WordPress-6.0+-blue.svg)](https://wordpress.org)
 [![License](https://img.shields.io/badge/license-proprietary-red.svg)](#lizenz)
@@ -26,7 +26,7 @@ custom-theme            →  Präsentationsebene (pro Projekt anpassen)
 
 ## Plugins & Versionen
 
-### media-lab-agency-core `v1.8.4`
+### media-lab-agency-core `v1.17.5`
 
 Framework-Plugin – wird **unverändert** auf allen Projekten eingesetzt.
 
@@ -68,6 +68,9 @@ Framework-Plugin – wird **unverändert** auf allen Projekten eingesetzt.
 - White-Label / Agentur-Branding
 - Maintenance Mode (ACF-konfigurierbar, 503-Header, Admin-Bypass)
 - Media Replace
+
+**Import-Tools:**
+  - WP All Import: Timeout-Fix & UA-Blocking-Workaround für Bilder-Downloads (manuelle Template-Einrichtung pro Import nötig)
 
 **Helper:**
 - `medialab_get_thumbnail()` – responsive Bilder mit srcset + lazy loading
@@ -266,7 +269,7 @@ media-lab-starter-kit/
 ├── cms/
 │   └── wp-content/
 │       ├── plugins/
-│       │   ├── media-lab-agency-core/     # Framework v1.8.4
+│       │   ├── media-lab-agency-core/     # Framework v1.17.5
 │       │   ├── media-lab-seo/             # SEO-Toolkit v1.3.0
 │       │   └── media-lab-bookings/        # Buchungssystem v1.3.1
 │       └── themes/
@@ -326,6 +329,7 @@ media-lab-starter-kit/
 
 | Kit-Version | Komponente | Schwerpunkt |
 |---|---|---|
+| v1.22.5 | agency-core 1.17.5 | WP All Import: Timeout- & UA-Blocking-Fix für Bilder-Downloads |
 | v1.18.0 | custom-theme 1.14.0 | Footer Legal Navigation, Agentur-Creditline |
 | v1.17.0 | custom-theme 1.13.0 | WCAG 2.1 AA Audit – 11 Accessibility-Fixes |
 | v1.16.0 | theme 1.12.0 / core 1.6.0 | 8 Custom Gutenberg Blocks (Design-Kategorie) |
