@@ -6,6 +6,17 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ---
 
+## [1.22.6] - 2026-08-03
+
+### media-lab-backup 1.3.3
+
+#### Fixed
+- **caffeinate-Fix funktionierte nicht im asynchronen WP-Cron-Kontext** –
+  siehe `media-lab-backup/CHANGELOG.md` für Details. `launchctl asuser`
+  reicht die Power-Management-Assertion korrekt in die GUI-Session durch.
+
+---
+
 ## [1.22.5] - 2026-08-03
 
 ### media-lab-agency-core 1.17.5
