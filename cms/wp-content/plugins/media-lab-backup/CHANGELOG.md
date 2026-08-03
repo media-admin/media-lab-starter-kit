@@ -6,6 +6,23 @@ Versionierung: [Semantic Versioning](https://semver.org/)
 
 ---
 
+## [1.3.3] - 2026-08-03
+
+### Fixed
+- **caffeinate hält keine Power-Management-Assertion im WP-Cron-Loopback-
+  Kontext** (`includes/class-mlb-backup-runner.php`) – der bisherige Fix
+  (`nohup caffeinate -d -i -s`, siehe 1.3.2) startete den Prozess zwar
+  korrekt (verifiziert via PPID 1), hielt aber im asynchronen
+  WP-Cron-Kontext (php-fpm LaunchDaemon-Kontext, nicht die aktive
+  GUI-Session) keine `IOPMAssertionCreate`-Assertion — der Mac schlief
+  trotz laufendem `caffeinate`-Prozess ein. Fix: `launchctl asuser $(id -u)`
+  reicht den Aufruf explizit in die GUI-Session des Users durch. Verifiziert
+  via `pmset -g assertions` über zwei unabhängige Testläufe: alle drei
+  Assertions (`PreventUserIdleSystemSleep`, `PreventUserIdleDisplaySleep`,
+  `PreventSystemSleep`) aktiv.
+
+---
+
 ## [1.3.2] — 2026-07-31
 
 ### Fixed
