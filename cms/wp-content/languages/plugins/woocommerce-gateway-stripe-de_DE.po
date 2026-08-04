@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - WooCommerce Stripe Payment Gateway - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-07-16 11:09:31+0000\n"
+"PO-Revision-Date: 2026-07-23 11:16:40+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -1509,13 +1509,13 @@ msgstr "MULTIBANCO-BESTELLINFORMATIONEN"
 msgid "Entity:"
 msgstr "Entität:"
 
-#: includes/class-wc-stripe-helper.php:197
-msgid "We are unable to authenticate your payment method. Please choose a different payment method and try again."
-msgstr "Wir können deine Zahlungsmethode nicht authentifizieren. Bitte wähle eine andere Zahlungsmethode und versuche es erneut."
-
 #: includes/compat/trait-wc-stripe-subscriptions.php:937
 msgid "Invalid payment method ID. A valid \"Stripe Payment Method ID\" must begin with \"src_\", \"pm_\", or \"card_\"."
 msgstr "Ungültige Zahlungsmethoden-ID. Eine gültige „Stripe-Zahlungsmethoden-ID“ muss mit „src_“, „pm_“ oder „card_“ beginnen."
+
+#: includes/class-wc-stripe-helper.php:197
+msgid "We are unable to authenticate your payment method. Please choose a different payment method and try again."
+msgstr "Wir können deine Zahlungsart nicht authentifizieren. Bitte wähle eine andere Zahlungsart und versuche es erneut."
 
 #. Author URI of the plugin
 #: woocommerce-gateway-stripe.php

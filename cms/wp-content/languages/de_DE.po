@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the WordPress - 7.0.x - Development package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-07-10 08:09:35+0000\n"
+"PO-Revision-Date: 2026-07-27 21:30:39+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -336,10 +336,6 @@ msgstr "Schütze deine Website vor Spam."
 msgid "Connector \"%s\" plugin is_active must be callable."
 msgstr "„is_active“ des Plugins für den Konnektor „%s“ muss aufrufbar sein."
 
-#: wp-includes/collaboration/class-wp-http-polling-sync-server.php:269
-msgid "Request body is too large."
-msgstr "Der Anfrage-Body ist zu groß."
-
 #. translators: %s: wp_ai_client_default_request_timeout
 #: wp-includes/ai-client/class-wp-ai-client-prompt-builder.php:210
 msgid "The %s filter must return a non-negative number."
@@ -526,12 +522,6 @@ msgstr "Der Schlüssel „%1$s“ mit dem Wert „%2$s“ für das Stylesheet �
 msgid "The CSS must not end in \"%s\"."
 msgstr "Das CSS darf nicht mit „%s“ enden."
 
-#. translators: %s is the CSS that was provided.
-#: wp-includes/customize/class-wp-customize-custom-css-setting.php:231
-#: wp-includes/rest-api/endpoints/class-wp-rest-global-styles-controller.php:743
-msgid "The CSS must not contain \"%s\"."
-msgstr "Das CSS darf kein „%s“ enthalten."
-
 #: wp-includes/rest-api/endpoints/class-wp-rest-icons-controller.php:221
 msgid "The icon label."
 msgstr "Die Icon-Beschriftung."
@@ -558,14 +548,6 @@ msgstr "Icons müssen entweder `content` oder `filePath` enthalten."
 msgid "Invalid icon property: \"%s\"."
 msgstr "Ungültige Icon-Eigenschaft: „%s“."
 
-#: wp-includes/collaboration/class-wp-http-polling-sync-server.php:224
-msgid "Client ID is already in use by another user."
-msgstr "Die Client-ID wird bereits von einem anderen Benutzer verwendet."
-
-#: wp-includes/collaboration/class-wp-http-polling-sync-server.php:206
-msgid "You do not have permission to perform this action"
-msgstr "Du hast keine Berechtigung, diese Aktion auszuführen."
-
 #: wp-includes/connectors.php:312
 msgid "Text and image generation with GPT and Dall-E."
 msgstr "Text- und Bildgenerierung mit GPT und Dall-E."
@@ -573,10 +555,6 @@ msgstr "Text- und Bildgenerierung mit GPT und Dall-E."
 #: wp-includes/connectors.php:288
 msgid "Text generation with Claude."
 msgstr "Textgenerierung mit Claude."
-
-#: wp-includes/connectors.php:196
-msgid "Provider logo path must be located within the plugins or must-use plugins directory."
-msgstr "Der Pfad zum Anbieter-Logo muss sich im Verzeichnis „plugins“ oder „must-use plugins“ befinden."
 
 #. translators: %s: Connector name.
 #: wp-includes/connectors.php:603
@@ -621,11 +599,6 @@ msgstr "Du bist leider nicht berechtigt, die registrierten Icons anzuzeigen."
 msgid "The provider \"%s\" is not registered in the AI client registry."
 msgstr "Der Anbieter „%s“ ist nicht in dem KI-Client-Register registriert."
 
-#. translators: %s: The room name encodes the current entity being synced.
-#: wp-includes/collaboration/class-wp-http-polling-sync-server.php:242
-msgid "You do not have permission to sync this entity: %s."
-msgstr "Du hast keine Berechtigung, diese Entität zu synchronisieren: %s."
-
 #. translators: 1: 'module_dependencies', 2: Script handle.
 #: wp-includes/class-wp-scripts.php:942
 msgid "The value for \"%1$s\" must be an array for the \"%2$s\" script."
@@ -652,14 +625,6 @@ msgstr "Nicht erkannte(r) Schlüssel im Parameter %1$s: %2$s. Unterstützte Schl
 msgid "Unable to set inline script data."
 msgstr "Die Inline-Skriptdaten konnten nicht festgelegt werden."
 
-#: wp-includes/collaboration/class-wp-http-polling-sync-server.php:527
-msgid "Invalid sync update type."
-msgstr "Ungültiger Typ für die Synchronisations-Aktualisierung."
-
-#: wp-includes/collaboration/class-wp-http-polling-sync-server.php:553
-msgid "Failed to store sync update."
-msgstr "Die Synchronisations-Aktualisierung konnte nicht gespeichert werden."
-
 #: wp-includes/rest-api/endpoints/class-wp-rest-attachments-controller.php:1239
 msgid "EXIF orientation value. Values 1-8 follow the EXIF specification, where 1 means no rotation needed."
 msgstr "Der EXIF-Ausrichtungswert. Die Werte 1–8 entsprechen der EXIF-Spezifikation, wobei 1 bedeutet, dass keine Rotation nötig ist."
@@ -668,13 +633,19 @@ msgstr "Der EXIF-Ausrichtungswert. Die Werte 1–8 entsprechen der EXIF-Spezifik
 msgid "Text and image generation with Gemini and Imagen."
 msgstr "Text- und Bildgenerierung mit Gemini und Imagen."
 
-#: wp-includes/collaboration/class-wp-http-polling-sync-server.php:493
-msgid "Failed to remove updates during compaction."
-msgstr "Aktualisierungen konnten bei der Komprimierung nicht entfernt werden."
-
 #: wp-includes/class-wp-xmlrpc-server.php:275
 msgid "Invalid arguments passed to this XML-RPC method. Requires two integers."
 msgstr "Dieser XML-RPC-Methode wurden ungültige Argumente übergeben. Es sind zwei Ganzzahlen erforderlich."
+
+#. translators: %s is the CSS that was provided.
+#: wp-includes/customize/class-wp-customize-custom-css-setting.php:231
+#: wp-includes/rest-api/endpoints/class-wp-rest-global-styles-controller.php:743
+msgid "The CSS must not contain \"%s\"."
+msgstr "Das CSS darf „%s“ nicht enthalten."
+
+#: wp-includes/connectors.php:196
+msgid "Provider logo path must be located within the plugins or must-use plugins directory."
+msgstr "Der Pfad zum Anbieter-Logo muss sich im Verzeichnis „plugins“ oder „mu-plugins“ befinden."
 
 #. translators: %s is the post type name.
 #: wp-includes/blocks/query-title.php:69
@@ -1584,18 +1555,6 @@ msgstr "Die Beschreibung der Kategorie."
 msgid "Meta information about the category."
 msgstr "Die Metainformationen der Kategorie."
 
-#: wp-includes/rest-api/endpoints/class-wp-rest-attachments-controller.php:1462
-msgid "Limit result set to attachments of a particular MIME type or MIME types."
-msgstr "Begrenzt den Ergebnissatz auf Anhänge eines bestimmten MIME-Typs oder bestimmter MIME-Typen."
-
-#: wp-includes/rest-api/endpoints/class-wp-rest-attachments-controller.php:1452
-msgid "Limit result set to attachments of a particular media type or media types."
-msgstr "Begrenzt den Ergebnissatz auf Anhänge eines bestimmten Medientyps oder bestimmter Medientypen."
-
-#: wp-includes/rest-api/endpoints/class-wp-rest-abilities-v1-categories-controller.php:245
-msgid "Display label for the category."
-msgstr "Zeigt die Beschriftung der Kategorie an."
-
 #: wp-includes/rest-api/endpoints/class-wp-rest-attachments-controller.php:1675
 msgid "Whether to flip in the vertical direction."
 msgstr "Ob in vertikaler Richtung gespiegelt werden soll."
@@ -1657,10 +1616,6 @@ msgstr "Eine eindeutige Kennung für die Fähigkeitskategorie."
 msgid "Ability category not found."
 msgstr "Die Fähigkeitskategorie wurde nicht gefunden."
 
-#: wp-includes/rest-api/endpoints/class-wp-rest-abilities-v1-run-controller.php:215
-msgid "Input parameters for the ability execution."
-msgstr "Input-Parameter für die Ausführung der Fähigkeit."
-
 #: wp-includes/rest-api/endpoints/class-wp-rest-abilities-v1-run-controller.php:126
 msgid "Abilities that perform destructive actions require DELETE method."
 msgstr "Fähigkeiten, die destruktive Aktionen ausführen, erfordern die DELETE-Methode."
@@ -1689,10 +1644,6 @@ msgstr "Das JSON-Schema für die Eingabe der Fähigkeit."
 msgid "Display label for the ability."
 msgstr "Die Beschriftung der Fähigkeit."
 
-#: wp-includes/rest-api/endpoints/class-wp-rest-abilities-v1-list-controller.php:436
-msgid "Limit results to abilities in specific ability category."
-msgstr "Beschränkt die Ergebnisse auf Fähigkeiten einer bestimmten Fähigkeitskategorie."
-
 #: wp-includes/rest-api/endpoints/class-wp-rest-abilities-v1-run-controller.php:177
 msgid "Sorry, you are not allowed to execute this ability."
 msgstr "Du bist leider nicht berechtigt, diese Fähigkeit auszuführen."
@@ -1718,6 +1669,26 @@ msgstr "Die Spiegelungs-Argumente."
 #: wp-includes/rest-api/endpoints/class-wp-rest-abilities-v1-run-controller.php:124
 msgid "Read-only abilities require GET method."
 msgstr "Schreibgeschützte Fähigkeiten erfordern die GET-Methode."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-abilities-v1-categories-controller.php:245
+msgid "Display label for the category."
+msgstr "Die Anzeigebeschriftung für die Kategorie."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-abilities-v1-run-controller.php:215
+msgid "Input parameters for the ability execution."
+msgstr "Eingabeparameter für die Ausführung der Fähigkeit."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-attachments-controller.php:1462
+msgid "Limit result set to attachments of a particular MIME type or MIME types."
+msgstr "Den Ergebnissatz auf Anhänge eines bestimmten MIME-Typs oder bestimmter MIME-Typen begrenzen."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-attachments-controller.php:1452
+msgid "Limit result set to attachments of a particular media type or media types."
+msgstr "Den Ergebnissatz auf Anhänge eines bestimmten Medientyps oder bestimmter Medientypen begrenzen."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-abilities-v1-list-controller.php:436
+msgid "Limit results to abilities in specific ability category."
+msgstr "Die Ergebnisse auf Fähigkeiten einer bestimmten Fähigkeitskategorie begrenzen."
 
 #. translators: %s: Note text.
 #. translators: %s: note excerpt
@@ -2183,10 +2154,6 @@ msgstr "Der Titel der Website."
 msgid "Returns core details about the site's runtime context for diagnostics and compatibility (environment, PHP runtime, database server info, WordPress version)."
 msgstr "Gibt wichtige Details zum Laufzeitkontext der Website für Diagnose- und Kompatibilitätszwecke zurück (Umgebung, PHP-Runtime, Datenbank-Serverinformationen, WordPress-Version)."
 
-#: wp-includes/abilities.php:211
-msgid "The site's runtime environment classification (can be one of these: production, staging, development, local)."
-msgstr "Die Klassifizierung der Website-Laufzeitumgebung (kann eine der folgenden sein: Produktion, Staging, Entwicklung, lokal)."
-
 #: wp-includes/abilities.php:202
 msgid "Get Environment Info"
 msgstr "Umgebungsinformationen abrufen"
@@ -2254,6 +2221,10 @@ msgstr[1] "%1$s Kommentare<span class=\"screen-reader-text\"> zu %2$s</span>"
 #: wp-includes/blocks/post-comments-link.php:43
 msgid "No comments<span class=\"screen-reader-text\"> on %s</span>"
 msgstr "Keine Kommentare<span class=\"screen-reader-text\"> zu %s</span>"
+
+#: wp-includes/abilities.php:211
+msgid "The site's runtime environment classification (can be one of these: production, staging, development, local)."
+msgstr "Die Klassifizierung der Website-Laufzeitumgebung (kann eine der folgenden sein: production, staging, development, local)."
 
 #. translators: %s: Ability name.
 #: wp-includes/abilities-api/class-wp-abilities-registry.php:96
@@ -2457,7 +2428,7 @@ msgstr "Eine Liste der zulässigen Bereichswerte für Template-Teile."
 msgid "Add Link Category"
 msgstr "Linkkategorie hinzufügen"
 
-#: wp-includes/rest-api.php:449
+#: wp-includes/rest-api.php:458
 msgid "The REST route parameter must be a string."
 msgstr "Der Routenparameter für REST muss eine Zeichenfolge sein."
 
@@ -2771,7 +2742,7 @@ msgstr "Deine PHP-Version ist von einem Fehler betroffen, der zu korrupten Nachr
 #. translators: %s: forbidden eagerness value
 #: wp-includes/class-wp-speculation-rules.php:198
 msgid "The eagerness value \"%s\" is forbidden for document-level speculation rules."
-msgstr "Der eagerness-Wert „%s“ ist für Spekulationsregeln auf Dokumentenebene unzulässig."
+msgstr "Der Eagerness-Wert „%s“ ist für Spekulationsregeln auf Dokumentenebene unzulässig."
 
 #. translators: 1: Start index of posts, 2: Total number of posts
 #: wp-includes/blocks/query-total.php:47
@@ -2901,10 +2872,6 @@ msgstr "Eine Wolke beliebter Stichwörter, deren Schriftgröße sich nach der H�
 msgid "Plugin that registered the template."
 msgstr "Das Plugin, das dieses Template registriert hat."
 
-#: wp-includes/rest-api/endpoints/class-wp-rest-posts-controller.php:3158
-msgid "Limit result set to items assigned one or more given formats."
-msgstr "Ergebnissatz auf Elemente begrenzen, denen ein oder mehrere bestimmte Formate zugeordnet sind."
-
 #: wp-includes/rest-api/endpoints/class-wp-rest-posts-controller.php:3052
 msgid "How to interpret the search input."
 msgstr "Wie man Suchbegriffe interpretiert."
@@ -2929,6 +2896,10 @@ msgstr "Der Namensraum darf nicht mit einem Schrägstrich beginnen oder enden. D
 #: wp-includes/rest-api.php:45
 msgid "Routes must be namespaced with plugin or theme name and version. Instead there seems to be an empty namespace '%1$s' for route '%2$s'."
 msgstr "Routen müssen mit dem Namen und der Version des Plugins oder Themes benannt werden. Der Namensraum ‚%1$s‘ für die Route ‚%2$s‘ scheint jedoch leer zu sein."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-posts-controller.php:3158
+msgid "Limit result set to items assigned one or more given formats."
+msgstr "Den Ergebnissatz auf Elemente begrenzen, denen ein oder mehrere bestimmte Formate zugeordnet sind."
 
 #: wp-includes/class-wp-block-templates-registry.php:54
 msgid "Template names must contain a namespace prefix. Example: my-plugin//my-custom-template"
@@ -3034,7 +3005,7 @@ msgstr "https://developer.wordpress.org/advanced-administration/wordpress/cookie
 msgid "https://developer.wordpress.org/advanced-administration/wordpress/wp-config/"
 msgstr "https://developer.wordpress.org/advanced-administration/wordpress/wp-config/"
 
-#: wp-includes/rest-api.php:1060 wp-includes/rest-api.php:1091
+#: wp-includes/rest-api.php:1069 wp-includes/rest-api.php:1100
 msgctxt "REST API resource link name"
 msgid "JSON"
 msgstr "JSON"
@@ -3231,7 +3202,7 @@ msgctxt "block description"
 msgid "Reuse this design across your site."
 msgstr "Dieses Design auf deiner gesamten Website wiederverwenden."
 
-#: wp-includes/js/dist/editor.js:67144 wp-admin/about.php:180
+#: wp-includes/js/dist/editor.js:67144 wp-admin/about.php:200
 msgid "Accessibility"
 msgstr "Barrierefreiheit"
 
@@ -3455,17 +3426,17 @@ msgstr "Name der voreingestellten Schriftfamilie, übersetzbar."
 msgid "font-face definition in theme.json format."
 msgstr "Schriftart-Definition im theme.json-Format."
 
-#. translators: %d: A post id.
-#: wp-includes/rest-api/endpoints/class-wp-rest-font-faces-controller.php:309
-#: wp-includes/rest-api/endpoints/class-wp-rest-font-faces-controller.php:423
-msgid "The font face does not belong to the specified font family with id of \"%d\"."
-msgstr "Die Schriftart gehört nicht zur angegebenen Schriftfamilie mit der ID von „%d“."
-
 #. translators: %s: force=true
 #: wp-includes/rest-api/endpoints/class-wp-rest-font-faces-controller.php:435
 #: wp-includes/rest-api/endpoints/class-wp-rest-font-families-controller.php:222
 msgid "Font faces do not support trashing. Set \"%s\" to delete."
 msgstr "Schriftarten unterstützen die Papierkorbfunktion nicht. Setze „%s“, um sie zu löschen."
+
+#. translators: %s: Name of parameter being updated:
+#. font_family_settings[slug]".
+#: wp-includes/rest-api/endpoints/class-wp-rest-font-families-controller.php:122
+msgid "%s cannot be updated."
+msgstr "%s kann nicht aktualisiert werden."
 
 #. translators: %s: Parameter name: "font_family_settings".
 #: wp-includes/rest-api/endpoints/class-wp-rest-font-families-controller.php:105
@@ -3536,12 +3507,6 @@ msgstr "Die eindeutige Kennung für die Schriftensammlung."
 msgid "List of available font weights, separated by a space."
 msgstr "Eine Liste von verfügbaren Schriftstärken, durch ein Leerzeichen getrennt."
 
-#. translators: %s: Name of parameter being updated:
-#. font_family_settings[slug]".
-#: wp-includes/rest-api/endpoints/class-wp-rest-font-families-controller.php:122
-msgid "%s cannot be updated."
-msgstr "%s konnte nicht aktualisiert werden."
-
 #: wp-includes/rest-api/endpoints/class-wp-rest-templates-controller.php:1164
 msgid "Where the template originally comes from e.g. 'theme'"
 msgstr "Woher das Template ursprünglich stammt, z. B. „Theme“"
@@ -3551,13 +3516,19 @@ msgstr "Woher das Template ursprünglich stammt, z. B. „Theme“"
 msgid "CSS font-family value."
 msgstr "CSS-Wert font-family."
 
-#: wp-includes/rest-api/endpoints/class-wp-rest-font-families-controller.php:337
-msgid "Kebab-case unique identifier for the font family preset."
-msgstr "Eindeutige Kennung im Kebab-case für die Voreinstellung der Schriftfamilie."
-
 #: wp-includes/rest-api/endpoints/class-wp-rest-global-styles-revisions-controller.php:102
 msgid "Unique identifier for the global styles revision."
 msgstr "Eindeutige Kennung der Revision für globale Stile."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-font-families-controller.php:337
+msgid "Kebab-case unique identifier for the font family preset."
+msgstr "Eindeutige Kennung im Kebab-Case für die Voreinstellung der Schriftfamilie."
+
+#. translators: %d: A post id.
+#: wp-includes/rest-api/endpoints/class-wp-rest-font-faces-controller.php:309
+#: wp-includes/rest-api/endpoints/class-wp-rest-font-faces-controller.php:423
+msgid "The font face does not belong to the specified font family with id of \"%d\"."
+msgstr "Die Schriftart gehört nicht zur angegebenen Schriftfamilie mit der ID „%d“."
 
 #: wp-includes/post.php:600
 msgid "Font Families"
@@ -3574,10 +3545,6 @@ msgstr "Schriftarten"
 #: wp-includes/class-wp-script-modules.php:157
 msgid "Entries in dependencies array must be either strings or arrays with an id key."
 msgstr "Einträge im Abhängigkeitsarray müssen Zeichenfolgen oder Arrays mit einem ID-Schlüssel sein."
-
-#: wp-includes/class-wp-script-modules.php:144
-msgid "Missing required id key in entry among dependencies array."
-msgstr "Fehlender erforderlicher ID-Schlüssel in Eintrag unter Abhängigkeitsarray."
 
 #. translators: %s: Font collection URL.
 #: wp-includes/fonts/class-wp-font-collection.php:188
@@ -3779,6 +3746,10 @@ msgstr "Einige der Werte für %1$s %2$s sind ungültig"
 #: wp-admin/options-general.php:215
 msgid "The Site Icon is what you see in browser tabs, bookmark bars, and within the WordPress mobile apps. It should be square and at least <code>%1$s by %2$s</code> pixels."
 msgstr "Das Website-Icon ist in Browser-Tabs, Lesezeichenleisten und in den WordPress Mobile Apps zu sehen. Es sollte quadratisch und mindestens <code>%1$s × %2$s</code> Pixel groß sein."
+
+#: wp-includes/class-wp-script-modules.php:144
+msgid "Missing required id key in entry among dependencies array."
+msgstr "Erforderlicher ID-Schlüssel fehlt in einem Eintrag des Abhängigkeits-Arrays."
 
 #: wp-includes/block-patterns.php:211
 msgctxt "Block pattern category"
@@ -4936,10 +4907,6 @@ msgstr "Editor-Stil-Handle. VERALTET: Stattdessen `editor_style_handles` verwend
 msgid "Editor script handle. DEPRECATED: Use `editor_script_handles` instead."
 msgstr "Editor-Skript-Handle. VERALTET: Stattdessen `editor_script_handles` verwenden."
 
-#: wp-includes/rest-api/endpoints/class-wp-rest-block-types-controller.php:789
-msgid "Public facing and editor script handle. DEPRECATED: Use `script_handles` instead."
-msgstr "Öffentlich zugänglich und Editor-Skript-Handle. VERALTET: Stattdessen `script_handles` verwenden."
-
 #: wp-includes/rest-api/endpoints/class-wp-rest-block-types-controller.php:796
 msgid "Public facing script handle. DEPRECATED: Use `view_script_handles` instead."
 msgstr "Öffentlich zugängliches Skript-Handle. VERALTET: Stattdessen `view_script_handles` verwenden."
@@ -4952,22 +4919,26 @@ msgstr "Revisionen sind nicht aktiviert."
 msgid "The slug of the template to get the fallback for"
 msgstr "Die Titelform des Templates, für die das Fallback abgerufen werden soll"
 
+#: wp-includes/rest-api/endpoints/class-wp-rest-block-types-controller.php:789
+msgid "Public facing and editor script handle. DEPRECATED: Use `script_handles` instead."
+msgstr "Skript-Handles für Frontend und Editor. VERALTET: Stattdessen `script_handles` verwenden."
+
 #: wp-includes/rest-api/endpoints/class-wp-rest-block-types-controller.php:810
 msgid "Public facing and editor style handle. DEPRECATED: Use `style_handles` instead."
-msgstr "Stil-Handle für Frontend und Editor. VERALTET: Stattdessen `style_handles` verwenden."
+msgstr "Stil-Handles für Frontend und Editor. VERALTET: Stattdessen `style_handles` verwenden."
 
 #: wp-includes/ms-load.php:482
 msgid "If you are the owner of this network please check that your host&#8217;s database server is running properly and all tables are error free."
 msgstr "Wenn du der Betreiber dieses Netzwerks bist, überprüfe bitte, ob der Datenbankserver deines Hostings störungsfrei läuft und alle Tabellen fehlerfrei sind."
 
-#. translators: 1: $args, 2: The REST API route being registered.
-#: wp-includes/rest-api.php:142
-msgid "REST API %1$s should be an array of arrays. Non-array value detected for %2$s."
-msgstr "Das REST-API %1$s sollte ein Array von Arrays sein. Ein abweichender Wert wurde für %2$s festgestellt."
-
 #: wp-includes/rest-api/endpoints/class-wp-rest-block-patterns-controller.php:272
 msgid "An array of post types that the pattern is restricted to be used with."
 msgstr "Ein Array von Inhaltstypen, für die die Vorlage nur eingeschränkt verwendet werden kann."
+
+#. translators: 1: $args, 2: The REST API route being registered.
+#: wp-includes/rest-api.php:142
+msgid "REST API %1$s should be an array of arrays. Non-array value detected for %2$s."
+msgstr "Die REST-API %1$s sollte ein Array von Arrays sein. Für %2$s wurde ein Wert erkannt, der kein Array ist."
 
 #. translators: Character to identify required form fields.
 #: wp-includes/general-template.php:5384
@@ -5408,10 +5379,6 @@ msgstr "Vorgänger-Blöcke."
 msgid "The pattern category slugs."
 msgstr "Kategorie-Titelformen der Vorlage."
 
-#: wp-includes/rest-api/endpoints/class-wp-rest-block-patterns-controller.php:242
-msgid "The pattern viewport width for inserter preview."
-msgstr "Der Vorlagen-Viewport für die Inserter-Vorschau."
-
 #: wp-includes/rest-api/endpoints/class-wp-rest-block-patterns-controller.php:236
 msgid "The pattern detailed description."
 msgstr "Die ausführliche Beschreibung der Vorlage."
@@ -5443,6 +5410,10 @@ msgstr "Die Kategoriebeschriftung in menschenlesbarem Format."
 #: wp-includes/rest-api/endpoints/class-wp-rest-block-patterns-controller.php:266
 msgid "Block types that the pattern is intended to be used with."
 msgstr "Die Blocktypen, mit denen die Vorlage verwendet werden soll."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-block-patterns-controller.php:242
+msgid "The pattern viewport width for inserter preview."
+msgstr "Die Viewport-Breite der Vorlage für die Inserter-Vorschau."
 
 #: wp-includes/media.php:5062 wp-admin/edit.php:181 wp-admin/post.php:322
 #: wp-admin/upload.php:337
@@ -5862,10 +5833,6 @@ msgstr "Die Inhalte des Elements %s der URL."
 msgid "URL not found. Response returned a non-200 status code for this URL."
 msgstr "Die URL wurde nicht gefunden. Die Antwort gab einen anderen Statuscode als 200 zurück."
 
-#: wp-includes/rest-api/endpoints/class-wp-rest-templates-controller.php:1018
-msgid "Limit to the specified template part area."
-msgstr "Begrenzung des ausgewählten Bereichs des Template-Teils."
-
 #: wp-includes/rest-api/endpoints/class-wp-rest-templates-controller.php:1022
 msgid "Post type to get the templates for."
 msgstr "Inhaltstyp für die Templates."
@@ -5912,7 +5879,11 @@ msgstr "Der Inhalt für das Template, wie er in der Datenbank vorliegt."
 
 #: wp-includes/rest-api/endpoints/class-wp-rest-templates-controller.php:1195
 msgid "Where the template part is intended for use (header, footer, etc.)"
-msgstr "Wo das Template-Teil verwendet werden soll (Header, Footer etc.)."
+msgstr "Wo das Template-Teil verwendet werden soll (Header, Footer etc.)"
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-templates-controller.php:1018
+msgid "Limit to the specified template part area."
+msgstr "Auf den angegebenen Bereich des Template-Teils begrenzen."
 
 #: wp-includes/rest-api/endpoints/class-wp-rest-menu-locations-controller.php:291
 msgid "The ID of the assigned menu."
@@ -5938,11 +5909,6 @@ msgstr "Die Sichtbarkeits-Einstellungen für den Inhaltstyp."
 #: wp-includes/rest-api/endpoints/class-wp-rest-menus-controller.php:109
 msgid "Sorry, you are not allowed to view menus."
 msgstr "Du bist leider nicht berechtigt, Menüs anzuzeigen."
-
-#. translators: %s: force=true
-#: wp-includes/rest-api/endpoints/class-wp-rest-menus-controller.php:382
-msgid "Menus do not support trashing. Set '%s' to delete."
-msgstr "Die Papierkorbfunktion wird von Menüs nicht unterstützt. Setze ‚%s‘, um sie zu löschen."
 
 #: wp-includes/rest-api/endpoints/class-wp-rest-post-types-controller.php:414
 msgid "Whether to generate a default UI for managing this post type."
@@ -5978,6 +5944,11 @@ msgstr "Die Menüposition ist ungültig."
 msgid "Sorry, you are not allowed to view menu locations."
 msgstr "Du bist leider nicht berechtigt, Menüpositionen anzuzeigen."
 
+#. translators: %s: force=true
+#: wp-includes/rest-api/endpoints/class-wp-rest-menus-controller.php:382
+msgid "Menus do not support trashing. Set '%s' to delete."
+msgstr "Menüs unterstützen die Papierkorbfunktion nicht. Setze ‚%s‘, um sie zu löschen."
+
 #: wp-includes/rest-api/endpoints/class-wp-rest-menu-items-controller.php:867
 msgid "The URL to which this menu item points."
 msgstr "Die URL, auf die dieser Menüeintrag zeigt."
@@ -5994,10 +5965,6 @@ msgstr "Ob der Menüeintrag ein Objekt repräsentiert, das nicht mehr existiert.
 msgid "The type of object originally represented, such as \"category\", \"post\", or \"attachment\"."
 msgstr "Der ursprünglich repräsentierte Objekttyp, z. B. „category“, „post“ oder „attachment“."
 
-#: wp-includes/rest-api/endpoints/class-wp-rest-menu-items-controller.php:769
-msgid "The singular label used to describe this type of menu item."
-msgstr "Die einzigartige Beschriftung, um diese Art Menüeintrag zu beschreiben."
-
 #: wp-includes/rest-api/endpoints/class-wp-rest-menu-items-controller.php:849
 msgid "The database ID of the original object this menu item represents, for example the ID for posts or the term_id for categories."
 msgstr "Die Datenbank-ID des ursprünglichen Objekts, das dieser Menüeintrag repräsentiert, zum Beispiel die ID für Beiträge oder die term_id für Kategorien."
@@ -6005,6 +5972,10 @@ msgstr "Die Datenbank-ID des ursprünglichen Objekts, das dieser Menüeintrag re
 #: wp-includes/rest-api/endpoints/class-wp-rest-menu-items-controller.php:857
 msgid "The target attribute of the link element for this menu item."
 msgstr "Das Zielattribut des Linkelements für diesen Menüeintrag."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-menu-items-controller.php:769
+msgid "The singular label used to describe this type of menu item."
+msgstr "Die Beschriftung im Singular, um diesen Typ Menüeintrag zu beschreiben."
 
 #: wp-includes/rest-api/endpoints/class-wp-rest-menu-items-controller.php:792
 msgid "The ID for the parent of the object."
@@ -6022,10 +5993,6 @@ msgstr "Die Beschreibung dieses Menüeintrags."
 msgid "The family of objects originally represented, such as \"post_type\" or \"taxonomy\"."
 msgstr "Die ursprünglich repräsentierte Objektfamilie, z. B. „post_type“ oder „taxonomy“."
 
-#: wp-includes/rest-api/endpoints/class-wp-rest-menu-items-controller.php:832
-msgid "The DB ID of the nav_menu_item that is this item's menu parent, if any, otherwise 0."
-msgstr "Die DB-ID vom nav_menu_item des übergeordneten Objekts dieses Menüeintrags, falls es eines gibt, sonst 0."
-
 #: wp-includes/rest-api/endpoints/class-wp-rest-menu-items-controller.php:800
 msgid "Text for the title attribute of the link element for this menu item."
 msgstr "Text für das Titelattribut des Linkelements dieses Menüeintrags."
@@ -6033,6 +6000,10 @@ msgstr "Text für das Titelattribut des Linkelements dieses Menüeintrags."
 #: wp-includes/rest-api/endpoints/class-wp-rest-menu-items-controller.php:809
 msgid "Class names for the link element of this menu item."
 msgstr "Klassennamen für das Linkelement dieses Menüeintrags."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-menu-items-controller.php:832
+msgid "The DB ID of the nav_menu_item that is this item's menu parent, if any, otherwise 0."
+msgstr "Die DB-ID des nav_menu_item, das gegebenenfalls der übergeordnete Menüeintrag dieses Elements ist; andernfalls 0."
 
 #: wp-includes/rest-api/endpoints/class-wp-rest-menu-items-controller.php:707
 msgid "Get linked object."
@@ -6093,10 +6064,6 @@ msgstr "Die ID der globalen Stile-Konfiguration."
 msgid "Global settings."
 msgstr "Globale Einstellungen."
 
-#: wp-includes/rest-api/endpoints/class-wp-rest-block-types-controller.php:581
-msgid "Public facing and editor script handles."
-msgstr "Öffentlich zugänglich und Editor-Skript-Handles."
-
 #: wp-includes/rest-api/endpoints/class-wp-rest-global-styles-controller.php:141
 msgid "No global styles config exists with that ID."
 msgstr "Es existiert keine globale Stil-Konfiguration mit dieser ID."
@@ -6104,10 +6071,6 @@ msgstr "Es existiert keine globale Stil-Konfiguration mit dieser ID."
 #: wp-includes/rest-api/endpoints/class-wp-rest-global-styles-controller.php:488
 msgid "Title of the global styles variation."
 msgstr "Der Titel der globalen Stilvariante."
-
-#: wp-includes/rest-api/endpoints/class-wp-rest-block-types-controller.php:621
-msgid "Public facing and editor style handles."
-msgstr "Stil-Handle für Frontend und Editor."
 
 #: wp-includes/rest-api/endpoints/class-wp-rest-global-styles-controller.php:494
 msgid "Title for the global styles variation, as it exists in the database."
@@ -6117,6 +6080,14 @@ msgstr "Der Titel der globalen Stilvariante, wie er in der Datenbank vorliegt."
 #: wp-includes/rest-api/endpoints/class-wp-rest-global-styles-controller.php:78
 msgid "The theme identifier"
 msgstr "Die Theme-Kennung"
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-block-types-controller.php:621
+msgid "Public facing and editor style handles."
+msgstr "Stil-Handles für Frontend und Editor."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-block-types-controller.php:581
+msgid "Public facing and editor script handles."
+msgstr "Skript-Handles für Frontend und Editor."
 
 #: wp-includes/post.php:546
 msgid "New Navigation Menu"
@@ -6669,10 +6640,6 @@ msgctxt "block keyword"
 msgid "link"
 msgstr "Link"
 
-#: wp-includes/rest-api/endpoints/class-wp-rest-posts-controller.php:2479
-msgid "An alphanumeric identifier for the post unique to its type."
-msgstr "Alphanumerische Kennung für den Beitrag, die für seinen Typ eindeutig ist."
-
 #: wp-includes/rest-api/endpoints/class-wp-rest-posts-controller.php:2472
 msgid "The date the post was last modified, as GMT."
 msgstr "Das Datum in UTC, an dem der Beitrag zuletzt geändert wurde."
@@ -6688,6 +6655,10 @@ msgstr "Das Datum der letzten Änderung des Beitrags, in der Zeitzone der Websit
 #: wp-includes/rest-api/endpoints/class-wp-rest-posts-controller.php:2438
 msgid "GUID for the post, as it exists in the database."
 msgstr "GUID für den Beitrag, wie sie in der Datenbank vorliegt."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-posts-controller.php:2479
+msgid "An alphanumeric identifier for the post unique to its type."
+msgstr "Eine alphanumerische Kennung für den Beitrag, die für seinen Typ eindeutig ist."
 
 #: wp-includes/rest-api/endpoints/class-wp-rest-comments-controller.php:1577
 msgid "The date the comment was published, in the site's timezone."
@@ -7461,10 +7432,6 @@ msgstr "HTML-Darstellung des Widgets."
 msgid "Inactive widgets"
 msgstr "Inaktive Widgets"
 
-#: wp-includes/rest-api/endpoints/class-wp-rest-widgets-controller.php:842
-msgid "HTML representation of the widget admin form."
-msgstr "HTML-Darstellung des Widget-Admin-Formulars."
-
 #: wp-includes/rest-api/endpoints/class-wp-rest-widget-types-controller.php:403
 msgid "Unique slug identifying the widget type."
 msgstr "Eindeutige Titelform, die den Widget-Typ identifiziert."
@@ -7589,10 +7556,6 @@ msgstr "Menschenlesbarer Name, der den Widget-Typ bezeichnet."
 msgid "Current instance settings of the widget."
 msgstr "Aktuelle Instanz-Einstellungen des Widgets."
 
-#: wp-includes/rest-api/endpoints/class-wp-rest-widget-types-controller.php:86
-msgid "Serialized widget form data to encode into instance settings."
-msgstr "Serialisierte Widget-Formulardaten zur Kodierung in Instanzen-Einstellungen."
-
 #: wp-includes/rest-api/endpoints/class-wp-rest-widget-types-controller.php:422
 msgid "Whether the widget supports multiple instances"
 msgstr "Ob das Widget mehrere Instanzen unterstützt"
@@ -7670,13 +7633,21 @@ msgstr "Die angegebene Instanz ist ungültig. Sie muss entweder unverarbeitet se
 msgid "The provided instance is malformed."
 msgstr "Die übergebene Instanz ist ungültig strukturiert."
 
-#: wp-includes/rest-api/endpoints/class-wp-rest-sidebars-controller.php:470
-msgid "HTML content to prepend to each widget's HTML output when assigned to this sidebar. Default is an opening list item element."
-msgstr "HTML-Inhalt, der den HTML-Ausgaben jedes Widgets vorangestellt wird, wenn er dieser Seitenleiste zugewiesen wird. Standard ist ein öffnendes Listenelement."
-
 #: wp-includes/rest-api/endpoints/class-wp-rest-sidebars-controller.php:477
 msgid "HTML content to append to each widget's HTML output when assigned to this sidebar. Default is a closing list item element."
 msgstr "HTML-Inhalt, der an die HTML-Ausgabe jedes Widgets angehängt wird, wenn es dieser Seitenleiste zugewiesen wird. Standard ist ein schließendes Listenelement."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-widget-types-controller.php:86
+msgid "Serialized widget form data to encode into instance settings."
+msgstr "Serialisierte Widget-Formulardaten zur Kodierung in Instanz-Einstellungen."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-widgets-controller.php:842
+msgid "HTML representation of the widget admin form."
+msgstr "Die HTML-Darstellung des Widget-Adminformulars."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-sidebars-controller.php:470
+msgid "HTML content to prepend to each widget's HTML output when assigned to this sidebar. Default is an opening list item element."
+msgstr "HTML-Inhalt, der den HTML-Ausgaben jedes Widgets vorangestellt wird, wenn es dieser Seitenleiste zugewiesen wird. Standard ist ein öffnendes Listenelement."
 
 #: wp-includes/rest-api/endpoints/class-wp-rest-pattern-directory-controller.php:349
 #: wp-includes/rest-api/endpoints/class-wp-rest-posts-controller.php:3070
@@ -7701,13 +7672,13 @@ msgstr "Die ID für den Autor der Revision."
 msgid "Whether items must be assigned all or any of the specified terms."
 msgstr "Ob Elemente allen oder beliebigen festgelegten Begriffen zugewiesen sein müssen."
 
-#: wp-includes/rest-api/endpoints/class-wp-rest-posts-controller.php:2496
-msgid "Type of post."
-msgstr "Beitragsart."
-
 #: wp-includes/rest-api/endpoints/class-wp-rest-posts-controller.php:2600
 msgid "The title for the post."
 msgstr "Der Titel für den Beitrag."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-posts-controller.php:2496
+msgid "Type of post."
+msgstr "Der Inhaltstyp."
 
 #: wp-includes/rest-api/endpoints/class-wp-rest-block-patterns-controller.php:224
 #: wp-includes/rest-api/endpoints/class-wp-rest-pattern-directory-controller.php:249
@@ -7779,6 +7750,10 @@ msgstr "URL zum Kommentar."
 msgid "Unique identifier for the comment."
 msgstr "Eindeutige Kennung für den Kommentar."
 
+#: wp-includes/rest-api/endpoints/class-wp-rest-block-types-controller.php:699
+msgid "The initial values for attributes."
+msgstr "Die Anfangswerte für Attribute."
+
 #: wp-includes/rest-api/endpoints/class-wp-rest-autosaves-controller.php:124
 #: wp-includes/rest-api/endpoints/class-wp-rest-template-autosaves-controller.php:148
 msgid "The ID for the autosave."
@@ -7799,10 +7774,6 @@ msgstr "Eine detaillierte Variantenbeschreibung."
 #: wp-includes/rest-api/endpoints/class-wp-rest-block-types-controller.php:693
 msgid "Indicates whether the current variation is the default one."
 msgstr "Gibt an, ob die aktuelle Variante dem Standard entspricht."
-
-#: wp-includes/rest-api/endpoints/class-wp-rest-block-types-controller.php:699
-msgid "The initial values for attributes."
-msgstr "Die ursprünglichen Werte für Attribute."
 
 #: wp-includes/rest-api/endpoints/class-wp-rest-block-types-controller.php:705
 msgid "The list of scopes where the variation is applicable. When not provided, it assumes all available scopes."
@@ -7889,7 +7860,7 @@ msgstr "Beitragslink"
 msgid "Unique identifier for the attachment."
 msgstr "Eindeutige Kennung für den Anhang."
 
-#: wp-includes/rest-api.php:1149
+#: wp-includes/rest-api.php:1158
 msgid "Cookie check failed"
 msgstr "Die Cookie-Prüfung ist fehlgeschlagen"
 
@@ -8273,12 +8244,12 @@ msgid "Learn more about troubleshooting WordPress."
 msgstr "Mehr über die Problembehandlung in WordPress erfahren (engl.)."
 
 #. translators: 1: Parameter, 2: Valid values.
-#: wp-includes/rest-api.php:2111
+#: wp-includes/rest-api.php:2120
 msgid "%1$s is not %2$s."
 msgstr "%1$s ist nicht %2$s."
 
 #. translators: 1: Parameter, 2: List of valid values.
-#: wp-includes/rest-api.php:2115
+#: wp-includes/rest-api.php:2124
 msgid "%1$s is not one of %2$l."
 msgstr "%1$s ist nicht eins von %2$l."
 
@@ -8581,56 +8552,56 @@ msgstr "Anwendungspasswort konnte nicht gespeichert werden."
 #: wp-includes/media-template.php:552 wp-includes/media-template.php:804
 #: wp-admin/async-upload.php:76 wp-admin/includes/media.php:3384
 msgid "Copy URL to clipboard"
-msgstr "URL in Zwischenablage kopieren"
-
-#. translators: 1: Parameter, 2: Schema title, 3: Reason.
-#: wp-includes/rest-api.php:1854
-msgid "%1$s is not a valid %2$s. Reason: %3$s"
-msgstr "%1$s ist kein gültiger %2$s. Begründung: %3$s"
+msgstr "URL in die Zwischenablage kopieren"
 
 #. translators: 1: Parameter, 2: Multiplier.
-#: wp-includes/rest-api.php:2566
+#: wp-includes/rest-api.php:2575
 msgid "%1$s must be a multiple of %2$s."
 msgstr "%1$s muss ein Vielfaches von %2$s sein."
 
 #. translators: 1: Parameter, 2: Schema titles.
-#: wp-includes/rest-api.php:1929
+#: wp-includes/rest-api.php:1938
 msgid "%1$s is not a valid %2$l."
 msgstr "%1$s ist nicht gültig als %2$l."
 
 #. translators: %s: Parameter.
-#: wp-includes/rest-api.php:2037
+#: wp-includes/rest-api.php:2046
 msgid "%s matches more than one of the expected formats."
 msgstr "%s stimmt mit mehr als einem der erwarteten Formate überein."
 
 #. translators: %s: Parameter.
-#: wp-includes/rest-api.php:1933
+#: wp-includes/rest-api.php:1942
 msgid "%s does not match any of the expected formats."
 msgstr "%s entspricht keinem der erwarteten Formate."
 
 #. translators: 1: Parameter, 2: Number.
-#: wp-includes/rest-api.php:2457
+#: wp-includes/rest-api.php:2466
 msgid "%1$s must contain at most %2$s property."
 msgid_plural "%1$s must contain at most %2$s properties."
 msgstr[0] "%1$s darf maximal %2$s Eigenschaft beinhalten."
 msgstr[1] "%1$s darf maximal %2$s Eigenschaften beinhalten."
 
 #. translators: 1: Parameter, 2: Number.
-#: wp-includes/rest-api.php:2441
+#: wp-includes/rest-api.php:2450
 msgid "%1$s must contain at least %2$s property."
 msgid_plural "%1$s must contain at least %2$s properties."
 msgstr[0] "%1$s muss mindestens %2$s Eigenschaft beinhalten."
 msgstr[1] "%1$s muss mindestens %2$s Eigenschaften beinhalten."
 
 #. translators: 1: Parameter, 2: Schema titles.
-#: wp-includes/rest-api.php:2029
+#: wp-includes/rest-api.php:2038
 msgid "%1$s matches %2$l, but should match only one."
 msgstr "%1$s entspricht %2$l, sollte aber nur mit einem einzigen übereinstimmen."
 
 #. translators: 1: Parameter, 2: Reason.
-#: wp-includes/rest-api.php:1862
+#: wp-includes/rest-api.php:1871
 msgid "%1$s does not match the expected format. Reason: %2$s"
 msgstr "%1$s stimmt nicht mit dem erwarteten Format überein. Grund: %2$s"
+
+#. translators: 1: Parameter, 2: Schema title, 3: Reason.
+#: wp-includes/rest-api.php:1863
+msgid "%1$s is not a valid %2$s. Reason: %3$s"
+msgstr "%1$s ist kein gültiger %2$s. Grund: %3$s"
 
 #: wp-includes/rest-api/endpoints/class-wp-rest-application-passwords-controller.php:846
 msgid "The IP address the application password was last used by."
@@ -8672,10 +8643,6 @@ msgstr "Der Status des Tests."
 msgid "Sorry, you are not allowed to manage application passwords for this user."
 msgstr "Du bist leider nicht berechtigt, Anwendungspasswörter für diesen Benutzer zu verwalten."
 
-#: wp-includes/rest-api/endpoints/class-wp-rest-site-health-controller.php:399
-msgid "HTML containing an action to direct the user to where they can resolve the issue."
-msgstr "HTML das eine Aktion enthält, die Benutzer dorthin leitet, wo sie das Problem lösen können."
-
 #: wp-includes/rest-api/endpoints/class-wp-rest-site-health-controller.php:394
 msgid "A more descriptive explanation of what the test looks for, and why it is important for the user."
 msgstr "Eine ausführlichere Erklärung darüber, wonach der Test sucht und warum er für den Benutzer wichtig ist."
@@ -8707,11 +8674,15 @@ msgstr "Die Kategorie, der dieser Test zugeordnet ist."
 msgid "Application passwords are not available for your account. Please contact the site administrator for assistance."
 msgstr "Anwendungspasswörter sind für dein Konto nicht verfügbar. Bitte wende dich für Unterstützung an den Website-Administrator."
 
+#: wp-includes/rest-api/endpoints/class-wp-rest-site-health-controller.php:399
+msgid "HTML containing an action to direct the user to where they can resolve the issue."
+msgstr "HTML, das eine Aktion enthält, die Benutzer dorthin leitet, wo sie das Problem lösen können."
+
 #: wp-includes/theme.php:2726
 msgid "You need to pass an array of post formats."
 msgstr "Du musst ein Array von Beitrags-Formaten übergeben."
 
-#: wp-includes/rest-api/class-wp-rest-server.php:1103
+#: wp-includes/rest-api/class-wp-rest-server.php:1109
 msgid "The handler for the route is invalid."
 msgstr "Der Handler für die Route ist ungültig."
 
@@ -8719,11 +8690,11 @@ msgstr "Der Handler für die Route ist ungültig."
 msgid "Version of block API."
 msgstr "Block-API-Version."
 
-#: wp-includes/rest-api/class-wp-rest-server.php:1772
+#: wp-includes/rest-api/class-wp-rest-server.php:1779
 msgid "The requested route does not support batch requests."
 msgstr "Die angeforderte Route unterstützt keine Batch-Anforderungen."
 
-#: wp-includes/rest-api/class-wp-rest-server.php:1716
+#: wp-includes/rest-api/class-wp-rest-server.php:1722
 msgid "Could not parse the path."
 msgstr "Der Pfad konnte nicht geparst werden."
 
@@ -8747,46 +8718,25 @@ msgid "The %s constant is no longer supported."
 msgstr "Die Konstante %s wird nicht mehr unterstützt."
 
 #. translators: %s: Theme name.
-#: wp-includes/customize/class-wp-customize-theme-control.php:161
-#: wp-admin/includes/theme.php:949 wp-admin/includes/update.php:807
-#: wp-admin/themes.php:505 wp-admin/themes.php:902 wp-admin/themes.php:1213
-msgid "There is a new version of %s available, but it does not work with your version of PHP."
-msgstr "Es gibt eine neue Version von %s, aber sie funktioniert nicht mit deiner PHP-Version."
-
-#. translators: %s: Theme name.
 #: wp-includes/customize/class-wp-customize-theme-control.php:116
 #: wp-admin/includes/theme.php:904 wp-admin/includes/update.php:766
 #: wp-admin/themes.php:464 wp-admin/themes.php:857 wp-admin/themes.php:1168
 msgid "There is a new version of %s available, but it does not work with your versions of WordPress and PHP."
-msgstr "Es gibt eine neue Version von %s, aber sie funktioniert nicht mit deiner PHP- und WordPress-Version."
+msgstr "Es ist eine neue Version von %s verfügbar, die jedoch mit deinen Versionen von WordPress und PHP nicht kompatibel ist."
 
 #. translators: %s: Theme name.
 #: wp-includes/customize/class-wp-customize-theme-control.php:146
 #: wp-admin/includes/theme.php:934 wp-admin/includes/update.php:794
 #: wp-admin/themes.php:492 wp-admin/themes.php:887 wp-admin/themes.php:1198
 msgid "There is a new version of %s available, but it does not work with your version of WordPress."
-msgstr "Es gibt eine neue Version von %s, aber sie funktioniert nicht mit deiner WordPress-Version."
+msgstr "Es ist eine neue Version von %s verfügbar, die jedoch mit deiner WordPress-Version nicht kompatibel ist."
 
-#: wp-includes/customize/class-wp-customize-theme-control.php:183
-#: wp-admin/includes/theme.php:983 wp-admin/theme-install.php:340
-#: wp-admin/theme-install.php:545 wp-admin/themes.php:530
-#: wp-admin/themes.php:923 wp-admin/themes.php:1103
-msgid "This theme does not work with your versions of WordPress and PHP."
-msgstr "Dieses Theme funktioniert nicht mit deinen Versionen von WordPress und PHP."
-
-#: wp-includes/customize/class-wp-customize-theme-control.php:209
-#: wp-admin/includes/theme.php:1009 wp-admin/theme-install.php:366
-#: wp-admin/theme-install.php:571 wp-admin/themes.php:554
-#: wp-admin/themes.php:949 wp-admin/themes.php:1129
-msgid "This theme does not work with your version of WordPress."
-msgstr "Dieses Theme funktioniert nicht mit deiner WordPress-Version."
-
-#: wp-includes/customize/class-wp-customize-theme-control.php:220
-#: wp-admin/includes/theme.php:1020 wp-admin/theme-install.php:377
-#: wp-admin/theme-install.php:582 wp-admin/themes.php:563
-#: wp-admin/themes.php:960 wp-admin/themes.php:1140
-msgid "This theme does not work with your version of PHP."
-msgstr "Dieses Theme funktioniert nicht mit deiner PHP-Version."
+#. translators: %s: Theme name.
+#: wp-includes/customize/class-wp-customize-theme-control.php:161
+#: wp-admin/includes/theme.php:949 wp-admin/includes/update.php:807
+#: wp-admin/themes.php:505 wp-admin/themes.php:902 wp-admin/themes.php:1213
+msgid "There is a new version of %s available, but it does not work with your version of PHP."
+msgstr "Es ist eine neue Version von %s verfügbar, die jedoch mit deiner PHP-Version nicht kompatibel ist."
 
 #. translators: %s: URL to WordPress Updates screen.
 #: wp-includes/customize/class-wp-customize-theme-control.php:130
@@ -8821,7 +8771,7 @@ msgstr "<a href=\"%s\">Bitte aktualisiere WordPress</a>."
 #: wp-admin/includes/class-wp-plugins-list-table.php:1474
 #: wp-admin/includes/plugin.php:1153 wp-admin/includes/theme.php:924
 #: wp-admin/includes/theme.php:955 wp-admin/includes/theme.php:1001
-#: wp-admin/includes/theme.php:1024 wp-admin/includes/update-core.php:1202
+#: wp-admin/includes/theme.php:1024 wp-admin/includes/update-core.php:1207
 #: wp-admin/includes/update.php:786 wp-admin/includes/update.php:813
 #: wp-admin/install.php:248 wp-admin/theme-install.php:358
 #: wp-admin/theme-install.php:381 wp-admin/theme-install.php:563
@@ -8848,7 +8798,28 @@ msgstr "<a href=\"%s\">Mehr über die PHP-Aktualisierung erfahren (engl.)</a>."
 #: wp-admin/themes.php:1107 wp-admin/themes.php:1174
 #: wp-admin/update-core.php:703
 msgid "<a href=\"%1$s\">Please update WordPress</a>, and then <a href=\"%2$s\">learn more about updating PHP</a>."
-msgstr "<a href=\"%1$s\">Bitte aktualisiere WordPress</a> und informiere dich bitte danach über <a href=\"%2$s\">die Aktualisierung von PHP (engl.)</a>."
+msgstr "<a href=\"%1$s\">Bitte aktualisiere WordPress</a> und informiere dich anschließend über <a href=\"%2$s\">die Aktualisierung von PHP (engl.)</a>."
+
+#: wp-includes/customize/class-wp-customize-theme-control.php:220
+#: wp-admin/includes/theme.php:1020 wp-admin/theme-install.php:377
+#: wp-admin/theme-install.php:582 wp-admin/themes.php:563
+#: wp-admin/themes.php:960 wp-admin/themes.php:1140
+msgid "This theme does not work with your version of PHP."
+msgstr "Dieses Theme ist mit deiner PHP-Version nicht kompatibel."
+
+#: wp-includes/customize/class-wp-customize-theme-control.php:209
+#: wp-admin/includes/theme.php:1009 wp-admin/theme-install.php:366
+#: wp-admin/theme-install.php:571 wp-admin/themes.php:554
+#: wp-admin/themes.php:949 wp-admin/themes.php:1129
+msgid "This theme does not work with your version of WordPress."
+msgstr "Dieses Theme ist mit deiner WordPress-Version nicht kompatibel."
+
+#: wp-includes/customize/class-wp-customize-theme-control.php:183
+#: wp-admin/includes/theme.php:983 wp-admin/theme-install.php:340
+#: wp-admin/theme-install.php:545 wp-admin/themes.php:530
+#: wp-admin/themes.php:923 wp-admin/themes.php:1103
+msgid "This theme does not work with your versions of WordPress and PHP."
+msgstr "Dieses Theme ist mit deinen Versionen von WordPress und PHP nicht kompatibel."
 
 #. translators: %s: register_rest_field
 #: wp-includes/rest-api/endpoints/class-wp-rest-posts-controller.php:2831
@@ -9004,11 +8975,6 @@ msgstr "TB"
 msgid "Block pattern category name must be a string."
 msgstr "Der Kategoriename der Block-Vorlage muss eine Zeichenfolge sein."
 
-#. translators: 1: WP_REST_Response, 2: WP_Error
-#: wp-includes/functions.php:4546
-msgid "Return a %1$s or %2$s object from your callback when using the REST API."
-msgstr "Gib ein %1$s- oder %2$s-Objekt von deinem Callback zurück, wenn du das REST-API benutzt."
-
 #. translators: %s: Block pattern name.
 #: wp-includes/class-wp-block-pattern-categories-registry.php:92
 msgid "Block pattern category \"%s\" not found."
@@ -9020,6 +8986,11 @@ msgstr "Die Block-Vorlagen-Kategorie „%s“ wurde nicht gefunden."
 msgctxt "unit symbol"
 msgid "KB"
 msgstr "KB"
+
+#. translators: 1: WP_REST_Response, 2: WP_Error
+#: wp-includes/functions.php:4546
+msgid "Return a %1$s or %2$s object from your callback when using the REST API."
+msgstr "Gib ein %1$s- oder %2$s-Objekt von deinem Callback zurück, wenn du die REST-API verwendest."
 
 #: wp-includes/class-wp-block-patterns-registry.php:93
 msgid "Pattern name must be a string."
@@ -9118,12 +9089,12 @@ msgid "File URL:"
 msgstr "Datei-URL:"
 
 #. translators: %s: The name of a JSON field expecting a valid UUID.
-#: wp-includes/rest-api.php:2303
+#: wp-includes/rest-api.php:2312
 msgid "%s is not a valid UUID."
 msgstr "%s ist keine gültige UUID."
 
 #. translators: 1: Property of an object, 2: Parameter.
-#: wp-includes/rest-api.php:2384 wp-includes/rest-api.php:2394
+#: wp-includes/rest-api.php:2393 wp-includes/rest-api.php:2403
 msgid "%1$s is a required property of %2$s."
 msgstr "%1$s ist eine erforderliche Eigenschaft für %2$s."
 
@@ -9140,7 +9111,7 @@ msgstr "%1$s ist eine erforderliche Eigenschaft für %2$s."
 #. translators: 1: Theme name. 2: Theme slug.
 #: wp-includes/block-template-utils.php:740
 #: wp-includes/block-template-utils.php:819
-#: wp-includes/block-template-utils.php:992 wp-includes/rest-api.php:773
+#: wp-includes/block-template-utils.php:992 wp-includes/rest-api.php:782
 #: wp-includes/js/dist/block-library.js:38187
 #: wp-admin/includes/class-wp-debug-data.php:1177
 #: wp-admin/includes/class-wp-debug-data.php:1196
@@ -9150,7 +9121,7 @@ msgid "%1$s (%2$s)"
 msgstr "%1$s (%2$s)"
 
 #. translators: 1: Parameter, 2: Pattern.
-#: wp-includes/rest-api.php:2727
+#: wp-includes/rest-api.php:2736
 msgid "%1$s does not match pattern %2$s."
 msgstr "%1$s stimmt nicht mit der Vorlage %2$s überein."
 
@@ -9160,56 +9131,56 @@ msgid "This notice was triggered by the %s handle."
 msgstr "Dieser Hinweis wurde durch das Handle %s verursacht."
 
 #. translators: %s: Parameter.
-#: wp-includes/rest-api.php:2204 wp-includes/rest-api.php:2806
+#: wp-includes/rest-api.php:2213 wp-includes/rest-api.php:2815
 msgid "The \"type\" schema keyword for %s is required."
 msgstr "Das Schema-Keyword „type“ ist für %s erforderlich."
 
-#: wp-includes/rest-api.php:1785
+#: wp-includes/rest-api.php:1794
 msgid "Cannot stabilize objects. Convert the object to an array first."
 msgstr "Objekte können nicht stabilisiert werden. Konvertiere das Objekt zuerst in ein Array."
 
 #. translators: 1: Parameter, 2: The list of allowed types.
-#: wp-includes/rest-api.php:2226 wp-includes/rest-api.php:2823
+#: wp-includes/rest-api.php:2235 wp-includes/rest-api.php:2832
 msgid "The \"type\" schema keyword for %1$s can only be one of the built-in types: %2$l."
 msgstr "Das Schema-Keyword „type“ für %1$s kann nur einer der integrierten Typen sein: %2$l."
 
 #. translators: %s: Parameter.
-#: wp-includes/rest-api.php:2536 wp-includes/rest-api.php:2839
+#: wp-includes/rest-api.php:2545 wp-includes/rest-api.php:2848
 msgid "%s has duplicate items."
 msgstr "%s hat doppelte Elemente."
 
 #. translators: 1: Parameter, 2: List of allowed types.
-#: wp-includes/rest-api.php:1723
+#: wp-includes/rest-api.php:1732
 msgid "The \"type\" schema keyword for %1$s can only contain the built-in types: %2$l."
 msgstr "Das Schema-Keyword „type“ für %1$s kann nur die integrierten Typen enthalten: %2$l."
 
-#: wp-includes/rest-api.php:2279
+#: wp-includes/rest-api.php:2288
 msgid "Invalid hex color."
 msgstr "Die Hexadezimal-Farbe ist ungültig."
 
 #. translators: 1: Parameter, 2: Number of characters.
-#: wp-includes/rest-api.php:2712
+#: wp-includes/rest-api.php:2721
 msgid "%1$s must be at most %2$s character long."
 msgid_plural "%1$s must be at most %2$s characters long."
 msgstr[0] "%1$s darf maximal %2$s Zeichen lang sein."
 msgstr[1] "%1$s darf maximal %2$s Zeichen lang sein."
 
 #. translators: 1: Parameter, 2: Number of characters.
-#: wp-includes/rest-api.php:2696
+#: wp-includes/rest-api.php:2705
 msgid "%1$s must be at least %2$s character long."
 msgid_plural "%1$s must be at least %2$s characters long."
 msgstr[0] "%1$s muss mindestens %2$s Zeichen lang sein."
 msgstr[1] "%1$s muss mindestens %2$s Zeichen lang sein."
 
 #. translators: 1: Parameter, 2: Number.
-#: wp-includes/rest-api.php:2523
+#: wp-includes/rest-api.php:2532
 msgid "%1$s must contain at most %2$s item."
 msgid_plural "%1$s must contain at most %2$s items."
 msgstr[0] "%1$s darf maximal %2$s Element beinhalten."
 msgstr[1] "%1$s darf maximal %2$s Elemente beinhalten."
 
 #. translators: 1: Parameter, 2: Number.
-#: wp-includes/rest-api.php:2507
+#: wp-includes/rest-api.php:2516
 msgid "%1$s must contain at least %2$s item."
 msgid_plural "%1$s must contain at least %2$s items."
 msgstr[0] "%1$s muss mindestens %2$s Element beinhalten."
@@ -9235,10 +9206,6 @@ msgstr "Dieses Bild kann nicht zugeschnitten werden."
 msgid "The image was not edited. Edit the image before applying the changes."
 msgstr "Das Bild wurde nicht bearbeitet. Bearbeite das Bild, bevor du die Änderungen speicherst."
 
-#: wp-includes/rest-api/endpoints/class-wp-rest-attachments-controller.php:598
-msgid "This type of file cannot be edited."
-msgstr "Die Datei dieses Typs kann nicht bearbeitet werden."
-
 #: wp-includes/rest-api/endpoints/class-wp-rest-attachments-controller.php:588
 msgid "Unable to get meta information for file."
 msgstr "Meta-Informationen für diese Datei können nicht abgerufen werden."
@@ -9258,6 +9225,10 @@ msgstr "Ergebnissatz auf Blöcke beschränken, die mit dem Suchbegriff übereins
 #: wp-includes/rest-api/endpoints/class-wp-rest-block-directory-controller.php:288
 msgid "The date when the block was last updated, in human readable format."
 msgstr "Das Datum, an dem der Block zuletzt aktualisiert wurde, in einem menschenlesbaren Format."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-attachments-controller.php:598
+msgid "This type of file cannot be edited."
+msgstr "Dieser Dateityp kann nicht bearbeitet werden."
 
 #: wp-includes/rest-api/endpoints/class-wp-rest-block-directory-controller.php:246
 msgid "The star rating of the block."
@@ -9607,10 +9578,6 @@ msgstr "Block-Attribute."
 msgid "Block category."
 msgstr "Block-Kategorie."
 
-#: wp-includes/rest-api/endpoints/class-wp-rest-block-types-controller.php:564
-msgid "Is the block dynamically rendered."
-msgstr "Ob der Block dynamisch gerendert ist."
-
 #: wp-includes/rest-api/endpoints/class-wp-rest-block-types-controller.php:537
 msgid "Context values inherited by blocks of this type."
 msgstr "Geerbte Kontextwerte von Blöcken dieses Typs."
@@ -9667,6 +9634,10 @@ msgstr "Öffentlich zugängliche Stil-Handles."
 msgid "Block style variations."
 msgstr "Die Varianten des Blockstils."
 
+#: wp-includes/rest-api/endpoints/class-wp-rest-block-types-controller.php:564
+msgid "Is the block dynamically rendered."
+msgstr "Ob der Block dynamisch gerendert wird."
+
 #: wp-includes/widgets/class-wp-widget-rss.php:129
 msgid "RSS Feed"
 msgstr "RSS-Feed"
@@ -9699,7 +9670,7 @@ msgstr "Die Funktion „type“ ist kein gültiger JSON-Schema-Typ."
 
 #: wp-includes/theme.php:3329
 msgid "When registering an \"array\" or \"object\" feature to show in the REST API, the feature's schema must also be defined."
-msgstr "Wenn eine Funktion als „array“ oder „object“ registriert wird, um es im REST-API anzuzeigen, muss das Funktions-Schema auch definiert sein."
+msgstr "Wenn eine Funktion als „array“ oder „object“ registriert wird, um sie in der REST-API anzuzeigen, muss das Funktions-Schema ebenfalls definiert sein."
 
 #. translators: %s: Theme name.
 #: wp-includes/theme.php:978
@@ -10678,11 +10649,6 @@ msgstr "Für diese E-Mail-Adresse existiert bereits eine offene Anfrage zu perso
 msgid "Error Details"
 msgstr "Fehlerdetails"
 
-#: wp-login.php:1248 wp-admin/includes/ajax-actions.php:4940
-#: wp-admin/includes/ajax-actions.php:5130
-msgid "Missing request ID."
-msgstr "Fehlende Anforderungs-ID."
-
 #: wp-login.php:1252
 msgid "Missing confirm key."
 msgstr "Fehlender Bestätigungsschlüssel."
@@ -10763,6 +10729,11 @@ msgid "%s Comment in moderation"
 msgid_plural "%s Comments in moderation"
 msgstr[0] "%s Kommentar in der Moderation"
 msgstr[1] "%s Kommentare in der Moderation"
+
+#: wp-login.php:1248 wp-admin/includes/ajax-actions.php:4940
+#: wp-admin/includes/ajax-actions.php:5130
+msgid "Missing request ID."
+msgstr "Die Anfrage-ID fehlt."
 
 #: wp-includes/functions.php:8672
 msgid "Update PHP"
@@ -11133,10 +11104,6 @@ msgstr "Der gerenderte Block."
 msgid "Unique registered name for the block."
 msgstr "Eindeutiger registrierter Name für den Block."
 
-#: wp-includes/rest-api/endpoints/class-wp-rest-block-renderer-controller.php:91
-msgid "ID of the post context."
-msgstr "ID des Beitrag-Kontextes."
-
 #: wp-includes/rest-api/endpoints/class-wp-rest-block-renderer-controller.php:132
 msgid "Sorry, you are not allowed to read blocks as this user."
 msgstr "Du bist mit deiner Benutzerrolle leider nicht berechtigt, Blöcke zu lesen."
@@ -11152,6 +11119,10 @@ msgstr "Attribute für den Block."
 #: wp-includes/rest-api/endpoints/class-wp-rest-block-renderer-controller.php:171
 msgid "Invalid block."
 msgstr "Der Block ist ungültig."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-block-renderer-controller.php:91
+msgid "ID of the post context."
+msgstr "Die ID des Beitragskontextes."
 
 #: wp-includes/theme.php:4325
 msgid "Whether the theme supports responsive embedded content."
@@ -11313,7 +11284,7 @@ msgstr "Der Blocktyp „%s“ ist nicht registriert."
 #: wp-includes/rest-api/endpoints/class-wp-rest-global-styles-revisions-controller.php:229
 #: wp-includes/rest-api/endpoints/class-wp-rest-revisions-controller.php:349
 msgid "The offset number requested is larger than or equal to the number of available revisions."
-msgstr "Die angeforderte Offset-Nummer ist größer oder gleich groß der Anzahl der verfügbaren Revisionen."
+msgstr "Die angeforderte Offset-Nummer ist größer oder gleich der Anzahl der verfügbaren Revisionen."
 
 #: wp-includes/user.php:5015
 msgid "Unable to send personal data export confirmation email."
@@ -11496,10 +11467,6 @@ msgstr "Benutzer-Vorname"
 msgid "User Nickname"
 msgstr "Benutzer-Spitzname"
 
-#: wp-includes/user.php:4043
-msgid "User Display Name"
-msgstr "Benutzer-Anzeige-Name"
-
 #: wp-includes/user.php:4042
 msgid "User Registration Date"
 msgstr "Benutzer-Registrierungsdatum"
@@ -11527,6 +11494,10 @@ msgstr "URL-freundlicher Benutzername"
 #: wp-includes/user.php:4040
 msgid "User Email"
 msgstr "Benutzer-E-Mail-Adresse"
+
+#: wp-includes/user.php:4043
+msgid "User Display Name"
+msgstr "Benutzer-Anzeigename"
 
 #: wp-includes/media.php:5648
 msgid "WordPress Media"
@@ -11757,7 +11728,7 @@ msgid "Installed"
 msgstr "Installiert"
 
 #. translators: %s: Property of an object.
-#: wp-includes/rest-api.php:2423
+#: wp-includes/rest-api.php:2432
 msgid "%1$s is not a valid property of Object."
 msgstr "%1$s ist keine gültige Eigenschaft des Objekts."
 
@@ -12458,12 +12429,6 @@ msgstr "Themes filtern (%s)"
 msgid "Search WordPress.org themes"
 msgstr "Themes auf WordPress.org suchen"
 
-#: wp-includes/customize/class-wp-customize-theme-control.php:312
-#: wp-includes/customize/class-wp-customize-theme-control.php:314
-#: wp-admin/includes/theme.php:1086 wp-admin/includes/theme.php:1089
-msgid "Install &amp; Preview"
-msgstr "Installation und Vorschau"
-
 #: wp-includes/functions.php:8042
 msgid "Only UUID V4 is supported at this time."
 msgstr "Zurzeit wird nur UUID V4 unterstützt."
@@ -12476,6 +12441,12 @@ msgstr "Das Plugin Press This ist erforderlich."
 #: wp-includes/customize/class-wp-customize-themes-section.php:124
 msgid "Go to theme sources"
 msgstr "Zu den Theme-Quellen"
+
+#: wp-includes/customize/class-wp-customize-theme-control.php:312
+#: wp-includes/customize/class-wp-customize-theme-control.php:314
+#: wp-admin/includes/theme.php:1086 wp-admin/includes/theme.php:1089
+msgid "Install &amp; Preview"
+msgstr "Installieren und Vorschau anzeigen"
 
 #. translators: %s: "Add Items" button text.
 #: wp-includes/customize/class-wp-customize-nav-menu-control.php:46
@@ -13037,22 +13008,22 @@ msgid "Looks like this is not the correct kind of file. Please link to an audio 
 msgstr "Dies ist anscheinend nicht der richtige Dateityp. Bitte verlinke stattdessen auf eine Audiodatei."
 
 #. translators: 1: Parameter, 2: Maximum number.
-#: wp-includes/rest-api.php:2593
+#: wp-includes/rest-api.php:2602
 msgid "%1$s must be less than %2$d"
 msgstr "%1$s muss kleiner als %2$d sein"
 
 #. translators: 1: Parameter, 2: Minimum number.
-#: wp-includes/rest-api.php:2583
+#: wp-includes/rest-api.php:2592
 msgid "%1$s must be greater than or equal to %2$d"
 msgstr "%1$s muss größer oder gleich %2$d sein"
 
 #. translators: 1: Parameter, 2: Minimum number.
-#: wp-includes/rest-api.php:2575
+#: wp-includes/rest-api.php:2584
 msgid "%1$s must be greater than %2$d"
 msgstr "%1$s muss größer als %2$d sein"
 
 #. translators: 1: Parameter, 2: Maximum number.
-#: wp-includes/rest-api.php:2601
+#: wp-includes/rest-api.php:2610
 msgid "%1$s must be less than or equal to %2$d"
 msgstr "%1$s muss kleiner oder gleich %2$d sein"
 
@@ -13063,10 +13034,6 @@ msgstr "%1$s muss kleiner oder gleich %2$d sein"
 #: wp-includes/rest-api/endpoints/class-wp-rest-search-controller.php:163
 msgid "The page number requested is larger than the number of pages available."
 msgstr "Die angeforderte Seitennummer ist größer als die Anzahl der verfügbaren Seiten."
-
-#: wp-includes/rest-api/endpoints/class-wp-rest-post-types-controller.php:375
-msgid "All features, supported by the post type."
-msgstr "Alle von diesem Inhaltstypen unterstützten Eigenschaften."
 
 #: wp-includes/rest-api/endpoints/class-wp-rest-posts-controller.php:230
 #: wp-includes/rest-api/endpoints/class-wp-rest-revisions-controller.php:253
@@ -13080,6 +13047,10 @@ msgstr "Ergebnissatz auf Benutzer mit einer oder mehreren bestimmten Titelformen
 #: wp-includes/rest-api/endpoints/class-wp-rest-terms-controller.php:1207
 msgid "Limit result set to terms with one or more specific slugs."
 msgstr "Ergebnissatz auf Begriffe mit einer oder mehreren bestimmten Titelformen begrenzen."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-post-types-controller.php:375
+msgid "All features, supported by the post type."
+msgstr "Alle von diesem Inhaltstyp unterstützten Funktionen."
 
 #: wp-includes/class-wp-post-type.php:1006
 msgctxt "page"
@@ -13286,14 +13257,6 @@ msgstr "Eine alphanumerische Kennung für die Taxonomie."
 msgid "An alphanumeric identifier for the post type."
 msgstr "Eine alphanumerische Kennung für den Inhaltstyp."
 
-#: wp-includes/rest-api/endpoints/class-wp-rest-post-types-controller.php:339
-msgid "A human-readable description of the post type."
-msgstr "Eine visuell lesbare Beschreibung des Inhaltstyps."
-
-#: wp-includes/rest-api/endpoints/class-wp-rest-post-types-controller.php:357
-msgid "Human-readable labels for the post type for various contexts."
-msgstr "Visuell lesbare Beschriftungen des Inhaltstyps für verschiedene Kontexte."
-
 #: wp-includes/rest-api/endpoints/class-wp-rest-post-types-controller.php:333
 msgid "All capabilities used by the post type."
 msgstr "Alle Berechtigungen, die der Inhaltstyp benutzt."
@@ -13301,6 +13264,14 @@ msgstr "Alle Berechtigungen, die der Inhaltstyp benutzt."
 #: wp-includes/rest-api/endpoints/class-wp-rest-post-types-controller.php:345
 msgid "Whether or not the post type should have children."
 msgstr "Ob der Inhaltstyp untergeordnete Elemente haben soll oder nicht."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-post-types-controller.php:357
+msgid "Human-readable labels for the post type for various contexts."
+msgstr "Menschenlesbare Beschriftungen des Inhaltstyps für verschiedene Kontexte."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-post-types-controller.php:339
+msgid "A human-readable description of the post type."
+msgstr "Eine menschenlesbare Beschreibung des Inhaltstyps."
 
 #: wp-includes/rest-api/endpoints/class-wp-rest-post-statuses-controller.php:58
 #: wp-includes/rest-api/endpoints/class-wp-rest-post-statuses-controller.php:342
@@ -13331,21 +13302,17 @@ msgstr "Der Spitzname für den Benutzer."
 msgid "Author URL of the user."
 msgstr "Autor-URL des Benutzers."
 
-#: wp-includes/rest-api/endpoints/class-wp-rest-users-controller.php:1457
-msgid "Description of the user."
-msgstr "Beschreibung des Benutzers."
-
-#: wp-includes/rest-api/endpoints/class-wp-rest-users-controller.php:1451
-msgid "URL of the user."
-msgstr "URL des Benutzers."
-
 #: wp-includes/rest-api/endpoints/class-wp-rest-users-controller.php:1469
 msgid "Locale for the user."
 msgstr "Sprachumgebung für den Benutzer."
 
-#: wp-includes/rest-api/endpoints/class-wp-rest-users-controller.php:1420
-msgid "Display name for the user."
-msgstr "Anzeige-Name für den Benutzer."
+#: wp-includes/rest-api/endpoints/class-wp-rest-users-controller.php:1451
+msgid "URL of the user."
+msgstr "Die URL des Benutzers."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-users-controller.php:1457
+msgid "Description of the user."
+msgstr "Die Beschreibung des Benutzers."
 
 #: wp-includes/rest-api/endpoints/class-wp-rest-users-controller.php:1436
 msgid "Last name for the user."
@@ -13358,6 +13325,10 @@ msgstr "Vorname für den Benutzer."
 #: wp-includes/rest-api/endpoints/class-wp-rest-users-controller.php:1411
 msgid "Login name for the user."
 msgstr "Anmeldename für den Benutzer."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-users-controller.php:1420
+msgid "Display name for the user."
+msgstr "Der Anzeigename für den Benutzer."
 
 #: wp-includes/rest-api/endpoints/class-wp-rest-users-controller.php:923
 #: wp-includes/rest-api/endpoints/class-wp-rest-users-controller.php:970
@@ -13491,7 +13462,7 @@ msgstr "Ein Kommentar dieses Typs kann nicht erstellt werden."
 msgid "Invalid slug."
 msgstr "Die Titelform ist ungültig."
 
-#: wp-includes/rest-api.php:2291
+#: wp-includes/rest-api.php:2300
 #: wp-includes/rest-api/endpoints/class-wp-rest-users-controller.php:780
 #: wp-includes/user.php:4780 wp-admin/network/site-new.php:100
 msgid "Invalid email address."
@@ -13502,7 +13473,7 @@ msgstr "Die E-Mail-Adresse ist ungültig."
 msgid "Invalid comment content."
 msgstr "Der Kommentarinhalt ist ungültig."
 
-#: wp-includes/rest-api/class-wp-rest-server.php:361
+#: wp-includes/rest-api/class-wp-rest-server.php:367
 msgid "Invalid JSONP callback function."
 msgstr "Die JSONP-Callback-Funktion ist ungültig."
 
@@ -13510,7 +13481,7 @@ msgstr "Die JSONP-Callback-Funktion ist ungültig."
 msgid "Invalid page template."
 msgstr "Das Seiten-Template ist ungültig."
 
-#: wp-includes/post.php:4680 wp-includes/rest-api.php:2285
+#: wp-includes/post.php:4680 wp-includes/rest-api.php:2294
 #: wp-includes/script-loader.php:1366 wp-admin/includes/post.php:189
 msgid "Invalid date."
 msgstr "Das Datum ist ungültig."
@@ -13867,13 +13838,13 @@ msgstr "HTML-Beschreibung für den Anhang, transformiert für die Anzeige."
 msgid "Description for the attachment, as it exists in the database."
 msgstr "Beschreibung für den Anhang, wie sie in der Datenbank vorliegt."
 
-#: wp-includes/rest-api/endpoints/class-wp-rest-attachments-controller.php:1144
-msgid "Caption for the attachment, as it exists in the database."
-msgstr "Die Beschriftung für den Anhang, wie er in der Datenbank vorliegt."
-
 #: wp-includes/rest-api/endpoints/class-wp-rest-attachments-controller.php:1149
 msgid "HTML caption for the attachment, transformed for display."
-msgstr "Der für die Anzeige umgewandelte HTML-Beschriftung des Anhangs."
+msgstr "Die für die Anzeige umgewandelte HTML-Beschriftung des Anhangs."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-attachments-controller.php:1144
+msgid "Caption for the attachment, as it exists in the database."
+msgstr "Die Beschriftung für den Anhang, wie sie in der Datenbank vorliegt."
 
 #: wp-includes/class-wp-customize-manager.php:6127
 msgid "Please enter a valid YouTube URL."
@@ -13952,36 +13923,36 @@ msgid "I really need an ID for this to work."
 msgstr "Damit das funktioniert, wird eine ID benötigt."
 
 #. translators: %s: IP address.
-#: wp-includes/rest-api.php:2297
+#: wp-includes/rest-api.php:2306
 msgid "%s is not a valid IP address."
 msgstr "%s ist keine gültige IP-Adresse."
 
 #. translators: 1: Parameter, 2: Minimum number, 3: Maximum number.
-#: wp-includes/rest-api.php:2613
+#: wp-includes/rest-api.php:2622
 msgid "%1$s must be between %2$d (exclusive) and %3$d (exclusive)"
 msgstr "%1$s muss zwischen %2$d (ausschließlich) und %3$d (ausschließlich) liegen"
 
 #. translators: 1: Parameter, 2: Minimum number, 3: Maximum number.
-#: wp-includes/rest-api.php:2643
+#: wp-includes/rest-api.php:2652
 msgid "%1$s must be between %2$d (inclusive) and %3$d (exclusive)"
 msgstr "%1$s muss zwischen %2$d (einschließlich) und %3$d (ausschließlich) liegen"
 
 #. translators: 1: Parameter, 2: Minimum number, 3: Maximum number.
-#: wp-includes/rest-api.php:2628
+#: wp-includes/rest-api.php:2637
 msgid "%1$s must be between %2$d (exclusive) and %3$d (inclusive)"
 msgstr "%1$s muss zwischen %2$d (ausschließlich) und %3$d (einschließlich) liegen"
 
 #. translators: 1: Parameter, 2: Minimum number, 3: Maximum number.
-#: wp-includes/rest-api.php:2658
+#: wp-includes/rest-api.php:2667
 msgid "%1$s must be between %2$d (inclusive) and %3$d (inclusive)"
 msgstr "%1$s muss zwischen %2$d (einschließlich) und %3$d (einschließlich) liegen"
 
 #. translators: 1: Parameter, 2: List of types.
 #. translators: 1: Parameter, 2: Type name.
-#: wp-includes/rest-api.php:2214 wp-includes/rest-api.php:2326
-#: wp-includes/rest-api.php:2348 wp-includes/rest-api.php:2371
-#: wp-includes/rest-api.php:2486 wp-includes/rest-api.php:2557
-#: wp-includes/rest-api.php:2686 wp-includes/rest-api.php:2754
+#: wp-includes/rest-api.php:2223 wp-includes/rest-api.php:2335
+#: wp-includes/rest-api.php:2357 wp-includes/rest-api.php:2380
+#: wp-includes/rest-api.php:2495 wp-includes/rest-api.php:2566
+#: wp-includes/rest-api.php:2695 wp-includes/rest-api.php:2763
 msgid "%1$s is not of type %2$s."
 msgstr "%1$s ist nicht vom Typ %2$s."
 
@@ -13989,10 +13960,6 @@ msgstr "%1$s ist nicht vom Typ %2$s."
 #: wp-includes/rest-api/endpoints/class-wp-rest-posts-controller.php:1670
 msgid "%1$s is not one of %2$s."
 msgstr "%1$s ist nicht eins von %2$s."
-
-#: wp-includes/rest-api/endpoints/class-wp-rest-users-controller.php:1627
-msgid "Limit result set to users matching at least one specific role provided. Accepts csv list or single role."
-msgstr "Ergebnissatz auf Benutzer begrenzen, die mindestens einer bestimmten Rolle entsprechen. Akzeptiert eine CSV-Liste oder einzelne Rolle."
 
 #: wp-includes/rest-api/fields/class-wp-rest-meta-fields.php:526
 msgid "Meta fields."
@@ -14005,6 +13972,10 @@ msgstr "Der Metawert in der Datenbank konnte nicht gelöscht werden."
 #: wp-includes/rest-api/endpoints/class-wp-rest-users-controller.php:1521
 msgid "Any extra capabilities assigned to the user."
 msgstr "Alle zusätzlichen Berechtigungen, die dem Benutzer zugewiesen sind."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-users-controller.php:1627
+msgid "Limit result set to users matching at least one specific role provided. Accepts csv list or single role."
+msgstr "Ergebnissatz auf Benutzer begrenzen, die mindestens einer bestimmten Rolle entsprechen. Akzeptiert eine CSV-Liste oder eine einzelne Rolle."
 
 #: wp-includes/rest-api/endpoints/class-wp-rest-users-controller.php:1506
 msgid "Password for the user (never included)."
@@ -14057,10 +14028,6 @@ msgstr "Ein bereits vorhandener Benutzer kann nicht erstellt werden."
 msgid "You are not currently logged in."
 msgstr "Du bist derzeit nicht angemeldet."
 
-#: wp-includes/rest-api/endpoints/class-wp-rest-terms-controller.php:1188
-msgid "Whether to hide terms not assigned to any posts."
-msgstr "Ob Begriffe verborgen werden, die keinen Beiträgen zugewiesen sind."
-
 #: wp-includes/rest-api/endpoints/class-wp-rest-terms-controller.php:1201
 msgid "Limit result set to terms assigned to a specific post."
 msgstr "Ergebnissatz auf Begriffe begrenzen, die einem bestimmten Beitrag zugewiesen sind."
@@ -14089,6 +14056,10 @@ msgstr "Typzuordnung für den Begriff."
 msgid "Sort collection by term attribute."
 msgstr "Sammlung nach Begriffsattribut sortieren."
 
+#: wp-includes/rest-api/endpoints/class-wp-rest-terms-controller.php:1188
+msgid "Whether to hide terms not assigned to any posts."
+msgstr "Ob Begriffe ausgeblendet werden sollen, die keinen Beiträgen zugewiesen sind."
+
 #: wp-includes/rest-api/endpoints/class-wp-rest-users-controller.php:83
 #: wp-includes/rest-api/endpoints/class-wp-rest-users-controller.php:1405
 msgid "Unique identifier for the user."
@@ -14110,10 +14081,6 @@ msgstr "Das Template kann nicht gelöscht werden."
 #: wp-includes/rest-api/endpoints/class-wp-rest-posts-controller.php:3219
 msgid "Status is forbidden."
 msgstr "Status ist unzulässig."
-
-#: wp-includes/rest-api/endpoints/class-wp-rest-posts-controller.php:3145
-msgid "Limit result set to items that are sticky."
-msgstr "Ergebnissatz auf Elemente begrenzen, die oben gehalten werden."
 
 #: wp-includes/rest-api/endpoints/class-wp-rest-users-controller.php:109
 #: wp-includes/rest-api/endpoints/class-wp-rest-users-controller.php:150
@@ -14140,9 +14107,9 @@ msgstr "Ob die Schlagwort-Wolke angezeigt werden soll oder nicht."
 msgid "The %s property has an invalid stored value, and cannot be updated to null."
 msgstr "Die %s-Eigenschaft ist mit einem ungültigen Wert gespeichert und kann nicht auf null aktualisiert werden."
 
-#: wp-includes/rest-api/endpoints/class-wp-rest-posts-controller.php:3005
-msgid "Ensure result set excludes posts assigned to specific authors."
-msgstr "Stelle sicher, dass der Ergebnissatz Beiträge ausschließt, die bestimmten Autoren zugewiesen sind."
+#: wp-includes/rest-api/endpoints/class-wp-rest-posts-controller.php:3145
+msgid "Limit result set to items that are sticky."
+msgstr "Den Ergebnissatz auf Elemente begrenzen, die oben gehalten werden."
 
 #: wp-includes/rest-api/endpoints/class-wp-rest-posts-controller.php:2997
 msgid "Limit result set to posts assigned to specific authors."
@@ -14158,15 +14125,6 @@ msgstr "Ergebnissatz auf Elemente beschränken, außer auf solche, denen bestimm
 msgid "The terms assigned to the post in the %s taxonomy."
 msgstr "Die Begriffe, die dem Beitrag in der Taxonomie %s zugewiesen sind."
 
-#: wp-includes/rest-api/endpoints/class-wp-rest-comments-controller.php:1722
-#: wp-includes/rest-api/endpoints/class-wp-rest-pattern-directory-controller.php:337
-#: wp-includes/rest-api/endpoints/class-wp-rest-posts-controller.php:3058
-#: wp-includes/rest-api/endpoints/class-wp-rest-revisions-controller.php:873
-#: wp-includes/rest-api/endpoints/class-wp-rest-terms-controller.php:1156
-#: wp-includes/rest-api/endpoints/class-wp-rest-users-controller.php:1591
-msgid "Offset the result set by a specific number of items."
-msgstr "Verschiebt den Ergebnissatz um eine bestimmte Elementanzahl."
-
 #: wp-includes/rest-api/endpoints/class-wp-rest-posts-controller.php:3095
 msgid "Limit result set to items with particular parent IDs."
 msgstr "Den Ergebnissatz auf alle Elemente bestimmter übergeordneter IDs begrenzen."
@@ -14179,6 +14137,19 @@ msgstr "Den Ergebnissatz auf alle Elemente begrenzen, außer denen mit einer bes
 #: wp-includes/rest-api/endpoints/class-wp-rest-posts-controller.php:3046
 msgid "Limit result set to posts with a specific menu_order value."
 msgstr "Ergebnissatz auf Beiträge begrenzen, die einen bestimmten menu_order-Wert haben."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-comments-controller.php:1722
+#: wp-includes/rest-api/endpoints/class-wp-rest-pattern-directory-controller.php:337
+#: wp-includes/rest-api/endpoints/class-wp-rest-posts-controller.php:3058
+#: wp-includes/rest-api/endpoints/class-wp-rest-revisions-controller.php:873
+#: wp-includes/rest-api/endpoints/class-wp-rest-terms-controller.php:1156
+#: wp-includes/rest-api/endpoints/class-wp-rest-users-controller.php:1591
+msgid "Offset the result set by a specific number of items."
+msgstr "Den Ergebnissatz um eine bestimmte Anzahl von Elementen verschieben."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-posts-controller.php:3005
+msgid "Ensure result set excludes posts assigned to specific authors."
+msgstr "Sicherstellen, dass der Ergebnissatz Beiträge ausschließt, die bestimmten Autoren zugewiesen sind."
 
 #: wp-includes/rest-api/endpoints/class-wp-rest-posts-controller.php:2690
 msgid "Whether the excerpt is protected with a password."
@@ -14356,10 +14327,6 @@ msgstr "Ob Beiträge dieses Status im Frontend der Website angezeigt werden soll
 msgid "An alphanumeric identifier for the user."
 msgstr "Eine alphanumerische Kennung für den Benutzer."
 
-#: wp-includes/rest-api/endpoints/class-wp-rest-taxonomies-controller.php:349
-msgid "A human-readable description of the taxonomy."
-msgstr "Eine visuell lesbare Beschreibung der Taxonomie."
-
 #: wp-includes/rest-api/endpoints/class-wp-rest-post-statuses-controller.php:318
 msgid "Whether posts with this status should be protected."
 msgstr "Ob Beiträge mit diesem Status passwortgeschützt sein sollen."
@@ -14367,10 +14334,6 @@ msgstr "Ob Beiträge mit diesem Status passwortgeschützt sein sollen."
 #: wp-includes/rest-api/endpoints/class-wp-rest-post-statuses-controller.php:95
 msgid "Sorry, you are not allowed to manage post statuses."
 msgstr "Du bist leider nicht berechtigt, Beitragsstatus zu verwalten."
-
-#: wp-includes/rest-api/endpoints/class-wp-rest-taxonomies-controller.php:361
-msgid "Human-readable labels for the taxonomy for various contexts."
-msgstr "Visuell lesbare Beschriftungen der Taxonomie für verschiedene Kontexte."
 
 #: wp-includes/rest-api/endpoints/class-wp-rest-taxonomies-controller.php:343
 msgid "All capabilities used by the taxonomy."
@@ -14384,15 +14347,19 @@ msgstr "Ob die Taxonomie untergeordnete Elemente haben soll oder nicht."
 msgid "Whether to include posts in the edit listing for their post type."
 msgstr "Ob Beiträge in der Bearbeitungsliste für ihre Inhaltstypen eingeschlossen werden sollen."
 
+#: wp-includes/rest-api/endpoints/class-wp-rest-taxonomies-controller.php:361
+msgid "Human-readable labels for the taxonomy for various contexts."
+msgstr "Menschenlesbare Beschriftungen der Taxonomie für verschiedene Kontexte."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-taxonomies-controller.php:349
+msgid "A human-readable description of the taxonomy."
+msgstr "Eine menschenlesbare Beschreibung der Taxonomie."
+
 #: wp-includes/rest-api/endpoints/class-wp-rest-abilities-v1-categories-controller.php:279
 #: wp-includes/rest-api/endpoints/class-wp-rest-abilities-v1-list-controller.php:423
 #: wp-includes/rest-api/endpoints/class-wp-rest-controller.php:345
 msgid "Current page of the collection."
 msgstr "Aktuelle Seite der Sammlung."
-
-#: wp-includes/rest-api/endpoints/class-wp-rest-controller.php:382
-msgid "Scope under which the request is made; determines fields present in response."
-msgstr "Geltungsbereich der Anfrage; ermittelt in der Antwort vorhandene Felder."
 
 #: wp-includes/rest-api/endpoints/class-wp-rest-post-statuses-controller.php:312
 msgid "Whether posts with this status should be private."
@@ -14424,10 +14391,9 @@ msgstr "Die Methode ‚%s‘ wurde nicht implementiert. Sie muss in der Unterkla
 msgid "Maximum number of items to be returned in result set."
 msgstr "Maximale Anzahl der im Ergebnissatz zurückzugebenden Elemente."
 
-#: wp-includes/rest-api/endpoints/class-wp-rest-menu-items-controller.php:966
-#: wp-includes/rest-api/endpoints/class-wp-rest-revisions-controller.php:885
-msgid "Sort collection by object attribute."
-msgstr "Sortiere die Sammlung nach einem Attribut des Objekts."
+#: wp-includes/rest-api/endpoints/class-wp-rest-controller.php:382
+msgid "Scope under which the request is made; determines fields present in response."
+msgstr "Geltungsbereich, unter dem die Anfrage erfolgt; bestimmt die in der Antwort vorhandenen Felder."
 
 #: wp-includes/rest-api/endpoints/class-wp-rest-comments-controller.php:1788
 msgid "Limit result set to comments assigned a specific type. Requires authorization."
@@ -14440,10 +14406,6 @@ msgstr "Ergebnissatz auf Kommentare begrenzen, denen ein bestimmter Status zugew
 #: wp-includes/rest-api/endpoints/class-wp-rest-comments-controller.php:1771
 msgid "Limit result set to comments assigned to specific post IDs."
 msgstr "Ergebnissatz auf Kommentare begrenzen, die bestimmten Beitrags-IDs zugewiesen sind."
-
-#: wp-includes/rest-api/endpoints/class-wp-rest-comments-controller.php:1762
-msgid "Ensure result set excludes specific parent IDs."
-msgstr "Stelle sicher, dass der Ergebnissatz bestimmte übergeordnete IDs ausschließt."
 
 #: wp-includes/rest-api/endpoints/class-wp-rest-comments-controller.php:1753
 msgid "Limit result set to comments of specific parent IDs."
@@ -14458,6 +14420,15 @@ msgstr "Den Ergebnissatz auf Kommentare bestimmter übergeordneter IDs begrenzen
 #: wp-includes/rest-api/endpoints/class-wp-rest-users-controller.php:1597
 msgid "Order sort attribute ascending or descending."
 msgstr "Das Sortierattribut aufsteigend oder absteigend sortieren."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-menu-items-controller.php:966
+#: wp-includes/rest-api/endpoints/class-wp-rest-revisions-controller.php:885
+msgid "Sort collection by object attribute."
+msgstr "Die Sammlung nach Objektattribut sortieren."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-comments-controller.php:1762
+msgid "Ensure result set excludes specific parent IDs."
+msgstr "Sicherstellen, dass der Ergebnissatz bestimmte übergeordnete IDs ausschließt."
 
 #: wp-includes/rest-api/endpoints/class-wp-rest-comments-controller.php:1704
 #: wp-includes/rest-api/endpoints/class-wp-rest-posts-controller.php:3027
@@ -14552,10 +14523,6 @@ msgstr "Der Kommentar kann nicht gelöscht werden."
 msgid "The comment has already been trashed."
 msgstr "Der Kommentar wurde bereits in den Papierkorb verschoben."
 
-#: wp-includes/rest-api/endpoints/class-wp-rest-comments-controller.php:1533
-msgid "Display name for the comment author."
-msgstr "Anzeige-Name für den Autor des Kommentars."
-
 #: wp-includes/rest-api/endpoints/class-wp-rest-comments-controller.php:1527
 msgid "IP address for the comment author."
 msgstr "IP-Adresse für den Autor des Kommentars."
@@ -14579,6 +14546,10 @@ msgstr "Die ID des Benutzerobjekts, falls der Autor ein Benutzer war."
 #: wp-includes/rest-api/endpoints/class-wp-rest-comments-controller.php:1429
 msgid "Invalid comment author ID."
 msgstr "Die ID des Kommentarautors ist ungültig."
+
+#: wp-includes/rest-api/endpoints/class-wp-rest-comments-controller.php:1533
+msgid "Display name for the comment author."
+msgstr "Der Anzeigename für den Kommentarautor."
 
 #: wp-includes/rest-api/endpoints/class-wp-rest-comments-controller.php:969
 msgid "Updating comment failed."
@@ -14663,11 +14634,6 @@ msgstr "Du bist leider nicht berechtigt, Medien auf diese Website hochzuladen."
 msgid "Sorry, you are not allowed to upload media to this post."
 msgstr "Du bist leider nicht berechtigt, Medien zu diesem Beitrag hochzuladen."
 
-#. translators: %s: rest_authentication_errors
-#: wp-includes/rest-api/class-wp-rest-server.php:349
-msgid "The REST API can no longer be completely disabled, the %s filter can be used to restrict access to the API, instead."
-msgstr "Das REST-API kann nicht mehr länger komplett deaktiviert werden; stattdessen kann aber der Filter %s genutzt werden, um den Zugriff zur API einzuschränken."
-
 #: wp-includes/rest-api/endpoints/class-wp-rest-attachments-controller.php:203
 #: wp-includes/rest-api/endpoints/class-wp-rest-attachments-controller.php:462
 msgid "Invalid parent type."
@@ -14680,6 +14646,11 @@ msgstr "Alternativtext, der anzeigt wird, wenn der Anhang nicht angezeigt wird."
 #: wp-includes/rest-api/endpoints/class-wp-rest-attachments-controller.php:1196
 msgid "Details about the media file, specific to its type."
 msgstr "Details zur Mediendatei, spezifisch für ihren Typ."
+
+#. translators: %s: rest_authentication_errors
+#: wp-includes/rest-api/class-wp-rest-server.php:355
+msgid "The REST API can no longer be completely disabled, the %s filter can be used to restrict access to the API, instead."
+msgstr "Die REST-API kann nicht mehr vollständig deaktiviert werden; stattdessen kann der %s-Filter verwendet werden, um den Zugriff auf die API einzuschränken."
 
 #: wp-includes/class-wp-post-type.php:1001
 msgid "Post Attributes"
@@ -15266,7 +15237,7 @@ msgstr "Passwort geändert für Benutzer: %s"
 msgid "Sorry, you are not allowed to preview drafts."
 msgstr "Du bist leider nicht berechtigt, Entwürfe anzusehen."
 
-#: wp-includes/rest-api/class-wp-rest-server.php:1261
+#: wp-includes/rest-api/class-wp-rest-server.php:1267
 #: wp-includes/script-loader.php:843 wp-admin/js/tags.js:78
 msgid "Sorry, you are not allowed to do that."
 msgstr "Du bist leider nicht berechtigt, diese Aktion durchzuführen."
@@ -15874,7 +15845,7 @@ msgstr "Ungültiger Shortcode-Name: %1$s. Verwende keine Leerzeichen oder reserv
 #. message.
 #. translators: Developer debugging message. 1: PHP function name, 2: WordPress
 #. version number, 3: Explanatory message.
-#: wp-includes/rest-api.php:744 wp-includes/rest-api.php:769
+#: wp-includes/rest-api.php:753 wp-includes/rest-api.php:778
 msgid "%1$s (since %2$s; %3$s)"
 msgstr "%1$s (ab %2$s; %3$s)"
 
@@ -15883,25 +15854,25 @@ msgid "Invalid shortcode name: Empty name given."
 msgstr "Ungültiger Shortcode-Name: Es wurde ein leerer Name übergeben."
 
 #. translators: 1: Function name, 2: WordPress version number.
-#: wp-includes/rest-api.php:723 wp-includes/rest-api.php:747
+#: wp-includes/rest-api.php:732 wp-includes/rest-api.php:756
 msgid "%1$s (since %2$s; no alternative available)"
 msgstr "%1$s (seit %2$s; keine Alternative verfügbar)"
 
-#: wp-includes/rest-api/class-wp-rest-server.php:1516
+#: wp-includes/rest-api/class-wp-rest-server.php:1522
 msgid "The specified namespace could not be found."
 msgstr "Der gewählte Namensraum konnte nicht gefunden werden."
 
 #. translators: 1: Function name, 2: WordPress version number, 3: New function
 #. name.
-#: wp-includes/rest-api.php:720
+#: wp-includes/rest-api.php:729
 msgid "%1$s (since %2$s; use %3$s instead)"
 msgstr "%1$s (ab %2$s; verwende stattdessen %3$s)"
 
-#: wp-includes/rest-api/class-wp-rest-server.php:1215
+#: wp-includes/rest-api/class-wp-rest-server.php:1221
 msgid "No route was found matching the URL and request method."
 msgstr "Es wurde keine Route gefunden, die mit der URL und der Anfragemethode übereinstimmt."
 
-#: wp-includes/rest-api/class-wp-rest-server.php:1851
+#: wp-includes/rest-api/class-wp-rest-server.php:1858
 msgid "The handler for the route is invalid"
 msgstr "Der Handler für die Route ist ungültig"
 
@@ -15922,7 +15893,7 @@ msgstr "Verwende in %1$s die Methode %2$s, nicht die Funktion %3$s. Siehe %4$s."
 msgid "Invalid parameter(s): %s"
 msgstr "Ungültige(r) Parameter: %s"
 
-#: wp-includes/rest-api/class-wp-rest-server.php:356
+#: wp-includes/rest-api/class-wp-rest-server.php:362
 msgid "JSONP support is disabled on this site."
 msgstr "JSONP-Unterstützung ist auf dieser Website deaktiviert."
 
@@ -16893,36 +16864,6 @@ msgstr "<strong>Datenbanktabellen fehlen.</strong> Das heißt, dass der Datenban
 msgid "<strong>Could not find site %1$s.</strong> Searched for table %2$s in database %3$s. Is that right?"
 msgstr "<strong>Die Website %1$s wurde nicht gefunden.</strong> Es wurde nach der Tabelle %2$s in der Datenbank %3$s gesucht. Ist das richtig?"
 
-#. translators: Do not translate USERNAME, PASSWORD, LOGINLINK, SITE_NAME:
-#. those are placeholders.
-#: wp-includes/ms-functions.php:2399
-msgid ""
-"Howdy USERNAME,\n"
-"\n"
-"Your new account is set up.\n"
-"\n"
-"You can log in with the following information:\n"
-"Username: USERNAME\n"
-"Password: PASSWORD\n"
-"LOGINLINK\n"
-"\n"
-"Thanks!\n"
-"\n"
-"--The Team @ SITE_NAME"
-msgstr ""
-"Hallo USERNAME,\n"
-"\n"
-"dein neues Konto wurde eingerichtet.\n"
-"\n"
-"Du kannst dich mit folgenden Angaben anmelden:\n"
-"Benutzername: USERNAME\n"
-"Passwort: PASSWORD\n"
-"LOGINLINK\n"
-"\n"
-"Vielen Dank!\n"
-"\n"
-"-- Das Team von SITE_NAME"
-
 #. translators: Do not translate USERNAME, SITE_NAME, BLOG_URL, PASSWORD: those
 #. are placeholders.
 #: wp-includes/ms-functions.php:1672 wp-admin/includes/schema.php:1294
@@ -16954,6 +16895,36 @@ msgstr ""
 "Melde dich hier an: BLOG_URLwp-login.php\n"
 "\n"
 "Wir hoffen, dir gefällt deine neue Website. Vielen Dank!\n"
+"\n"
+"-- Das Team von SITE_NAME"
+
+#. translators: Do not translate USERNAME, PASSWORD, LOGINLINK, SITE_NAME:
+#. those are placeholders.
+#: wp-includes/ms-functions.php:2399
+msgid ""
+"Howdy USERNAME,\n"
+"\n"
+"Your new account is set up.\n"
+"\n"
+"You can log in with the following information:\n"
+"Username: USERNAME\n"
+"Password: PASSWORD\n"
+"LOGINLINK\n"
+"\n"
+"Thanks!\n"
+"\n"
+"--The Team @ SITE_NAME"
+msgstr ""
+"Hallo USERNAME,\n"
+"\n"
+"dein neues Konto wurde eingerichtet.\n"
+"\n"
+"Du kannst dich mit folgenden Angaben anmelden:\n"
+"Benutzername: USERNAME\n"
+"Passwort: PASSWORD\n"
+"LOGINLINK\n"
+"\n"
+"Vielen Dank!\n"
 "\n"
 "-- Das Team von SITE_NAME"
 
@@ -21044,42 +21015,6 @@ msgstr[1] "Papierkorb <span class=\"count\">(%s)</span>"
 msgid "Paragraph"
 msgstr "Absatz"
 
-#: wp-includes/class-wp-editor.php:1144
-#: wp-includes/js/dist/block-library.js:66958
-#: wp-includes/js/dist/editor.js:35650
-msgid "Heading 1"
-msgstr "Überschrift 1"
-
-#: wp-includes/class-wp-editor.php:1145
-#: wp-includes/js/dist/block-library.js:66959
-#: wp-includes/js/dist/editor.js:35659
-msgid "Heading 2"
-msgstr "Überschrift 2"
-
-#: wp-includes/class-wp-editor.php:1146
-#: wp-includes/js/dist/block-library.js:66960
-#: wp-includes/js/dist/editor.js:35668
-msgid "Heading 3"
-msgstr "Überschrift 3"
-
-#: wp-includes/class-wp-editor.php:1147
-#: wp-includes/js/dist/block-library.js:66961
-#: wp-includes/js/dist/editor.js:35677
-msgid "Heading 4"
-msgstr "Überschrift 4"
-
-#: wp-includes/class-wp-editor.php:1148
-#: wp-includes/js/dist/block-library.js:66962
-#: wp-includes/js/dist/editor.js:35686
-msgid "Heading 5"
-msgstr "Überschrift 5"
-
-#: wp-includes/class-wp-editor.php:1149
-#: wp-includes/js/dist/block-library.js:66963
-#: wp-includes/js/dist/editor.js:35695
-msgid "Heading 6"
-msgstr "Überschrift 6"
-
 #: wp-includes/class-wp-editor.php:1168 wp-includes/script-loader.php:826
 #: wp-includes/js/dist/block-library.js:11286
 #: wp-includes/js/dist/block-library.js:11495
@@ -22491,6 +22426,42 @@ msgstr "Freigeben: %s"
 msgid "You are attempting to log out of %s"
 msgstr "Du möchtest dich gerade von der Website %s abmelden"
 
+#: wp-includes/class-wp-editor.php:1146
+#: wp-includes/js/dist/block-library.js:66960
+#: wp-includes/js/dist/editor.js:35668
+msgid "Heading 3"
+msgstr "Überschrift 3"
+
+#: wp-includes/class-wp-editor.php:1145
+#: wp-includes/js/dist/block-library.js:66959
+#: wp-includes/js/dist/editor.js:35659
+msgid "Heading 2"
+msgstr "Überschrift 2"
+
+#: wp-includes/class-wp-editor.php:1144
+#: wp-includes/js/dist/block-library.js:66958
+#: wp-includes/js/dist/editor.js:35650
+msgid "Heading 1"
+msgstr "Überschrift 1"
+
+#: wp-includes/class-wp-editor.php:1147
+#: wp-includes/js/dist/block-library.js:66961
+#: wp-includes/js/dist/editor.js:35677
+msgid "Heading 4"
+msgstr "Überschrift 4"
+
+#: wp-includes/class-wp-editor.php:1148
+#: wp-includes/js/dist/block-library.js:66962
+#: wp-includes/js/dist/editor.js:35686
+msgid "Heading 5"
+msgstr "Überschrift 5"
+
+#: wp-includes/class-wp-editor.php:1149
+#: wp-includes/js/dist/block-library.js:66963
+#: wp-includes/js/dist/editor.js:35695
+msgid "Heading 6"
+msgstr "Überschrift 6"
+
 #: wp-includes/link-template.php:2675 wp-includes/link-template.php:2734
 msgid "&laquo; Previous Page"
 msgstr "&laquo; Vorherige Seite"
@@ -22731,6 +22702,23 @@ msgstr "Deaktivieren"
 msgid "HTML"
 msgstr "HTML"
 
+#: wp-login.php:1047
+msgid "Strength indicator"
+msgstr "Passwortstärke"
+
+#: wp-includes/admin-bar.php:1163
+#: wp-includes/class-wp-customize-widgets.php:419
+#: wp-includes/class-wp-customize-widgets.php:927
+#: wp-includes/functions.php:5473 wp-includes/js/dist/blocks.js:5734
+#: wp-includes/js/dist/core-data.js:14557
+#: wp-includes/js/dist/customize-widgets.js:1848
+#: wp-includes/js/dist/edit-widgets.js:3489
+#: wp-includes/js/dist/edit-widgets.js:3495
+#: wp-includes/js/dist/edit-widgets.js:3796 wp-includes/js/dist/editor.js:39959
+#: wp-includes/js/dist/editor.js:39977 wp-admin/widgets.php:28
+msgid "Widgets"
+msgstr "Widgets"
+
 #: wp-includes/class-wp-editor.php:1335 wp-includes/media-template.php:1212
 #: wp-includes/widgets/class-wp-widget-media-image.php:78
 #: wp-includes/js/dist/block-editor.js:48717
@@ -22783,23 +22771,6 @@ msgstr "Breite"
 #: wp-admin/js/color-picker.js:149
 msgid "Default"
 msgstr "Standard"
-
-#: wp-login.php:1047
-msgid "Strength indicator"
-msgstr "Passwortstärke"
-
-#: wp-includes/admin-bar.php:1163
-#: wp-includes/class-wp-customize-widgets.php:419
-#: wp-includes/class-wp-customize-widgets.php:927
-#: wp-includes/functions.php:5473 wp-includes/js/dist/blocks.js:5734
-#: wp-includes/js/dist/core-data.js:14557
-#: wp-includes/js/dist/customize-widgets.js:1848
-#: wp-includes/js/dist/edit-widgets.js:3489
-#: wp-includes/js/dist/edit-widgets.js:3495
-#: wp-includes/js/dist/edit-widgets.js:3796 wp-includes/js/dist/editor.js:39959
-#: wp-includes/js/dist/editor.js:39977 wp-admin/widgets.php:28
-msgid "Widgets"
-msgstr "Widgets"
 
 #: wp-includes/widgets/class-wp-nav-menu-widget.php:185
 #: wp-includes/widgets/class-wp-widget-archives.php:235
@@ -23343,6 +23314,10 @@ msgstr "Links"
 msgid "Users"
 msgstr "Benutzer"
 
+#: wp-includes/post.php:3543 wp-includes/js/dist/editor.js:13365
+msgid "Images"
+msgstr "Bilder"
+
 #. translators: Hidden accessibility text.
 #: wp-includes/admin-bar.php:1259 wp-includes/admin-bar.php:1261
 #: wp-includes/blocks/search.php:25 wp-includes/blocks/search.php:26
@@ -23401,10 +23376,6 @@ msgstr "Suchen"
 #: wp-admin/includes/class-wp-ms-themes-list-table.php:755
 msgid "By %s"
 msgstr "Von %s"
-
-#: wp-includes/post.php:3543 wp-includes/js/dist/editor.js:13365
-msgid "Images"
-msgstr "Bilder"
 
 #: wp-login.php:1169 wp-admin/includes/class-wp-users-list-table.php:373
 #: wp-admin/includes/class-wp-users-list-table.php:396
@@ -23572,6 +23543,26 @@ msgstr "Kommentar"
 msgid "Update Category"
 msgstr "Kategorie aktualisieren"
 
+#: wp-includes/class-wp-editor.php:1187
+#: wp-includes/js/dist/block-library.js:55934
+#: wp-includes/js/dist/components.js:38965 wp-admin/includes/meta-boxes.php:165
+#: wp-admin/includes/meta-boxes.php:223 wp-admin/includes/template.php:894
+#: wp-admin/js/post.js:1031
+msgid "OK"
+msgstr "OK"
+
+#: wp-includes/post.php:1326 wp-includes/post.php:1346
+#: wp-includes/js/dist/block-library.js:41298
+#: wp-includes/js/dist/edit-site.js:46207 wp-includes/js/dist/editor.js:10424
+#: wp-includes/js/dist/editor.js:46229 wp-includes/js/dist/editor.js:48202
+#: wp-includes/js/dist/editor.js:48218
+#: wp-admin/includes/class-wp-posts-list-table.php:1793
+#: wp-admin/includes/class-wp-posts-list-table.php:1998
+#: wp-admin/includes/meta-boxes.php:180 wp-admin/includes/meta-boxes.php:220
+#: wp-admin/js/post.js:910
+msgid "Private"
+msgstr "Privat"
+
 #: wp-includes/class-wp-customize-nav-menus.php:1277
 #: wp-includes/class-wp-editor.php:1271 wp-includes/class-wp-editor.php:1893
 #: wp-includes/customize/class-wp-customize-nav-menu-item-control.php:111
@@ -23675,26 +23666,6 @@ msgstr "Kommentare"
 msgid "Save"
 msgstr "Speichern"
 
-#: wp-includes/class-wp-editor.php:1187
-#: wp-includes/js/dist/block-library.js:55934
-#: wp-includes/js/dist/components.js:38965 wp-admin/includes/meta-boxes.php:165
-#: wp-admin/includes/meta-boxes.php:223 wp-admin/includes/template.php:894
-#: wp-admin/js/post.js:1031
-msgid "OK"
-msgstr "OK"
-
-#: wp-includes/post.php:1326 wp-includes/post.php:1346
-#: wp-includes/js/dist/block-library.js:41298
-#: wp-includes/js/dist/edit-site.js:46207 wp-includes/js/dist/editor.js:10424
-#: wp-includes/js/dist/editor.js:46229 wp-includes/js/dist/editor.js:48202
-#: wp-includes/js/dist/editor.js:48218
-#: wp-admin/includes/class-wp-posts-list-table.php:1793
-#: wp-admin/includes/class-wp-posts-list-table.php:1998
-#: wp-admin/includes/meta-boxes.php:180 wp-admin/includes/meta-boxes.php:220
-#: wp-admin/js/post.js:910
-msgid "Private"
-msgstr "Privat"
-
 #: wp-includes/js/dist/editor.js:46224 wp-admin/includes/meta-boxes.php:189
 #: wp-admin/includes/meta-boxes.php:211 wp-admin/js/post.js:907
 msgid "Public"
@@ -23703,6 +23674,20 @@ msgstr "Öffentlich"
 #: wp-includes/class-wp-taxonomy.php:617
 msgid "All Categories"
 msgstr "Alle Kategorien"
+
+#. translators: %s: human-readable time difference.
+#. translators: %s: Human-readable time difference.
+#. translators: %s: Duration.
+#: wp-includes/blocks/comment-date.php:33 wp-includes/blocks/post-date.php:68
+#: wp-includes/rest-api/endpoints/class-wp-rest-block-directory-controller.php:143
+#: wp-includes/script-loader.php:444
+#: wp-admin/includes/class-wp-media-list-table.php:583
+#: wp-admin/includes/class-wp-plugin-install-list-table.php:704
+#: wp-admin/includes/class-wp-privacy-requests-table.php:487
+#: wp-admin/includes/plugin-install.php:663 wp-admin/includes/revision.php:254
+#: wp-admin/includes/revision.php:297
+msgid "%s ago"
+msgstr "vor %s"
 
 #: wp-includes/class-wp-editor.php:1188 wp-includes/class-wp-editor.php:1939
 #: wp-includes/media.php:5023 wp-includes/script-loader.php:1319
@@ -23759,20 +23744,6 @@ msgstr "Alle Kategorien"
 #: wp-admin/network/settings.php:184
 msgid "Cancel"
 msgstr "Abbrechen"
-
-#. translators: %s: human-readable time difference.
-#. translators: %s: Human-readable time difference.
-#. translators: %s: Duration.
-#: wp-includes/blocks/comment-date.php:33 wp-includes/blocks/post-date.php:68
-#: wp-includes/rest-api/endpoints/class-wp-rest-block-directory-controller.php:143
-#: wp-includes/script-loader.php:444
-#: wp-admin/includes/class-wp-media-list-table.php:583
-#: wp-admin/includes/class-wp-plugin-install-list-table.php:704
-#: wp-admin/includes/class-wp-privacy-requests-table.php:487
-#: wp-admin/includes/plugin-install.php:663 wp-admin/includes/revision.php:254
-#: wp-admin/includes/revision.php:297
-msgid "%s ago"
-msgstr "vor %s"
 
 #: wp-includes/post.php:132 wp-includes/js/dist/editor.js:37708
 #: wp-includes/js/dist/editor.js:45447 wp-includes/js/dist/editor.js:66616
@@ -24073,23 +24044,6 @@ msgstr "Originalgröße"
 msgid "Activate"
 msgstr "Aktivieren"
 
-#: wp-includes/post.php:1327 wp-includes/post.php:1347
-#: wp-includes/script-loader.php:1308
-#: wp-includes/js/dist/block-library.js:41294
-#: wp-includes/js/dist/edit-site.js:46143 wp-includes/js/dist/editor.js:10430
-#: wp-includes/js/dist/editor.js:48204 wp-includes/js/dist/editor.js:48228
-#: wp-admin/includes/ajax-actions.php:2280
-#: wp-admin/includes/class-wp-posts-list-table.php:1211
-#: wp-admin/includes/class-wp-posts-list-table.php:1994
-#: wp-admin/includes/meta-boxes.php:112 wp-admin/includes/meta-boxes.php:152
-#: wp-admin/js/post.js:840
-msgid "Published"
-msgstr "Veröffentlicht"
-
-#: wp-includes/admin-bar.php:349
-msgid "Log Out"
-msgstr "Abmelden"
-
 #: wp-includes/class-wp-editor.php:1215 wp-includes/media-template.php:523
 #: wp-includes/media-template.php:775 wp-includes/option.php:2750
 #: wp-includes/revision.php:32 wp-includes/js/dist/block-library.js:40874
@@ -24108,6 +24062,23 @@ msgstr "Abmelden"
 #: wp-admin/includes/media.php:2669 wp-admin/includes/media.php:2992
 msgid "Title"
 msgstr "Titel"
+
+#: wp-includes/post.php:1327 wp-includes/post.php:1347
+#: wp-includes/script-loader.php:1308
+#: wp-includes/js/dist/block-library.js:41294
+#: wp-includes/js/dist/edit-site.js:46143 wp-includes/js/dist/editor.js:10430
+#: wp-includes/js/dist/editor.js:48204 wp-includes/js/dist/editor.js:48228
+#: wp-admin/includes/ajax-actions.php:2280
+#: wp-admin/includes/class-wp-posts-list-table.php:1211
+#: wp-admin/includes/class-wp-posts-list-table.php:1994
+#: wp-admin/includes/meta-boxes.php:112 wp-admin/includes/meta-boxes.php:152
+#: wp-admin/js/post.js:840
+msgid "Published"
+msgstr "Veröffentlicht"
+
+#: wp-includes/admin-bar.php:349
+msgid "Log Out"
+msgstr "Abmelden"
 
 #. translators: Indicating that the navigation link is a Draft.
 #: wp-includes/post.php:1324 wp-includes/post.php:1345

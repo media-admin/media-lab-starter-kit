@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - WooCommerce - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-07-14 00:16:43+0000\n"
+"PO-Revision-Date: 2026-07-24 01:42:50+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -514,7 +514,7 @@ msgstr "oberste Ebene"
 #. translators: 1: block name; 2: parent block name
 #: src/Internal/EmailEditor/WCTransactionalEmails/WCEmailTemplateChangeSummary.php:523
 msgid "Moved %1$s into %2$s"
-msgstr "%1$s zu %2$s verschoben"
+msgstr "%1$s in %2$s verschoben"
 
 #: src/Internal/EmailEditor/WCTransactionalEmails/WCEmailTemplateChangeSummary.php:336
 #: assets/client/admin/wp-admin-scripts/email-editor-integration.js:2
@@ -38107,7 +38107,7 @@ msgstr "Das eingegebene Datum ist ungültig."
 
 #: src/StoreApi/Routes/V1/AbstractRoute.php:268
 msgid "Scope under which the request is made; determines fields present in response."
-msgstr "Bereich, in dem die Anfrage gestellt wurde; Setzt Felder fest, die in der Antwort enthalten sind."
+msgstr "Geltungsbereich, unter dem die Anfrage erfolgt; bestimmt die in der Antwort vorhandenen Felder."
 
 #: includes/rest-api/Controllers/Version3/class-wc-rest-crud-controller.php:591
 #: src/Internal/RestApi/Routes/V4/Customers/CollectionQuery.php:50
@@ -41387,7 +41387,7 @@ msgstr "Beschränkt die Ergebnismenge auf bestimmte Eltern-IDs."
 #: src/StoreApi/Routes/V1/ProductReviews.php:212
 #: src/StoreApi/Routes/V1/Products.php:208
 msgid "Sort collection by object attribute."
-msgstr "Sortiere die Sammlung nach einem Attribut des Objekts."
+msgstr "Die Sammlung nach Objektattribut sortieren."
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-customers-v1-controller.php:1014
 #: includes/rest-api/Controllers/Version1/class-wc-rest-taxes-v1-controller.php:757
@@ -41415,7 +41415,7 @@ msgstr "Das Sortierattribut aufsteigend oder absteigend sortieren."
 #: src/StoreApi/Routes/V1/ProductReviews.php:197
 #: src/StoreApi/Routes/V1/Products.php:193
 msgid "Offset the result set by a specific number of items."
-msgstr "Verschiebt den Ergebnissatz um eine bestimmte Elementanzahl."
+msgstr "Den Ergebnissatz um eine bestimmte Anzahl von Elementen verschieben."
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-webhooks-v1-controller.php:735
 #: includes/rest-api/Controllers/Version3/class-wc-rest-crud-controller.php:636

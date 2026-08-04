@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the WordPress - 7.0.x - Development - Administration - Network Admin package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-06-24 19:12:54+0000\n"
+"PO-Revision-Date: 2026-07-26 15:34:31+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -408,7 +408,7 @@ msgstr "Wenn %1$s deaktiviert ist, bitte deinen Serveradministrator darum, das M
 #. translators: %s: mod_rewrite
 #: wp-admin/includes/network.php:217
 msgid "It looks like the Apache %s module is not installed."
-msgstr "Es sieht danach aus, dass das Apache-Modul %s nicht installiert ist."
+msgstr "Es scheint, als wäre das Apache-Modul %s nicht installiert."
 
 #. translators: %s: mod_rewrite
 #: wp-admin/includes/network.php:209
@@ -1249,7 +1249,7 @@ msgstr "Die Benutzer wurden gelöscht."
 
 #: wp-admin/network/users.php:291
 msgid "Users marked as spam."
-msgstr "Benutzer wurden als Spam markiert."
+msgstr "Die Benutzer wurden als Spam markiert."
 
 #: wp-admin/network/sites.php:355
 msgid "Site unarchived."
@@ -1424,7 +1424,7 @@ msgstr "Geblockte E-Mail-Domains"
 
 #: wp-admin/network/settings.php:273
 msgid "Limited Email Registrations"
-msgstr "Registrierung für E-Mail-Domains limitieren"
+msgstr "Einschränkung der E-Mail-Registrierungen"
 
 #: wp-admin/network/settings.php:254
 msgid "Banned Names"
