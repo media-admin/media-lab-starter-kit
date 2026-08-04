@@ -6,6 +6,19 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ---
 
+## [1.22.7] - 2026-08-04
+
+### media-lab-backup 1.3.4
+
+#### Fixed
+- **Verwaister `caffeinate`-Prozess nach Backup-Abschluss** – der in 1.3.3
+  eingeführte `launchctl asuser`-Fix startete `caffeinate` korrekt, aber
+  `maybe_stop_caffeinate()` killte die falsche PID (die von `launchctl`,
+  nicht von `caffeinate`). Fix: gezieltes Beenden per `pkill -f` anhand des
+  Kommandostrings. Siehe `media-lab-backup/CHANGELOG.md` für Details.
+
+---
+
 ## [1.22.6] - 2026-08-03
 
 ### media-lab-backup 1.3.3

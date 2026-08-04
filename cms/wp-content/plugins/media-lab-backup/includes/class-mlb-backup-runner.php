@@ -255,7 +255,14 @@ class MLBKP_Backup_Runner {
     private function maybe_stop_caffeinate(): void {
         if ( $this->caffeinate_pid === null ) return;
         if ( function_exists( 'shell_exec' ) ) {
-            @shell_exec( 'kill ' . (int) $this->caffeinate_pid . ' 2>/dev/null' );
+            // WICHTIG: Die über $! erfasste PID (in maybe_start_caffeinate())
+            // gehört zu "launchctl", nicht zu "caffeinate" selbst — launchctl
+            // asuser reparented caffeinate als eigenständigen Prozess in der
+            // GUI-Session. Ein kill auf die getrackte PID trifft daher ins
+            // Leere, caffeinate läuft für immer weiter (verifiziert: über
+            // 2 Stunden verwaister Prozess beobachtet). Stattdessen gezielt
+            // per pkill anhand des Kommandostrings beenden.
+            @shell_exec( "pkill -f 'caffeinate -d -i -s' 2>/dev/null" );
         }
         $this->caffeinate_pid = null;
     }

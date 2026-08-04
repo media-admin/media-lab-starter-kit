@@ -6,6 +6,22 @@ Versionierung: [Semantic Versioning](https://semver.org/)
 
 ---
 
+## [1.3.4] - 2026-08-04
+
+### Fixed
+- **Verwaister `caffeinate`-Prozess nach Backup-Abschluss** (`includes/class-mlb-backup-runner.php`)
+  – `maybe_stop_caffeinate()` killte die per `$!` erfasste PID, die aber zu
+  `launchctl` gehört, nicht zu `caffeinate` selbst (`launchctl asuser`
+  reparented `caffeinate` als eigenständigen Prozess in der GUI-Session,
+  siehe 1.3.3). Der `kill`-Aufruf lief dadurch ins Leere, `caffeinate` blieb
+  nach jedem Backup dauerhaft aktiv (verifiziert: über 2 Stunden verwaister
+  Prozess beobachtet, verhinderte unnötig weiterhin System-/Display-Sleep).
+  Fix: `pkill -f 'caffeinate -d -i -s'` beendet gezielt anhand des
+  Kommandostrings statt einer unzuverlässigen PID-Referenz. Verifiziert:
+  `ps aux | grep caffeinate` liefert nach Backup-Abschluss keine Treffer mehr.
+
+---
+
 ## [1.3.3] - 2026-08-03
 
 ### Fixed
