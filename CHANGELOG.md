@@ -6,6 +6,50 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ---
 
+## [1.23.1] - 2026-08-06
+
+### media-lab-woocommerce 2.0.1
+
+#### Fixed
+- Fehlendes Lade-/Sperr-Feedback in `wishlist.js` beim Entfernen bzw.
+  Ändern der Menge behoben (Doppelklick-Schutz, Button-/Input-Disable
+  während des Requests). Bewusst **kein** Skeleton-Screen hier – die
+  Operationen sind für ein Skeleton zu schnell, siehe
+  `media-lab-woocommerce/CHANGELOG.md` für die Begründung.
+
+---
+
+## [1.23.0] - 2026-08-05
+
+### media-lab-agency-core 1.18.0
+
+#### Added
+- **Zentrale Skeleton-Loading-API** (`inc/skeleton.php`, `assets/css/skeleton.css`,
+  `assets/js/skeleton.js`) – wiederverwendbares Feature für Skeleton-Screens
+  statt Spinner/Opacity-Dimming bei AJAX-Requests und verzögerter
+  JS-Initialisierung (z.B. Swiper). Site-weit als `window.MediaLabSkeleton`
+  verfügbar (JS) sowie über `medialab_render_skeleton()` (PHP, für
+  serverseitig gerenderte Platzhalter). Vier Varianten: `card`, `list`,
+  `text`, `slide`. Farben per CSS Custom Properties
+  (`--medialab-skeleton-base`, `--medialab-skeleton-shine`) im Theme
+  überschreibbar, Struktur (Größen, Shimmer-Animation) bleibt im Plugin.
+  Respektiert `prefers-reduced-motion`.
+- Dies ist Stufe 1 einer dreistufigen Skeleton-Einführung: (1) AJAX-Content
+  [erledigt], (2) JS-init-abhängige Blocks (Slider/Parallax) [offen],
+  (3) initialer Seitenaufbau [offen].
+
+### custom-theme 1.15.0
+
+#### Changed
+- **`ajax-filters.js`**: `showLoading()`/`hideLoading()` nutzen jetzt
+  `window.MediaLabSkeleton`, um während des AJAX-Requests Skeleton-Karten
+  passend zum jeweiligen Template (card/job/project/team/event) direkt im
+  Ergebnis-Grid anzuzeigen, statt nur einen Spinner einzublenden und das
+  Grid abzudunkeln. Fallback auf das alte Spinner-Verhalten, falls
+  `media-lab-agency-core` (noch) nicht geladen ist.
+
+---
+
 ## [1.22.7] - 2026-08-04
 
 ### media-lab-backup 1.3.4

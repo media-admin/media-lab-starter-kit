@@ -6,6 +6,30 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ---
 
+## [2.0.1] - 2026-08-06
+
+### media-lab-woocommerce 2.0.1
+
+#### Fixed
+- **Fehlendes Lade-/Sperr-Feedback in `wishlist.js`** – `handleRemove()` und
+  `handleQtyChange()` gaben während des laufenden AJAX-Requests keinerlei
+  visuelles Signal, wodurch Doppelklicks auf "Entfernen" oder schnelles
+  mehrfaches Ändern der Menge unbemerkt mehrere Requests auslösen konnten.
+  - `handleRemove()`: betroffene `.mlw-wishlist-item`-Zeile bekommt sofort
+    die Klasse `is-removing` (Opacity 0.4, `pointer-events: none`) und der
+    Entfernen-Button wird deaktiviert; zusätzlicher `removingItemIds`-Set
+    verhindert parallele Requests für dieselbe Item-ID.
+  - `handleQtyChange()`: Mengen-Input wird für die Dauer des (debounced)
+    Requests deaktiviert.
+  - Kein klassisches Skeleton-Screen hier bewusst nicht eingesetzt: die
+    Operationen laufen über `get_user_meta()`-Storage ohne externe Requests
+    und sind typischerweise deutlich unter 200ms – ein Skeleton würde eher
+    Flackern erzeugen als Wartezeit fühlbar verkürzen. Siehe
+    `media-lab-agency-core` CHANGELOG für die zentrale Skeleton-API, die für
+    langsamere AJAX-Fälle (z.B. Post-/CPT-Filter) zum Einsatz kommt.
+
+---
+
 ## [2.0.0] - 2026-08-06
 
 ### media-lab-woocommerce 2.0.0

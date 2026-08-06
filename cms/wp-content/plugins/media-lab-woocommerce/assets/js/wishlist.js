@@ -80,9 +80,22 @@
 
     // ── Remove ───────────────────────────────────────────────────────────────
 
+    // Item-IDs mit gerade laufendem Remove-Request - verhindert Doppelklicks
+    // während der (kurzen) Server-Anfrage.
+    const removingItemIds = new Set();
+
     function handleRemove( itemId ) {
         if ( ! itemId ) return;
+        if ( removingItemIds.has( itemId ) ) return; // bereits in Bearbeitung
         if ( ! window.confirm( mlwWishlist.i18n.confirmRemove ) ) return;
+
+        removingItemIds.add( itemId );
+        const row = document.querySelector( '.mlw-wishlist-item[data-item-id="' + cssEscape( itemId ) + '"]' );
+        if ( row ) {
+            row.classList.add( 'is-removing' );
+            const btn = row.querySelector( '.mlw-wishlist-item__remove-btn' );
+            if ( btn ) btn.disabled = true;
+        }
 
         postAjax( 'mlw_wishlist_remove', { item_id: itemId } )
             .then( function ( res ) {
@@ -95,6 +108,17 @@
             } )
             .catch( function () {
                 alert( mlwWishlist.i18n.genericError );
+            } )
+            .finally( function () {
+                removingItemIds.delete( itemId );
+                // Falls die Zeile nach einem Fehler noch existiert (kein renderItems
+                // gelaufen), Sperre wieder aufheben - bei Erfolg ist sie ohnehin weg,
+                // da renderItems() das Grid neu aufbaut.
+                if ( row && row.isConnected ) {
+                    row.classList.remove( 'is-removing' );
+                    const btn = row.querySelector( '.mlw-wishlist-item__remove-btn' );
+                    if ( btn ) btn.disabled = false;
+                }
             } );
     }
 
@@ -105,6 +129,9 @@
         if ( ! itemId ) return;
         clearTimeout( qtyDebounce );
         qtyDebounce = setTimeout( function () {
+            const input = document.querySelector( '.mlw-wishlist-item__qty-input[data-item-id="' + cssEscape( itemId ) + '"]' );
+            if ( input ) input.disabled = true;
+
             postAjax( 'mlw_wishlist_update_qty', { item_id: itemId, quantity: quantity } )
                 .then( function ( res ) {
                     if ( res.success ) {
@@ -116,6 +143,11 @@
                 } )
                 .catch( function () {
                     alert( mlwWishlist.i18n.genericError );
+                } )
+                .finally( function () {
+                    // Bei Erfolg hat renderItems() den Input ohnehin ersetzt;
+                    // nur bei Fehlerfall existiert er noch und muss reaktiviert werden.
+                    if ( input && input.isConnected ) input.disabled = false;
                 } );
         }, 400 );
     }
@@ -291,5 +323,15 @@
 
     function escapeAttr( str ) {
         return escapeHtml( str ).replace( /"/g, '&quot;' );
+    }
+
+    // Für den Bau von attribute-selector-Strings (data-item-id="...") aus
+    // Werten, die serverseitig erzeugt wurden - defensiv, falls IDs mal
+    // Sonderzeichen enthalten.
+    function cssEscape( value ) {
+        if ( window.CSS && typeof window.CSS.escape === 'function' ) {
+            return window.CSS.escape( String( value ) );
+        }
+        return String( value ).replace( /["\\]/g, '\\$&' );
     }
 })();

@@ -36,7 +36,11 @@
     align-items: center;
     padding: 1rem 0;
     border-bottom: 1px solid rgba(0,0,0,0.1);
+    transition: opacity 0.15s ease;
 }
+/* Kurzzeitiger Sperr-Zustand während Entfernen-Request (F-01: verhindert
+   unbemerkte Doppelklicks bei fehlendem visuellem Feedback) */
+.mlw-wishlist-item.is-removing { opacity: 0.4; pointer-events: none; }
 .mlw-wishlist-item__image img { width: 72px; height: 72px; object-fit: cover; border-radius: 8px; }
 .mlw-wishlist-item__name { font-weight: 600; text-decoration: none; }
 .mlw-wishlist-item__name--gone { opacity: 0.5; font-style: italic; }
