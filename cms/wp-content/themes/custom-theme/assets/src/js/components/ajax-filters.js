@@ -678,7 +678,36 @@ export default class AjaxFilters {
   // ============================================
   // LOADING STATES
   // ============================================
+  /**
+   * Klassen-Zuordnung Template → Karten-Klasse, damit die Skeleton-Items
+   * exakt im gleichen Grid landen wie die späteren echten Ergebnis-Karten
+   * (siehe renderPost/renderXPost unten). Muss synchron gehalten werden,
+   * falls dort ein neues Template ergänzt wird.
+   */
+  skeletonItemClass(template) {
+    const map = {
+      card: 'post-card',
+      job: 'filter-result filter-result--job',
+      project: 'project-card',
+      team: 'team-card',
+      event: 'event-card',
+    };
+    return map[template] || 'post-card';
+  }
+
   showLoading(container) {
+    // Erster Aufruf pro Container: initial noch keine Ergebnisse im Grid,
+    // danach ersetzt der Skeleton die alten (jetzt veralteten) Karten.
+    if (container.elements.grid && window.MediaLabSkeleton) {
+      window.MediaLabSkeleton.show(container.elements.grid, {
+        type: container.filterSettings.template === 'card' ? 'card' : container.filterSettings.template,
+        count: Math.min(container.filterSettings.postsPerPage, 9),
+        itemClass: this.skeletonItemClass(container.filterSettings.template),
+      });
+      return;
+    }
+
+    // Fallback, falls media-lab-agency-core (noch) nicht aktiv/geladen ist.
     if (container.elements.loading) container.elements.loading.style.display = 'flex';
     if (container.elements.grid) container.elements.grid.style.opacity = '0.5';
   }
@@ -686,6 +715,13 @@ export default class AjaxFilters {
   hideLoading(container) {
     if (container.elements.loading) container.elements.loading.style.display = 'none';
     if (container.elements.grid) container.elements.grid.style.opacity = '1';
+    // renderResults()/showError() leeren das Grid ohnehin per innerHTML,
+    // das entfernt vorhandene Skeleton-Items automatisch mit. Für den Fall,
+    // dass loadResults() vorzeitig abbricht (z.B. Config-Fehler), räumen
+    // wir hier zusätzlich explizit auf:
+    if (container.elements.grid && window.MediaLabSkeleton) {
+      window.MediaLabSkeleton.clear(container.elements.grid);
+    }
   }
   
   showError(container, message) {
