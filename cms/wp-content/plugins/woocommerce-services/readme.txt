@@ -7,7 +7,7 @@ Requires Plugins: woocommerce
 Tested up to: 7.0
 WC requires at least: 10.8
 WC tested up to: 11.0
-Stable tag: 3.6.10
+Stable tag: 3.6.11
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -69,6 +69,10 @@ This plugin relies on the following external services:
 2. Checking on the health of WooCommerce Tax
 
 == Changelog ==
+
+= 3.6.11 - 2026-08-05 =
+* Fix   - Prevent a fatal error during cart and checkout tax calculation when TaxJar returns an incomplete tax response.
+* Fix   - React 19 compatibility for store notices on the block cart and checkout.
 
 = 3.6.10 - 2026-07-27 =
 * Tweak - WooCommerce 11.0 Compatibility.

@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - Advanced Custom Fields (ACF®) - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-07-19 03:26:35+0000\n"
+"PO-Revision-Date: 2026-08-01 21:37:34+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -11,11 +11,116 @@ msgstr ""
 "Language: de\n"
 "Project-Id-Version: Plugins - Advanced Custom Fields (ACF®) - Stable (latest release)\n"
 
+#: includes/admin/views/email-opt-in-banner.php:70
+msgid "Join the list"
+msgstr "Liste beitreten"
+
+#: includes/admin/views/email-opt-in-banner.php:54
+msgid "Email address"
+msgstr "E-Mail-Adresse"
+
+#: includes/admin/views/email-opt-in-banner.php:39
+msgid "Join the ACF community."
+msgstr "Werde Teil der ACF-Community."
+
+#: includes/admin/views/email-opt-in-banner.php:21
+msgid "Privacy Policy"
+msgstr "Datenschutzerklärung"
+
+#: includes/admin/admin-email-opt-in-banner.php:264
+msgid "Please enter a valid email address."
+msgstr "Bitte gib eine gültige E-Mail-Adresse ein."
+
+#: includes/admin/admin-email-opt-in-banner.php:263
+msgid "Email address is required."
+msgstr "Die E-Mail-Adresse ist erforderlich."
+
+#: src/Site_Health/Site_Health.php:1009
+msgid "Datastore Enabled"
+msgstr "Datenspeicher aktiviert"
+
+#: src/Site_Health/Site_Health.php:996
+msgid "Objects with Schema Support"
+msgstr "Objekte mit Schema-Unterstützung"
+
+#: src/Site_Health/Site_Health.php:984
+msgid "Schema Support"
+msgstr "Schema-Unterstützung"
+
+#: src/Site_Health/Site_Health.php:975
+msgid "AI Execution Errors"
+msgstr "KI-Ausführungsfehler"
+
+#: src/Site_Health/Site_Health.php:968
+msgid "AI Actions Executed"
+msgstr "Ausgeführte KI-Aktionen"
+
+#: src/Site_Health/Site_Health.php:929
+msgid "AI Support"
+msgstr "KI-Unterstützung"
+
+#: src/Site_Health/Site_Health.php:396
+msgid "Disabled"
+msgstr "Deaktiviert"
+
+#: src/Site_Health/Site_Health.php:395
+msgid "Enabled"
+msgstr "Aktiviert"
+
+#: src/AI/GEO/GEO.php:135
+msgid "All Types"
+msgstr "Alle Typen"
+
+#: src/AI/GEO/GEO.php:103
+msgid "Schema.org Type"
+msgstr "Schema.org-Typ"
+
+#: src/AI/GEO/GEO.php:65
+msgid "Schema"
+msgstr "Schema"
+
+#: src/AI/GEO/FieldSettings.php:169
+msgid "Schema.org Output Format"
+msgstr "Schema.org-Ausgabeformat"
+
+#: src/AI/GEO/FieldSettings.php:144
+msgid "Schema.org Property"
+msgstr "Schema.org-Eigenschaft"
+
+#: src/AI/GEO/FieldSettings.php:95
+msgid "Missing required parameters"
+msgstr "Erforderliche Parameter fehlen"
+
+#: src/AI/AI.php:156
+msgid "AI Context Description"
+msgstr "KI-Kontextbeschreibung"
+
+#: src/AI/AI.php:136
+msgid "AI Description"
+msgstr "KI-Beschreibung"
+
+#: src/AI/AI.php:134
+msgid "Allow AI Access"
+msgstr "KI-Zugriff erlauben"
+
+#. translators: %s The singular label for the custom taxonomy.
+#: src/AI/Abilities/Taxonomy.php:317
+msgid "Create %s Term"
+msgstr "%s-Begriff erstellen"
+
+#: src/AI/Abilities/PostType.php:78
+msgid "Register Custom Post Type"
+msgstr "Individuellen Inhaltstyp registrieren"
+
+#: src/AI/Abilities/PostType.php:42
+msgid "ACF Custom Post Types"
+msgstr "Individuelle ACF-Inhaltstypen"
+
 #: includes/fields/class-acf-field-file.php:159
 msgid "Edit file"
 msgstr "Datei bearbeiten"
 
-#: includes/fields/class-acf-field-image.php:142
+#: includes/fields/class-acf-field-image.php:143
 msgid "Edit image"
 msgstr "Bild bearbeiten"
 
@@ -23,7 +128,7 @@ msgstr "Bild bearbeiten"
 msgid "Remove file"
 msgstr "Datei entfernen"
 
-#: includes/fields/class-acf-field-image.php:144
+#: includes/fields/class-acf-field-image.php:145
 msgid "Remove image"
 msgstr "Bild entfernen"
 
@@ -1444,8 +1549,8 @@ msgstr "(Duplikat von %s)"
 msgid "Duplicate post type"
 msgstr "Inhaltstyp duplizieren"
 
-#: includes/fields/class-acf-field-page_link.php:505
-#: includes/fields/class-acf-field-post_object.php:418
+#: includes/fields/class-acf-field-page_link.php:511
+#: includes/fields/class-acf-field-post_object.php:424
 #: includes/fields/class-acf-field-select.php:387
 #: includes/fields/class-acf-field-user.php:120
 msgid "Select Multiple"
@@ -1554,9 +1659,9 @@ msgstr "Keine Beschreibung"
 msgid "No fields"
 msgstr "Keine Felder"
 
-#: includes/fields/class-acf-field-page_link.php:472
-#: includes/fields/class-acf-field-post_object.php:381
-#: includes/fields/class-acf-field-relationship.php:610
+#: includes/fields/class-acf-field-page_link.php:478
+#: includes/fields/class-acf-field-post_object.php:387
+#: includes/fields/class-acf-field-relationship.php:616
 msgid "Any post status"
 msgstr "Jeder Beitragsstatus"
 
@@ -1651,9 +1756,9 @@ msgstr "Eine einfache Texteingabe, nützlich für die Speicherung einzelner Zeic
 msgid "Allows the selection of one or more taxonomy terms based on the criteria and options specified in the fields settings."
 msgstr "Ermöglicht die Auswahl von einem oder mehreren Taxonomiebegriffen auf der Grundlage der in den Feldeinstellungen angegebenen Kriterien und Optionen."
 
-#: includes/fields/class-acf-field-page_link.php:464
-#: includes/fields/class-acf-field-post_object.php:373
-#: includes/fields/class-acf-field-relationship.php:602
+#: includes/fields/class-acf-field-page_link.php:470
+#: includes/fields/class-acf-field-post_object.php:379
+#: includes/fields/class-acf-field-relationship.php:608
 msgid "Filter by Post Status"
 msgstr "Nach Beitragsstatus filtern"
 
@@ -3703,13 +3808,13 @@ msgstr[1] "%1$s muss einen Benutzer mit einer der folgenden rollen haben: %2$s"
 msgid "%1$s must have a valid user ID."
 msgstr "%1$s muss eine gültige Benutzer-ID haben."
 
-#: includes/fields/class-acf-field-post_object.php:667
+#: includes/fields/class-acf-field-post_object.php:673
 msgid "%1$s must have term %2$s."
 msgid_plural "%1$s must have one of the following terms: %2$s"
 msgstr[0] "%1$s muss den Begriff %2$s haben."
 msgstr[1] "%1$s muss einen der folgenden Begriffe haben: %2$s"
 
-#: includes/fields/class-acf-field-post_object.php:642
+#: includes/fields/class-acf-field-post_object.php:648
 msgid "%1$s must have a valid post ID."
 msgstr "%1$s muss eine gültige Beitrags-ID haben."
 
@@ -3717,7 +3822,7 @@ msgstr "%1$s muss eine gültige Beitrags-ID haben."
 msgid "%s requires a valid attachment ID."
 msgstr "%s erfordert eine gültige Anhangs-ID."
 
-#: includes/fields/class-acf-field-post_object.php:651
+#: includes/fields/class-acf-field-post_object.php:657
 msgid "%1$s must be of post type %2$s."
 msgid_plural "%1$s must be of one of the following post types: %2$s"
 msgstr[0] "%1$s muss vom Inhaltstyp %2$s sein."
@@ -3941,7 +4046,7 @@ msgstr "Fehler beim Laden des Felds."
 msgid "Invalid nonce."
 msgstr "Der Nonce ist ungültig."
 
-#: includes/forms/form-user.php:337
+#: includes/forms/form-user.php:417
 msgid "<strong>Error</strong>: %s"
 msgstr "<strong>Fehler</strong>: %s"
 
@@ -4224,7 +4329,7 @@ msgid "Move"
 msgstr "Verschieben"
 
 #: includes/assets.php:358 includes/fields/class-acf-field-file.php:161
-#: includes/fields/class-acf-field-image.php:144
+#: includes/fields/class-acf-field-image.php:145
 #: includes/fields/class-acf-field-link.php:133
 msgid "Remove"
 msgstr "Entfernen"
@@ -4349,7 +4454,7 @@ msgstr "Aktualisieren"
 #: includes/admin/views/acf-field-group/conditional-logic.php:191
 #: includes/admin/views/acf-field-group/location-group.php:14
 #: includes/admin/views/acf-field-group/locations.php:43
-#: includes/api/api-helpers.php:3077
+#: includes/api/api-helpers.php:3431
 msgid "or"
 msgstr "oder"
 
@@ -4396,7 +4501,7 @@ msgstr "Keine %s"
 msgid "Toggle All"
 msgstr "Alle umschalten"
 
-#: includes/fields/class-acf-field-page_link.php:494
+#: includes/fields/class-acf-field-page_link.php:500
 msgid "Allow Archives URLs"
 msgstr "Archiv-URLs erlauben"
 
@@ -4424,8 +4529,8 @@ msgstr "Auswahlmöglichkeiten"
 msgid "Button Group"
 msgstr "Button-Gruppe"
 
-#: includes/fields/class-acf-field-page_link.php:280
-#: includes/fields/class-acf-field-post_object.php:261
+#: includes/fields/class-acf-field-page_link.php:286
+#: includes/fields/class-acf-field-post_object.php:267
 #: includes/fields/class-acf-field-taxonomy.php:890
 msgid "Parent"
 msgstr "Übergeordnet"
@@ -4481,61 +4586,61 @@ msgstr "Anhängen"
 msgid "Prepend"
 msgstr "Voranstellen"
 
-#: includes/fields/class-acf-field-post_object.php:409
-#: includes/fields/class-acf-field-relationship.php:653
+#: includes/fields/class-acf-field-post_object.php:415
+#: includes/fields/class-acf-field-relationship.php:659
 msgid "Post ID"
 msgstr "Beitrags-ID"
 
 #: includes/fields/class-acf-field-post_object.php:24
-#: includes/fields/class-acf-field-post_object.php:408
-#: includes/fields/class-acf-field-relationship.php:652
+#: includes/fields/class-acf-field-post_object.php:414
+#: includes/fields/class-acf-field-relationship.php:658
 msgid "Post Object"
 msgstr "Beitrags-Objekt"
 
 #: includes/admin/views/acf-field-group/options.php:196
 #: includes/admin/views/acf-post-type/advanced-settings.php:36
-#: includes/fields/class-acf-field-relationship.php:710
+#: includes/fields/class-acf-field-relationship.php:716
 msgid "Featured Image"
 msgstr "Beitragsbild"
 
-#: includes/fields/class-acf-field-relationship.php:705
+#: includes/fields/class-acf-field-relationship.php:711
 msgid "Elements"
 msgstr "Elemente"
 
-#: includes/fields/class-acf-field-relationship.php:639
+#: includes/fields/class-acf-field-relationship.php:645
 #: includes/fields/class-acf-field-taxonomy.php:29
 #: includes/fields/class-acf-field-taxonomy.php:646
 #: includes/locations/class-acf-location-taxonomy.php:31
 msgid "Taxonomy"
 msgstr "Taxonomie"
 
-#: includes/fields/class-acf-field-relationship.php:638
+#: includes/fields/class-acf-field-relationship.php:644
 #: includes/locations/class-acf-location-post-type.php:31
 #: includes/post-types/class-acf-post-type.php:101
 msgid "Post Type"
 msgstr "Inhaltstyp"
 
-#: includes/fields/class-acf-field-relationship.php:632
+#: includes/fields/class-acf-field-relationship.php:638
 msgid "Filters"
 msgstr "Filter"
 
-#: includes/fields/class-acf-field-page_link.php:479
-#: includes/fields/class-acf-field-post_object.php:388
-#: includes/fields/class-acf-field-relationship.php:617
+#: includes/fields/class-acf-field-page_link.php:485
+#: includes/fields/class-acf-field-post_object.php:394
+#: includes/fields/class-acf-field-relationship.php:623
 msgid "Filter by Taxonomy"
 msgstr "Nach Taxonomie filtern"
 
-#: includes/fields/class-acf-field-page_link.php:449
-#: includes/fields/class-acf-field-post_object.php:358
-#: includes/fields/class-acf-field-relationship.php:587
+#: includes/fields/class-acf-field-page_link.php:455
+#: includes/fields/class-acf-field-post_object.php:364
+#: includes/fields/class-acf-field-relationship.php:593
 msgid "Filter by Post Type"
 msgstr "Nach Inhaltstyp filtern"
 
-#: includes/fields/class-acf-field-relationship.php:417
+#: includes/fields/class-acf-field-relationship.php:423
 msgid "Select taxonomy"
 msgstr "Taxonomie auswählen"
 
-#: includes/fields/class-acf-field-relationship.php:409
+#: includes/fields/class-acf-field-relationship.php:415
 msgid "Select post type"
 msgstr "Inhaltstyp auswählen"
 
@@ -4544,25 +4649,25 @@ msgid "Relationship"
 msgstr "Beziehung"
 
 #: includes/fields/class-acf-field-file.php:277
-#: includes/fields/class-acf-field-image.php:279
+#: includes/fields/class-acf-field-image.php:294
 msgid "Maximum"
 msgstr "Maximum"
 
 #: includes/fields/class-acf-field-file.php:153
 #: includes/fields/class-acf-field-file.php:269
 #: includes/fields/class-acf-field-file.php:281
-#: includes/fields/class-acf-field-image.php:270
-#: includes/fields/class-acf-field-image.php:306
+#: includes/fields/class-acf-field-image.php:285
+#: includes/fields/class-acf-field-image.php:321
 msgid "File size"
 msgstr "Dateigröße"
 
 #: includes/fields/class-acf-field-file.php:265
-#: includes/fields/class-acf-field-image.php:243
+#: includes/fields/class-acf-field-image.php:258
 msgid "Minimum"
 msgstr "Minimum"
 
 #: includes/fields/class-acf-field-file.php:234
-#: includes/fields/class-acf-field-image.php:208
+#: includes/fields/class-acf-field-image.php:223
 #: includes/locations/class-acf-location-attachment.php:83
 #: includes/locations/class-acf-location-comment.php:70
 #: includes/locations/class-acf-location-nav-menu.php:84
@@ -4573,11 +4678,11 @@ msgstr "Minimum"
 msgid "All"
 msgstr "Alle"
 
-#: includes/fields/class-acf-field-image.php:194
+#: includes/fields/class-acf-field-image.php:209
 msgid "Image ID"
 msgstr "Bild-ID"
 
-#: includes/fields/class-acf-field-image.php:193
+#: includes/fields/class-acf-field-image.php:208
 msgid "Image URL"
 msgstr "Bild-URL"
 
@@ -4590,30 +4695,30 @@ msgstr "Bild-URL"
 msgid "Return Value"
 msgstr "Rückgabewert"
 
-#: includes/fields/class-acf-field-image.php:164
+#: includes/fields/class-acf-field-image.php:179
 msgid "Add Image"
 msgstr "Bild hinzufügen"
 
 #: includes/admin/views/acf-field-group/field.php:99
 #: includes/fields/class-acf-field-file.php:159
-#: includes/fields/class-acf-field-image.php:142
+#: includes/fields/class-acf-field-image.php:143
 #: includes/fields/class-acf-field-link.php:133
 msgid "Edit"
 msgstr "Bearbeiten"
 
-#: includes/fields/class-acf-field-image.php:72 includes/media.php:64
+#: includes/fields/class-acf-field-image.php:73 includes/media.php:64
 msgid "All images"
 msgstr "Alle Bilder"
 
-#: includes/fields/class-acf-field-image.php:71
+#: includes/fields/class-acf-field-image.php:72
 msgid "Update Image"
 msgstr "Bild aktualisieren"
 
-#: includes/fields/class-acf-field-image.php:70
+#: includes/fields/class-acf-field-image.php:71
 msgid "Edit Image"
 msgstr "Bild bearbeiten"
 
-#: includes/fields/class-acf-field-image.php:69
+#: includes/fields/class-acf-field-image.php:70
 msgid "Select Image"
 msgstr "Bild auswählen"
 
@@ -4631,8 +4736,8 @@ msgctxt "Date Picker JS currentText"
 msgid "Today"
 msgstr "Heute"
 
-#: includes/fields/class-acf-field-image.php:247
-#: includes/fields/class-acf-field-image.php:283
+#: includes/fields/class-acf-field-image.php:262
+#: includes/fields/class-acf-field-image.php:298
 #: includes/fields/class-acf-field-oembed.php:282
 msgid "Width"
 msgstr "Breite"
@@ -4694,8 +4799,8 @@ msgid "Group"
 msgstr "Gruppe"
 
 #: includes/fields/class-acf-field-google-map.php:230
-#: includes/fields/class-acf-field-image.php:258
-#: includes/fields/class-acf-field-image.php:294
+#: includes/fields/class-acf-field-image.php:273
+#: includes/fields/class-acf-field-image.php:309
 #: includes/fields/class-acf-field-oembed.php:294
 msgid "Height"
 msgstr "Höhe"
@@ -4708,9 +4813,9 @@ msgstr "Zoom"
 #: includes/fields/class-acf-field-date_picker.php:211
 #: includes/fields/class-acf-field-date_time_picker.php:199
 #: includes/fields/class-acf-field-icon_picker.php:296
-#: includes/fields/class-acf-field-image.php:186
-#: includes/fields/class-acf-field-post_object.php:403
-#: includes/fields/class-acf-field-relationship.php:647
+#: includes/fields/class-acf-field-image.php:201
+#: includes/fields/class-acf-field-post_object.php:409
+#: includes/fields/class-acf-field-relationship.php:653
 #: includes/fields/class-acf-field-select.php:371
 #: includes/fields/class-acf-field-time_picker.php:130
 #: includes/fields/class-acf-field-user.php:104
@@ -5087,31 +5192,31 @@ msgstr "Stelle bitte ebenfalls sicher, dass alle Premium-Add-ons (%s) auf die ne
 msgid "Local JSON"
 msgstr "Lokales JSON"
 
-#: includes/api/api-helpers.php:1450 includes/api/api-term.php:149
+#: includes/api/api-helpers.php:1524 includes/api/api-term.php:149
 msgid "(no title)"
 msgstr "(ohne Titel)"
 
-#: includes/api/api-helpers.php:3016
+#: includes/api/api-helpers.php:3370
 msgid "Image width must be at least %dpx."
 msgstr "Die Breite des Bildes muss mindestens %dpx sein."
 
-#: includes/api/api-helpers.php:3020
+#: includes/api/api-helpers.php:3374
 msgid "Image width must not exceed %dpx."
 msgstr "Die Breite des Bildes darf %dpx nicht überschreiten."
 
-#: includes/api/api-helpers.php:3032
+#: includes/api/api-helpers.php:3386
 msgid "Image height must be at least %dpx."
 msgstr "Die Höhe des Bildes muss mindestens %dpx sein."
 
-#: includes/api/api-helpers.php:3036
+#: includes/api/api-helpers.php:3390
 msgid "Image height must not exceed %dpx."
 msgstr "Die Höhe des Bild darf %dpx nicht überschreiten."
 
-#: includes/api/api-helpers.php:3049
+#: includes/api/api-helpers.php:3403
 msgid "File size must be at least %s."
 msgstr "Die Dateigröße muss mindestens %s sein."
 
-#: includes/api/api-helpers.php:3080
+#: includes/api/api-helpers.php:3434
 msgid "File type must be %s."
 msgstr "Der Dateityp muss %s sein."
 
@@ -5178,17 +5283,17 @@ msgid "Placeholder Text"
 msgstr "Platzhaltertext"
 
 #: includes/fields/class-acf-field-file.php:228
-#: includes/fields/class-acf-field-image.php:202
+#: includes/fields/class-acf-field-image.php:217
 msgid "Library"
 msgstr "Mediathek"
 
 #: includes/fields/class-acf-field-file.php:229
-#: includes/fields/class-acf-field-image.php:203
+#: includes/fields/class-acf-field-image.php:218
 msgid "Limit the media library choice"
 msgstr "Beschränkt die Auswahl in der Mediathek"
 
 #: includes/fields/class-acf-field-file.php:289
-#: includes/fields/class-acf-field-image.php:315
+#: includes/fields/class-acf-field-image.php:330
 msgid "Allowed File Types"
 msgstr "Erlaubte Dateiformate"
 
@@ -5200,7 +5305,7 @@ msgstr "Position löschen"
 msgid "Find current location"
 msgstr "Aktuelle Position finden"
 
-#: includes/fields/class-acf-field-image.php:192
+#: includes/fields/class-acf-field-image.php:207
 msgid "Image Array"
 msgstr "Bild-Array"
 
@@ -5223,15 +5328,15 @@ msgstr "Numerisch"
 msgid "Minimum Value"
 msgstr "Mindestwert"
 
-#: includes/fields/class-acf-field-page_link.php:457
-#: includes/fields/class-acf-field-post_object.php:366
-#: includes/fields/class-acf-field-relationship.php:595
+#: includes/fields/class-acf-field-page_link.php:463
+#: includes/fields/class-acf-field-post_object.php:372
+#: includes/fields/class-acf-field-relationship.php:601
 msgid "All post types"
 msgstr "Alle Inhaltstypen"
 
-#: includes/fields/class-acf-field-page_link.php:487
-#: includes/fields/class-acf-field-post_object.php:396
-#: includes/fields/class-acf-field-relationship.php:625
+#: includes/fields/class-acf-field-page_link.php:493
+#: includes/fields/class-acf-field-post_object.php:402
+#: includes/fields/class-acf-field-relationship.php:631
 msgid "All taxonomies"
 msgstr "Alle Taxonomien"
 
@@ -5239,15 +5344,15 @@ msgstr "Alle Taxonomien"
 msgid "Other"
 msgstr "Weitere"
 
-#: includes/fields/class-acf-field-relationship.php:706
+#: includes/fields/class-acf-field-relationship.php:712
 msgid "Selected elements will be displayed in each result"
 msgstr "Die ausgewählten Elemente werden in jedem Ergebnis angezeigt"
 
-#: includes/fields/class-acf-field-relationship.php:675
+#: includes/fields/class-acf-field-relationship.php:681
 msgid "Minimum Posts"
 msgstr "Mindestzahl an Beiträgen"
 
-#: includes/fields/class-acf-field-relationship.php:685
+#: includes/fields/class-acf-field-relationship.php:691
 msgid "Maximum Posts"
 msgstr "Höchstzahl an Beiträgen"
 
@@ -5385,8 +5490,8 @@ msgstr "Individuell:"
 msgid "Restrict which files can be uploaded"
 msgstr "Beschränkt, welche Dateien hochgeladen werden können"
 
-#: includes/fields/class-acf-field-image.php:244
-#: includes/fields/class-acf-field-image.php:280
+#: includes/fields/class-acf-field-image.php:259
+#: includes/fields/class-acf-field-image.php:295
 msgid "Restrict which images can be uploaded"
 msgstr "Beschränkt, welche Bilder hochgeladen werden können"
 
@@ -5420,7 +5525,7 @@ msgstr "Anhang"
 msgid "Site requires database upgrade from %1$s to %2$s"
 msgstr "Die Website erfordert ein Upgrade der Datenbank von %1$s auf %2$s"
 
-#: includes/fields/class-acf-field-relationship.php:790
+#: includes/fields/class-acf-field-relationship.php:796
 msgid "%1$s requires at least %2$s selection"
 msgid_plural "%1$s requires at least %2$s selections"
 msgstr[0] "%1$s erfordert mindestens %2$s Auswahl"
@@ -5435,12 +5540,12 @@ msgstr "Danke für die Aktualisierung auf %1$s v%2$s!"
 msgid "Gallery"
 msgstr "Galerie"
 
-#: includes/api/api-helpers.php:3053
+#: includes/api/api-helpers.php:3407
 msgid "File size must not exceed %s."
 msgstr "Die Dateigröße darf nicht größer als %s sein."
 
 #: includes/fields/class-acf-field-google-map.php:159
-#: includes/fields/class-acf-field-relationship.php:637
+#: includes/fields/class-acf-field-relationship.php:643
 msgid "Search"
 msgstr "Suchen"
 
@@ -5533,8 +5638,8 @@ msgid "Add New"
 msgstr "Neu hinzufügen"
 
 #: includes/fields/class-acf-field-button-group.php:210
-#: includes/fields/class-acf-field-page_link.php:526
-#: includes/fields/class-acf-field-post_object.php:439
+#: includes/fields/class-acf-field-page_link.php:532
+#: includes/fields/class-acf-field-post_object.php:445
 #: includes/fields/class-acf-field-radio.php:243
 #: includes/fields/class-acf-field-select.php:408
 #: includes/fields/class-acf-field-taxonomy.php:726
@@ -5904,7 +6009,7 @@ msgid "Incorrect file type"
 msgstr "Inkorrekter Dateityp"
 
 #: includes/fields/class-acf-field-file.php:235
-#: includes/fields/class-acf-field-image.php:209
+#: includes/fields/class-acf-field-image.php:224
 msgid "Uploaded to post"
 msgstr "Wurde zum Beitrag hochgeladen"
 
@@ -5923,7 +6028,7 @@ msgid "Upgrade Sites"
 msgstr "Upgrade der Websites"
 
 #: includes/fields/class-acf-field-file.php:290
-#: includes/fields/class-acf-field-image.php:316
+#: includes/fields/class-acf-field-image.php:331
 msgid "Comma separated list. Leave blank for all types"
 msgstr "Eine durch Kommata getrennte Liste. Leer lassen, um alle Typen zu erlauben"
 
@@ -6061,7 +6166,7 @@ msgstr "Wahr/falsch"
 msgid "Date Picker"
 msgstr "Datumspicker"
 
-#: includes/fields/class-acf-field-image.php:164
+#: includes/fields/class-acf-field-image.php:179
 msgid "No image selected"
 msgstr "Es wurde kein Bild ausgewählt"
 
@@ -6213,7 +6318,7 @@ msgstr "Übergangslos (keine Metabox)"
 msgid "Multi-Expand"
 msgstr "Mehrfach-Erweiterung"
 
-#: includes/fields/class-acf-field-relationship.php:487
+#: includes/fields/class-acf-field-relationship.php:493
 msgid "Search..."
 msgstr "Suchen …"
 
@@ -6282,11 +6387,11 @@ msgstr "Beitragsseite"
 msgid "Page Link"
 msgstr "Seitenlink"
 
-#: includes/fields/class-acf-field-page_link.php:203
+#: includes/fields/class-acf-field-page_link.php:209
 msgid "Archives"
 msgstr "Archiv"
 
-#: includes/fields/class-acf-field-image.php:335
+#: includes/fields/class-acf-field-image.php:350
 msgid "Preview Size"
 msgstr "Vorschaugröße"
 

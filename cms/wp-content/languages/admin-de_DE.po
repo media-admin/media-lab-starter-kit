@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the WordPress - 7.0.x - Development - Administration package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-07-26 17:19:01+0000\n"
+"PO-Revision-Date: 2026-08-03 17:24:43+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -2224,7 +2224,7 @@ msgstr "Erstelle umfangreiche Inhalte mit Blöcken und Vorlagen"
 #. translators: %s: Current WordPress version.
 #: wp-admin/includes/dashboard.php:2089
 msgid "Learn more about the %s version."
-msgstr "Erfahre mehr über die Version %s."
+msgstr "Mehr über die Version %s erfahren"
 
 #: wp-admin/freedoms.php:44
 msgid "WordPress is free and open source software"
@@ -7771,23 +7771,23 @@ msgstr "Du bist leider nicht berechtigt, auf diese Seite zuzugreifen."
 
 #: wp-admin/includes/file.php:52
 msgid "Embed Footer Template"
-msgstr "Footer-Template einbetten"
+msgstr "Einbettungs-Footer-Template"
 
 #: wp-admin/includes/file.php:51
 msgid "Embed Header Template"
-msgstr "Header-Template einbetten"
+msgstr "Einbettungs-Header-Template"
 
 #: wp-admin/includes/file.php:50
 msgid "Embed Content Template"
-msgstr "Inhalts-Template einbetten"
+msgstr "Einbettungs-Inhalts-Template"
 
 #: wp-admin/includes/file.php:49
 msgid "Embed 404 Template"
-msgstr "404-Template einbetten"
+msgstr "Einbettungs-404-Template"
 
 #: wp-admin/includes/file.php:48
 msgid "Embed Template"
-msgstr "Template einbetten"
+msgstr "Einbettungs-Template"
 
 #: wp-admin/includes/plugin-install.php:987 wp-admin/js/updates.js:1155
 #: wp-admin/js/updates.js:1163
@@ -9011,7 +9011,7 @@ msgstr "Datum und Uhrzeit"
 
 #: wp-admin/edit-form-advanced.php:355
 msgid "You can also embed media from many popular websites including Twitter, YouTube, Flickr and others by pasting the media URL on its own line into the content of your post/page. <a href=\"https://wordpress.org/documentation/article/embeds/\">Learn more about embeds</a>."
-msgstr "Du kannst auch Medien von populären Websites wie z. B. Twitter, YouTube, Flickr und anderen Portalen einbinden, indem du die URL der Medien in einer einzelnen Zeile innerhalb des Textinhaltes einfügst. Bitte schau auch in die Dokumentation, um zu <a href=\"https://wordpress.org/documentation/article/embeds/\">lernen, wie externe Medien eingebettet werden (engl.)</a>."
+msgstr "Du kannst auch Medien von vielen beliebten Websites wie Twitter, YouTube, Flickr und weiteren einbetten, indem du die Medien-URL in eine eigene Zeile im Inhalt deines Beitrags oder deiner Seite einfügst. <a href=\"https://wordpress.org/documentation/article/embeds/\">Mehr über Einbettungen erfahren (engl.)</a>."
 
 #: wp-admin/includes/class-custom-background.php:110
 msgid "<a href=\"https://codex.wordpress.org/Appearance_Background_Screen\">Documentation on Custom Background</a>"
@@ -9060,7 +9060,7 @@ msgstr "Bei der Suche nach installierten Themes wird nach Begriffen in deren Nam
 
 #: wp-admin/theme-install.php:113
 msgid "Alternately, you can browse the themes that are Popular or Latest. When you find a theme you like, you can preview it or install it."
-msgstr "Alternativ kannst du die Themes durchsuchen, die populär oder neu sind. Wenn du ein Theme findest, das dir gefällt, kannst du dir eine Vorschau ansehen oder es direkt installieren."
+msgstr "Alternativ kannst du die Themes unter „Beliebt“ oder „Neueste“ durchstöbern. Wenn du ein Theme findest, das dir gefällt, kannst du dir eine Vorschau anzeigen lassen oder es installieren."
 
 #: wp-admin/theme-install.php:112
 msgid "You can Search for themes by keyword, author, or tag, or can get more specific and search by criteria listed in the feature filter."
@@ -9472,7 +9472,7 @@ msgstr "Alle Dateien, die du hochgeladen hast, werden in der Mediathek aufgelist
 
 #: wp-admin/plugin-install.php:113
 msgid "If you just want to get an idea of what&#8217;s available, you can browse Featured and Popular plugins by using the links above the plugins list. These sections rotate regularly."
-msgstr "Wenn du eine Idee davon erhalten möchtest, welche Plugins verfügbar sind, kannst du über die Links oberhalb der Plugins-Liste hervorgehobene und populäre Plugins durchstöbern. Diese Abschnitte werden regelmäßig neu bestückt."
+msgstr "Wenn du dir einfach nur einen Überblick über das Angebot verschaffen möchtest, kannst du über die Links oberhalb der Plugin-Liste die Abschnitte „Hervorgehoben“ und „Beliebt“ durchstöbern. Diese Abschnitte werden regelmäßig aktualisiert."
 
 #: wp-admin/plugin-install.php:155
 msgid "Browse Plugins"
@@ -9541,7 +9541,7 @@ msgstr "Rezensionen"
 #. translators: %s: Support email address.
 #: wp-admin/includes/class-wp-automatic-updater.php:1054
 msgid "The WordPress team is willing to help you. Forward this email to %s and the team will work with you to make sure your site is working."
-msgstr "Das WordPress-Team möchte dir gerne helfen. Leite diese E-Mail an %s weiter. Das Team wird sich mit dir in Verbindung setzen, um sicherzustellen, dass deine Website funktioniert."
+msgstr "Das WordPress-Team hilft dir gerne weiter. Leite diese E-Mail an %s weiter, und das Team wird mit dir gemeinsam sicherstellen, dass deine Website einwandfrei funktioniert."
 
 #: wp-admin/includes/class-wp-theme-install-list-table.php:67
 msgctxt "themes"
@@ -9586,7 +9586,7 @@ msgstr "Beta-Test"
 #. translators: %s: URL that could not be embedded.
 #: wp-admin/includes/ajax-actions.php:3832
 msgid "%s failed to embed."
-msgstr "%s konnte nicht eingebunden werden."
+msgstr "%s konnte nicht eingebettet werden."
 
 #: wp-admin/theme-install.php:269
 msgid "Filtering by:"
@@ -9638,7 +9638,7 @@ msgstr "Neueste"
 #: wp-admin/theme-install.php:211
 msgctxt "themes"
 msgid "Popular"
-msgstr "Populär"
+msgstr "Beliebt"
 
 #: wp-admin/includes/class-wp-theme-install-list-table.php:64
 msgctxt "themes"
@@ -9965,17 +9965,17 @@ msgstr "Fehlgeschlagen: %s"
 #. translators: %s: Name of plugin / theme / translation.
 #: wp-admin/includes/class-wp-automatic-updater.php:1608
 msgid "SUCCESS: %s"
-msgstr "Erfolg bei: %s"
+msgstr "Erfolgreich: %s"
 
 #. translators: %s: WordPress version.
 #: wp-admin/includes/class-wp-automatic-updater.php:1583
 msgid "FAILED: WordPress failed to update to %s"
-msgstr "Fehler! Die Aktualisierung von WordPress auf die Version %s ist fehlgeschlagen"
+msgstr "Fehlgeschlagen: Die Aktualisierung auf die WordPress-Version %s ist fehlgeschlagen"
 
 #. translators: %s: WordPress version.
 #: wp-admin/includes/class-wp-automatic-updater.php:1580
 msgid "SUCCESS: WordPress was successfully updated to %s"
-msgstr "Erfolg! WordPress wurde erfolgreich auf %s aktualisiert"
+msgstr "Erfolgreich: WordPress wurde erfolgreich auf die Version %s aktualisiert"
 
 #. translators: %s: Network home URL.
 #: wp-admin/includes/class-wp-automatic-updater.php:1572
@@ -9990,7 +9990,7 @@ msgstr "Deine Website führt die Version %s aus."
 #. translators: 1: Home URL, 2: WordPress version.
 #: wp-admin/includes/class-wp-automatic-updater.php:1029
 msgid "Your site at %1$s experienced a critical failure while trying to update WordPress to version %2$s."
-msgstr "Deine Website %1$s hat einen kritischen Fehler gemeldet, als versucht wurde WordPress auf Version %2$s zu aktualisieren."
+msgstr "Auf deiner Website unter %1$s ist ein schwerwiegender Fehler aufgetreten, als versucht wurde, WordPress auf die Version %2$s zu aktualisieren."
 
 #. translators: %s: WordPress latest version.
 #: wp-admin/includes/class-wp-automatic-updater.php:995
@@ -10032,7 +10032,7 @@ msgstr "Es stehen auch Aktualisierungen für einige deiner Plugins oder Themes z
 #: wp-admin/includes/class-wp-automatic-updater.php:1059
 #: wp-admin/includes/class-wp-automatic-updater.php:1506
 msgid "If you experience any issues or need support, the volunteers in the WordPress.org support forums may be able to help."
-msgstr "Wenn du irgendwelche Fehler feststellst oder Unterstützung benötigst, steht dir das WordPress.org-Support-Forum mit seinen freiwilligen Helfern zur Verfügung."
+msgstr "Falls du Probleme hast oder Unterstützung benötigst, helfen dir die freiwilligen Helfer in den WordPress.org-Supportforen gerne weiter."
 
 #: wp-admin/includes/class-wp-automatic-updater.php:1065
 #: wp-admin/update-core.php:991
@@ -10861,7 +10861,7 @@ msgstr "Du kannst auch nach Plugins, die WordPress.org-Benutzer favorisiert habe
 
 #: wp-admin/plugin-install.php:112
 msgid "If you know what you are looking for, Search is your best bet. The Search screen has options to search the WordPress Plugin Directory for a particular Term, Author, or Tag. You can also search the directory by selecting popular tags. Tags in larger type mean more plugins have been labeled with that tag."
-msgstr "Falls du weißt, wonach du suchst, ist die Suchfunktion die beste Wahl. Die Suchansicht bietet Optionen, die das Suchen nach einem bestimmten Begriff, Autoren oder Schlagwort innerhalb des Plugin-Verzeichnisses von WordPress ermöglichen. Außerdem kannst du das Verzeichnis durchsuchen, indem du beliebte Schlagwörter auswählst. Schlagwörter in größerer Schrift bedeuten, dass mehr Plugins mit diesem Schlagwort gekennzeichnet wurden."
+msgstr "Falls du weißt, wonach du suchst, ist die Suchfunktion die beste Wahl. Die Suchansicht bietet Optionen, die das Suchen nach einem bestimmten Begriff, Autor oder Schlagwort innerhalb des Plugin-Verzeichnisses von WordPress ermöglichen. Außerdem kannst du das Verzeichnis durchsuchen, indem du beliebte Schlagwörter auswählst. Schlagwörter in größerer Schrift bedeuten, dass mehr Plugins mit diesem Schlagwort gekennzeichnet wurden."
 
 #: wp-admin/install.php:203 wp-admin/options-reading.php:240
 msgid "It is up to search engines to honor this request."
@@ -12447,11 +12447,11 @@ msgstr "Folgende Boxen gibt es im Dashboard:"
 #. translators: Default page slug.
 #: wp-admin/includes/upgrade.php:354
 msgid "sample-page"
-msgstr "beispiel-seite"
+msgstr "beispielseite"
 
 #: wp-admin/includes/upgrade.php:352
 msgid "Sample Page"
-msgstr "Beispiel-Seite"
+msgstr "Beispielseite"
 
 #: wp-admin/options-discussion.php:279
 msgid "Retro (Generated)"
@@ -13197,7 +13197,7 @@ msgstr "Kategorie- und Schlagwort-Konverter"
 
 #: wp-admin/includes/nav-menu.php:600 wp-admin/includes/nav-menu.php:623
 msgid "Most Recent"
-msgstr "Zuletzt erstellt"
+msgstr "Neueste"
 
 #: wp-admin/export.php:224 wp-admin/export.php:276 wp-admin/export.php:321
 msgid "Start date:"
@@ -13530,7 +13530,7 @@ msgstr "Du kannst deine Website weiterhin benutzen, nur wird jede angelegte Subd
 #. translators: %s: Error message.
 #: wp-admin/includes/schema.php:1186
 msgid "This resulted in an error message: %s"
-msgstr "Dabei trat eine Fehlermeldung auf: %s"
+msgstr "Dies führte zu folgender Fehlermeldung: %s"
 
 #: wp-admin/includes/schema.php:1046
 msgid "You must provide a valid email address."
@@ -14130,7 +14130,7 @@ msgstr "Möchtest du diese Dateien wirklich löschen?"
 #: wp-admin/includes/class-wp-plugin-install-list-table.php:112
 msgctxt "Plugin Installer"
 msgid "Popular"
-msgstr "Populär"
+msgstr "Beliebt"
 
 #: wp-admin/includes/class-wp-plugin-install-list-table.php:111
 msgctxt "Plugin Installer"
@@ -15323,7 +15323,7 @@ msgstr "Filtern &#187;"
 
 #: wp-admin/includes/media.php:2816
 msgid "All Types"
-msgstr "Alle Arten"
+msgstr "Alle Typen"
 
 #. translators: Hidden accessibility text.
 #: wp-admin/includes/class-wp-media-list-table.php:350

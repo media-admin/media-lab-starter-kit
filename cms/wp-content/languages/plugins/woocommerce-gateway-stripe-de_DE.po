@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - WooCommerce Stripe Payment Gateway - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-07-23 11:16:40+0000\n"
+"PO-Revision-Date: 2026-08-01 00:37:43+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -547,18 +547,18 @@ msgstr "Die Bezahlsitzungs-Update-API hat einen Fehler zurückgegeben"
 msgid "Your payment was cancelled. Please try again or use a different payment method."
 msgstr "Deine Zahlung wurde storniert. Bitte versuche es erneut oder verwende eine andere Zahlungsmethode."
 
-#: includes/class-wc-stripe-webhook-handler.php:2026
+#: includes/class-wc-stripe-webhook-handler.php:2099
 msgid "The checkout session has expired."
 msgstr "Die Bezahlsitzung ist abgelaufen."
 
-#: includes/class-wc-stripe-webhook-handler.php:2026
+#: includes/class-wc-stripe-webhook-handler.php:2099
 msgid "The async payment for this checkout session has failed."
 msgstr "Die asynchrone Zahlung für diese Bezahlsitzung ist fehlgeschlagen."
 
 #. translators: %s: product name
 #: includes/agentic-commerce/class-wc-stripe-agentic-commerce-manual-approval.php:126
 msgid "%s is out of stock."
-msgstr "%s ist ausverkauft."
+msgstr "%s ist nicht vorrätig."
 
 #: includes/abstracts/abstract-wc-stripe-payment-gateway.php:374
 msgid "iDEAL | Wero"
@@ -598,7 +598,7 @@ msgid "You do not have permission to update this subscription."
 msgstr "Du hast keine Berechtigung, dieses Abonnement zu aktualisieren."
 
 #. translators: 1) presentment currency 2) presentment amount
-#: includes/class-wc-stripe-webhook-handler.php:1839
+#: includes/class-wc-stripe-webhook-handler.php:1912
 msgid "Local currency purchase via Adaptive Pricing. Amount paid was: %1$s %2$s"
 msgstr "Kauf in Landeswährung über Adapative Preisgestaltung. Der gezahlte Betrag betrug: %1$s %2$s"
 
@@ -734,12 +734,12 @@ msgid "Parent product not found for variation: %s"
 msgstr "Übergeordnetes Produkt für Variante nicht gefunden: %s"
 
 #. translators: 1) Error message from the exception
-#: includes/class-wc-stripe-webhook-handler.php:1929
+#: includes/class-wc-stripe-webhook-handler.php:2002
 msgid "Checkout session could not be processed. %s"
 msgstr "Die Bezahlsitzung konnte nicht verarbeitet werden. %s"
 
 #. translators: 1) Error message from the exception
-#: includes/class-wc-stripe-webhook-handler.php:1937
+#: includes/class-wc-stripe-webhook-handler.php:2010
 msgid "Checkout session processing error: %s"
 msgstr "Verarbeitungsfehler bei Bezahlsitzung: %s"
 
