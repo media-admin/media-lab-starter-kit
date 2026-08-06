@@ -196,50 +196,73 @@ class MediaLab_WC_Catalog_Mode {
         return $template;
     }
     
+    /**
+     * Verarbeitet die Cart-Anfrage (Catalog Mode).
+     *
+     * Dünner Wrapper: normalisiert WC()->cart-Items und übergibt an die
+     * zentrale Inquiry-Engine (siehe inc/inquiry/class-inquiry-engine.php).
+     * Die Engine übernimmt Validierung (inkl. konfigurierbarer Pflichtfelder
+     * & Datenschutz-Zustimmung), CPT-Speicherung und Multi-Channel-Versand -
+     * ersetzt die frühere, hier fest verdrahtete Klartext-wp_mail()-Logik.
+     */
     public function handle_inquiry_submission() {
         check_ajax_referer('wc_catalog_inquiry', 'nonce');
-        
-        $name = sanitize_text_field($_POST['name']);
-        $email = sanitize_email($_POST['email']);
-        $phone = sanitize_text_field($_POST['phone']);
-        $message = sanitize_textarea_field($_POST['message']);
-        
-        if (!$name || !$email) {
-            wp_send_json_error('Bitte Name und E-Mail angeben.');
+
+        if ( ! WC()->cart || WC()->cart->is_empty() ) {
+            wp_send_json_error( __( 'Ihr Warenkorb ist leer.', 'media-lab-woocommerce' ) );
         }
-        
-        $cart_items = WC()->cart->get_cart();
-        $admin_email = get_option('admin_email');
-        $subject = 'Neue Produktanfrage von ' . $name;
-        
-        $body = "Neue Anfrage:\n\n";
-        $body .= "Name: $name\n";
-        $body .= "E-Mail: $email\n";
-        $body .= "Telefon: $phone\n";
-        $body .= "Nachricht: $message\n\n";
-        $body .= "--- Angefragte Produkte ---\n\n";
-        
-        foreach ($cart_items as $cart_item) {
+
+        // Cart-Items in das von der Inquiry-Engine erwartete Format normalisieren.
+        $items = [];
+        foreach ( WC()->cart->get_cart() as $cart_item ) {
             $product = $cart_item['data'];
-            $body .= sprintf(
-                "%s (Menge: %d)\n",
-                $product->get_name(),
-                $cart_item['quantity']
-            );
+            $config  = $cart_item['product_config'] ?? null; // siehe class-configurator.php, add_configuration_to_cart()
+
+            $item = [
+                'product_id' => $cart_item['product_id'],
+                'quantity'   => $cart_item['quantity'],
+                'name'       => $product ? $product->get_name() : null,
+            ];
+
+            // Konfigurator-Cart-Items reichern wir über die dort bereitgestellten
+            // wiederverwendbaren Helper an (dieselbe Formatierung wie in der
+            // Cart-Anzeige und bei der Konfigurator-Direktanfrage).
+            if ( $config && class_exists( 'MediaLab_Product_Configurator' ) ) {
+                $configurator = MediaLab_Product_Configurator::get_instance();
+                $item['config']          = $config;
+                $item['config_display']  = $configurator->get_config_display_array( $cart_item['product_id'], $config );
+                $item['price_breakdown'] = $configurator->get_price_breakdown( $cart_item['product_id'], $config );
+                $item['attachments']     = $configurator->get_attachment_ids_from_config( $config );
+            }
+
+            $items[] = $item;
         }
-        
-        $sent = wp_mail($admin_email, $subject, $body);
-        
-        if ($sent) {
-            $customer_subject = 'Ihre Produktanfrage';
-            $customer_body = "Hallo $name,\n\nvielen Dank für Ihre Anfrage. Wir melden uns in Kürze bei Ihnen.\n\nMit freundlichen Grüßen";
-            wp_mail($email, $customer_subject, $customer_body);
-            
-            WC()->cart->empty_cart();
-            wp_send_json_success('Vielen Dank! Ihre Anfrage wurde versendet.');
-        } else {
-            wp_send_json_error('Fehler beim Versenden. Bitte erneut versuchen.');
+
+        // Kontaktdaten: Basisfelder + alle konfigurierten Zusatzfelder generisch durchreichen
+        // (siehe templates/inquiry-form.php, das diese Felder jetzt dynamisch rendert).
+        $contact = [
+            'name'            => sanitize_text_field( $_POST['name']    ?? '' ),
+            'email'           => sanitize_email( $_POST['email']        ?? '' ),
+            'phone'           => sanitize_text_field( $_POST['phone']   ?? '' ),
+            'message'         => sanitize_textarea_field( $_POST['message'] ?? '' ),
+            'privacy_consent' => ! empty( $_POST['privacy_consent'] ),
+        ];
+        foreach ( MediaLab_Inquiry_Settings::get_form_fields() as $field ) {
+            $key = $field['field_key'] ?? '';
+            if ( $key && isset( $_POST[ $key ] ) ) {
+                $raw = wp_unslash( $_POST[ $key ] );
+                $contact[ $key ] = is_array( $raw ) ? array_map( 'sanitize_text_field', $raw ) : sanitize_text_field( $raw );
+            }
         }
+
+        $result = MediaLab_Inquiry_Engine::submit( $items, $contact, 'cart' );
+
+        if ( is_wp_error( $result ) ) {
+            wp_send_json_error( $result->get_error_message() );
+        }
+
+        WC()->cart->empty_cart();
+        wp_send_json_success( MediaLab_Inquiry_Settings::wording( 'success' ) );
     }
     
     public function update_cart_quantity() {

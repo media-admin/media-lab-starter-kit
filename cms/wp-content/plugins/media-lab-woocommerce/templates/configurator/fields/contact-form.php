@@ -1,8 +1,15 @@
 <?php
 /**
  * Contact Form Field Template
- * Hardcoded fields: Name, E-Mail, Telefon
+ *
+ * Name, E-Mail, Telefon sind Basisfelder (bewusst weiterhin fest, da sie die
+ * Inquiry-Engine immer erwartet). Zusätzliche, projektspezifisch konfigurierte
+ * Felder sowie die Datenschutz-Zustimmung werden dynamisch aus den
+ * Inquiry-Einstellungen gerendert - siehe inc/inquiry/class-settings.php.
  */
+$mlw_extra_fields     = class_exists( 'MediaLab_Inquiry_Settings' ) ? MediaLab_Inquiry_Settings::get_form_fields_localized() : [];
+$mlw_privacy_required = class_exists( 'MediaLab_Inquiry_Settings' ) ? MediaLab_Inquiry_Settings::privacy_required() : false;
+$mlw_privacy_text     = class_exists( 'MediaLab_Inquiry_Settings' ) ? MediaLab_Inquiry_Settings::privacy_text() : '';
 ?>
 
 <div class="configurator-field configurator-field--contact">
@@ -48,6 +55,54 @@
                    @input="onFieldChange('customer_phone')"
                    placeholder="+43 123 456789">
         </div>
+
+        <?php foreach ( $mlw_extra_fields as $field ) :
+            $key         = esc_attr( $field['field_key'] ?? '' );
+            $label       = esc_html( $field['label'] ?? $key );
+            $required    = ! empty( $field['required'] );
+            $placeholder = esc_attr( $field['placeholder'] ?? '' );
+            if ( ! $key ) continue;
+        ?>
+            <div class="configurator-form-group">
+                <label class="configurator-form-label" for="mlw_field_<?php echo $key; ?>">
+                    <?php echo $label; ?><?php if ( $required ) : ?> <span class="required">*</span><?php endif; ?>
+                </label>
+                <?php if ( ( $field['field_type'] ?? 'text' ) === 'textarea' ) : ?>
+                    <textarea id="mlw_field_<?php echo $key; ?>" class="configurator-form-input" rows="3"
+                        x-model="config['<?php echo $key; ?>']" @input="onFieldChange('<?php echo $key; ?>')"
+                        placeholder="<?php echo $placeholder; ?>" <?php echo $required ? 'required' : ''; ?>></textarea>
+                <?php elseif ( ( $field['field_type'] ?? 'text' ) === 'select' ) : ?>
+                    <select id="mlw_field_<?php echo $key; ?>" class="configurator-form-input"
+                        x-model="config['<?php echo $key; ?>']" @change="onFieldChange('<?php echo $key; ?>')"
+                        <?php echo $required ? 'required' : ''; ?>>
+                        <option value=""></option>
+                        <?php foreach ( array_filter( array_map( 'trim', explode( ',', (string) ( $field['options'] ?? '' ) ) ) ) as $option ) : ?>
+                            <option value="<?php echo esc_attr( $option ); ?>"><?php echo esc_html( $option ); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                <?php elseif ( ( $field['field_type'] ?? 'text' ) === 'checkbox' ) : ?>
+                    <label style="font-weight:normal;display:flex;gap:0.5rem;align-items:center;">
+                        <input type="checkbox" id="mlw_field_<?php echo $key; ?>"
+                            x-model="config['<?php echo $key; ?>']" @change="onFieldChange('<?php echo $key; ?>')">
+                        <?php echo $label; ?>
+                    </label>
+                <?php else : ?>
+                    <input type="<?php echo esc_attr( $field['field_type'] ?? 'text' ); ?>" id="mlw_field_<?php echo $key; ?>" class="configurator-form-input"
+                        x-model="config['<?php echo $key; ?>']" @input="onFieldChange('<?php echo $key; ?>')"
+                        placeholder="<?php echo $placeholder; ?>" <?php echo $required ? 'required' : ''; ?>>
+                <?php endif; ?>
+            </div>
+        <?php endforeach; ?>
+
+        <?php if ( $mlw_privacy_required ) : ?>
+            <div class="configurator-form-group configurator-form-group--privacy">
+                <label style="font-weight:normal;display:flex;gap:0.5rem;align-items:flex-start;font-size:14px;">
+                    <input type="checkbox" style="margin-top:3px;"
+                        x-model="config['privacy_consent']" @change="onFieldChange('privacy_consent')" required>
+                    <span><?php echo wp_kses_post( $mlw_privacy_text ); ?></span>
+                </label>
+            </div>
+        <?php endif; ?>
         
     </div>
 </div>

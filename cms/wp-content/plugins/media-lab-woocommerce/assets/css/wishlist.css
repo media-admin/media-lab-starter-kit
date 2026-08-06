@@ -1,0 +1,139 @@
+/* Wunschlisten-Styling - Basis-Layout, projektspezifisch im Theme überschreibbar */
+
+.mlw-add-to-wishlist {
+    display: inline-block;
+    padding: 0.6rem 1.25rem;
+    font-size: 14px;
+    font-weight: 600;
+    border: 2px solid currentColor;
+    border-radius: 8px;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.mlw-add-to-wishlist:hover { opacity: 0.8; }
+.mlw-add-to-wishlist--loop { margin-top: 0.5rem; width: 100%; }
+.mlw-add-to-wishlist--single { margin: 1rem 0; }
+
+.mlw-wishlist-page { max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; }
+.mlw-wishlist-page__title { margin-bottom: 1.5rem; }
+.mlw-wishlist-page__layout {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 2rem;
+    align-items: start;
+}
+@media (max-width: 900px) {
+    .mlw-wishlist-page__layout { grid-template-columns: 1fr; }
+}
+
+.mlw-wishlist-empty { padding: 2rem; text-align: center; opacity: 0.7; }
+
+.mlw-wishlist-item {
+    display: grid;
+    grid-template-columns: 72px 1fr auto auto;
+    gap: 1rem;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+.mlw-wishlist-item__image img { width: 72px; height: 72px; object-fit: cover; border-radius: 8px; }
+.mlw-wishlist-item__name { font-weight: 600; text-decoration: none; }
+.mlw-wishlist-item__name--gone { opacity: 0.5; font-style: italic; }
+.mlw-wishlist-item__config { list-style: none; margin: 0.4rem 0 0; padding: 0; font-size: 13px; opacity: 0.75; }
+.mlw-wishlist-item__config li { margin-bottom: 0.2rem; }
+.mlw-wishlist-item__attachments { margin-top: 0.4rem; font-size: 13px; }
+.mlw-wishlist-item__attachments a { text-decoration: none; }
+.mlw-wishlist-item__price { margin-top: 0.4rem; font-weight: 600; }
+.mlw-wishlist-item__qty-input { width: 64px; padding: 0.4rem; border-radius: 6px; border: 1px solid rgba(0,0,0,0.2); text-align: center; }
+.mlw-wishlist-item__remove-btn {
+    background: none; border: none; cursor: pointer; font-size: 16px; opacity: 0.6; padding: 0.4rem;
+}
+.mlw-wishlist-item__remove-btn:hover { opacity: 1; color: #e11d48; }
+
+.mlw-wishlist-grand-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 0;
+    margin-top: 0.5rem;
+    border-top: 2px solid rgba(0,0,0,0.15);
+    font-size: 18px;
+}
+.mlw-wishlist-grand-total strong { font-size: 22px; }
+
+.mlw-wishlist-form {
+    background: rgba(0,0,0,0.03);
+    border-radius: 12px;
+    padding: 1.5rem;
+}
+.mlw-wishlist-form__title { margin-top: 0; margin-bottom: 1rem; }
+.mlw-form-row { margin-bottom: 1rem; }
+.mlw-form-row label { display: block; margin-bottom: 0.4rem; font-weight: 600; }
+.mlw-form-row input[type="text"],
+.mlw-form-row input[type="email"],
+.mlw-form-row input[type="tel"],
+.mlw-form-row select,
+.mlw-form-row textarea {
+    width: 100%;
+    padding: 0.7rem;
+    border-radius: 8px;
+    border: 1px solid rgba(0,0,0,0.2);
+    font-size: 15px;
+}
+.mlw-checkbox-label { display: flex; gap: 0.5rem; align-items: flex-start; font-weight: normal; }
+.mlw-wishlist-submit {
+    width: 100%;
+    padding: 1rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+}
+.mlw-wishlist-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.mlw-wishlist-message { padding: 1rem; border-radius: 8px; margin-top: 1rem; }
+.mlw-wishlist-message--success { background: #d4edda; color: #155724; }
+.mlw-wishlist-message--error { background: #f8d7da; color: #721c24; }
+
+.mlw-wishlist-count {
+    display: inline-block;
+    min-width: 18px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background: currentColor;
+    font-size: 11px;
+    text-align: center;
+}
+
+/* Wunschlisten-Icon im Hauptmenü */
+.mlw-nav-wishlist-item { list-style: none; }
+.mlw-nav-wishlist-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.mlw-nav-wishlist-icon-wrap {
+    position: relative;
+    display: inline-flex;
+    line-height: 0;
+}
+.mlw-nav-wishlist-icon {
+    display: block;
+    width: 22px;
+    height: 22px;
+    max-width: none; /* überschreibt Theme-Reset "svg{max-width:100%}", das sonst mit height:auto zu 0x0 führen kann */
+    flex-shrink: 0;
+}
+.mlw-nav-wishlist-icon-wrap .mlw-wishlist-count {
+    position: absolute;
+    top: -8px;
+    right: -10px;
+    background: #e11d48;
+    color: #fff;
+    line-height: 16px;
+    height: 16px;
+    font-size: 10px;
+    font-weight: 700;
+}

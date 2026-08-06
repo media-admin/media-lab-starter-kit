@@ -294,6 +294,15 @@ if (!empty($remaining_tabs)) {
         </button>
         
         <button type="button" 
+                class="button button--secondary configurator-nav__button"
+                @click="addToWishlist()"
+                x-show="currentStep === totalSteps + 1"
+                :disabled="isProcessing">
+            <span x-show="!isProcessing" x-text="configuratorData.wishlistAddLabel || 'Zur Wunschliste hinzufügen'">Zur Wunschliste hinzufügen</span>
+            <span x-show="isProcessing">…</span>
+        </button>
+
+        <button type="button" 
                 class="button button--primary button--large configurator-nav__button"
                 @click="sendInquiry()"
                 x-show="currentStep === totalSteps + 1"
@@ -618,16 +627,13 @@ if (comments_open() || get_comments_number()) {
 }
 ?>
 
-<!-- Configurator Scripts -->
-<!-- Configurator Scripts -->
-<script src="<?php echo MEDIA_LAB_WC_URL; ?>assets/js/alpine.min.js" defer></script>
-<script>
-const configuratorData = {
-    ajax_url: '<?php echo admin_url('admin-ajax.php'); ?>',
-    nonce: '<?php echo wp_create_nonce('configurator_nonce'); ?>',
-    product_id: <?php echo $product_id; ?>,
-    cart_url: '<?php echo wc_get_cart_url(); ?>'
-};
-</script>
-<script src="<?php echo MEDIA_LAB_WC_URL; ?>assets/js/configurator.js?v=<?php echo time(); ?>"></script>
-<link rel="stylesheet" href="<?php echo MEDIA_LAB_WC_URL; ?>assets/css/configurator.css?v=<?php echo time(); ?>">
+<?php
+// Hinweis: Alpine.js, configurator.js und configuratorData werden bereits
+// korrekt über wp_enqueue_script()/wp_localize_script() in
+// MediaLab_Product_Configurator::enqueue_scripts() geladen (inkl.
+// extraFieldKeys/privacyRequired für die dynamischen Zusatzfelder).
+// Frühere doppelte, hartcodierte <script>-Tags hier im Template wurden
+// entfernt - sie überschrieben/kollidierten mit der korrekten Version
+// (doppelte 'const configuratorData'-Deklaration führte zu einem
+// SyntaxError, wodurch die angereicherten Werte nie ankamen).
+?>

@@ -1,8 +1,17 @@
 <?php
 /**
  * Anfrageformular Checkout (Catalog Mode)
+ *
+ * Rendert die in den Inquiry-Einstellungen konfigurierten Zusatzfelder
+ * (Pflicht/Optional, je nach Projekt editierbar) sowie die Datenschutz-
+ * Zustimmung dynamisch - siehe inc/inquiry/class-settings.php.
  */
 get_header();
+
+$mlw_extra_fields     = class_exists( 'MediaLab_Inquiry_Settings' ) ? MediaLab_Inquiry_Settings::get_form_fields_localized() : [];
+$mlw_privacy_required = class_exists( 'MediaLab_Inquiry_Settings' ) ? MediaLab_Inquiry_Settings::privacy_required() : false;
+$mlw_privacy_text     = class_exists( 'MediaLab_Inquiry_Settings' ) ? MediaLab_Inquiry_Settings::privacy_text() : '';
+$mlw_submit_label     = class_exists( 'MediaLab_Inquiry_Settings' ) ? MediaLab_Inquiry_Settings::wording( 'submit_button' ) : 'Anfrage absenden';
 ?>
 
 <div class="woocommerce">
@@ -160,6 +169,35 @@ get_header();
                                 style="width:100%;padding:0.75rem;border:2px solid #e0e0e0;border-radius:8px;font-size:16px;"
                                 placeholder="+43 123 456789">
                         </p>
+
+                        <?php foreach ( $mlw_extra_fields as $field ) :
+                            $key         = esc_attr( $field['field_key'] ?? '' );
+                            $label       = esc_html( $field['label'] ?? $key );
+                            $required    = ! empty( $field['required'] );
+                            $placeholder = esc_attr( $field['placeholder'] ?? '' );
+                            $input_style = 'width:100%;padding:0.75rem;border:2px solid #e0e0e0;border-radius:8px;font-size:16px;';
+                            if ( ! $key ) continue;
+                        ?>
+                            <p class="form-row" style="margin-bottom:1.5rem;">
+                                <label for="inquiry_<?php echo $key; ?>" style="display:block;margin-bottom:0.5rem;font-weight:600;">
+                                    <?php echo $label; ?><?php if ( $required ) : ?> <span class="required" style="color:red;">*</span><?php endif; ?>
+                                </label>
+                                <?php if ( ( $field['field_type'] ?? 'text' ) === 'textarea' ) : ?>
+                                    <textarea name="<?php echo $key; ?>" id="inquiry_<?php echo $key; ?>" rows="3" class="input-text" style="<?php echo $input_style; ?>resize:vertical;" placeholder="<?php echo $placeholder; ?>" <?php echo $required ? 'required' : ''; ?>></textarea>
+                                <?php elseif ( ( $field['field_type'] ?? 'text' ) === 'select' ) : ?>
+                                    <select name="<?php echo $key; ?>" id="inquiry_<?php echo $key; ?>" class="input-text" style="<?php echo $input_style; ?>" <?php echo $required ? 'required' : ''; ?>>
+                                        <option value=""></option>
+                                        <?php foreach ( array_filter( array_map( 'trim', explode( ',', (string) ( $field['options'] ?? '' ) ) ) ) as $option ) : ?>
+                                            <option value="<?php echo esc_attr( $option ); ?>"><?php echo esc_html( $option ); ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                <?php elseif ( ( $field['field_type'] ?? 'text' ) === 'checkbox' ) : ?>
+                                    <label style="font-weight:normal;"><input type="checkbox" name="<?php echo $key; ?>" id="inquiry_<?php echo $key; ?>" value="1"> <?php echo $label; ?></label>
+                                <?php else : ?>
+                                    <input type="<?php echo esc_attr( $field['field_type'] ?? 'text' ); ?>" name="<?php echo $key; ?>" id="inquiry_<?php echo $key; ?>" class="input-text" style="<?php echo $input_style; ?>" placeholder="<?php echo $placeholder; ?>" <?php echo $required ? 'required' : ''; ?>>
+                                <?php endif; ?>
+                            </p>
+                        <?php endforeach; ?>
                         
                         <p class="form-row" style="margin-bottom:1.5rem;">
                             <label for="inquiry_message" style="display:block;margin-bottom:0.5rem;font-weight:600;">
@@ -169,11 +207,20 @@ get_header();
                                 style="width:100%;padding:0.75rem;border:2px solid #e0e0e0;border-radius:8px;font-size:16px;resize:vertical;"
                                 placeholder="Wann können Sie liefern?"></textarea>
                         </p>
+
+                        <?php if ( $mlw_privacy_required ) : ?>
+                            <p class="form-row form-row-privacy" style="margin-bottom:1.5rem;font-size:14px;">
+                                <label style="font-weight:normal;display:flex;gap:0.5rem;align-items:flex-start;">
+                                    <input type="checkbox" name="privacy_consent" id="inquiry_privacy_consent" value="1" required style="margin-top:3px;">
+                                    <span><?php echo wp_kses_post( $mlw_privacy_text ); ?></span>
+                                </label>
+                            </p>
+                        <?php endif; ?>
                         
                         <p class="form-row">
                             <button type="submit" class="button alt" 
                                 style="width:100%;padding:1rem 2rem;background:red;color:#fff;border:none;border-radius:8px;font-weight:600;font-size:18px;cursor:pointer;transition:all 0.2s ease;">
-                                Anfrage absenden
+                                <?php echo esc_html( $mlw_submit_label ); ?>
                             </button>
                         </p>
                         
@@ -259,18 +306,27 @@ get_header();
                     
                     $btn.prop('disabled', true).text('Wird gesendet...');
                     $msg.hide();
+
+                    // Alle Formularfelder generisch einsammeln (Basisfelder + konfigurierte
+                    // Zusatzfelder + Datenschutz-Checkbox) statt einzeln aufzuzählen -
+                    // damit neue, im Backend hinzugefügte Felder automatisch mitgeschickt werden.
+                    var data = {
+                        action: 'wc_catalog_inquiry',
+                        nonce: '<?php echo wp_create_nonce('wc_catalog_inquiry'); ?>'
+                    };
+                    $form.find('input[name], textarea[name], select[name]').each(function() {
+                        var $el = $(this);
+                        if ($el.attr('type') === 'checkbox') {
+                            data[$el.attr('name')] = $el.is(':checked') ? '1' : '';
+                        } else {
+                            data[$el.attr('name')] = $el.val();
+                        }
+                    });
                     
                     $.ajax({
                         url: '<?php echo admin_url('admin-ajax.php'); ?>',
                         type: 'POST',
-                        data: {
-                            action: 'wc_catalog_inquiry',
-                            nonce: '<?php echo wp_create_nonce('wc_catalog_inquiry'); ?>',
-                            name: $form.find('[name="name"]').val(),
-                            email: $form.find('[name="email"]').val(),
-                            phone: $form.find('[name="phone"]').val(),
-                            message: $form.find('[name="message"]').val()
-                        },
+                        data: data,
                         success: function(response) {
                             if (response.success) {
                                 $msg.html('<div style="padding:1rem;background:#d4edda;border:1px solid #c3e6cb;color:#155724;border-radius:8px;"><strong>✓ Erfolg!</strong> ' + response.data + '</div>').show();
@@ -280,12 +336,12 @@ get_header();
                                 }, 3000);
                             } else {
                                 $msg.html('<div style="padding:1rem;background:#f8d7da;border:1px solid #f5c6cb;color:#721c24;border-radius:8px;"><strong>⚠ Fehler:</strong> ' + response.data + '</div>').show();
-                                $btn.prop('disabled', false).text('Anfrage absenden');
+                                $btn.prop('disabled', false).text('<?php echo esc_js( $mlw_submit_label ); ?>');
                             }
                         },
                         error: function() {
                             $msg.html('<div style="padding:1rem;background:#f8d7da;border:1px solid #f5c6cb;color:#721c24;border-radius:8px;"><strong>⚠ Fehler:</strong> Die Anfrage konnte nicht gesendet werden. Bitte versuchen Sie es erneut.</div>').show();
-                            $btn.prop('disabled', false).text('Anfrage absenden');
+                            $btn.prop('disabled', false).text('<?php echo esc_js( $mlw_submit_label ); ?>');
                         }
                     });
                 });

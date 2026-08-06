@@ -3,13 +3,13 @@
  * Plugin Name: Media Lab WooCommerce
  * Plugin URI:  https://media-lab.de
  * Description: WooCommerce integration for Media Lab Agency sites
- * Version:     1.0.2
+ * Version:     2.0.0
  * Author:      Media Lab
  * Text Domain: media-lab-woocommerce
  */
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define( 'MEDIA_LAB_WC_VERSION', '1.0.2' );
+define( 'MEDIA_LAB_WC_VERSION', '2.0.0' );
 define( 'MEDIA_LAB_WC_PATH', plugin_dir_path( __FILE__ ) );
 define( 'MEDIA_LAB_WC_URL', plugin_dir_url( __FILE__ ) );
 
@@ -32,8 +32,24 @@ add_action( 'plugins_loaded', function () {
 
     require_once MEDIA_LAB_WC_PATH . 'inc/enqueue.php';
     require_once MEDIA_LAB_WC_PATH . 'inc/hpos-product-type-cache-fix.php';
+
+    // ── Inquiry-Engine (gemeinsamer Kern für Cart-Anfrage, Konfigurator-Anfrage & Wunschliste) ──
+    require_once MEDIA_LAB_WC_PATH . 'inc/inquiry/class-cpt.php';
+    require_once MEDIA_LAB_WC_PATH . 'inc/inquiry/class-i18n.php';
+    require_once MEDIA_LAB_WC_PATH . 'inc/inquiry/class-settings.php';
+    require_once MEDIA_LAB_WC_PATH . 'inc/inquiry/class-mail.php';
+    require_once MEDIA_LAB_WC_PATH . 'inc/inquiry/class-channels.php';
+    require_once MEDIA_LAB_WC_PATH . 'inc/inquiry/class-inquiry-engine.php';
+    require_once MEDIA_LAB_WC_PATH . 'inc/inquiry/class-upload-cleanup.php';
+
     require_once MEDIA_LAB_WC_PATH . 'inc/catalog-mode.php';
     require_once MEDIA_LAB_WC_PATH . 'inc/configurator/class-configurator.php';
+
+    // ── Wunschliste (nutzt die Inquiry-Engine, siehe oben) ────────────────────
+    require_once MEDIA_LAB_WC_PATH . 'inc/wishlist/class-storage.php';
+    require_once MEDIA_LAB_WC_PATH . 'inc/wishlist/class-ajax.php';
+    require_once MEDIA_LAB_WC_PATH . 'inc/wishlist/class-frontend.php';
+    require_once MEDIA_LAB_WC_PATH . 'inc/wishlist/class-enqueue.php';
 
     // ── Medialab WooCommerce Filters ─────────────────────────────────────────
     require_once MEDIA_LAB_WC_PATH . 'inc/filters/filter-config.php';

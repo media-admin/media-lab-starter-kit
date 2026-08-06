@@ -21,8 +21,17 @@ class MediaLab_Product_Configurator {
         add_action('acf/init', array($this, 'register_acf_fields'));
         
         // Frontend Hooks
-        add_action('woocommerce_before_add_to_cart_button', array($this, 'move_tabs_before_configurator'), 5);
-        add_action('woocommerce_before_add_to_cart_button', array($this, 'maybe_show_configurator'));
+        // WICHTIG: NICHT an 'woocommerce_before_add_to_cart_button' hängen - dieser Hook
+        // wird nur INNERHALB der Add-to-Cart-Vorlage ausgelöst, die catalog-mode.php bei
+        // aktivem "Kaufbuttons verstecken" komplett von 'woocommerce_single_product_summary'
+        // entfernt (siehe MediaLab_WC_Catalog_Mode::activate_catalog_mode()). Dadurch würde
+        // der Konfigurator für JEDES konfigurierbare Produkt nie mehr feuern, sobald Catalog
+        // Mode aktiv ist. Stattdessen direkt an 'woocommerce_single_product_summary' hängen,
+        // mit fester Priorität VOR der Standard-Add-to-Cart-Priorität (30) - so bleibt die
+        // bisherige visuelle Reihenfolge (Tabs, dann Konfigurator) erhalten und die Anzeige
+        // ist unabhängig von Catalog-Mode-Einstellungen.
+        add_action('woocommerce_single_product_summary', array($this, 'move_tabs_before_configurator'), 24);
+        add_action('woocommerce_single_product_summary', array($this, 'maybe_show_configurator'), 25);
         add_filter('woocommerce_placeholder_img_src', array($this, 'replace_placeholder_image'), 999);
         add_filter('woocommerce_add_to_cart_validation', array($this, 'validate_configuration'), 10, 3);
         add_filter('woocommerce_add_cart_item_data', array($this, 'add_configuration_to_cart'), 10, 2);
@@ -209,30 +218,107 @@ class MediaLab_Product_Configurator {
         if (!isset($cart_item['product_config'])) {
             return $item_data;
         }
-        
-        $config = $cart_item['product_config'];
-        $product_id = $cart_item['product_id'];
-        $steps = $this->get_configuration_steps($product_id);
-        
+
+        $display = $this->get_config_display_array($cart_item['product_id'], $cart_item['product_config']);
+        foreach ($display as $label => $value) {
+            $item_data[] = array(
+                'name'  => $label,
+                'value' => $value,
+            );
+        }
+
+        return $item_data;
+    }
+
+    /**
+     * Formatiert eine rohe Konfiguration (step_id => Wert) als lesbares
+     * Label => Wert-Array. Wiederverwendbar für Cart-Anzeige, Wunschliste
+     * und Mail-Versand (siehe inc/inquiry/class-mail.php), damit Cart,
+     * Wunschliste und Mail immer identisch formatiert sind - EINE Quelle
+     * statt an drei Stellen dieselbe Logik zu duplizieren.
+     *
+     * @return array<string,string> Label => formatierter Wert
+     */
+    public function get_config_display_array($product_id, $config): array {
+        $steps  = $this->get_configuration_steps($product_id);
+        $result = [];
+
         foreach ($steps as $step) {
             $step_id = $step['step_id'];
-            if (isset($config[$step_id])) {
-                $value = $config[$step_id];
-                
-                if ($step['step_type'] === 'file_upload' && is_array($value)) {
-                    $value = '<a href="' . esc_url($value['url']) . '" target="_blank">Datei anzeigen</a>';
-                } elseif (is_array($value)) {
-                    $value = implode(', ', $value);
+            // Konfigurator initialisiert JEDES Step-Feld beim Start mit einem
+            // leeren String (siehe configurator.js, init()) - auch nie befüllte
+            // file_upload/text/select-Steps. isset() allein reicht daher nicht,
+            // sonst erscheinen z.B. nie hochgeladene "Logo-Datei"-Steps leer in
+            // der Anzeige. '0' bleibt bewusst gültig (z.B. Mengenfeld = 0).
+            if ( ! isset( $config[ $step_id ] ) || $config[ $step_id ] === '' || empty( $step['show_in_summary'] ) ) continue;
+
+            $value = $config[$step_id];
+
+            if ( ($step['step_type'] === 'select' || $step['step_type'] === 'radio') && !empty($step['options']) ) {
+                $option  = null;
+                foreach ($step['options'] as $opt) {
+                    if ($opt['value'] === $value) { $option = $opt; break; }
                 }
-                
-                $item_data[] = array(
-                    'name' => $step['step_label'],
-                    'value' => $value,
-                );
+                $value = $option ? $option['label'] : $value;
+            } elseif ($step['step_type'] === 'checkbox' && is_array($value) && !empty($step['options'])) {
+                $labels = [];
+                foreach ($value as $v) {
+                    foreach ($step['options'] as $opt) {
+                        if ($opt['value'] === $v) { $labels[] = $opt['label']; break; }
+                    }
+                }
+                $value = implode(', ', $labels);
+            } elseif ($step['step_type'] === 'size_matrix' && is_array($value)) {
+                $sizes = [];
+                foreach ($value as $size => $qty) {
+                    if ($qty > 0) $sizes[] = "$size: {$qty}x";
+                }
+                $value = implode(', ', $sizes);
+            } elseif ($step['step_type'] === 'file_upload' && is_array($value)) {
+                $value = $value['filename'] ?? $value['name'] ?? basename((string) ($value['url'] ?? ''));
+            } elseif (is_array($value)) {
+                $value = implode(', ', $value);
+            }
+
+            // Nach der Formatierung nochmal prüfen: leere Checkbox-Auswahl
+            // (initialisiert als []) landet z.B. als leerer implode()-String hier.
+            if ($value === '' || $value === null) continue;
+
+            $result[$step['step_label']] = (string) $value;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Sammelt alle Attachment-IDs aus file_upload-Steps einer Konfiguration
+     * (für den finalen Anfrage-Anhang, siehe class-inquiry-engine.php).
+     *
+     * @return int[]
+     */
+    public function get_attachment_ids_from_config($config): array {
+        $ids = [];
+        if (!is_array($config)) return $ids;
+
+        foreach ($config as $value) {
+            if (is_array($value) && !empty($value['id'])) {
+                $ids[] = (int) $value['id'];
             }
         }
-        
-        return $item_data;
+        return $ids;
+    }
+
+    /**
+     * Liefert die Preisaufschlüsselung für ein konfigurierbares Produkt,
+     * oder null wenn das Produkt nicht konfigurierbar ist. Wiederverwendbar
+     * für Cart, Wunschliste und Konfigurator-Direktanfrage.
+     */
+    public function get_price_breakdown($product_id, $config): ?array {
+        if (!$this->is_configurable($product_id)) return null;
+
+        require_once MEDIA_LAB_WC_PATH . 'inc/configurator/class-price-calculator.php';
+        $calculator = new MediaLab_Price_Calculator($product_id);
+        return $calculator->get_breakdown($config);
     }
     
     public function update_cart_item_price($cart) {
@@ -415,6 +501,12 @@ class MediaLab_Product_Configurator {
         $attachment_data = wp_generate_attachment_metadata($attachment_id, $uploaded_file['file']);
         wp_update_attachment_metadata($attachment_id, $attachment_data);
         
+        // Marker für den Upload-Cleanup-Cron (inc/inquiry/class-upload-cleanup.php).
+        // Wird entfernt, sobald der Upload final einer Anfrage zugeordnet wird
+        // (Inquiry_Engine::submit()) - nur dann greift der Cron NIE ein.
+        update_post_meta($attachment_id, '_mlw_pending_upload', 1);
+        update_post_meta($attachment_id, '_mlw_upload_timestamp', time());
+        
         wp_send_json_success(array(
             'id' => $attachment_id,
             'url' => $uploaded_file['url'],
@@ -423,146 +515,68 @@ class MediaLab_Product_Configurator {
         ));
     }
     
+    /**
+     * Verarbeitet die Konfigurator-Direktanfrage ("Anfrage senden" statt
+     * "In den Warenkorb").
+     *
+     * Dünner Wrapper: baut aus der Konfiguration ein Engine-Item (inkl.
+     * Konfigurationsanzeige, Preisaufschlüsselung und Datei-Attachments über
+     * die wiederverwendbaren Helper get_config_display_array()/
+     * get_price_breakdown()/get_attachment_ids_from_config()) und übergibt
+     * an die zentrale Inquiry-Engine. Ersetzt die frühere, hier fest
+     * verdrahtete Klartext-wp_mail()-Logik.
+     */
     public function ajax_configurator_inquiry() {
         check_ajax_referer('configurator_nonce', 'nonce');
         
         $product_id = intval($_POST['product_id']);
-        $config = json_decode(stripslashes($_POST['config']), true);
-        $contact = json_decode(stripslashes($_POST['contact']), true);
+        $config     = json_decode(stripslashes($_POST['config']), true);
+        $contact    = json_decode(stripslashes($_POST['contact']), true);
         
         $product = wc_get_product($product_id);
         if (!$product) {
             wp_send_json_error('Produkt nicht gefunden');
         }
-        
-        require_once MEDIA_LAB_WC_PATH . 'inc/configurator/class-price-calculator.php';
-        $calculator = new MediaLab_Price_Calculator($product_id);
-        $price_breakdown = $calculator->get_breakdown($config);
-        
-        $admin_email = get_option('admin_email');
-        $subject = 'Neue Produktanfrage: ' . $product->get_name();
-        
-        $body = "Neue Produktanfrage über Konfigurator\n\n";
-        $body .= "=================================\n\n";
-        
-        if (!empty($contact['name']) || !empty($contact['email'])) {
-            $body .= "KONTAKTDATEN:\n";
-            $body .= "-------------\n";
-            if (!empty($contact['name'])) $body .= "Name: " . $contact['name'] . "\n";
-            if (!empty($contact['email'])) $body .= "E-Mail: " . $contact['email'] . "\n";
-            if (!empty($contact['phone'])) $body .= "Telefon: " . $contact['phone'] . "\n";
-            $body .= "\n";
-        }
-        
-        $body .= "PRODUKT:\n";
-        $body .= "--------\n";
-        $body .= "Produkt: " . $product->get_name() . "\n";
-        $body .= "Produkt-ID: " . $product_id . "\n\n";
-        
-        $body .= "KONFIGURATION:\n";
-        $body .= "--------------\n";
-        
-        $steps = $this->get_configuration_steps($product_id);
-        foreach ($steps as $step) {
-            $step_id = $step['step_id'];
-            
-            if (!isset($config[$step_id]) || !$step['show_in_summary']) {
-                continue;
-            }
-            
-            $value = $config[$step_id];
-            $label = $step['step_label'];
-            
-            if ($step['step_type'] === 'select' || $step['step_type'] === 'radio') {
-                $option = null;
-                foreach ($step['options'] as $opt) {
-                    if ($opt['value'] === $value) {
-                        $option = $opt;
-                        break;
-                    }
+
+        $config = is_array($config) ? $config : [];
+        $contact = is_array($contact) ? $contact : [];
+
+        $item = [
+            'product_id'      => $product_id,
+            'quantity'        => isset($config['quantity']) ? max(1, intval($config['quantity'])) : 1,
+            'name'            => $product->get_name(),
+            'config'          => $config,
+            'config_display'  => $this->get_config_display_array($product_id, $config),
+            'price_breakdown' => $this->get_price_breakdown($product_id, $config),
+            'attachments'     => $this->get_attachment_ids_from_config($config),
+        ];
+
+        // Kontaktdaten: Basisfelder aus dem JS-Objekt (siehe configurator.js sendInquiry())
+        // + alle konfigurierten Zusatzfelder, die dort bereits generisch mitgeschickt werden.
+        $contact_data = [
+            'name'            => sanitize_text_field( $contact['name']    ?? '' ),
+            'email'           => sanitize_email( $contact['email']        ?? '' ),
+            'phone'           => sanitize_text_field( $contact['phone']   ?? '' ),
+            'message'         => sanitize_textarea_field( $contact['message'] ?? '' ),
+            'privacy_consent' => ! empty( $contact['privacy_consent'] ),
+        ];
+        if ( class_exists( 'MediaLab_Inquiry_Settings' ) ) {
+            foreach ( MediaLab_Inquiry_Settings::get_form_fields() as $field ) {
+                $key = $field['field_key'] ?? '';
+                if ( $key && isset( $contact[ $key ] ) ) {
+                    $raw = $contact[ $key ];
+                    $contact_data[ $key ] = is_array( $raw ) ? array_map( 'sanitize_text_field', $raw ) : sanitize_text_field( (string) $raw );
                 }
-                $display = $option ? $option['label'] : $value;
-            } elseif ($step['step_type'] === 'checkbox' && is_array($value)) {
-                $labels = array();
-                foreach ($value as $v) {
-                    foreach ($step['options'] as $opt) {
-                        if ($opt['value'] === $v) {
-                            $labels[] = $opt['label'];
-                            break;
-                        }
-                    }
-                }
-                $display = implode(', ', $labels);
-            } elseif ($step['step_type'] === 'size_matrix' && is_array($value)) {
-                $sizes = array();
-                foreach ($value as $size => $qty) {
-                    if ($qty > 0) {
-                        $sizes[] = "$size: {$qty}x";
-                    }
-                }
-                $display = implode(', ', $sizes);
-            } elseif ($step['step_type'] === 'file_upload' && is_array($value)) {
-                $display = 'Datei hochgeladen: ' . $value['name'];
-            } else {
-                $display = is_array($value) ? implode(', ', $value) : $value;
             }
-            
-            $body .= "$label: $display\n";
         }
-        
-        $body .= "\nPREISKALKULATION:\n";
-        $body .= "-----------------\n";
-        $body .= "Basispreis: " . wc_price($price_breakdown['base_price']) . "\n";
-        
-        foreach ($price_breakdown['additions'] as $addition) {
-            $body .= "+ " . $addition['label'] . ": " . wc_price($addition['price']) . "\n";
+
+        $result = MediaLab_Inquiry_Engine::submit( [ $item ], $contact_data, 'configurator' );
+
+        if ( is_wp_error( $result ) ) {
+            wp_send_json_error( $result->get_error_message() );
         }
-        
-        $body .= "Zwischensumme/Stk: " . wc_price($price_breakdown['subtotal']) . "\n";
-        $body .= "Menge: " . $price_breakdown['quantity'] . " Stück\n";
-        
-        if ($price_breakdown['tier_discount'] > 0) {
-            $discount_percent = ($price_breakdown['tier_discount_percent'] * 100);
-            $body .= "Mengenrabatt ($discount_percent%): -" . wc_price($price_breakdown['tier_discount'] * $price_breakdown['quantity']) . "\n";
-        }
-        
-        $body .= "Zwischensumme: " . wc_price($price_breakdown['total_before_tax']) . "\n";
-        $body .= "MwSt (" . $price_breakdown['tax_rate'] . "%): " . wc_price($price_breakdown['tax_amount']) . "\n\n";
-        $body .= "GESAMTPREIS: " . wc_price($price_breakdown['total']) . "\n";
-        
-        if (!empty($contact['message'])) {
-            $body .= "\nNACHRICHT:\n";
-            $body .= "----------\n";
-            $body .= $contact['message'] . "\n";
-        }
-        
-        // HTML Email Header
-        $headers = array('Content-Type: text/html; charset=UTF-8');
-        
-        // Wrappe Body in HTML
-        $html_body = '<html><body style="font-family: Arial, sans-serif; line-height: 1.6;">';
-        $html_body .= nl2br($body); // Konvertiere \n zu <br>
-        $html_body .= '</body></html>';
-        
-        $sent = wp_mail($admin_email, $subject, $html_body, $headers);
-        
-        if ($sent) {
-            if (!empty($contact['email'])) {
-                $customer_subject = 'Ihre Produktanfrage: ' . $product->get_name();
-                $customer_body = "Hallo" . (!empty($contact['name']) ? ' ' . $contact['name'] : '') . ",\n\n";
-                $customer_body .= "vielen Dank für Ihre Anfrage zu:\n";
-                $customer_body .= $product->get_name() . "\n\n";
-                $customer_body .= "Wir haben Ihre Konfiguration erhalten und melden uns in Kürze bei Ihnen mit einem individuellen Angebot.\n\n";
-                $customer_body .= "Mit freundlichen Grüßen\n";
-                $customer_body .= get_bloginfo('name');
-                
-                wp_mail($contact['email'], $customer_subject, $customer_body, $headers);
-            }
-            
-            wp_send_json_success('Vielen Dank! Ihre Anfrage wurde versendet.');
-        } else {
-            wp_send_json_error('Fehler beim Versenden. Bitte versuchen Sie es erneut.');
-        }
+
+        wp_send_json_success( MediaLab_Inquiry_Settings::wording( 'success' ) );
     }
     
     /**
@@ -603,9 +617,14 @@ class MediaLab_Product_Configurator {
     
     public function enqueue_scripts() {
         if (!is_product()) return;
-        
-        global $product;
-        
+
+        // WICHTIG: global $product ist am 'wp_enqueue_scripts'-Hook (feuert VOR
+        // der eigentlichen Content-Loop) bei WooCommerce typischerweise noch
+        // NICHT gesetzt - das passiert erst später während the_post() in der
+        // Loop selbst. Daher zuverlässig über die Query-ID laden statt über
+        // den globalen $product, der hier unzuverlässig/leer sein kann.
+        $product = wc_get_product( get_queried_object_id() );
+
         if (!is_a($product, 'WC_Product')) {
             return;
         }
@@ -643,6 +662,16 @@ class MediaLab_Product_Configurator {
             'nonce' => wp_create_nonce('configurator_nonce'),
             'product_id' => $product->get_id(),
             'cart_url' => wc_get_cart_url(),
+            // Damit sendInquiry() (configurator.js) die dynamisch konfigurierten
+            // Zusatzfelder generisch mitsenden kann, ohne sie hier hart zu verdrahten.
+            'extraFieldKeys' => class_exists( 'MediaLab_Inquiry_Settings' )
+                ? array_values( array_filter( array_map( fn( $f ) => $f['field_key'] ?? '', MediaLab_Inquiry_Settings::get_form_fields() ) ) )
+                : array(),
+            'privacyRequired' => class_exists( 'MediaLab_Inquiry_Settings' ) ? MediaLab_Inquiry_Settings::privacy_required() : false,
+            // Für den "Zur Wunschliste hinzufügen"-Button im Wizard (eigener Nonce,
+            // da die Wunschliste ein separater Ajax-Namespace ist, siehe class-ajax.php).
+            'wishlistNonce'   => wp_create_nonce( class_exists( 'MediaLab_Wishlist_Ajax' ) ? MediaLab_Wishlist_Ajax::NONCE_ACTION : 'mlw_wishlist_nonce' ),
+            'wishlistAddLabel' => class_exists( 'MediaLab_Inquiry_Settings' ) ? MediaLab_Inquiry_Settings::wording( 'add_button' ) : 'Zur Wunschliste hinzufügen',
         ));
         
         wp_enqueue_style(

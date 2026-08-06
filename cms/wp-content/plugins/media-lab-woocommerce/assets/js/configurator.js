@@ -92,7 +92,16 @@ function productConfigurator(initialData) {
         
         canProceed() {
             const currentStepData = this.steps[this.currentStep - 1];
-            
+
+            // Zusammenfassungs-Schritt (currentStep === totalSteps + 1) hat KEINEN
+            // Eintrag im steps-Array - hier ist "Weiter" ohnehin ausgeblendet
+            // (x-show), aber Alpine wertet :disabled trotzdem bei jeder
+            // Reaktivitäts-Änderung aus. Ohne diese Absicherung crasht das bei
+            // jedem Tastendruck im letzten Formularfeld vor der Zusammenfassung.
+            if (!currentStepData) {
+                return true;
+            }
+
             if (!currentStepData.required) {
                 return true;
             }
@@ -341,6 +350,48 @@ function productConfigurator(initialData) {
             return items;
         },
         
+        // Zur Wunschliste hinzufügen (statt Anfrage/Warenkorb)
+        async addToWishlist() {
+            this.isProcessing = true;
+            this.errors = [];
+
+            try {
+                const response = await fetch(configuratorData.ajax_url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        action: 'mlw_wishlist_add',
+                        nonce: configuratorData.wishlistNonce,
+                        product_id: this.productId,
+                        quantity: this.config.quantity || 1,
+                        config: JSON.stringify(this.config)
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('✅ Zur Wunschliste hinzugefügt!');
+                    if (typeof mlwWishlist !== 'undefined' && data.data && typeof data.data.count !== 'undefined') {
+                        mlwWishlist.count = data.data.count;
+                        document.querySelectorAll('.mlw-wishlist-count').forEach(function (el) {
+                            el.textContent = data.data.count;
+                        });
+                    }
+                    window.location.href = '/';
+                } else {
+                    this.errors = [(data.data && data.data.message) || 'Fehler beim Hinzufügen zur Wunschliste'];
+                }
+            } catch (error) {
+                console.error('Wishlist error:', error);
+                this.errors = ['Fehler beim Hinzufügen zur Wunschliste. Bitte versuchen Sie es erneut.'];
+            } finally {
+                this.isProcessing = false;
+            }
+        },
+
         // Send Inquiry (statt Add to Cart)
         async sendInquiry() {
             this.isProcessing = true;
@@ -352,8 +403,15 @@ function productConfigurator(initialData) {
                     name: this.config.customer_name || '',
                     email: this.config.customer_email || '',
                     phone: this.config.customer_phone || '',
-                    message: this.config.notes || ''
+                    message: this.config.notes || '',
+                    privacy_consent: !!this.config.privacy_consent
                 };
+
+                // Dynamisch konfigurierte Zusatzfelder generisch mitsenden
+                // (Feld-Keys kommen aus den Inquiry-Einstellungen, siehe class-configurator.php enqueue_scripts()).
+                (configuratorData.extraFieldKeys || []).forEach((key) => {
+                    contactData[key] = this.config[key] || '';
+                });
                 
                 const response = await fetch(configuratorData.ajax_url, {
                     method: 'POST',
