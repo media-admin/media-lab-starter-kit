@@ -103,6 +103,15 @@ class MediaLab_Inquiry_Settings {
                 'placeholder' => 'Vielen Dank! Ihre Anfrage wurde erfolgreich übermittelt. Wir melden uns in Kürze bei Ihnen.',
                 'conditional_logic' => $hide_if_multilang,
             ],
+            [
+                'key'         => 'field_mlw_price_notice',
+                'label'       => 'Preis-Hinweistext',
+                'name'        => 'mlw_price_notice',
+                'type'        => 'text',
+                'instructions'=> 'Erscheint neben Preisangaben im Konfigurator (z.B. "zzgl. Versandkosten" oder ein eigener Steuer-/Rechtshinweis). Leer lassen, um nichts anzuzeigen.',
+                'placeholder' => 'zzgl. Versandkosten',
+                'conditional_logic' => $hide_if_multilang,
+            ],
         ];
     }
 
@@ -146,10 +155,11 @@ class MediaLab_Inquiry_Settings {
                     [ 'key' => 'field_mlw_lang_name', 'label' => 'Bezeichnung', 'name' => 'lang_name', 'type' => 'text', 'placeholder' => 'Deutsch', 'instructions' => 'Nur zur internen Orientierung.', 'wrapper' => [ 'width' => '30' ] ],
 
                     $sep( 'Wording' ),
-                    [ 'key' => 'field_mlw_lang_wishlist_label', 'label' => 'Bezeichnung Wunschliste', 'name' => 'wishlist_label', 'type' => 'text', 'wrapper' => [ 'width' => '25' ] ],
-                    [ 'key' => 'field_mlw_lang_add_button',     'label' => '„Hinzufügen"-Button',       'name' => 'add_button',      'type' => 'text', 'wrapper' => [ 'width' => '25' ] ],
-                    [ 'key' => 'field_mlw_lang_submit_button',  'label' => 'Absenden-Button',            'name' => 'submit_button',   'type' => 'text', 'wrapper' => [ 'width' => '25' ] ],
-                    [ 'key' => 'field_mlw_lang_success',        'label' => 'Erfolgsmeldung',             'name' => 'success',         'type' => 'text', 'wrapper' => [ 'width' => '25' ] ],
+                    [ 'key' => 'field_mlw_lang_wishlist_label', 'label' => 'Bezeichnung Wunschliste', 'name' => 'wishlist_label', 'type' => 'text', 'wrapper' => [ 'width' => '20' ] ],
+                    [ 'key' => 'field_mlw_lang_add_button',     'label' => '„Hinzufügen"-Button',       'name' => 'add_button',      'type' => 'text', 'wrapper' => [ 'width' => '20' ] ],
+                    [ 'key' => 'field_mlw_lang_submit_button',  'label' => 'Absenden-Button',            'name' => 'submit_button',   'type' => 'text', 'wrapper' => [ 'width' => '20' ] ],
+                    [ 'key' => 'field_mlw_lang_success',        'label' => 'Erfolgsmeldung',             'name' => 'success',         'type' => 'text', 'wrapper' => [ 'width' => '20' ] ],
+                    [ 'key' => 'field_mlw_lang_price_notice',   'label' => 'Preis-Hinweistext',          'name' => 'price_notice',    'type' => 'text', 'placeholder' => 'zzgl. Versandkosten', 'wrapper' => [ 'width' => '20' ] ],
                     [ 'key' => 'field_mlw_lang_privacy_text',   'label' => 'Datenschutz-Text',           'name' => 'privacy_text',    'type' => 'textarea', 'rows' => 2, 'wrapper' => [ 'width' => '100' ] ],
 
                     $sep( 'Navigation' ),
@@ -662,12 +672,14 @@ class MediaLab_Inquiry_Settings {
             'add_button'     => 'Zur Wunschliste hinzufügen',
             'submit_button'  => 'Anfrage senden',
             'success'        => 'Vielen Dank! Ihre Anfrage wurde erfolgreich übermittelt. Wir melden uns in Kürze bei Ihnen.',
+            'price_notice'   => '',
         ];
         $field_map = [
             'wishlist_label' => 'mlw_wishlist_label',
             'add_button'     => 'mlw_add_button_label',
             'submit_button'  => 'mlw_submit_label',
             'success'        => 'mlw_success_message',
+            'price_notice'   => 'mlw_price_notice',
         ];
         if ( ! isset( $field_map[ $key ] ) ) return '';
 

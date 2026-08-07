@@ -74,10 +74,10 @@ if (!empty($remaining_tabs)) {
     <div class="configurator-progress">
         <div class="configurator-progress__bar">
             <div class="configurator-progress__fill" 
-                 :style="`width: ${(currentStep / totalSteps) * 100}%`"></div>
+                 :style="`width: ${(currentStep / (totalSteps + 1)) * 100}%`"></div>
         </div>
         <div class="configurator-progress__text">
-            Schritt <span x-text="currentStep"></span> von <span x-text="totalSteps"></span>
+            Schritt <span x-text="currentStep"></span> von <span x-text="totalSteps + 1"></span>
         </div>
     </div>
     
@@ -221,14 +221,17 @@ if (!empty($remaining_tabs)) {
                         <span x-text="formatPrice(priceBreakdown.total_before_tax)"></span>
                     </div>
                     
-                    <div class="price-row price-row--tax">
+                    <div class="price-row price-row--tax" x-show="priceBreakdown.tax_rate > 0">
                         <span x-text="`MwSt. (${priceBreakdown.tax_rate}%):`"></span>
                         <span x-text="formatPrice(priceBreakdown.tax_amount)"></span>
                     </div>
                     
                     <div class="price-row price-row--grand-total">
                         <span>Gesamtpreis:</span>
-                        <span x-text="formatPrice(priceBreakdown.total)"></span>
+                        <span>
+                            <span x-text="formatPrice(priceBreakdown.total)"></span>
+                            <small x-show="priceBreakdown.price_suffix" x-text="priceBreakdown.price_suffix" class="price-row__suffix"></small>
+                        </span>
                     </div>
                 </div>
                 
@@ -242,10 +245,27 @@ if (!empty($remaining_tabs)) {
     <div class="configurator-price-preview" x-show="currentStep <= totalSteps">
         <div class="configurator-price-preview__content">
             <div class="configurator-price-preview__label">Geschätzter Preis:</div>
-            <div class="configurator-price-preview__amount" x-text="formatPrice(estimatedPrice)"></div>
+            <div class="configurator-price-preview__amount" x-text="(isConfigurationComplete() ? '' : 'ab ') + formatPrice(estimatedPrice)"></div>
+            <div class="configurator-price-preview__suffix" x-show="priceBreakdown && priceBreakdown.price_suffix" x-text="priceBreakdown ? priceBreakdown.price_suffix : ''"></div>
             <div class="configurator-price-preview__note" x-show="config.quantity > 0">
                 <span x-text="formatPrice(pricePerUnit)"></span> pro Stück
             </div>
+            <?php
+            /**
+             * WP-Germanized-Rechtshinweise (Steuer/Versandkosten) an genau dieser
+             * Stelle einbinden, statt WPGs Standard-Ausgabeposition zu nutzen.
+             * Nutzt die offiziellen WPG-Shortcodes - $product ist an dieser Stelle
+             * (innerhalb der Produkt-Loop bzw. Single-Product-Kontext) zuverlässig
+             * gesetzt. Dafür in Germanized → Preisauszeichnung → Produktseite die
+             * Schalter "Steuer" + "Versandkosten" deaktivieren (NICHT unter
+             * "Produktlisten" - das steuert die Shop-Grid-Karten und bleibt aktiv).
+             */
+            if ( function_exists( 'do_shortcode' ) && ( shortcode_exists( 'gzd_product_tax_notice' ) || shortcode_exists( 'gzd_product_shipping_notice' ) ) ) {
+                echo '<div class="configurator-price-preview__legal">';
+                echo do_shortcode( '[gzd_product_tax_notice][gzd_product_shipping_notice]' );
+                echo '</div>';
+            }
+            ?>
         </div>
     </div>
     
@@ -303,7 +323,7 @@ if (!empty($remaining_tabs)) {
         </button>
 
         <button type="button" 
-                class="button button--primary button--large configurator-nav__button"
+                class="button button--primary button--large configurator-nav__button configurator-nav__button--full"
                 @click="sendInquiry()"
                 x-show="currentStep === totalSteps + 1"
                 :disabled="isProcessing">
@@ -399,20 +419,53 @@ if (!empty($remaining_tabs)) {
     margin-top: 0.5rem;
 }
 
+.configurator-price-preview__legal {
+    font-size: 12px;
+    color: #888;
+    margin-top: 0.5rem;
+}
+.configurator-price-preview__legal p {
+    margin: 0.2rem 0 0;
+}
+
+.configurator-price-preview__suffix {
+    font-size: 12px;
+    color: #888;
+    margin-top: 0.25rem;
+}
+
+.price-row__suffix {
+    display: block;
+    font-size: 11px;
+    font-weight: normal;
+    color: #888;
+    text-align: right;
+}
+
 .configurator-navigation {
     display: flex;
+    flex-wrap: wrap;
     gap: 1rem;
     margin-top: 2rem;
-    justify-content: space-between;
 }
 
 .configurator-nav__button {
+    flex: 1 1 auto;
+    min-width: 140px;
     padding: 1rem 2rem;
     font-size: 16px;
     font-weight: 600;
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.2s ease;
+}
+
+/* "Anfrage absenden" bekommt immer eine eigene, volle Zeile - drei
+   Buttons nebeneinander (Zurück / Wunschliste / Anfrage absenden) haben
+   in der schmaleren .summary-Spalte sonst nicht genug Platz. */
+.configurator-nav__button--full {
+    flex-basis: 100%;
+    order: 10;
 }
 
 .button--primary {
@@ -619,12 +672,11 @@ button:disabled {
 </div><!-- .product-configurator -->
 
 <?php
-// Zeige Rezensionen am Ende
-if (comments_open() || get_comments_number()) {
-    echo '<div class="product-reviews-section" style="margin-top: 3rem;">';
-    comments_template();
-    echo '</div>';
-}
+// Rezensionen werden jetzt über render_reviews_for_configurable() AUSSERHALB
+// von .summary ausgegeben (siehe class-configurator.php, Hook
+// 'woocommerce_after_single_product_summary') - hier innerhalb der
+// .summary-Spalte würden sie sonst auf 50% Breite gequetscht statt
+// volle Breite unterhalb des Konfigurators zu erscheinen.
 ?>
 
 <?php

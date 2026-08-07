@@ -32,6 +32,11 @@ class MediaLab_Product_Configurator {
         // ist unabhängig von Catalog-Mode-Einstellungen.
         add_action('woocommerce_single_product_summary', array($this, 'move_tabs_before_configurator'), 24);
         add_action('woocommerce_single_product_summary', array($this, 'maybe_show_configurator'), 25);
+
+        // Rezensionen für konfigurierbare Produkte AUSSERHALB von .summary
+        // ausgeben (voller Seitenbreite unterhalb des Konfigurators), statt
+        // wie zuvor innerhalb von .summary eingequetscht auf 50% Breite.
+        add_action('woocommerce_after_single_product_summary', array($this, 'render_reviews_for_configurable'), 20);
         add_filter('woocommerce_placeholder_img_src', array($this, 'replace_placeholder_image'), 999);
         add_filter('woocommerce_add_to_cart_validation', array($this, 'validate_configuration'), 10, 3);
         add_filter('woocommerce_add_cart_item_data', array($this, 'add_configuration_to_cart'), 10, 2);
@@ -601,6 +606,26 @@ class MediaLab_Product_Configurator {
         return $src;
     }
     
+    /**
+     * Gibt die Produkt-Rezensionen für konfigurierbare Produkte aus - AUSSERHALB
+     * von .summary (voller Breite unterhalb des Konfigurators), da dieser Hook
+     * ('woocommerce_after_single_product_summary') erst NACH dem Schließen von
+     * .summary feuert. Für nicht-konfigurierbare Produkte unverändert (Theme
+     * kümmert sich dort selbst darum, hier keine doppelte Ausgabe).
+     */
+    public function render_reviews_for_configurable() {
+        global $product;
+        if (!$product || !$this->is_configurable($product->get_id())) {
+            return;
+        }
+
+        if (comments_open() || get_comments_number()) {
+            echo '<div class="product-reviews-section" style="margin-top: 3rem;">';
+            comments_template();
+            echo '</div>';
+        }
+    }
+
     public function move_tabs_before_configurator() {
         global $product;
         
@@ -678,7 +703,7 @@ class MediaLab_Product_Configurator {
             'medialab-configurator',
             MEDIA_LAB_WC_URL . 'assets/css/configurator.css',
             array(),
-            '1.0.0'
+            time() // dynamischer Cache-Buster, analog zu den JS-Enqueues oben - statische '1.0.0' verhinderte zuverlässiges Ausliefern von CSS-Änderungen
         );
     }
 }

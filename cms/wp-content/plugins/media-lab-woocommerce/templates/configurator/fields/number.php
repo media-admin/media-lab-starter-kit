@@ -80,6 +80,14 @@ $is_quantity = ($step_id === 'quantity');
     padding: 1rem;
     border: 2px solid #e0e0e0;
     border-radius: 8px;
+    /* Native Browser-Spinner-Pfeile ausblenden - eigene +/- Buttons daneben übernehmen das bereits */
+    -moz-appearance: textfield;
+}
+
+.configurator-number__input::-webkit-inner-spin-button,
+.configurator-number__input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
 
 .configurator-number__input:focus {

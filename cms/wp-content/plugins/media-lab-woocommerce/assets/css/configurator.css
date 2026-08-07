@@ -4,6 +4,51 @@
     display: none !important;
 }
 
+/*
+ * Verteidigende Absicherung: Auf manchen Themes/Setups (insbesondere bei
+ * Produkten ohne eigenes Bild, WooCommerce "--without-images"-Galerie)
+ * kann die .summary-Spalte durch WooCommerce-eigene Galerie-Skripte
+ * (FlexSlider/Zoom) zur Laufzeit auf eine sehr schmale Breite kollabieren,
+ * obwohl das Theme-CSS eine 50/50-Aufteilung vorsieht. Da der Konfigurator
+ * in dieser Spalte lebt, erzwingen wir hier eine Mindestbreite, unabhängig
+ * von der (Theme-seitigen) Ursache. Root Cause noch nicht abschließend
+ * geklärt - siehe CHANGELOG "Known Issues".
+ */
+.single-product div.product > .summary {
+    min-width: min(320px, 100%) !important;
+    flex-basis: 50% !important;
+}
+/*
+ * Theme-weite generische Regel `[data-columns] { display:grid!important;
+ * grid-template-columns:repeat(4,1fr)!important }` ist eigentlich nur für
+ * die eigenen Grid-Komponenten des Themes gedacht (Team-Karten, Services
+ * etc.), greift aber ungewollt auch hier, da WooCommerce dasselbe Attribut
+ * an der Produktgalerie setzt (rein informativ für die eigene Thumbnail-JS-
+ * Logik, kein CSS-Grid-Hook). Dadurch wurde der Galerie-Wrapper auf 1/4
+ * seiner eigentlichen Breite gequetscht. Spezifischerer Selektor überschreibt
+ * die generische Regel gezielt nur für die Produktgalerie.
+ */
+.woocommerce-product-gallery[data-columns] {
+    display: block !important;
+    grid-template-columns: none !important;
+}
+
+.single-product div.product > .woocommerce-product-gallery {
+    flex-basis: 50% !important;
+}
+
+/*
+ * Platzhalterbild auf volle Breite der Galerie-Spalte strecken - das Theme
+ * liefert dafür keine eigene Regel (WooCommerce-Basis-Galerie-CSS wird hier
+ * nicht eingebunden), reale Produktfotos wirken oft zufällig "passend groß",
+ * das kleinere Standard-Platzhalterbild aber nicht.
+ */
+.woocommerce-product-gallery__image--placeholder img {
+    width: 100% !important;
+    height: auto !important;
+    max-width: 100% !important;
+}
+
 .product-configurator ~ .quantity,
 .product-configurator ~ .single_add_to_cart_button {
     display: none !important;

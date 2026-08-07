@@ -102,31 +102,47 @@ function productConfigurator(initialData) {
                 return true;
             }
 
-            if (!currentStepData.required) {
+            return this.isStepValid(currentStepData);
+        },
+
+        // Prüft einen einzelnen Step auf Vollständigkeit (unabhängig davon, ob
+        // es der AKTUELLE Step ist) - wiederverwendet von canProceed() (nur
+        // aktueller Step) und isConfigurationComplete() (ALLE Pflicht-Steps,
+        // für die "ab"-Preis-Anzeige, siehe wizard.php Live-Preisvorschau).
+        isStepValid(stepData) {
+            if (!stepData.required) {
                 return true;
             }
-            
+
             // Contact Form ZUERST prüfen
-            if (currentStepData.step_type === 'contact_form') {
-                return this.config['customer_name'] && 
+            if (stepData.step_type === 'contact_form') {
+                return this.config['customer_name'] &&
                        this.config['customer_name'].trim() !== '' &&
-                       this.config['customer_email'] && 
+                       this.config['customer_email'] &&
                        this.config['customer_email'].trim() !== '';
             }
-            
-            const value = this.config[currentStepData.step_id];
-            
-            if (currentStepData.step_type === 'checkbox') {
+
+            const value = this.config[stepData.step_id];
+
+            if (stepData.step_type === 'checkbox') {
                 return value && value.length > 0;
-            } else if (currentStepData.step_type === 'size_matrix') {
-                return this.getSizeMatrixTotal(currentStepData.step_id) > 0;
-            } else if (currentStepData.step_type === 'number') {
+            } else if (stepData.step_type === 'size_matrix') {
+                return this.getSizeMatrixTotal(stepData.step_id) > 0;
+            } else if (stepData.step_type === 'number') {
                 const numValue = parseInt(value);
-                const minValue = parseInt(currentStepData.min_value) || 0;
+                const minValue = parseInt(stepData.min_value) || 0;
                 return !isNaN(numValue) && numValue >= minValue;
             } else {
                 return value !== '' && value !== null && value !== undefined;
             }
+        },
+
+        // Sind ALLE Pflicht-Steps ausgefüllt (nicht nur der aktuelle)?
+        // Steuert die "ab"-Vorsilbe der Live-Preisvorschau (siehe wizard.php):
+        // solange noch Pflichtangaben fehlen, ist der angezeigte Preis nur ein
+        // Ausgangswert ("ab X €"), kein finaler Preis.
+        isConfigurationComplete() {
+            return this.steps.every((step) => this.isStepValid(step));
         },
         
         // Field Changes
@@ -295,8 +311,17 @@ function productConfigurator(initialData) {
         },
         
         calculateTierPrice(discountPercent) {
+            // Muss exakt derselben Logik folgen wie class-price-calculator.php:
+            // MwSt. nur aufschlagen, wenn der Shop laut WooCommerce-Einstellung
+            // (woocommerce_tax_display_shop) Bruttopreise anzeigt - sonst bleibt
+            // es netto, damit die Tabelle zur restlichen Shop-Darstellung passt.
             const price = this.priceBreakdown ? this.priceBreakdown.subtotal : this.basePrice;
-            const discounted = price * (1 - discountPercent / 100);
+            const taxRate = this.priceBreakdown ? this.priceBreakdown.tax_rate : 0;
+            const showGross = this.priceBreakdown && this.priceBreakdown.tax_display_mode === 'incl';
+            let discounted = price * (1 - discountPercent / 100);
+            if (showGross) {
+                discounted = discounted * (1 + taxRate / 100);
+            }
             return this.formatPrice(discounted);
         },
         

@@ -6,6 +6,36 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ---
 
+## [1.24.2] - 2026-08-07
+
+### media-lab-agency-core 1.19.2
+
+#### Fixed
+- **Security-Scan meldete auf nginx-Systemen dauerhaft unbehebbare
+  Fehler** ("Subdirectory-Fix für wp-content/wp-includes"), inkl.
+  wöchentlicher Alarm-E-Mail und rotem ❌ im Admin - obwohl die
+  zugrunde liegende `.htaccess`-Prüfung auf nginx grundsätzlich nie
+  etwas finden kann (nginx wertet `.htaccess` nicht aus; die
+  entsprechende Konfiguration gehört in den Vhost). Betraf praktisch
+  jedes Starter-Kit-Projekt mit `/cms/`-Subdirectory-Setup auf nginx.
+- `check_uploads_php_blocked()` hatte diese nginx-Erkennung bereits
+  (liefert dort `'warn'` statt `'fail'`) - `check_subdirectory_htaccess_fix()`
+  jedoch nicht. Beide nutzen jetzt einen gemeinsamen `is_nginx()`-Helper;
+  auf nginx liefert der Subdirectory-Check jetzt ebenfalls `'warn'`
+  (⚠️ statt ❌, löst keine Alarm-Mail aus - `run_scan_and_notify()`
+  reagiert ohnehin nur auf `'fail'`) mit einer nginx-`location`-Block-
+  Anleitung statt der Apache-`.htaccess`-Anleitung.
+- `check_xmlrpc()` und `check_directory_listing()` prüfen echtes
+  Live-Server-Verhalten (HTTP-Requests) und sind dadurch bereits
+  server-agnostisch korrekt - deren Fix-Anleitung war aber nur für
+  Apache brauchbar. Beide zeigen jetzt zusätzlich die passende
+  nginx-Anleitung.
+- Neuer Hinweis-Banner auf der Security-Scan-Seite bei erkanntem
+  nginx: erklärt kurz, warum manche Prüfungen als Hinweis statt Fehler
+  erscheinen, statt das kommentarlos zu ändern.
+
+---
+
 ## [1.24.1] - 2026-08-07
 
 ### media-lab-agency-core 1.19.1 + custom-theme 1.15.2

@@ -6,27 +6,33 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ---
 
-## [2.0.1] - 2026-08-06
+## [2.1.0] - 2026-08-07
 
-### media-lab-woocommerce 2.0.1
+### media-lab-woocommerce 2.1.0
+
+Konfigurator-Feinschliff: korrekte Steuerberechnung über WooCommerce, Layout-Fixes,
+Mengen-/Staffelpreis-UX, WP-Germanized-Integration.
+
+#### Added
+
+- Freier, mehrsprachiger „Preis-Hinweistext" in den Inquiry-Einstellungen (Wording/Sprachen-Tab)
+- `inc/price-suffix.php` – globaler Hook in `woocommerce_get_price_suffix`, **nicht** an die Inquiry-Engine gekoppelt: nutzt die eigene mehrsprachige Einstellung, falls konfiguriert, sonst WooCommerce's natives „Preis-Anzeige-Suffix"-Feld (Einstellungen → Steuern) - funktioniert damit auch in Projekten ohne Inquiry-Engine
+- WP-Germanized-Rechtshinweise (Steuer/Versandkosten) direkt unter der Live-Preisvorschau im Konfigurator, über die offiziellen WPG-Shortcodes (`gzd_product_tax_notice`, `gzd_product_shipping_notice`) statt WPGs Standard-Ausgabeposition
+- `create-category-test-products.php` (WP-CLI-Skript) – 36 Testprodukte über 3 Kategorien (Drucksorten/Textilien/Give-aways), inkl. Mengen-Step für Staffelpreis-Tests
+
+#### Changed
+
+- `class-price-calculator.php`: komplette Preisberechnung auf WooCommerce's eigene Steuer-Funktionen (`wc_get_price_excluding_tax()`/`wc_get_price_including_tax()`) umgestellt statt hartcodierter 20 % - berücksichtigt jetzt Steuerklasse, `wc_prices_include_tax()` und die tatsächliche Shop-Steueranzeige-Einstellung (`woocommerce_tax_display_shop`)
+- Konfigurator-Navigation: „Anfrage absenden" bekommt bei drei Buttons (Zurück/Wunschliste/Anfrage) eine eigene volle Zeile, statt mit den anderen um Platz zu konkurrieren
+- Schritt-Zähler („Schritt X von Y") zählt den Zusammenfassungs-Schritt jetzt korrekt mit (Denominator `totalSteps + 1`)
 
 #### Fixed
-- **Fehlendes Lade-/Sperr-Feedback in `wishlist.js`** – `handleRemove()` und
-  `handleQtyChange()` gaben während des laufenden AJAX-Requests keinerlei
-  visuelles Signal, wodurch Doppelklicks auf "Entfernen" oder schnelles
-  mehrfaches Ändern der Menge unbemerkt mehrere Requests auslösen konnten.
-  - `handleRemove()`: betroffene `.mlw-wishlist-item`-Zeile bekommt sofort
-    die Klasse `is-removing` (Opacity 0.4, `pointer-events: none`) und der
-    Entfernen-Button wird deaktiviert; zusätzlicher `removingItemIds`-Set
-    verhindert parallele Requests für dieselbe Item-ID.
-  - `handleQtyChange()`: Mengen-Input wird für die Dauer des (debounced)
-    Requests deaktiviert.
-  - Kein klassisches Skeleton-Screen hier bewusst nicht eingesetzt: die
-    Operationen laufen über `get_user_meta()`-Storage ohne externe Requests
-    und sind typischerweise deutlich unter 200ms – ein Skeleton würde eher
-    Flackern erzeugen als Wartezeit fühlbar verkürzen. Siehe
-    `media-lab-agency-core` CHANGELOG für die zentrale Skeleton-API, die für
-    langsamere AJAX-Fälle (z.B. Post-/CPT-Filter) zum Einsatz kommt.
+
+- **Layout-Kollaps der `.summary`-Spalte** auf Produktseiten ohne eigenes Bild: mehrere ineinandergreifende Ursachen gefunden und behoben - u.a. eine zu allgemeine theme-weite `[data-columns]`-Grid-Regel, die ungewollt auch auf die WooCommerce-Produktgalerie griff (kollidierte mit demselben, für andere Theme-Komponenten gedachten Attribut)
+- Rezensionen wurden bei konfigurierbaren Produkten innerhalb von `.summary` ausgegeben (dadurch auf 50 % Breite gequetscht) - jetzt über einen eigenen Hook (`woocommerce_after_single_product_summary`) außerhalb davon
+- `unit_price` in der Preisaufschlüsselung enthielt keine MwSt., während `total` sie enthielt - beide Werte widersprachen sich sichtbar bei Menge 1 (jetzt behoben, da beide über dieselbe WooCommerce-Steuerfunktion laufen)
+- Native Browser-Spinner-Pfeile im Mengenfeld überlagerten die eigenen Plus/Minus-Buttons
+- Zwei vorbestehende Bugs in meinem eigenen Testprodukt-Anlage-Skript: fehlender Mengen-Step (keine Staffelpreis-Anzeige testbar) und bei 10 Give-away-Produkten fehlender Kontaktdaten-Step (identischer Bug wie schon einmal beim Kinder-T-Shirt-Testprodukt gefunden)
 
 ---
 
