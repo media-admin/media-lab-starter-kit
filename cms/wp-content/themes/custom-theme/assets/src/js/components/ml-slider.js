@@ -9,6 +9,13 @@
  *
  * @since 1.11.0
  * @updated 1.11.4  Korrektes Import-Pattern, kein JS-Wrapping mehr nötig
+ * @updated 1.15.2  Skeleton-Fallback ergänzt (siehe block-slider.css in
+ *                  media-lab-agency-core); übernimmt jetzt auch die
+ *                  Swiper-Initialisierung für medialab/slider komplett -
+ *                  das duplizierte, defekte Plugin-Script block-slider.js
+ *                  (window.Swiper nie verfügbar, SyntaxError beim Laden
+ *                  des rohen Swiper-ESM-Chunks als classic script) wurde
+ *                  entfernt.
  */
 
 import Swiper from 'swiper';
@@ -21,6 +28,17 @@ export default class MLSlider {
         this.init();
     }
 
+    /**
+     * Beendet den CSS-Skeleton (siehe media-lab-agency-core/assets/css/
+     * block-slider.css) für ein Slider-Element, das NICHT durch Swiper
+     * selbst initialisiert wurde (Swiper setzt "swiper-initialized" nur
+     * bei Erfolg). Verhindert, dass die Folien bei einem Fehler für immer
+     * hinter dem Shimmer-Platzhalter verschwinden.
+     */
+    revealSkeletonFallback( el ) {
+        el.classList.add( 'ml-slider__swiper--skeleton-done' );
+    }
+
     init() {
         this.sliders.forEach( el => {
             if ( el.swiper ) return; // bereits initialisiert
@@ -30,6 +48,7 @@ export default class MLSlider {
                 config = JSON.parse( el.dataset.swiper || '{}' );
             } catch ( e ) {
                 console.warn( '[ml-slider] Ungültige Config:', e );
+                this.revealSkeletonFallback( el );
                 return;
             }
 
@@ -63,8 +82,12 @@ export default class MLSlider {
 
             try {
                 new Swiper( el, config );
+                // Kein manuelles revealSkeletonFallback() nötig: Swiper
+                // selbst setzt bei Erfolg "swiper-initialized", das CSS
+                // reagiert direkt darauf.
             } catch ( err ) {
                 console.error( '[ml-slider] Init-Fehler:', err );
+                this.revealSkeletonFallback( el );
             }
         } );
     }

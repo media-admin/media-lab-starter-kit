@@ -6,6 +6,103 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ---
 
+## [1.24.1] - 2026-08-07
+
+### media-lab-agency-core 1.19.1 + custom-theme 1.15.2
+
+#### Fixed
+- **`Uncaught SyntaxError: Unexpected token 'export'` in `swiper.js`**
+  (Konsole, auf jeder Seite mit `medialab/slider`- oder
+  `medialab/logo-slider`-Block). Ursache: `inc/blocks.php` versuchte,
+  Swipers rohen Vite-ESM-Chunk (`assets/dist/js/chunks/swiper.js`,
+  enthält `export`-Statements) als **klassisches** `<script>` zu laden -
+  das kann kein Browser parsen. `window.Swiper`/globales `Swiper` gab es
+  dadurch nie.
+- **Ursache war ein doppelter, konkurrierender Initialisierungs-Ansatz:**
+  Das Theme importiert Swiper bereits korrekt per ESM
+  (`custom-theme/assets/src/js/components/ml-slider.js`, Teil des
+  regulären Vite-Bundles über `main.js` → `.ml-slider__swiper`) - das
+  hat immer funktioniert. Parallel dazu versuchte
+  `media-lab-agency-core/assets/js/block-slider.js`, dieselben Elemente
+  über ein globales `window.Swiper` nochmal zu initialisieren, das es
+  nie gab. `block-slider.js` war dadurch faktisch tot (`el.swiper`-Check
+  verhinderte Doppel-Init durch `ml-slider.js`, der eigene Init-Pfad
+  schlug immer fehl).
+- **Fix:**
+  - `media-lab-agency-core/inc/blocks.php`: kaputten `swiper`-Enqueue
+    (Script + Style) entfernt; Swiper-CSS kommt bereits über das Theme
+    (`main.js` importiert `swiper/css/bundle`).
+  - `media-lab-agency-core/assets/js/block-slider.js` **entfernt**
+    (redundant/tot). `assets/css/block-slider.css` (unser Skeleton aus
+    1.19.0) bleibt unverändert bestehen - hängt nur an Swipers eigener
+    `swiper-initialized`-Klasse, unabhängig davon, welches Script
+    `new Swiper()` aufruft.
+  - `custom-theme/assets/src/js/components/ml-slider.js`: übernimmt
+    jetzt zusätzlich den Skeleton-Fallback (`ml-slider__swiper--skeleton-done`)
+    in allen Fehlerpfaden (ungültige Config, Swiper-Init wirft Fehler) -
+    vorher in `block-slider.js`.
+  - `medialab-logo-slider` (`block-logo-slider.js`) ebenfalls
+    deaktiviert, gleicher Bug, gleiche Ursache. **Achtung:**
+    `block-logo-slider.js` enthält eine WCAG-2.2.2-Fokus-Pause
+    (Autoplay pausiert bei Tastaturfokus), die `ml-logo-slider.js`
+    (Theme) nicht hat - war durch den Bug aber ohnehin nie aktiv. Vor
+    einer echten Reaktivierung müsste diese Logik nach
+    `ml-logo-slider.js` portiert werden - **bewusst nicht in diesem Fix
+    entschieden**, das ist ein eigenständiges Thema.
+
+#### Bekannter Trade-off (weiterhin offen)
+- `medialab/logo-slider` hat aktuell keine WCAG-2.2.2-Fokus-Pause im
+  Frontend aktiv (siehe oben). Funktional unverändert zum vorherigen
+  Zustand (war vorher durch den Bug ebenfalls inaktiv), aber jetzt ohne
+  den zusätzlichen Konsolen-Fehler.
+
+---
+
+## [1.24.0] - 2026-08-06
+
+### media-lab-agency-core 1.19.0
+
+#### Added
+- **Skeleton für `medialab/slider` (Stufe 2)** – reiner CSS-Skeleton für
+  die Zeitspanne zwischen erstem Paint (Folien bereits im HTML, aber
+  ungestylt gestapelt) und abgeschlossener Swiper-Initialisierung.
+  Nutzt Swipers eigene `swiper-initialized`-Klasse als CSS-Selektor
+  (`:not(.swiper-initialized)`) – **kein zusätzliches JS zum Ein-/
+  Ausblenden nötig**, nur ein Sicherheitsnetz in `block-slider.js`
+  (`ml-slider__swiper--skeleton-done`), das den Skeleton in allen
+  Fehler-/Abbruchpfaden beendet (Swiper-Bundle fehlt, ungültige
+  Config, 0 Folien, Init wirft Fehler) – sonst würde bei einem Fehler
+  für immer geshimmert statt die rohen Folien zu zeigen. Shimmer-
+  Keyframe wird aus dem site-weiten `skeleton.css` (1.18.0) wieder-
+  verwendet, nicht neu definiert.
+- **Frontend-Verifizierung der nativen-Block-Migration abgeschlossen**
+  (offen seit 1.16.0/1.17.x): `medialab/slide` setzt die Klasse
+  `swiper-slide` bereits direkt am eigenen `useBlockProps.save()`-Root,
+  wodurch die Wrapping-Logik in `block-slider.js` (Kinder ohne
+  `.swiper-slide`-Klasse einwickeln) für nativ erzeugte Folien in der
+  Praxis nie greift – rein defensiver Fallback für Alt-Content. Bestätigt:
+  Migration ist mit dem bestehenden Frontend-JS vollständig kompatibel.
+
+#### Nicht geändert (bewusst)
+- **`medialab/parallax` bekommt keinen Skeleton.** Das Hintergrundbild
+  wird direkt als Inline-`background-image` in der statischen
+  `save()`-Ausgabe gerendert (normales Browser-Bildladen, keine JS-
+  Abhängigkeit für die Sichtbarkeit). Der Scroll-Effekt ist reine
+  Progressive Enhancement ohne "kaputt bis JS läuft"-Zustand – ein
+  Skeleton hätte hier keinen Nutzen, siehe Begründung analog zur
+  Wishlist-Entscheidung in 1.23.1.
+
+#### Bekannter Trade-off
+- Folien-Bilder nutzen `loading="lazy"`; während der (kurzen) Skeleton-
+  Phase ist `.ml-slider__wrapper` per `visibility: hidden` ausgeblendet,
+  was den nativen Lazy-Load-Trigger für das erste (oft LCP-relevante)
+  Bild geringfügig verzögern kann. In der Praxis vernachlässigbar, da
+  Swiper-Init nicht auf Bild-Ladezeit wartet, sondern nur auf das
+  bereits geladene Swiper-JS-Bundle – nur der Vollständigkeit halber
+  dokumentiert.
+
+---
+
 ## [1.23.2] - 2026-08-06
 
 ### custom-theme 1.15.1
