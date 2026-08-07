@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - WooCommerce - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-08-05 22:03:28+0000\n"
+"PO-Revision-Date: 2026-08-06 22:37:19+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -820,7 +820,7 @@ msgstr "Verfügbarkeit: %s"
 
 #: src/Admin/API/AnalyticsImports.php:408
 msgid "Number of failed order IDs dropped because the stored list reached its limit."
-msgstr "Anzahl der fehlgeschlagenen Bestellungs-IDs, die verworfen wurden, weil die gespeicherte Liste ihr Limit erreicht hat."
+msgstr "Anzahl der fehlgeschlagenen Bestell-IDs, die verworfen wurden, weil die gespeicherte Liste ihr Limit erreicht hat."
 
 #: src/Admin/API/AnalyticsImports.php:402
 msgid "Number of orders that failed analytics import and are pending retry."
@@ -2095,7 +2095,7 @@ msgstr "Produkt erstellen"
 
 #: src/Internal/Abilities/Domain/OrderUpdateStatus.php:151
 msgid "Optional status change note. Safe HTML is allowed. Use the woocommerce/order-add-note ability for notes without a status change."
-msgstr "Optionaler Hinweis zur Statusänderung. Sicheres HTML ist erlaubt. Verwende die woocommerce/order-add-note-Fähigkeit für Hinweise ohne Statusänderung."
+msgstr "Optionaler Hinweis zur Statusänderung. Sicheres HTML ist erlaubt. Verwende die Fähigkeit „woocommerce/order-add-note“ für Hinweise ohne Statusänderung."
 
 #: src/Internal/Abilities/Domain/OrderUpdateStatus.php:146
 msgid "Order status slug without the wc- prefix."
@@ -2107,7 +2107,7 @@ msgstr "Der Bestellstatus konnte nicht aktualisiert werden."
 
 #: src/Internal/Abilities/Domain/OrderUpdateStatus.php:104
 msgid "Order already has this status. Use the woocommerce/order-add-note ability to add a note without changing status."
-msgstr "Die Bestellung hat bereits diesen Status. Verwende die Fähigkeit „woocommerce/order-add-note“, um eine Notiz hinzuzufügen, ohne den Status zu ändern."
+msgstr "Die Bestellung hat bereits diesen Status. Verwende die Fähigkeit „woocommerce/order-add-note“, um einen Hinweis hinzuzufügen, ohne den Status zu ändern."
 
 #: src/Internal/Abilities/Domain/OrderUpdateStatus.php:96
 msgid "Order status is invalid."
@@ -2151,7 +2151,7 @@ msgstr "Bestellnummern, die aus den Ergebnissen ausgeschlossen werden sollen."
 
 #: src/Internal/Abilities/Domain/OrdersQuery.php:208
 msgid "Filter by parent order ID."
-msgstr "Nach übergeordneter Bestellnummer filtern."
+msgstr "Nach übergeordneter Bestell-ID filtern."
 
 #: src/Internal/Abilities/Domain/OrdersQuery.php:199
 msgid "Filter by customer ID. Use 0 to filter guest orders."
@@ -2171,7 +2171,7 @@ msgstr "Bestellungen abfragen"
 
 #: src/Internal/Abilities/Domain/OrderAddNote.php:133
 msgid "Whether the note is visible to the customer. Defaults to false for a private/admin note."
-msgstr "Ob die Notiz für den Kunden sichtbar ist. Standardmäßig ist für eine private/Admin-Notiz „false“ festgelegt."
+msgstr "Ob der Hinweis für den Kunden sichtbar ist. Standardmäßig ist für einen privaten/Admin-Hinweis „false“ festgelegt."
 
 #: src/Internal/Abilities/Domain/OrderAddNote.php:127
 msgid "Order note content. Safe HTML is allowed."
@@ -2183,7 +2183,7 @@ msgstr "Der Bestellhinweis konnte nicht hinzugefügt werden."
 
 #: src/Internal/Abilities/Domain/OrderAddNote.php:43
 msgid "Add a note to an order."
-msgstr "Füge einen Hinweis zu einer Bestellung hinzu."
+msgstr "Einer Bestellung einen Hinweis hinzufügen."
 
 #: src/Internal/Abilities/Domain/OrderAddNote.php:42
 msgid "Add order note"
@@ -2394,11 +2394,11 @@ msgstr "`%s` konnte nicht installiert werden. Versuche es in ein paar Minuten er
 
 #: src/Admin/API/Notes.php:794
 msgid "Deprecated. Always returns an empty string. Inbox notes no longer render images; this field will be removed in a future release."
-msgstr "Veraltet. Gibt immer eine leere Zeichenfolge zurück. Posteingangsnotizen geben keine Bilder mehr aus. Dieses Feld wird in einer zukünftigen Version entfernt."
+msgstr "Veraltet. Gibt immer eine leere Zeichenfolge zurück. Hinweise im Posteingang zeigen keine Bilder mehr an. Dieses Feld wird in einer zukünftigen Version entfernt."
 
 #: src/Admin/API/Notes.php:788
 msgid "Deprecated. Always returns \"plain\". Inbox notes no longer support layout variants; this field will be removed in a future release."
-msgstr "Veraltet. Gibt immer „plain“ zurück. Posteingangsnotizen unterstützen keine Layoutvarianten mehr. Dieses Feld wird in einer zukünftigen Version entfernt."
+msgstr "Veraltet. Gibt immer „plain“ zurück. Hinweise im Posteingang unterstützen keine Layoutvarianten mehr. Dieses Feld wird in einer zukünftigen Version entfernt."
 
 #. translators: %s: site name.
 #: src/Admin/API/MobileAppQRLogin.php:2058
@@ -4127,7 +4127,7 @@ msgstr "Status der Abwicklung Nr. %1$d von %2$s auf %3$s geändert."
 #. label
 #: src/Admin/Features/Fulfillments/FulfillmentOrderNotes.php:209
 msgid "Order fulfillment status changed from %1$s to %2$s."
-msgstr "Abwicklungsstatus der Bestellung geändert von %1$s in %2$s."
+msgstr "Abwicklungsstatus der Bestellung von %1$s auf %2$s geändert."
 
 #. translators: %d: fulfillment ID
 #: src/Admin/Features/Fulfillments/FulfillmentOrderNotes.php:169
@@ -4631,11 +4631,11 @@ msgstr "Geplante Updates aktiviert"
 
 #: src/Internal/Admin/Notes/ScheduledUpdatesPromotion.php:82
 msgid "This provides improved performance to your store, enable it in Analytics > Settings."
-msgstr "Dadurch wird die Performance deines Shops verbessert. Aktiviere sie unter Analytics > Einstellungen."
+msgstr "Dadurch wird die Performance deines Shops verbessert. Aktiviere dies unter Analysen > Einstellungen."
 
 #: src/Internal/Admin/Notes/ScheduledUpdatesPromotion.php:81
 msgid "Analytics now supports scheduled updates"
-msgstr "Analytics unterstützt jetzt geplante Updates"
+msgstr "Analysen unterstützen jetzt geplante Aktualisierungen"
 
 #. translators: %s: Payment provider name.
 #: src/Internal/Admin/Notes/PaymentsRemindMeLater.php:71
@@ -5478,7 +5478,7 @@ msgstr "Wenn „true“, wird die Zahlungsschnittstellen-API für die Erstattung
 
 #: src/Internal/RestApi/Routes/V4/Refunds/CollectionQuery.php:33
 msgid "Filter refunds by order ID."
-msgstr "Erstattungen nach Bestellnummer filtern."
+msgstr "Erstattungen nach Bestell-ID filtern."
 
 #: src/Internal/RestApi/Routes/V4/Products/Controller.php:2349
 msgid "Exclude products that belong to specific product category IDs."
@@ -5954,15 +5954,15 @@ msgstr "Beschränkt die Ergebnismenge auf Bestellungen mit bestimmten Gesamtbetr
 
 #: src/Internal/RestApi/Routes/V4/OrderNotes/Schema/OrderNoteSchema.php:91
 msgid "If true, the note will be shown to customers. If false, the note will be for admin reference only."
-msgstr "Wenn wahr, wird Kunden der Hinweis angezeigt. Wenn falsch, wird der Hinweis nur dem Administrator zur Information angezeigt."
+msgstr "Wenn „true“, wird der Hinweis den Kunden angezeigt. Wenn „false“, dient der Hinweis ausschließlich als Referenz für Administratoren."
 
 #: src/Internal/RestApi/Routes/V4/OrderNotes/Schema/OrderNoteSchema.php:47
 msgid "Order ID the note belongs to."
-msgstr "Bestellnummer, zu der der Hinweis gehört."
+msgstr "Die Bestell-ID, zu der der Hinweis gehört."
 
 #: src/Internal/RestApi/Routes/V4/OrderNotes/Controller.php:91
 msgid "The order ID that notes belong to."
-msgstr "Die Bestellnummer, zu der Hinweise gehören."
+msgstr "Die Bestell-ID, zu der Hinweise gehören."
 
 #: src/Internal/RestApi/Routes/V4/OrderNotes/CollectionQuery.php:34
 msgid "Limit result to customer notes or private notes."
@@ -8627,7 +8627,7 @@ msgstr "Details für Bestellnummer %s,"
 #: templates/emails/block/customer-refunded-order.php:58
 #: templates/emails/block/default-block-content.php:42
 msgid "Thanks again! If you need any help with your order, please contact us at %s."
-msgstr "Nochmals vielen Dank! Wenn du Hilfe mit deiner Bestellung benötigst, kannst du uns jederzeit unter %s kontaktieren."
+msgstr "Nochmals vielen Dank! Wenn du Hilfe bei deiner Bestellung benötigst, kannst du uns jederzeit unter %s kontaktieren."
 
 #. translators: %s: order number
 #: templates/emails/block/admin-new-order.php:29
@@ -9038,7 +9038,7 @@ msgstr "Wir haben einige aufregende Verbesserungen an unseren E-Mail-Templates v
 #: src/Internal/Admin/Notes/EmailImprovements.php:71
 #: assets/client/admin/chunks/homescreen.js:1
 msgid "Store emails have had an upgrade!"
-msgstr "Für Shop-E-Mails gab es ein Upgrade!"
+msgstr "Deine Shop-E-Mails haben ein Upgrade erhalten!"
 
 #: src/Internal/Admin/Notes/EmailImprovements.php:58
 #: assets/client/admin/chunks/homescreen.js:1
@@ -9116,7 +9116,7 @@ msgstr "[Wiedergabe der Produktbeschreibung angehalten]"
 
 #: src/Admin/Notes/Note.php:414
 msgid "The admin note type prop is deprecated."
-msgstr "Die Typ-Eigenschaft für Admin-Notiz ist veraltet."
+msgstr "Die Eigenschaft „type“ ist für Admin-Hinweise veraltet."
 
 #: src/Admin/Features/Blueprint/RestApi.php:376
 msgid "Whether blueprint imports are currently allowed"
@@ -9950,12 +9950,12 @@ msgstr "Modernes E-Mail-Design für transaktionsbezogene E-Mails aktivieren"
 
 #: src/Internal/Features/FeaturesController.php:420
 msgid "⚠ Usage tracking must be enabled to use remote logging."
-msgstr "⚠ Nutzungsaufzeichnung muss aktiviert sein, um die Remote-Protokollierung verwenden zu können."
+msgstr "⚠ Nutzungsdatenerfassung muss aktiviert sein, um die Remote-Protokollierung verwenden zu können."
 
 #. translators: %1$s: opening link tag, %2$s: closing link tag
 #: src/Internal/Features/FeaturesController.php:396
 msgid "Allow WooCommerce to send error logs and non-sensitive diagnostic data to help improve WooCommerce. This feature requires %1$susage tracking%2$s to be enabled."
-msgstr "Erlaube WooCommerce, Fehlerprotokolle und nicht sensible Diagnosedaten zu senden, um WooCommerce zu verbessern. Für diese Funktion muss die %1$sNutzungsaufzeichnung%2$s aktiviert sein."
+msgstr "Erlaube WooCommerce, Fehlerprotokolle und nicht sensible Diagnosedaten zu senden, um WooCommerce zu verbessern. Für diese Funktion muss die %1$sNutzungsdatenerfassung%2$s aktiviert sein."
 
 #: src/Internal/EmailEditor/PersonalizationTags/SiteTagsProvider.php:46
 msgid "Homepage URL"
@@ -10469,7 +10469,7 @@ msgstr "Sende deinen Kunden manuell eine E-Mail mit ihren Bestellinformationen u
 #: includes/emails/class-wc-email-customer-failed-order.php:150
 #: includes/emails/class-wc-email-customer-refunded-order.php:286
 msgid "If you need any help with your order, please contact us at {store_email}."
-msgstr "Wenn du Hilfe mit deiner Bestellung benötigst, kannst du uns jederzeit unter {store_email} kontaktieren."
+msgstr "Wenn du Hilfe bei deiner Bestellung benötigst, kannst du uns jederzeit unter {store_email} kontaktieren."
 
 #: includes/emails/class-wc-email-customer-completed-order.php:153
 #: includes/emails/class-wc-email-customer-invoice.php:132
@@ -10477,7 +10477,7 @@ msgstr "Wenn du Hilfe mit deiner Bestellung benötigst, kannst du uns jederzeit 
 #: includes/emails/class-wc-email-customer-on-hold-order.php:157
 #: includes/emails/class-wc-email-customer-processing-order.php:153
 msgid "Thanks again! If you need any help with your order, please contact us at {store_email}."
-msgstr "Nochmals vielen Dank! Wenn du Hilfe mit deiner Bestellung benötigst, kannst du uns jederzeit unter {store_email} kontaktieren."
+msgstr "Nochmals vielen Dank! Wenn du Hilfe bei deiner Bestellung benötigst, kannst du uns jederzeit unter {store_email} kontaktieren."
 
 #: includes/emails/class-wc-email-customer-completed-order.php:103
 #: templates/emails/block/customer-completed-order.php:27
@@ -10644,7 +10644,7 @@ msgstr "Gewinne und binde Kunden per E-Mail, SMS, über Automatisierungen und mi
 
 #: src/Internal/Admin/Notes/TrackingOptIn.php:73
 msgid "Usage tracking activated"
-msgstr "Nutzungsaufzeichnung aktiviert"
+msgstr "Nutzungsdatenerfassung aktiviert"
 
 #: src/Internal/Admin/EmailPreview/EmailPreviewRestController.php:264
 #: src/Internal/Admin/Emails/EmailListingRestController.php:161
@@ -10695,7 +10695,7 @@ msgstr "Preis: {{min}} - {{max}}"
 #. translators: %s is the formatted minimum price.
 #: src/Blocks/BlockTypes/ProductFilterPrice.php:79
 msgid "Price: From %s"
-msgstr "Preis: Von %s"
+msgstr "Preis: ab %s"
 
 #. translators: %s is the formatted maximum price.
 #: src/Blocks/BlockTypes/ProductFilterPrice.php:73
@@ -12396,7 +12396,7 @@ msgstr "Marken können über diesen Bildschirm hinzugefügt und verwaltet werden
 
 #: includes/admin/class-wc-admin-brands.php:236
 msgid "Choose to show the brand description on the archive page. Turn this off if you intend to use the description widget instead. Please note: this is only for themes that do not show the description."
-msgstr "Wähle aus, ob die Markenbeschreibung auf der Archivseite angezeigt werden soll. Deaktiviere diese Funktion, wenn du stattdessen lieber die Widget-Beschreibung nutzen möchtest. Hinweis: Dies gilt nur für Themes, bei denen die Beschreibung nicht angezeigt wird."
+msgstr "Wähle aus, ob die Markenbeschreibung auf der Archivseite angezeigt werden soll. Deaktiviere diese Funktion, wenn du stattdessen lieber das Beschreibungs-Widget nutzen möchtest. Hinweis: Dies gilt nur für Themes, bei denen die Beschreibung nicht angezeigt wird."
 
 #: includes/admin/class-wc-admin-brands.php:229
 msgid "Brands Archives"
@@ -12495,7 +12495,7 @@ msgstr "Dieses Tool wird den Cache mit Systemstatus-Theme-Informationen leeren."
 #. translators: %s is a placeholder for a URL.
 #: includes/gateways/paypal/includes/settings-paypal.php:104
 msgid "Log PayPal events such as IPN requests and review them on the <a href=\"%s\">Logs screen</a>. Note: this may log personal information. We recommend using this for debugging purposes only and deleting the logs when finished."
-msgstr "Protokolliere PayPal-Ereignisse wie IPN-Anfragen und überprüfe sie in der Ansicht <a href=\"%s\">Protokolle</a>. Hinweis: Dabei können personenbezogene Informationen protokolliert werden. Wir empfehlen, diese Funktion ausschließlich zum Debuggen zu verwenden und die Protokolle anschließend zu löschen."
+msgstr "Protokolliere PayPal-Ereignisse wie IPN-Anfragen und überprüfe sie in der Ansicht <a href=\"%s\">Protokolle</a>. Hinweis: Dabei können personenbezogene Daten protokolliert werden. Wir empfehlen, diese Funktion ausschließlich zum Debuggen zu verwenden und die Protokolle anschließend zu löschen."
 
 #. translators: %s: Product title
 #: includes/class-wc-product-simple.php:90
@@ -13271,7 +13271,7 @@ msgstr "Schreibgeschützte Schlüssel verhindern nicht, dass Kunden Informatione
 
 #: includes/admin/settings/views/html-keys-edit.php:35
 msgid "Add a meaningful description, including a note of the person, company or app you are sharing the key with."
-msgstr "Füge eine aussagekräftige Beschreibung hinzu, einschließlich eines Hinweises auf die Person, das Unternehmen oder die App, für die oder das du den Schlüssel freigibst."
+msgstr "Füge eine aussagekräftige Beschreibung hinzu, einschließlich eines Hinweises auf die Person, das Unternehmen oder die App, mit der oder dem du den Schlüssel teilst."
 
 #: includes/admin/settings/views/html-keys-edit.php:17
 msgid "Stick to one key per client: this makes it easier to revoke access in the future for a single client, without causing disruption for others."
@@ -13549,7 +13549,7 @@ msgstr "Cartes Bancaires"
 #. translators: %s: Order history URL on My Account section
 #: includes/class-wc-frontend-scripts.php:681
 msgid "There was an error processing your order. Please check for any charges in your payment method and review your <a href=\"%s\">order history</a> before placing the order again."
-msgstr "Bei der Bearbeitung deiner Bestellung ist ein Fehler aufgetreten. Bitte prüfe, ob bei deiner Zahlungsart Gebühren angefallen sind, und sieh dir deinen <a href=\"%s\">Bestellverlauf</a> an, bevor du die Bestellung erneut aufgibst."
+msgstr "Bei der Bearbeitung deiner Bestellung ist ein Fehler aufgetreten. Bitte überprüfe, ob auf deiner Zahlungsart Belastungen vorliegen, und sieh dir deinen <a href=\"%s\">Bestellverlauf</a> an, bevor du die Bestellung erneut aufgibst."
 
 #. translators: 1: Woo Update Manager plugin install URL
 #: includes/admin/helper/class-wc-helper-updater.php:223
@@ -14821,7 +14821,7 @@ msgstr "Bestellung ist keine HPOS-Bestellung."
 #. translators: %d is an order ID.
 #: src/Internal/DataStores/Orders/LegacyDataHandler.php:170
 msgid "%d is not a valid order ID."
-msgstr "%d ist keine gültige Bestellnummer."
+msgstr "%d ist keine gültige Bestell-ID."
 
 #: src/Internal/Admin/Orders/MetaBoxes/OrderAttribution.php:46
 msgid "Desktop"
@@ -17064,7 +17064,7 @@ msgstr "%s aus dem Warenkorb entfernen"
 #: assets/client/blocks/cart.js:6 assets/client/blocks/mini-cart-contents.js:7
 #: assets/client/blocks/wc-cart-checkout-base-frontend.js:5
 msgid "Increase quantity of %s"
-msgstr "Anzahl von %s erhöhen"
+msgstr "Menge von %s erhöhen"
 
 #. translators: %s refers to the item name in the cart.
 #. translators: %s is the name of the product in cart.
@@ -17937,7 +17937,7 @@ msgstr "Ob dieses Shop-Land über den Onboarding-Profiler festgelegt wurde oder 
 
 #: src/Admin/API/Notes.php:806
 msgid "Registers whether the note is read or not"
-msgstr "Registriert, ob die Notiz gelesen wurde oder nicht"
+msgstr "Registriert, ob der Hinweis gelesen wurde oder nicht"
 
 #: src/Admin/API/MobileAppMagicLink.php:96
 msgid "Jetpack is not connected."
@@ -19509,7 +19509,7 @@ msgstr "Einkaufen-Button für Mini-Warenkorb"
 #: assets/client/blocks/mini-cart-contents-block/shopping-button-frontend.js:1
 #: assets/client/blocks/mini-cart-contents.js:13
 msgid "Start shopping"
-msgstr "Einkaufen beginnen"
+msgstr "Einkauf beginnen"
 
 #: src/Internal/DataStores/Orders/CustomOrdersTableController.php:332
 msgid "Custom orders tables have been deleted."
@@ -19743,7 +19743,7 @@ msgstr "Menge dieses Artikels, die dem Warenkorb hinzugefügt werden soll."
 
 #: src/Internal/Admin/Notes/MagentoMigration.php:87
 msgid "Changing platforms might seem like a big hurdle to overcome, but it is easier than you might think to move your products, customers, and orders to WooCommerce. This article will help you with going through this process."
-msgstr "Ein Plattformwechsel mag zunächst als große Hürde erscheinen, es ist aber einfacher als du denkst, deine Produkte, Kunden und Bestellungen zu WooCommerce zu übertragen. Dieser Artikel geleitet dich durch diesen Prozess."
+msgstr "Ein Plattformwechsel mag zunächst als große Hürde erscheinen, doch es ist einfacher, als du vielleicht denkst, deine Produkte, Kunden und Bestellungen zu WooCommerce zu übertragen. Dieser Artikel führt dich durch diesen Prozess."
 
 #: src/Internal/Admin/Notes/MagentoMigration.php:86
 msgid "How to Migrate from Magento to WooCommerce"
@@ -19876,7 +19876,7 @@ msgstr "Akzeptiere Kreditkarten und andere beliebte Zahlungsarten mit %1$sWooPay
 
 #: src/Admin/API/Notes.php:452
 msgid "Please provide a valid promo note name."
-msgstr "Bitte gib einen gültigen Werbeaktionsnamen ein."
+msgstr "Bitte gib einen gültigen Namen für den Werbehinweis ein."
 
 #: includes/rest-api/Controllers/Version2/class-wc-rest-coupons-v2-controller.php:368
 msgid "The status of the coupon. Should always be draft, published, or pending review"
@@ -20696,7 +20696,7 @@ msgstr "Zahlungsoptionen"
 #: assets/client/blocks/inner-blocks/checkout-order-note-block/block.json
 msgctxt "block description"
 msgid "Allow customers to add a note to their order."
-msgstr "Hiermit können Kunden zu ihrer Bestellung einen Hinweis hinzufügen."
+msgstr "Ermöglicht Kunden, ihrer Bestellung einen Hinweis hinzuzufügen."
 
 #: assets/client/blocks/inner-blocks/checkout-order-note-block/block.json
 msgctxt "block title"
@@ -21154,7 +21154,7 @@ msgstr "Der angewandte Steuersatz."
 
 #: src/Admin/Notes/Notes.php:477
 msgid "Notes are unavailable because the \"admin-note\" data store cannot be loaded."
-msgstr "Anmerkungen sind nicht verfügbar, da der „admin-note“-Datenspeicher nicht geladen werden kann."
+msgstr "Hinweise sind nicht verfügbar, da der „admin-note“-Datenspeicher nicht geladen werden kann."
 
 #: src/Internal/Admin/Notes/MarketingJetpack.php:112
 msgid "Get backups"
@@ -21195,7 +21195,7 @@ msgstr "Verkaufte Produkte"
 
 #: src/Admin/API/Notes.php:676
 msgid "Source of note."
-msgstr "Quelle der Anmerkung"
+msgstr "Quelle des Hinweises."
 
 #: packages/action-scheduler/classes/ActionScheduler_wcSystemStatus.php:117
 msgid "Data store:"
@@ -21234,7 +21234,7 @@ msgstr "Nächste Schritte"
 #: src/Admin/Features/PaymentGatewaySuggestions/DefaultPaymentGateways.php:829
 #: src/Admin/Features/PaymentGatewaySuggestions/DefaultPaymentGateways.php:864
 msgid "Manage transactions without leaving your WordPress Dashboard. Only with WooPayments."
-msgstr "Verwalte Transaktionen, ohne dein WordPress Dashboard zu verlassen. Nur mit WooPayments."
+msgstr "Verwalte Transaktionen, ohne dein WordPress-Dashboard zu verlassen. Nur mit WooPayments."
 
 #: src/Admin/Features/MarketingRecommendations/DefaultMarketingRecommendations.php:169
 #: src/Internal/Admin/RemoteFreeExtensions/DefaultFreeExtensions.php:177
@@ -22325,7 +22325,7 @@ msgstr "Ob das Erstellen eines neuen Benutzerkontos Teil des Bestellprozesses is
 #. translators: 1: opening link tag, 2: closing tag
 #: src/Internal/Admin/Notes/WooCommercePayments.php:112
 msgid "By clicking \"Get started\", you agree to our %1$sTerms of Service%2$s"
-msgstr "Durch einen Klick auf „Get started“ (Anfangen) erklärst du dich mit unseren %1$sGeschäftsbedingungen%2$s einverstanden"
+msgstr "Durch einen Klick auf „Los geht’s“ erklärst du dich mit unseren %1$sGeschäftsbedingungen%2$s einverstanden"
 
 #: includes/cli/class-wc-cli-runner.php:118
 msgid "The slug for the resource."
@@ -23933,7 +23933,7 @@ msgstr "Artikel entfernen"
 #: assets/client/blocks/cart.js:3 assets/client/blocks/mini-cart-contents.js:4
 #: assets/client/blocks/wc-cart-checkout-base-frontend.js:2
 msgid "Quantity of %s in your cart."
-msgstr "Anzahl von %s in deinem Warenkorb."
+msgstr "Menge von %s in deinem Warenkorb."
 
 #: src/Blocks/Domain/Services/CheckoutFields.php:793
 msgid "Phone (optional)"
@@ -24651,7 +24651,7 @@ msgstr "Wenn sich dein Shop in der EU befindet, ist es empfehlenswert, zusätzli
 
 #: src/Internal/Admin/Notes/RealTimeOrderAlerts.php:48
 msgid "Get real-time order alerts anywhere"
-msgstr "Echtzeit-Bestellbenachrichtigungen überall erhalten"
+msgstr "Überall Echtzeit-Bestellbenachrichtigungen erhalten"
 
 #: src/Internal/Admin/Notes/RealTimeOrderAlerts.php:45
 msgid "Get notifications about store activity, including new orders and product reviews directly on your mobile devices with the Woo app."
@@ -24659,7 +24659,7 @@ msgstr "Erhalte mit der Woo-App Benachrichtigungen über Shopaktivitäten wie ne
 
 #: src/Internal/Admin/Notes/OrderMilestones.php:184
 msgid "First order received"
-msgstr "Erste empfangene Bestellung"
+msgstr "Erste eingegangene Bestellung"
 
 #: src/Internal/Admin/Notes/FirstProduct.php:74
 msgid "This video tutorial will help you go through the process of adding your first product in WooCommerce."
@@ -24671,7 +24671,7 @@ msgstr "Benötigst du Hilfe beim Hinzufügen deines ersten Produkts?"
 
 #: src/Internal/Admin/Notes/OnlineClothingStore.php:85
 msgid "Starting a fashion website is exciting but it may seem overwhelming as well. In this article, we'll walk you through the setup process, teach you to create successful product listings, and show you how to market to your ideal audience."
-msgstr "Eine Mode-Website zu gründen, ist aufregend, aber kann auch überwältigend sein. In diesem Artikel führen wir dich Schritt für Schritt durch den Einrichtungsprozess und bringen dir bei, wie du erfolgreiche Produktlisten erstellst und deine ideale Zielgruppe erreichst."
+msgstr "Eine Mode-Website zu gründen, ist aufregend, kann aber auch überwältigend sein. In diesem Artikel führen wir dich Schritt für Schritt durch den Einrichtungsprozess und bringen dir bei, wie du erfolgreiche Produktlisten erstellst und deine ideale Zielgruppe erreichst."
 
 #: src/Internal/Admin/Notes/OnlineClothingStore.php:84
 msgid "Start your online clothing store"
@@ -24679,7 +24679,7 @@ msgstr "Gründe deinen Online-Bekleidungsshop"
 
 #: src/Admin/Notes/Note.php:620
 msgid "The admin note layout has a wrong prop value."
-msgstr "Das Layout der Administratornotizen hat einen falschen Eigenschaftswert."
+msgstr "Das Layout der Admin-Hinweise hat einen falschen Eigenschaftswert."
 
 #: src/Internal/Admin/Notes/FirstProduct.php:81
 msgid "Watch tutorial"
@@ -24687,7 +24687,7 @@ msgstr "Tutorial ansehen"
 
 #: src/Internal/Admin/Notes/GivingFeedbackNotes.php:50
 msgid "Share feedback"
-msgstr "Feedback teilen"
+msgstr "Feedback geben"
 
 #: src/Internal/Admin/Notes/GivingFeedbackNotes.php:43
 msgid "Now that you’ve chosen us as a partner, our goal is to make sure we're providing the right tools to meet your needs. We're looking forward to having your feedback on the store setup experience so we can improve it in the future."
@@ -24695,7 +24695,7 @@ msgstr "Du hast uns als Partner gewählt und deshalb möchten wir sicherstellen,
 
 #: src/Internal/Admin/Notes/MigrateFromShopify.php:66
 msgid "Changing eCommerce platforms might seem like a big hurdle to overcome, but it is easier than you might think to move your products, customers, and orders to WooCommerce. This article will help you with going through this process."
-msgstr "Der Wechsel der E-Commerce-Plattform mag zunächst als große Hürde erscheinen, es ist aber einfacher als du denkst, deine Produkte, Kunden und Bestellungen zu WooCommerce zu übertragen. Dieser Artikel geleitet dich durch diesen Prozess."
+msgstr "Der Wechsel der E-Commerce-Plattform mag zunächst als große Hürde erscheinen, doch es ist einfacher, als du vielleicht denkst, deine Produkte, Kunden und Bestellungen zu WooCommerce zu übertragen. Dieser Artikel führt dich durch diesen Prozess."
 
 #: src/Internal/Admin/Notes/MigrateFromShopify.php:65
 msgid "Do you want to migrate from Shopify to WooCommerce?"
@@ -24738,11 +24738,11 @@ msgstr "Plugins dürfen kein leeres Array sein."
 
 #: src/Admin/API/Notes.php:800
 msgid "Registers whether the note is deleted or not"
-msgstr "Registriert, ob die Notiz gelöscht wurde oder nicht"
+msgstr "Registriert, ob der Hinweis gelöscht wurde oder nicht"
 
 #: src/Admin/API/Notes.php:328
 msgid "Sorry, there is no note with that ID."
-msgstr "Leider existiert keine Notiz mit dieser ID."
+msgstr "Leider existiert kein Hinweis mit dieser ID."
 
 #: src/Admin/API/Reports/PerformanceIndicators/Controller.php:235
 msgid "Views"
@@ -24980,7 +24980,7 @@ msgstr "Wickle deine Zahlungen mit einem Anbieter deiner Wahl ab – für WooCo
 
 #: src/Internal/Admin/Notes/OnboardingPayments.php:53
 msgid "Start accepting payments on your store!"
-msgstr "Erhalte Zahlungen in deinem Shop!"
+msgstr "Akzeptiere ab sofort Zahlungen in deinem Shop!"
 
 #: src/Internal/Admin/Notes/InstallJPAndWCSPlugins.php:61
 msgid "Install plugins"
@@ -24988,11 +24988,11 @@ msgstr "Plugins installieren"
 
 #: src/Internal/Admin/Notes/InstallJPAndWCSPlugins.php:53
 msgid "Uh oh... There was a problem during the Jetpack and WooCommerce Shipping & Tax install. Please try again."
-msgstr "Oh oh. Bei der Installation von Jetpack and WooCommerce Shipping & Tax ist ein Fehler aufgetreten. Bitte versuch es noch einmal."
+msgstr "Hoppla! Bei der Installation von Jetpack und WooCommerce Shipping & Tax ist ein Fehler aufgetreten. Bitte versuche es noch einmal."
 
 #: src/Internal/Admin/Notes/InstallJPAndWCSPlugins.php:50
 msgid "We noticed that there was a problem during the Jetpack and WooCommerce Shipping & Tax install. Please try again and enjoy all the advantages of having the plugins connected to your store! Sorry for the inconvenience. The \"Jetpack\" and \"WooCommerce Shipping & Tax\" plugins will be installed & activated for free."
-msgstr "Wir haben festgestellt, dass bei der Installation von Jetpack and WooCommerce Shipping & Tax ein Fehler aufgetreten ist. Versuche es bitte erneut und profitiere von all den Vorteilen, wenn Plugins mit deinem Shop verbunden sind! Wir entschuldigen uns für diese Unannehmlichkeit. Die Plugins „Jetpack“ und „WooCommerce Shipping & Tax“ werden kostenlos installiert und aktiviert."
+msgstr "Wir haben festgestellt, dass bei der Installation von Jetpack und WooCommerce Shipping & Tax ein Fehler aufgetreten ist. Versuche es bitte erneut und profitiere von all den Vorteilen, wenn Plugins mit deinem Shop verbunden sind! Wir entschuldigen uns für diese Unannehmlichkeit. Die Plugins „Jetpack“ und „WooCommerce Shipping & Tax“ werden kostenlos installiert und aktiviert."
 
 #: includes/class-wc-privacy-exporters.php:424
 msgid "User&#8217;s WooCommerce payment tokens data."
@@ -25221,11 +25221,11 @@ msgstr "Personalisiere die Homepage deines Shops"
 
 #: src/Internal/Admin/Notes/PersonalizeStore.php:51
 msgid "The homepage is one of the most important entry points in your store. When done right it can lead to higher conversions and engagement. Don't forget to personalize the homepage that we created for your store during the onboarding."
-msgstr "Die Startseite ist einer der wichtigen Einstiegspunkte deines Shops. Mit der richtigen Startseite kannst du mehr Kunden gewinnen und für Interaktionen sorgen. Vergiss nicht, die Startseite, die wir beim Onboarding für deinen Shop erstellt haben, zu personalisieren."
+msgstr "Die Homepage ist einer der wichtigsten Einstiegspunkte in deinem Shop. Richtig gestaltet, kann sie zu höheren Umsätzen und mehr Engagement führen. Vergiss nicht, die Homepage, die wir für deinen Shop während des Onboardings erstellt haben, zu personalisieren."
 
 #: src/Internal/Admin/Notes/WooCommercePayments.php:108
 msgid "Securely accept credit and debit cards on your site. Manage transactions without leaving your WordPress dashboard. Only with <strong>WooPayments</strong>."
-msgstr "Akzeptiere Kredit- und Debitkarten sicher auf deiner Website. Verwalte Transaktionen, ohne dein WordPress Dashboard zu verlassen. Nur mit <strong>WooPayments</strong>."
+msgstr "Akzeptiere Kredit- und Debitkarten sicher auf deiner Website. Verwalte Transaktionen, ohne dein WordPress-Dashboard zu verlassen. Nur mit <strong>WooPayments</strong>."
 
 #: src/Internal/Admin/Notes/WooCommercePayments.php:106
 msgid "Try the new way to get paid"
@@ -25559,71 +25559,71 @@ msgstr "Einführungsprofildaten wurden aktualisiert."
 
 #: src/Admin/API/Notes.php:782
 msgid "An array of actions, if any, for the note."
-msgstr "Ein Array von Aktionen für die Notiz, falls zutreffend."
+msgstr "Ein Array von Aktionen für den Hinweis, falls zutreffend."
 
 #: src/Admin/API/Notes.php:776
 msgid "Whether or not a user can request to be reminded about the note."
-msgstr "Gibt an, ob ein Benutzer eine Erinnerung an die Notiz anfordern kann."
+msgstr "Gibt an, ob ein Benutzer eine Erinnerung an den Hinweis anfordern kann."
 
 #: src/Admin/API/Notes.php:770
 msgid "Date after which the user should be reminded of the note, if any (GMT)."
-msgstr "Das Datum, nach dem der Benutzer an die Notiz erinnert werden sollte, falls zutreffend (UTC)."
+msgstr "Das Datum, nach dem der Benutzer an den Hinweis erinnert werden soll, falls zutreffend (UTC)."
 
 #: src/Admin/API/Notes.php:764
 msgid "Date after which the user should be reminded of the note, if any."
-msgstr "Das Datum, nach dem der Benutzer an die Notiz erinnert werden sollte, falls zutreffend."
+msgstr "Das Datum, nach dem der Benutzer an den Hinweis erinnert werden soll, falls zutreffend."
 
 #: src/Admin/API/Notes.php:758
 msgid "Date the note was created (GMT)."
-msgstr "Datum der Erstellung der Notiz (GMT)."
+msgstr "Hinweis-Erstelldatum (UTC)."
 
 #: src/Admin/API/Notes.php:752
 msgid "Date the note was created."
-msgstr "Datum der Erstellung der Notiz."
+msgstr "Datum der Erstellung des Hinweises."
 
 #: src/Admin/API/Notes.php:746
 msgid "Source of the note."
-msgstr "Quelle der Notiz."
+msgstr "Quelle des Hinweises."
 
 #: src/Admin/API/Notes.php:741
 msgid "The status of the note (e.g. unactioned, actioned)."
-msgstr "Der Status der Notiz (z. B. nicht umgesetzt, umgesetzt)."
+msgstr "Der Status des Hinweises (z. B. nicht umgesetzt, umgesetzt)."
 
 #: src/Admin/API/Notes.php:735
 msgid "Content data for the note. JSON string. Available for re-localization."
-msgstr "Inhaltsdaten für die Notiz. JSON-Zeichenfolge. Für erneute Lokalisierung verfügbar."
+msgstr "Inhaltsdaten für den Hinweis. JSON-Zeichenfolge. Für erneute Lokalisierung verfügbar."
 
 #: src/Admin/API/Notes.php:729
 msgid "Content of the note."
-msgstr "Inhalt der Notiz."
+msgstr "Inhalt des Hinweises."
 
 #: src/Admin/API/Notes.php:723
 msgid "Title of the note."
-msgstr "Titel der Notiz."
+msgstr "Titel des Hinweises."
 
 #: src/Admin/API/Notes.php:717
 msgid "Locale used for the note title and content."
-msgstr "Region für den Titel und Inhalt der Notiz."
+msgstr "Sprache für den Titel und Inhalt des Hinweises."
 
 #: src/Admin/API/Notes.php:711
 msgid "The type of the note (e.g. error, warning, etc.)."
-msgstr "Der Typ der Notiz (z. B. Fehler, Warnung usw.)."
+msgstr "Der Typ des Hinweises (z. B. Fehler, Warnung usw.)."
 
 #: src/Admin/API/Notes.php:705
 msgid "Name of the note."
-msgstr "Name der Notiz."
+msgstr "Name des Hinweises."
 
 #: src/Admin/API/Notes.php:699
 msgid "ID of the note record."
-msgstr "ID des Notizen-Datensatzes."
+msgstr "ID des Hinweis-Datensatzes."
 
 #: src/Admin/API/Notes.php:102 src/Admin/API/Notes.php:666
 msgid "Status of note."
-msgstr "Status der Notiz."
+msgstr "Status des Hinweises."
 
 #: src/Admin/API/Notes.php:656
 msgid "Type of note."
-msgstr "Art der Notiz."
+msgstr "Typ des Hinweises."
 
 #. translators: %s: parameter name
 #: src/Admin/API/Reports/TimeInterval.php:630
@@ -26396,7 +26396,7 @@ msgstr "Gesamtumsatz."
 
 #: src/Admin/API/Reports/Export/Controller.php:209
 msgid "Sorry, there is no export with that ID."
-msgstr "Entschuldigung, es gibt keinen Export mit dieser ID."
+msgstr "Leider gibt es keinen Export mit dieser ID."
 
 #: src/Admin/API/Reports/Export/Controller.php:176
 msgid "Your report file is being generated."
@@ -26627,15 +26627,15 @@ msgstr "Batch-Endpunkt zum Abrufen bestimmter Leistungskennzahlen von `stats`-En
 #: src/Admin/API/NoteActions.php:65 src/Admin/API/NoteActions.php:78
 #: src/Admin/API/Notes.php:156 src/Admin/API/Notes.php:307
 msgid "Sorry, there is no resource with that ID."
-msgstr "Entschuldigung, es gibt keine Ressource mit dieser ID."
+msgstr "Leider gibt es keine Ressource mit dieser ID."
 
 #: src/Admin/API/NoteActions.php:38
 msgid "Unique ID for the Note Action."
-msgstr "Eindeutige ID für die Notizaktion."
+msgstr "Eindeutige ID für die Hinweisaktion."
 
 #: src/Admin/API/NoteActions.php:34
 msgid "Unique ID for the Note."
-msgstr "Eindeutige ID für die Notiz."
+msgstr "Eindeutige ID für den Hinweis."
 
 #: src/Admin/API/Leaderboards.php:606
 msgid "Table cell value."
@@ -26956,7 +26956,7 @@ msgstr "Rezension"
 
 #: src/Internal/Admin/Notes/TrackingOptIn.php:73
 msgid "Activate usage tracking"
-msgstr "Nutzungsaufzeichnung aktivieren"
+msgstr "Nutzungsdatenerfassung aktivieren"
 
 #. translators: 1: open link to WooCommerce.com settings, 2: open link to
 #. WooCommerce.com tracking documentation, 3: close link tag.
@@ -26966,57 +26966,57 @@ msgstr "Anhand der Erfassung von Nutzungsdaten können wir WooCommerce verbesser
 
 #: src/Admin/Notes/Note.php:683
 msgid "The admin note action label prop cannot be empty."
-msgstr "Die Eigenschaft des Aktions-Labels für Admin-Notiz darf nicht leer sein."
+msgstr "Die Eigenschaft des Aktions-Labels darf für Admin-Hinweise nicht leer sein."
 
 #: src/Admin/Notes/Note.php:679
 msgid "The admin note action name prop cannot be empty."
-msgstr "Die Eigenschaft des Aktionsnamens für Admin-Notiz darf nicht leer sein."
+msgstr "Die Eigenschaft des Aktionsnamens darf für Admin-Hinweise nicht leer sein."
 
 #: src/Admin/Notes/Note.php:559
 msgid "The admin note date prop cannot be empty."
-msgstr "Die Datum-Eigenschaft für Admin-Notiz darf nicht leer sein."
+msgstr "Die Eigenschaft „date“ darf für Admin-Hinweise nicht leer sein."
 
 #: src/Admin/Notes/Note.php:546
 msgid "The admin note source prop cannot be empty."
-msgstr "Die Quelleigenschaft für Admin-Notiz darf nicht leer sein."
+msgstr "Die Eigenschaft „source“ darf für Admin-Hinweise nicht leer sein."
 
 #. translators: %s: admin note status property.
 #: src/Admin/Notes/Note.php:530
 msgid "The admin note status prop (%s) is not one of the supported statuses."
-msgstr "Die Status-Eigenschaft für Admin-Notiz (%s) ist kein unterstützter Status."
+msgstr "Die Eigenschaft „status“ ist für Admin-Hinweise (%s) kein unterstützter Status."
 
 #: src/Admin/Notes/Note.php:522
 msgid "The admin note status prop cannot be empty."
-msgstr "Die Status-Eigenschaft für Admin-Notiz darf nicht leer sein."
+msgstr "Die Eigenschaft „status“ darf für Admin-Hinweise nicht leer sein."
 
 #: src/Admin/Notes/Note.php:509
 msgid "The admin note content_data prop must be an instance of stdClass."
-msgstr "Die content_data-Eigenschaft für Admin-Notiz muss eine Instanz von stdClass sein."
+msgstr "Die Eigenschaft „content_data“ muss für Admin-Hinweise eine Instanz von stdClass sein."
 
 #: src/Admin/Notes/Note.php:492
 msgid "The admin note content prop cannot be empty."
-msgstr "Die Inhalt-Eigenschaft für Admin-Notiz darf nicht leer sein."
+msgstr "Die Eigenschaft „content“ darf für Admin-Hinweise nicht leer sein."
 
 #: src/Admin/Notes/Note.php:452
 msgid "The admin note title prop cannot be empty."
-msgstr "Die Titel-Eigenschaft für Admin-Notiz darf nicht leer sein."
+msgstr "Die Eigenschaft „title“ darf für Admin-Hinweise nicht leer sein."
 
 #: src/Admin/Notes/Note.php:439
 msgid "The admin note locale prop cannot be empty."
-msgstr "Die Region-Eigenschaft für Admin-Notiz darf nicht leer sein."
+msgstr "Die Eigenschaft „locale“ darf für Admin-Hinweise nicht leer sein."
 
 #. translators: %s: admin note type.
 #: src/Admin/Notes/Note.php:423
 msgid "The admin note type prop (%s) is not one of the supported types."
-msgstr "Die Typ-Eigenschaft für Admin-Notiz (%s) ist kein unterstützter Typ."
+msgstr "Die Eigenschaft „type“ ist für Admin-Hinweise (%s) kein unterstützter Typ."
 
 #: src/Admin/Notes/Note.php:408
 msgid "The admin note type prop cannot be empty."
-msgstr "Die Typ-Eigenschaft für Admin-Notiz darf nicht leer sein."
+msgstr "Die Eigenschaft „type“ darf für Admin-Hinweise nicht leer sein."
 
 #: src/Admin/Notes/Note.php:395
 msgid "The admin note name prop cannot be empty."
-msgstr "Die Name-Eigenschaft für Admin-Notiz darf nicht leer sein."
+msgstr "Die Eigenschaft „name“ darf für Admin-Hinweise nicht leer sein."
 
 #: src/Admin/ReportsSync.php:190
 msgid "Report table data is being deleted."
@@ -28856,7 +28856,7 @@ msgstr "Hinweis: WP CRON wurde in deiner Installation deaktiviert, wodurch das U
 #: includes/admin/notes/class-wc-notes-run-db-update.php:214
 #: includes/admin/views/html-notice-updating.php:16
 msgid "You can manually run queued updates here."
-msgstr "Hier kannst du sich in der Warteschlange befindliche Aktualisierungen manuell ausführen."
+msgstr "Hier kannst du in der Warteschlange befindliche Aktualisierungen manuell ausführen."
 
 #: includes/cli/class-wc-cli-update-command.php:73
 msgid "Updating database"
@@ -28955,7 +28955,7 @@ msgstr "WooCommerce-Datenbank aktualisieren"
 #: includes/admin/notes/class-wc-notes-run-db-update.php:179
 #: includes/admin/views/html-notice-update.php:28
 msgid "The database update process runs in the background and may take a little while, so please be patient. Advanced users can alternatively update via %1$sWP CLI%2$s."
-msgstr "Die Aktualisierung der Datenbank läuft im Hintergrund ab und kann etwas dauern. Bitte habe etwas Geduld. Fortgeschrittene Benutzer können alternativ über %1$sWP CLI%2$s aktualisieren."
+msgstr "Die Aktualisierung der Datenbank läuft im Hintergrund ab und kann etwas dauern. Bitte habe etwas Geduld. Fortgeschrittene Benutzer können alternativ über %1$sWP-CLI%2$s aktualisieren."
 
 #: includes/admin/notes/class-wc-notes-run-db-update.php:177
 #: includes/admin/views/html-notice-update.php:25
@@ -29086,11 +29086,11 @@ msgstr "Tracking aktivieren"
 
 #: includes/admin/settings/class-wc-settings-advanced.php:361
 msgid "Usage Tracking"
-msgstr "Nutzungsaufzeichnung"
+msgstr "Nutzungsdatenerfassung"
 
 #: includes/admin/settings/class-wc-settings-advanced.php:356
 msgid "WooCommerce.com Usage Tracking Documentation"
-msgstr "WooCommerce.com Nutzungsaufzeichnungs-Dokumentation"
+msgstr "WooCommerce.com-Nutzungsdatenerfassungs-Dokumentation"
 
 #: includes/admin/settings/class-wc-settings-advanced.php:65
 msgid "WooCommerce.com"
@@ -30260,7 +30260,7 @@ msgstr "Der Rezensionsstatus konnte nicht aktualisiert werden."
 
 #: includes/rest-api/Controllers/Version3/class-wc-rest-product-reviews-controller.php:540
 msgid "Sorry, you are not allowed to change the comment type."
-msgstr "Entschuldigung, du darfst den Kommentartyp nicht ändern."
+msgstr "Leider darfst du den Kommentartyp nicht ändern."
 
 #: includes/rest-api/Controllers/Version3/class-wc-rest-product-reviews-controller.php:425
 #: includes/rest-api/Controllers/Version3/class-wc-rest-product-reviews-controller.php:575
@@ -30282,7 +30282,7 @@ msgstr "Unterstützte Funktionen für diese Zahlungsschnittstelle."
 
 #: includes/rest-api/Controllers/Version3/class-wc-rest-order-notes-controller.php:157
 msgid "If true, this note will be attributed to the current user. If false, the note will be attributed to the system."
-msgstr "Wenn „true“, wird diese Anmerkung dem aktuellen Benutzer zugeordnet. Wenn „false“, wird die Anmerkung dem System zugeordnet."
+msgstr "Wenn „true“, wird dieser Hinweis dem aktuellen Benutzer zugeordnet. Wenn „false“, wird dieser Hinweis dem System zugeordnet."
 
 #: includes/rest-api/Controllers/Version3/class-wc-rest-order-notes-controller.php:128
 #: src/Internal/RestApi/Routes/V4/OrderNotes/Schema/OrderNoteSchema.php:53
@@ -31473,7 +31473,7 @@ msgstr "Die folgenden Plugins werden für dich installiert und aktiviert:"
 
 #: src/Internal/Admin/Notes/TrackingOptIn.php:67
 msgid "Help WooCommerce improve with usage tracking"
-msgstr "Hilf WooCommerce, sich zu verbessern, indem du Nutzungsaufzeichnungen erlaubst"
+msgstr "Hilf WooCommerce, sich durch die Nutzungsdatenerfassung zu verbessern"
 
 #. translators: 1: currency name 2: currency symbol, 3: currency code
 #: includes/admin/class-wc-admin-setup-wizard.php:570
@@ -32830,7 +32830,7 @@ msgstr "Bitte gib einen Attributnamen an."
 
 #: includes/shortcodes/class-wc-shortcode-order-tracking.php:64
 msgid "Sorry, the order could not be found. Please contact us if you are having difficulty finding your order details."
-msgstr "Entschuldigung, aber die Bestellung konnte nicht gefunden werden. Bitte kontaktiere uns, wenn du Schwierigkeiten hast, deine Bestelldetails zu finden."
+msgstr "Leider konnte die Bestellung nicht gefunden werden. Bitte kontaktiere uns, wenn du Schwierigkeiten hast, deine Bestelldetails zu finden."
 
 #: includes/shortcodes/class-wc-shortcode-order-tracking.php:50
 #: assets/client/blocks/checkout.js:14
@@ -33194,7 +33194,7 @@ msgstr "Verbinde deinen Shop mit Jetpack"
 
 #: includes/admin/class-wc-admin-setup-wizard.php:2100
 msgid "Sorry, we couldn't connect your store to Jetpack"
-msgstr "Entschuldigung, wir konnten deinen Shop nicht mit Jetpack verbinden"
+msgstr "Leider konnten wir deinen Shop nicht mit Jetpack verbinden"
 
 #: includes/admin/class-wc-admin-setup-wizard.php:2077
 msgid "automated taxes"
@@ -34669,7 +34669,7 @@ msgstr "Ungültige Produkt-ID"
 #: src/Admin/API/Notes.php:493 src/Admin/API/OnboardingProfile.php:169
 #: src/Admin/API/Reports/Import/Controller.php:105
 msgid "Sorry, you cannot edit this resource."
-msgstr "Entschuldigung, du kannst diese Ressource nicht bearbeiten."
+msgstr "Leider kannst du diese Ressource nicht bearbeiten."
 
 #: includes/admin/views/html-bulk-edit-product.php:33
 msgid "Increase existing price by (fixed amount or %):"
@@ -36036,7 +36036,7 @@ msgstr "Ergebnis auf Kundenhinweise oder interne Hinweise beschränken."
 #: includes/rest-api/Controllers/Version2/class-wc-rest-order-notes-v2-controller.php:152
 #: includes/rest-api/Controllers/Version3/class-wc-rest-order-notes-controller.php:151
 msgid "If true, the note will be shown to customers and they will be notified. If false, the note will be for admin reference only."
-msgstr "Wenn aktiv wird die Notiz für den Kunden sichtbar und er wird benachrichtigt. Wenn inaktiv ist diese Notiz nur für Admins."
+msgstr "Wenn „true“, wird der Hinweis für Kunden angezeigt und sie werden benachrichtigt. Wenn „false“, dient der Hinweis ausschließlich als Referenz für Administratoren."
 
 #: includes/rest-api/Controllers/Version2/class-wc-rest-order-notes-v2-controller.php:141
 #: includes/rest-api/Controllers/Version3/class-wc-rest-order-notes-controller.php:140
@@ -37097,7 +37097,7 @@ msgstr "Inhalt des Bestellhinweises."
 #: includes/rest-api/Controllers/Version2/class-wc-rest-order-refunds-v2-controller.php:96
 #: src/StoreApi/Schemas/V1/OrderSchema.php:116
 msgid "The order ID."
-msgstr "Die Bestellnummer."
+msgstr "Die Bestell-ID."
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-customers-v1-controller.php:998
 #: includes/rest-api/Controllers/Version3/class-wc-rest-product-reviews-controller.php:980
@@ -38403,7 +38403,7 @@ msgstr "Zeigt an, ob die Variante im Lieferrückstand ist."
 #: includes/rest-api/Controllers/Version1/class-wc-rest-products-v1-controller.php:2427
 #: includes/rest-api/Controllers/Version2/class-wc-rest-product-variations-v2-controller.php:961
 msgid "Controls whether or not the variation is listed as \"in stock\" or \"out of stock\" on the frontend."
-msgstr "Bestimmt, ob die Variante in der Besucheransicht (Frontend) als „vorrätig“ oder „nicht vorrätig“ gelistet wird."
+msgstr "Bestimmt, ob die Variante im Frontend als „vorrätig“ oder „nicht vorrätig“ gelistet wird."
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-products-v1-controller.php:2416
 #: includes/rest-api/Controllers/Version2/class-wc-rest-product-variations-v2-controller.php:950
@@ -39403,7 +39403,7 @@ msgstr "Das Datum, an dem die Bestellung abgeschlossen wurde (in der Zeitzone de
 #: includes/rest-api/Controllers/Version2/class-wc-rest-orders-v2-controller.php:1296
 #: src/Internal/RestApi/Routes/V4/Orders/Schema/OrderSchema.php:274
 msgid "Note left by customer during checkout."
-msgstr "Notiz, die der Kunde an der Kasse hinterlassen hat."
+msgstr "Hinweis, den der Kunde an der Kasse hinterlassen hat."
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-orders-v1-controller.php:1241
 #: includes/rest-api/Controllers/Version2/class-wc-rest-orders-v2-controller.php:1180
@@ -39901,7 +39901,7 @@ msgstr "Ungültige Bestell-ID."
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-order-notes-v1-controller.php:419
 msgid "Shows/define if the note is only for reference or for the customer (the user will be notified)."
-msgstr "Gibt an, ob die Notiz nur für interne Zwecke oder für den Kunden (der Nutzer wird per Mail informiert) bestimmt ist."
+msgstr "Gibt an, ob der Hinweis nur für interne Zwecke oder für den Kunden (der Benutzer wird per Mail informiert) bestimmt ist."
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-order-notes-v1-controller.php:414
 msgid "Order note."
@@ -39917,7 +39917,7 @@ msgstr "Das Datum, an dem der Bestellhinweis erstellt wurde, in der Zeitzone der
 #: includes/rest-api/Controllers/Version1/class-wc-rest-order-notes-v1-controller.php:296
 #: includes/rest-api/Controllers/Version1/class-wc-rest-webhooks-v1-controller.php:470
 msgid "Webhooks do not support trashing."
-msgstr "Webhooks unterstützen keine Löschvorgänge."
+msgstr "Webhooks unterstützen keine Verschiebung in den Papierkorb."
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-order-notes-v1-controller.php:234
 #: includes/rest-api/Controllers/Version3/class-wc-rest-order-notes-controller.php:86
@@ -40139,7 +40139,7 @@ msgstr "Anzahl der Bestellungen des Kunden."
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-customers-v1-controller.php:815
 msgid "Last order ID."
-msgstr "Letzte Bestellnummer."
+msgstr "Letzte Bestell-ID."
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-customers-v1-controller.php:809
 msgid "Last order data."
@@ -40353,7 +40353,7 @@ msgstr "Schlüssel der Bestellung."
 #: src/Admin/API/Reports/Downloads/Controller.php:183
 #: src/Admin/API/Reports/Orders/Controller.php:137
 msgid "Order ID."
-msgstr "Bestellnummer."
+msgstr "Die Bestell-ID."
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-customer-downloads-v1-controller.php:189
 #: includes/rest-api/Controllers/Version2/class-wc-rest-customer-downloads-v2-controller.php:105
@@ -40986,16 +40986,16 @@ msgstr "Taxonomie existiert nicht."
 #: includes/rest-api/Controllers/Version1/class-wc-rest-product-reviews-v1-controller.php:205
 #: includes/rest-api/Controllers/Version3/class-wc-rest-product-reviews-controller.php:210
 msgid "Sorry, you cannot delete this resource."
-msgstr "Entschuldigung, du kannst diese Ressource nicht löschen."
+msgstr "Leider kannst du diese Ressource nicht löschen."
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-product-attributes-v1-controller.php:197
 #: includes/rest-api/Controllers/Version2/class-wc-rest-system-status-tools-v2-controller.php:117
 msgid "Sorry, you cannot update resource."
-msgstr "Entschuldigung, du kannst die Ressource nicht aktualisieren."
+msgstr "Leider kannst du die Ressource nicht aktualisieren."
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-product-attributes-v1-controller.php:161
 msgid "Sorry, you cannot create new resource."
-msgstr "Entschuldigung, du kannst keine neue Ressource erstellen."
+msgstr "Leider kannst du keine neue Ressource erstellen."
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-customers-v1-controller.php:114
 #: includes/rest-api/Controllers/Version1/class-wc-rest-order-notes-v1-controller.php:106
@@ -41115,7 +41115,7 @@ msgstr "Die Antwort auf Ressourcen beschränken, die nach einem bestimmten ISO 8
 #: includes/rest-api/Controllers/Version3/class-wc-rest-crud-controller.php:510
 #: includes/rest-api/Controllers/Version3/class-wc-rest-posts-controller.php:467
 msgid "The %s cannot be deleted."
-msgstr "%s konnte nicht gelöscht werden."
+msgstr "%s kann nicht gelöscht werden."
 
 #. translators: %s: post type
 #: includes/rest-api/Controllers/Version1/class-wc-rest-products-v1-controller.php:1706
@@ -41142,7 +41142,7 @@ msgstr "%s unterstützt keine Löschvorgänge."
 #: includes/rest-api/Controllers/Version3/class-wc-rest-crud-controller.php:479
 #: includes/rest-api/Controllers/Version3/class-wc-rest-posts-controller.php:438
 msgid "Sorry, you are not allowed to delete %s."
-msgstr "Entschuldigung, du hast nicht die Berechtigung %s zu löschen."
+msgstr "Du hast leider nicht die Berechtigung, %s zu löschen."
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-products-v1-controller.php:1651
 msgid "Invalid post ID."
@@ -41249,7 +41249,7 @@ msgstr "Du hast leider keine Berechtigung, diese Ressource zu bearbeiten."
 #: src/Internal/RestApi/Routes/V4/Products/Controller.php:188
 #: src/Internal/RestApi/Routes/V4/Products/Controller.php:219
 msgid "Sorry, you cannot view this resource."
-msgstr "Entschuldigung, du kannst diese Ressource nicht anzeigen."
+msgstr "Leider kannst du diese Ressource nicht anzeigen."
 
 #: includes/rest-api/Controllers/Version1/class-wc-rest-customers-v1-controller.php:178
 #: includes/rest-api/Controllers/Version1/class-wc-rest-order-notes-v1-controller.php:137
@@ -41460,7 +41460,7 @@ msgstr "Die WooCommerce-Datenbankaktualisierung wurde abgeschlossen. Danke, dass
 
 #: includes/class-wc-frontend-scripts.php:760
 msgid "Please select some product options before adding this product to your cart."
-msgstr "Bitte wähle die Produktoptionen, bevor du den Artikel in den Warenkorb legst."
+msgstr "Bitte wähle Produktoptionen aus, bevor du den Artikel in den Warenkorb legst."
 
 #: includes/class-wc-countries.php:1467
 msgid "State / Zone"
@@ -41933,7 +41933,7 @@ msgstr "Diese findest du in der Bestellbestätigungs-E-Mail."
 #: src/Internal/Admin/Orders/ListTable.php:1823
 #: templates/order/form-tracking.php:36
 msgid "Order ID"
-msgstr "Bestellnummer"
+msgstr "Bestell-ID"
 
 #: templates/order/form-tracking.php:34
 msgid "To track your order please enter your Order ID in the box below and press the \"Track\" button. This was given to you on your receipt and in the confirmation email you should have received."
@@ -42169,7 +42169,7 @@ msgstr "Für Bestellung bezahlen"
 
 #: templates/checkout/form-pay.php:89
 msgid "Sorry, it seems that there are no available payment methods for your location. Please contact us if you require assistance or wish to make alternate arrangements."
-msgstr "Entschuldigung, aber es scheint, dass es keine verfügbaren Zahlungsarten für deinen Standort gibt. Bitte kontaktiere uns, falls du Hilfe benötigst oder andere Vereinbarungen treffen möchtest."
+msgstr "Anscheinend gibt es keine verfügbaren Zahlungsarten für deinen Standort. Bitte kontaktiere uns, falls du Hilfe benötigst oder andere Vereinbarungen treffen möchtest."
 
 #: includes/admin/class-wc-admin-setup-wizard.php:241
 #: includes/admin/class-wc-admin-setup-wizard.php:1794
@@ -42919,7 +42919,7 @@ msgstr "Bestellung vollständig erstattet"
 
 #: includes/shortcodes/class-wc-shortcode-order-tracking.php:48
 msgid "Please enter a valid order ID"
-msgstr "Bitte gib eine gültige Bestellnummer ein"
+msgstr "Bitte gib eine gültige Bestell-ID ein"
 
 #: includes/abstracts/abstract-wc-payment-gateway.php:646
 msgid "Use a new payment method"
@@ -42961,7 +42961,7 @@ msgstr "Bestellnummer:"
 #: includes/shortcodes/class-wc-shortcode-checkout.php:95
 #: includes/shortcodes/class-wc-shortcode-checkout.php:250
 msgid "Sorry, this order is invalid and cannot be paid for."
-msgstr "Entschuldigung, aber diese Bestellung ist ungültig und es kann dafür nicht bezahlt werden."
+msgstr "Leider ist diese Bestellung ungültig und kann nicht bezahlt werden."
 
 #. translators: %s: order status
 #: includes/shortcodes/class-wc-shortcode-checkout.php:125
@@ -44522,11 +44522,11 @@ msgstr "Du musst angemeldet sein, um Dateien herunterzuladen."
 
 #: includes/class-wc-download-handler.php:189
 msgid "Sorry, this download has expired"
-msgstr "Entschuldigung, aber dieser Download ist abgelaufen."
+msgstr "Leider ist dieser Download abgelaufen."
 
 #: includes/class-wc-download-handler.php:178
 msgid "Sorry, you have reached your download limit for this file"
-msgstr "Entschuldigung, aber du hast das Download-Limit für diese Datei erreicht."
+msgstr "Leider hast du das Download-Limit für diese Datei erreicht."
 
 #: includes/class-wc-download-handler.php:166
 #: includes/class-wc-form-handler.php:896
@@ -44764,7 +44764,7 @@ msgstr "Wir konnten deine Bestellung nicht bearbeiten, bitte versuche es erneut.
 #: assets/client/blocks/checkout-frontend.js:5
 #: assets/client/blocks/checkout.js:21
 msgid "Notes about your order, e.g. special notes for delivery."
-msgstr "Anmerkungen zu deiner Bestellung, z.B. besondere Hinweise für die Lieferung."
+msgstr "Hinweise zu deiner Bestellung, z. B. besondere Hinweise für die Lieferung."
 
 #: includes/class-wc-checkout.php:286
 msgid "Account username"
@@ -44790,7 +44790,7 @@ msgstr "Du kannst „%s“ nicht deinem Warenkorb hinzufügen, da das Produkt ni
 
 #: includes/class-wc-cart.php:1332
 msgid "Sorry, this product cannot be purchased."
-msgstr "Entschuldigung, dieses Produkt kann nicht gekauft werden."
+msgstr "Leider kann dieses Produkt nicht gekauft werden."
 
 #: includes/class-wc-cart.php:661
 msgid "Get cart should not be called before the wp_loaded action."
@@ -44973,7 +44973,7 @@ msgstr "Lagerbestand von Produkt #%1$s erhöht von %2$s auf %3$s."
 
 #: includes/class-wc-ajax.php:380
 msgid "Sorry, your session has expired."
-msgstr "Entschuldigung, deine Sitzung ist leider abgelaufen."
+msgstr "Leider ist deine Sitzung abgelaufen."
 
 #: includes/class-wc-ajax.php:322
 msgid "Coupon has been removed."
@@ -46244,7 +46244,7 @@ msgstr "Währung"
 
 #: includes/admin/settings/class-wc-settings-general.php:323
 msgid "The following options affect how prices are displayed on the frontend."
-msgstr "Die folgenden Einstellungen beeinflussen, wie Preise in der Besucheransicht (Frontend) angezeigt werden."
+msgstr "Die folgenden Optionen beeinflussen, die Preisdarstellung im Frontend."
 
 #: includes/admin/settings/class-wc-settings-general.php:321
 msgid "Currency options"
@@ -47778,7 +47778,7 @@ msgstr "Nur einzeln verkaufen"
 #: includes/rest-api/Controllers/Version1/class-wc-rest-products-v1-controller.php:1968
 #: includes/rest-api/Controllers/Version2/class-wc-rest-products-v2-controller.php:2089
 msgid "Controls whether or not the product is listed as \"in stock\" or \"out of stock\" on the frontend."
-msgstr "Bestimmt, ob das Produkt in der Besucheransicht (Frontend) als „vorrätig“ oder „nicht vorrätig“ gelistet wird."
+msgstr "Bestimmt, ob das Produkt im Frontend als „vorrätig“ oder „nicht vorrätig“ gelistet wird."
 
 #: includes/admin/meta-boxes/views/html-product-data-inventory.php:161
 #: includes/admin/meta-boxes/views/html-variation-admin.php:346
@@ -48112,7 +48112,7 @@ msgstr "Kundenhinweise zur Bestellung"
 
 #: includes/admin/meta-boxes/class-wc-meta-box-order-data.php:668
 msgid "Customer provided note"
-msgstr "Kundenbemerkungen"
+msgstr "Vom Kunden angegebener Hinweis"
 
 #: includes/admin/meta-boxes/class-wc-meta-box-order-data.php:577
 msgid "No shipping address set."
@@ -48457,7 +48457,7 @@ msgstr "Allgemein"
 
 #: includes/admin/importers/class-wc-tax-rate-importer.php:349
 msgid "Sorry, there has been an error."
-msgstr "Entschuldigung, es ist leider ein Fehler aufgetreten."
+msgstr "Leider ist ein Fehler aufgetreten."
 
 #: includes/admin/importers/class-wc-tax-rate-importer.php:334
 msgid "Upload file and import"
@@ -48610,7 +48610,7 @@ msgstr "Attributbegriffe können Produkten und Varianten zugeordnet werden.<br/>
 
 #: includes/admin/class-wc-admin-taxonomies.php:330
 msgid "Product categories for your store can be managed here. To change the order of categories on the front-end you can drag and drop to sort them. To see more categories listed click the \"screen options\" link at the top-right of this page."
-msgstr "Hier kannst du die Produkt-Kategorien für deinen Shop verwalten. Um die Reihenfolge der Kategorien in der Besucheransicht (Frontend) zu ändern, kannst du diese per Drag-and-drop zur gewünschten Position ziehen. Um mehr Kategorien pro Bearbeiten-Seite auflisten zu lassen, klicke bitte oben rechts auf den Link „Ansicht anpassen“."
+msgstr "Hier kannst du die Produkt-Kategorien für deinen Shop verwalten. Um die Reihenfolge der Kategorien im Frontend zu ändern, kannst du diese per Drag-and-drop zur gewünschten Position ziehen. Um mehr Kategorien pro Bearbeiten-Seite auflisten zu lassen, klicke bitte oben rechts auf den Link „Ansicht anpassen“."
 
 #: includes/admin/class-wc-admin-brands.php:355
 #: includes/admin/class-wc-admin-brands.php:451
@@ -50065,7 +50065,7 @@ msgstr "%s Aktionen"
 
 #: src/Internal/Admin/Orders/Edit.php:82
 msgid "Note: Permissions for order items will automatically be granted when the order status changes to processing/completed."
-msgstr "Hinweis: Berechtigungen für Bestellpositionen werden automatisch erteilt, wenn sich der Bestellstatus nach „In Bearbeitung“ / „Abgeschlossen“ ändert."
+msgstr "Hinweis: Berechtigungen für Bestellpositionen werden automatisch erteilt, wenn der Bestellstatus auf „In Bearbeitung“/„Abgeschlossen“ wechselt."
 
 #: src/Internal/Admin/Orders/Edit.php:82
 msgid "Downloadable product permissions"
@@ -50074,7 +50074,7 @@ msgstr "Berechtigungen für herunterladbares Produkt"
 #. Translators: %s order type name.
 #: src/Internal/Admin/Orders/Edit.php:81
 msgid "%s notes"
-msgstr "%s Anmerkungen"
+msgstr "%s-Hinweise"
 
 #: includes/admin/settings/views/html-settings-tax.php:115
 msgid "%s items"
@@ -50466,7 +50466,7 @@ msgstr "Titelform"
 #: includes/admin/class-wc-admin-attributes.php:274
 #: includes/admin/class-wc-admin-attributes.php:496
 msgid "Name for the attribute (shown on the front-end)."
-msgstr "Name der Eigenschaft (wird so in der Besucheransicht (Frontend) angezeigt)."
+msgstr "Name des Attributs (wird im Frontend angezeigt)."
 
 #: includes/admin/class-wc-admin-attributes.php:252
 msgid "Error: non-existing attribute ID."
@@ -51123,7 +51123,7 @@ msgstr "Gebühr"
 #: assets/client/blocks/cart.js:22 assets/client/blocks/checkout.js:21
 #: assets/client/blocks/wc-cart-checkout-base-frontend.js:36
 msgid "Shipping:"
-msgstr "Lieferung:"
+msgstr "Versand:"
 
 #: includes/abstracts/abstract-wc-order.php:2510
 #: includes/admin/meta-boxes/views/html-order-items.php:179

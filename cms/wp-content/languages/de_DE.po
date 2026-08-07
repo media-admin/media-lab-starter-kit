@@ -3202,7 +3202,7 @@ msgctxt "block description"
 msgid "Reuse this design across your site."
 msgstr "Dieses Design auf deiner gesamten Website wiederverwenden."
 
-#: wp-includes/js/dist/editor.js:67144 wp-admin/about.php:200
+#: wp-includes/js/dist/editor.js:67144 wp-admin/about.php:220
 msgid "Accessibility"
 msgstr "Barrierefreiheit"
 
@@ -4862,7 +4862,7 @@ msgstr "Website-Name (nur Unterverzeichnis):"
 msgid "Create a site or only a username:"
 msgstr "Eine Website erstellen oder nur einen Benutzernamen anlegen:"
 
-#: wp-includes/user.php:5220
+#: wp-includes/user.php:5230
 msgid "The date and time the preferences were updated."
 msgstr "Das Datum und die Uhrzeit der Aktualisierung der Einstellungen."
 
@@ -7334,7 +7334,7 @@ msgid "A widget containing a block."
 msgstr "Ein Widget, das einen Block enthält."
 
 #. translators: 1 & 2: Deprecation replacement options.
-#: wp-includes/user.php:4376 wp-includes/user.php:4616
+#: wp-includes/user.php:4386 wp-includes/user.php:4626
 msgid "%1$s or %2$s"
 msgstr "%1$s oder %2$s"
 
@@ -8212,15 +8212,15 @@ msgstr "https://developer.wordpress.org/reference/functions/is_main_query/"
 msgid "Filter by category"
 msgstr "Nach Kategorie filtern"
 
-#: wp-includes/user.php:5091
+#: wp-includes/user.php:5101
 msgid "The confirmation key has expired for this personal data request."
 msgstr "Der Bestätigungsschlüssel für diese Anfrage personenbezogener Daten ist abgelaufen."
 
-#: wp-includes/user.php:5087
+#: wp-includes/user.php:5097
 msgid "The confirmation key is invalid for this personal data request."
 msgstr "Der Bestätigungsschlüssel für diese Anfrage personenbezogener Daten ist ungültig."
 
-#: wp-includes/user.php:5073
+#: wp-includes/user.php:5083
 msgid "The confirmation key is missing from this personal data request."
 msgstr "Der Bestätigungsschlüssel für diese Anfrage personenbezogener Daten fehlt."
 
@@ -8229,13 +8229,13 @@ msgstr "Der Bestätigungsschlüssel für diese Anfrage personenbezogener Daten f
 msgid "https://wordpress.org/documentation/article/faq-troubleshooting/"
 msgstr "https://wordpress.org/documentation/article/faq-troubleshooting/"
 
-#: wp-includes/user.php:4877 wp-includes/user.php:5065
+#: wp-includes/user.php:4887 wp-includes/user.php:5075
 #: wp-admin/includes/privacy-tools.php:23
 #: wp-admin/includes/privacy-tools.php:52
 msgid "Invalid personal data request."
 msgstr "Die Anfrage personenbezogener Daten ist ungültig."
 
-#: wp-includes/user.php:5069
+#: wp-includes/user.php:5079
 msgid "This personal data request has expired."
 msgstr "Diese Anfrage zu personenbezogenen Daten ist abgelaufen."
 
@@ -8257,7 +8257,7 @@ msgstr "%1$s ist nicht eins von %2$l."
 msgid "It looks like the response did not come from this site."
 msgstr "Es sieht so aus, als ob die Antwort nicht von dieser Website stammt."
 
-#: wp-includes/user.php:4788
+#: wp-includes/user.php:4798
 msgid "Invalid request status."
 msgstr "Der Anfragestatus ist ungültig."
 
@@ -8898,7 +8898,7 @@ msgstr "Ein Fehler ist aufgetreten."
 msgid "Crop"
 msgstr "Zuschneiden"
 
-#: wp-includes/class-wp-script-modules.php:1137 wp-includes/js/dist/a11y.js:82
+#: wp-includes/class-wp-script-modules.php:1138 wp-includes/js/dist/a11y.js:82
 msgid "Notifications"
 msgstr "Benachrichtigungen"
 
@@ -9761,6 +9761,7 @@ msgstr "Mehr über XML-Sitemaps erfahren (engl.)."
 msgid "Change Frequency"
 msgstr "Änderungshäufigkeit"
 
+#: wp-includes/blocks/latest-comments.php:124
 #: wp-includes/comment-template.php:664 wp-includes/js/dist/editor.js:10356
 #: wp-includes/js/dist/editor.js:46234 wp-includes/js/dist/editor.js:48376
 #: wp-admin/includes/meta-boxes.php:183 wp-admin/includes/meta-boxes.php:217
@@ -9841,56 +9842,56 @@ msgstr "Vorherige und nächste Monate"
 msgid "When registering an \"array\" setting to show in the REST API, you must specify the schema for each array item in \"show_in_rest.schema.items\"."
 msgstr "Wenn du eine „array“-Einstellung registrierst, die im REST-API angezeigt wird, musst du das Schema für jedes Array-Element in „show_in_rest.schema.items“ angeben."
 
-#: wp-includes/user.php:4173
+#: wp-includes/user.php:4183
 msgid "Last Login"
 msgstr "Letzte Anmeldung"
 
-#: wp-includes/user.php:4170
+#: wp-includes/user.php:4180
 msgid "Expiration"
 msgstr "Ablaufdatum"
 
-#: wp-includes/user.php:4172
+#: wp-includes/user.php:4182
 msgid "User Agent"
 msgstr "User Agent"
 
-#: wp-includes/user.php:4160
+#: wp-includes/user.php:4170
 msgid "User&#8217;s location data used for the Community Events in the WordPress Events and News dashboard widget."
 msgstr "Die Standortdaten des Benutzers, die für die Anzeige der Einträge im Dashboard-Widget „WordPress-Veranstaltungen und Neuigkeiten“ verwendet werden."
 
-#: wp-includes/user.php:4195
+#: wp-includes/user.php:4205
 msgid "User&#8217;s Session Tokens data."
 msgstr "Die Daten im Sitzungs-Token des Benutzers."
 
-#: wp-includes/user.php:4194
+#: wp-includes/user.php:4204
 msgid "Session Tokens"
 msgstr "Sitzungs-Token"
 
-#: wp-includes/user.php:4143 wp-includes/user.php:4171
+#: wp-includes/user.php:4153 wp-includes/user.php:4181
 msgid "IP"
 msgstr "IP"
 
-#: wp-includes/user.php:4142
+#: wp-includes/user.php:4152
 msgid "Longitude"
 msgstr "Längengrad"
 
-#: wp-includes/user.php:4141
+#: wp-includes/user.php:4151
 msgid "Latitude"
 msgstr "Breitengrad"
 
-#: wp-includes/user.php:4140
+#: wp-includes/user.php:4150
 msgid "Country"
 msgstr "Land"
 
-#: wp-includes/user.php:4139
+#: wp-includes/user.php:4149
 msgid "City"
 msgstr "Stadt"
 
-#: wp-includes/user.php:4159
+#: wp-includes/user.php:4169
 msgid "Community Events Location"
 msgstr "Standort für WordPress-Veranstaltungen"
 
 #. translators: %s: wp_privacy_additional_user_profile_data
-#: wp-includes/user.php:4115
+#: wp-includes/user.php:4125
 msgid "Filter %s returned items with reserved names."
 msgstr "Der Filter %s übergibt Elemente mit reservierten Namen."
 
@@ -10152,7 +10153,7 @@ msgstr "Der Name des Blockstils muss eine Zeichenfolge sein."
 msgid "User&#8217;s media data."
 msgstr "Mediendaten des Benutzers."
 
-#: wp-includes/user.php:4130
+#: wp-includes/user.php:4140
 msgid "User&#8217;s profile data."
 msgstr "Profildaten des Benutzers."
 
@@ -10534,7 +10535,7 @@ msgid "[%s] Email Changed"
 msgstr "[%s] E-Mail-Adresse geändert"
 
 #. translators: New email address notification email subject. %s: Site title.
-#: wp-includes/user.php:3942
+#: wp-includes/user.php:3952
 msgid "[%s] Email Change Request"
 msgstr "[%s] Änderungsanfrage der E-Mail-Adresse"
 
@@ -10641,7 +10642,7 @@ msgstr "Der Wiederherstellungsschlüssel ist ungültig."
 msgid "Invalid recovery key format."
 msgstr "Das Schlüssel-Format für die Wiederherstellung ist ungültig."
 
-#: wp-includes/user.php:4809
+#: wp-includes/user.php:4819
 msgid "An incomplete personal data request for this email address already exists."
 msgstr "Für diese E-Mail-Adresse existiert bereits eine offene Anfrage zu personenbezogenen Daten."
 
@@ -11235,7 +11236,7 @@ msgstr "Die Seite wurde aktualisiert."
 msgid "Post updated."
 msgstr "Der Beitrag wurde aktualisiert."
 
-#: wp-includes/blocks/latest-comments.php:153
+#: wp-includes/blocks/latest-comments.php:156
 msgid "No comments to show."
 msgstr "Es sind keine Kommentare vorhanden."
 
@@ -11286,13 +11287,13 @@ msgstr "Der Blocktyp „%s“ ist nicht registriert."
 msgid "The offset number requested is larger than or equal to the number of available revisions."
 msgstr "Die angeforderte Offset-Nummer ist größer oder gleich der Anzahl der verfügbaren Revisionen."
 
-#: wp-includes/user.php:5015
+#: wp-includes/user.php:5025
 msgid "Unable to send personal data export confirmation email."
 msgstr "Die Bestätigungs-E-Mail zum Export personenbezogener Daten konnte nicht gesendet werden."
 
 #. translators: Privacy data request confirmed notification email subject. 1:
 #. Site title, 2: Name of the confirmed action.
-#: wp-includes/user.php:4294
+#: wp-includes/user.php:4304
 msgid "[%1$s] Action Confirmed: %2$s"
 msgstr "[%1$s] Aktion bestätigt: %2$s"
 
@@ -11329,25 +11330,25 @@ msgstr "Du hast dein Speicherplatzkontingent aufgebraucht. Bitte lösche Dateien
 msgid "Not enough space to upload. %s KB needed."
 msgstr "Es ist nicht genügend Speicherplatz zum Hochladen vorhanden. %s KB werden benötigt."
 
-#: wp-includes/user.php:4740
+#: wp-includes/user.php:4750
 msgid "Thanks for confirming your erasure request."
 msgstr "Danke für das Bestätigen deiner Lösch-Anfrage."
 
-#: wp-includes/user.php:4737
+#: wp-includes/user.php:4747
 msgid "Thanks for confirming your export request."
 msgstr "Danke für das Bestätigen deiner Export-Anfrage."
 
-#: wp-includes/user.php:4741
+#: wp-includes/user.php:4751
 msgid "The site administrator has been notified. You will receive an email confirmation when they erase your data."
 msgstr "Der Website-Administrator wurde benachrichtigt. Wenn die Daten gelöscht werden, erhältst du eine Bestätigung per E-Mail."
 
-#: wp-includes/user.php:4738
+#: wp-includes/user.php:4748
 msgid "The site administrator has been notified. You will receive a link to download your export via email when they fulfill your request."
 msgstr "Der Website-Administrator wurde benachrichtigt. Du erhältst einen Link zum Herunterladen deines Exports per E-Mail, wenn er deine Anfrage beantwortet."
 
 #. translators: Do not translate SITENAME, SITEURL, PRIVACY_POLICY_URL; those
 #. are placeholders.
-#: wp-includes/user.php:4565
+#: wp-includes/user.php:4575
 msgid ""
 "Howdy,\n"
 "\n"
@@ -11374,7 +11375,7 @@ msgstr ""
 "###SITEURL###"
 
 #. translators: Do not translate SITENAME, SITEURL; those are placeholders.
-#: wp-includes/user.php:4551
+#: wp-includes/user.php:4561
 msgid ""
 "Howdy,\n"
 "\n"
@@ -11398,13 +11399,13 @@ msgstr ""
 
 #. translators: Erasure request fulfilled notification email subject. %s: Site
 #. title.
-#: wp-includes/user.php:4498
+#: wp-includes/user.php:4508
 msgid "[%s] Erasure Request Fulfilled"
 msgstr "[%s] Löschauftrag ausgeführt"
 
 #. translators: Do not translate SITENAME, USER_EMAIL, DESCRIPTION, MANAGE_URL,
 #. SITEURL; those are placeholders.
-#: wp-includes/user.php:4321
+#: wp-includes/user.php:4331
 msgid ""
 "Howdy,\n"
 "\n"
@@ -11438,11 +11439,11 @@ msgstr ""
 
 #. translators: Confirm privacy data request notification email subject. 1:
 #. Site title, 2: Name of the action.
-#: wp-includes/user.php:4911
+#: wp-includes/user.php:4921
 msgid "[%1$s] Confirm Action: %2$s"
 msgstr "[%1$s] Aktion bestätigen: %2$s"
 
-#: wp-includes/user.php:4843 wp-admin/erase-personal-data.php:17
+#: wp-includes/user.php:4853 wp-admin/erase-personal-data.php:17
 #: wp-admin/erase-personal-data.php:107 wp-admin/menu.php:397
 msgid "Erase Personal Data"
 msgstr "Personenbezogene Daten löschen"
@@ -11451,51 +11452,51 @@ msgstr "Personenbezogene Daten löschen"
 msgid "Save my name, email, and website in this browser for the next time I comment."
 msgstr "Name, E-Mail-Adresse und Website in diesem Browser für meinen nächsten Kommentar speichern."
 
-#: wp-includes/user.php:4047
+#: wp-includes/user.php:4057
 msgid "User Description"
 msgstr "Benutzer-Beschreibung"
 
-#: wp-includes/user.php:4046
+#: wp-includes/user.php:4056
 msgid "User Last Name"
 msgstr "Benutzer-Nachname"
 
-#: wp-includes/user.php:4045
+#: wp-includes/user.php:4055
 msgid "User First Name"
 msgstr "Benutzer-Vorname"
 
-#: wp-includes/user.php:4044
+#: wp-includes/user.php:4054
 msgid "User Nickname"
 msgstr "Benutzer-Spitzname"
 
-#: wp-includes/user.php:4042
+#: wp-includes/user.php:4052
 msgid "User Registration Date"
 msgstr "Benutzer-Registrierungsdatum"
 
-#: wp-includes/user.php:4041
+#: wp-includes/user.php:4051
 msgid "User URL"
 msgstr "Benutzer-URL"
 
-#: wp-includes/user.php:4038
+#: wp-includes/user.php:4048
 msgid "User Login Name"
 msgstr "Benutzer-Anmeldename"
 
-#: wp-includes/user.php:4037
+#: wp-includes/user.php:4047
 msgid "User ID"
 msgstr "Benutzer-ID"
 
-#: wp-includes/user.php:3998
+#: wp-includes/user.php:4008
 msgid "WordPress User"
 msgstr "WordPress-Benutzer"
 
-#: wp-includes/user.php:4039
+#: wp-includes/user.php:4049
 msgid "User Nice Name"
 msgstr "URL-freundlicher Benutzername"
 
-#: wp-includes/user.php:4040
+#: wp-includes/user.php:4050
 msgid "User Email"
 msgstr "Benutzer-E-Mail-Adresse"
 
-#: wp-includes/user.php:4043
+#: wp-includes/user.php:4053
 msgid "User Display Name"
 msgstr "Benutzer-Anzeigename"
 
@@ -11514,11 +11515,11 @@ msgid "[deleted]"
 msgstr "[gelöscht]"
 
 #. translators: %s: Action name.
-#: wp-includes/user.php:4847
+#: wp-includes/user.php:4857
 msgid "Confirm the \"%s\" action"
 msgstr "Aktion „%s“ bestätigen"
 
-#: wp-includes/user.php:4733
+#: wp-includes/user.php:4743
 msgid "The site administrator has been notified and will fulfill your request as soon as possible."
 msgstr "Der Website-Administrator wurde benachrichtigt und wird deiner Anfrage so schnell wie möglich nachkommen."
 
@@ -11540,12 +11541,12 @@ msgstr "Dieser Inhalt wurde vom Autor gelöscht."
 msgid "Comment %d contains personal data but could not be anonymized."
 msgstr "Kommentar %d beinhaltet personenbezogene Daten, konnte aber nicht anonymisiert werden."
 
-#: wp-includes/user.php:4840 wp-admin/export-personal-data.php:17
+#: wp-includes/user.php:4850 wp-admin/export-personal-data.php:17
 #: wp-admin/export-personal-data.php:107 wp-admin/menu.php:396
 msgid "Export Personal Data"
 msgstr "Personenbezogene Daten exportieren"
 
-#: wp-includes/user.php:4784
+#: wp-includes/user.php:4794
 msgid "Invalid action name."
 msgstr "Der Aktions-Name ist ungültig."
 
@@ -11553,13 +11554,13 @@ msgstr "Der Aktions-Name ist ungültig."
 msgid "User action confirmed."
 msgstr "Die Benutzeraktion wurde bestätigt."
 
-#: wp-includes/user.php:4732
+#: wp-includes/user.php:4742
 msgid "Action has been confirmed."
 msgstr "Aktion wurde bestätigt."
 
 #. translators: Do not translate DESCRIPTION, CONFIRM_URL, SITENAME, SITEURL:
 #. those are placeholders.
-#: wp-includes/user.php:4934
+#: wp-includes/user.php:4944
 msgid ""
 "Howdy,\n"
 "\n"
@@ -11930,7 +11931,7 @@ msgid "Displays an image gallery."
 msgstr "Zeigt eine Bildergalerie an."
 
 #. translators: %s: New email address.
-#: wp-includes/user.php:3965
+#: wp-includes/user.php:3975
 msgid "Your email address has not been updated yet. Please check your inbox at %s for a confirmation email."
 msgstr "Deine E-Mail-Adresse wurde noch nicht aktualisiert. Bitte prüfe deinen Posteingang für %s auf eine Bestätigungs-E-Mail."
 
@@ -11944,7 +11945,7 @@ msgstr "Verwende das individuelle HTML-Widget, um in den Widget-Bereichen belieb
 
 #. translators: Do not translate USERNAME, ADMIN_URL, EMAIL, SITENAME, SITEURL:
 #. those are placeholders.
-#: wp-includes/user.php:3893
+#: wp-includes/user.php:3903
 msgid ""
 "Howdy ###USERNAME###,\n"
 "\n"
@@ -11977,7 +11978,7 @@ msgstr ""
 "Das Team von ###SITENAME###\n"
 "###SITEURL###"
 
-#: wp-includes/user.php:3873
+#: wp-includes/user.php:3882
 msgid "<strong>Error:</strong> The email address is already used."
 msgstr "<strong>Fehler:</strong> Diese E-Mail-Adresse wird bereits verwendet."
 
@@ -13464,7 +13465,7 @@ msgstr "Die Titelform ist ungültig."
 
 #: wp-includes/rest-api.php:2300
 #: wp-includes/rest-api/endpoints/class-wp-rest-users-controller.php:780
-#: wp-includes/user.php:4780 wp-admin/network/site-new.php:100
+#: wp-includes/user.php:4790 wp-admin/network/site-new.php:100
 msgid "Invalid email address."
 msgstr "Die E-Mail-Adresse ist ungültig."
 
@@ -13554,7 +13555,7 @@ msgstr "Du bist leider nicht berechtigt, Benutzer nach diesem Parameter zu sorti
 
 #: wp-includes/rest-api/endpoints/class-wp-rest-users-controller.php:1284
 #: wp-includes/rest-api/endpoints/class-wp-rest-users-controller.php:1298
-#: wp-admin/includes/ms.php:1184 wp-admin/includes/user.php:62
+#: wp-admin/includes/ms.php:1184 wp-admin/includes/user.php:64
 #: wp-admin/users.php:131 wp-admin/network/site-users.php:156
 msgid "Sorry, you are not allowed to give users that role."
 msgstr "Du bist leider nicht berechtigt, Benutzern diese Benutzerrolle zuzuweisen."
@@ -15551,7 +15552,7 @@ msgstr "Fehler beim Senden des Kommentars"
 msgid "Shift-click to edit this element."
 msgstr "Umschalttaste + Klick, um dieses Element zu bearbeiten."
 
-#: wp-includes/user.php:3555 wp-admin/includes/user.php:202
+#: wp-includes/user.php:3555 wp-admin/includes/user.php:207
 msgid "<strong>Error:</strong> Sorry, that username is not allowed."
 msgstr "<strong>Fehler:</strong> Dieser Benutzername ist leider nicht erlaubt."
 
@@ -15716,7 +15717,7 @@ msgid "The menu name %s conflicts with another menu name. Please try another."
 msgstr "Der Menüname %s kollidiert mit einem anderen Menünamen. Bitte wähle einen anderen."
 
 #. translators: %s: Site address.
-#: wp-signup.php:1035
+#: wp-signup.php:1039
 msgid "The site you were looking for, %s, does not exist."
 msgstr "Die Website, die du gesucht hast, %s, existiert nicht."
 
@@ -18697,7 +18698,7 @@ msgid "<strong>Error:</strong> Could not register you&hellip; please contact the
 msgstr "<strong>Fehler:</strong> Du konntest nicht registriert werden &hellip; bitte kontaktiere den <a href=\"mailto:%s\">Website-Administrator</a>!"
 
 #. translators: %s: Site address.
-#: wp-signup.php:1029
+#: wp-signup.php:1033
 msgid "The site you were looking for, %s, does not exist, but you can create it now!"
 msgstr "Die Website, die du gesucht hast, %s, existiert nicht, aber du kannst sie jetzt erstellen!"
 
@@ -19065,7 +19066,7 @@ msgstr "Bitte gib eine gültige E-Mail-Adresse ein."
 msgid "The requested user does not exist."
 msgstr "Der angeforderte Benutzer existiert nicht."
 
-#: wp-includes/user.php:3550 wp-admin/includes/user.php:195
+#: wp-includes/user.php:3550 wp-admin/includes/user.php:200
 msgid "<strong>Error:</strong> This username is already registered. Please choose another one."
 msgstr "<strong>Fehler:</strong> Dieser Benutzername ist bereits registriert. Bitte wähle einen anderen."
 
@@ -19571,7 +19572,7 @@ msgstr "Du bist leider nicht berechtigt, diesen Beitrag zu bearbeiten."
 
 #: wp-includes/post.php:5724 wp-admin/includes/ajax-actions.php:124
 #: wp-admin/includes/meta-boxes.php:583 wp-admin/includes/post.php:578
-#: wp-admin/includes/post.php:2265 wp-admin/js/inline-edit-post.js:412
+#: wp-admin/includes/post.php:2265 wp-admin/js/inline-edit-post.js:417
 #: wp-admin/js/tags-box.js:9 wp-admin/js/tags-suggest.js:8
 msgctxt "tag delimiter"
 msgid ","
@@ -20249,7 +20250,7 @@ msgstr "Name der neuen Linkkategorie"
 msgid "Update Link Category"
 msgstr "Linkkategorie aktualisieren"
 
-#: wp-includes/abilities.php:29 wp-includes/user.php:4129
+#: wp-includes/abilities.php:29 wp-includes/user.php:4139
 #: wp-includes/js/dist/block-editor.js:28549
 #: wp-includes/js/dist/block-library.js:6320
 #: wp-includes/js/dist/block-library.js:6418
@@ -20356,7 +20357,7 @@ msgstr "Neuer Schlagwortname"
 msgid "New Category Name"
 msgstr "Neuer Kategoriename"
 
-#: wp-signup.php:1018
+#: wp-signup.php:1022
 msgid "Sorry, new registrations are not allowed at this time."
 msgstr "Neue Registrierungen sind derzeit leider nicht erlaubt."
 
@@ -20413,7 +20414,7 @@ msgstr "Beiträge durchsuchen"
 msgid "No patterns found in Trash."
 msgstr "Im Papierkorb wurden keine Vorlagen gefunden."
 
-#: wp-includes/user.php:3547 wp-admin/includes/user.php:191
+#: wp-includes/user.php:3547 wp-admin/includes/user.php:196
 msgid "<strong>Error:</strong> This username is invalid because it uses illegal characters. Please enter a valid username."
 msgstr "<strong>Fehler:</strong> Dieser Benutzername ungültig, da er ungültige Zeichen enthält. Bitte gib einen gültigen Benutzernamen ein."
 
@@ -20606,7 +20607,7 @@ msgstr[1] "Abgeschlossen <span class=\"count\">(%s)</span>"
 msgid "This action has been disabled by the administrator."
 msgstr "Diese Aktion wurde vom Administrator deaktiviert."
 
-#: wp-signup.php:1020
+#: wp-signup.php:1024
 msgid "You are logged in already. No need to register again!"
 msgstr "Du bist bereits angemeldet und brauchst dich nicht erneut zu registrieren!"
 
@@ -20729,7 +20730,7 @@ msgstr "Website-Titel:"
 msgid "Sites you are already a member of:"
 msgstr "Du bist bereits Mitglied der folgenden Websites:"
 
-#: wp-signup.php:998
+#: wp-signup.php:998 wp-signup.php:1005
 msgid "Site registration has been disabled."
 msgstr "Das Registrieren von Websites ist deaktiviert."
 
@@ -21994,8 +21995,8 @@ msgstr "Du kannst dich leider nicht mit dieser E-Mail-Adresse registrieren, da d
 msgid "Border"
 msgstr "Ränder"
 
-#: wp-includes/user.php:3563 wp-includes/user.php:3861
-#: wp-admin/includes/user.php:209
+#: wp-includes/user.php:3563 wp-includes/user.php:3869
+#: wp-admin/includes/user.php:87 wp-admin/includes/user.php:214
 msgid "<strong>Error:</strong> The email address is not correct."
 msgstr "<strong>Fehler:</strong> Die E-Mail-Adresse ist nicht korrekt."
 
@@ -22923,7 +22924,7 @@ msgstr "Schlagwörter durch Kommas trennen"
 msgid "%1$s at %2$s"
 msgstr "%1$s um %2$s Uhr"
 
-#: wp-includes/user.php:3545 wp-admin/includes/user.php:152
+#: wp-includes/user.php:3545 wp-admin/includes/user.php:157
 msgid "<strong>Error:</strong> Please enter a username."
 msgstr "<strong>Fehler:</strong> Bitte gib einen Benutzernamen ein."
 

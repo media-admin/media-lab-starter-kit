@@ -28,20 +28,21 @@
 /cms/wp-content/db.php
 
 # ============================================
-# PLUGINS – Third Party (via Composer/ZIP installieren)
+# PLUGINS – nur eigene media-lab-*-Plugins tracken
 # ============================================
-/cms/wp-content/plugins/advanced-custom-fields/
-/cms/wp-content/plugins/advanced-custom-fields-pro/
-/cms/wp-content/plugins/contact-form-7/
-/cms/wp-content/plugins/wordpress-importer/
-/cms/wp-content/plugins/woocommerce/
-/cms/wp-content/plugins/woocommerce-gateway-stripe/
-/cms/wp-content/plugins/woocommerce-paypal-payments/
-/cms/wp-content/plugins/woocommerce-services/
-/cms/wp-content/plugins/better-search-replace/
-/cms/wp-content/plugins/ewww-image-optimizer/
-/cms/wp-content/plugins/wp-fastest-cache/
-/cms/wp-content/plugins/query-monitor/
+# GEÄNDERT (siehe CHANGELOG): Vorher eine Denylist mit einzeln benannten
+# Third-Party-Plugins (ACF, CF7, WooCommerce, Gateways, ...) - musste bei
+# JEDEM neu installierten Drittanbieter-Plugin manuell ergänzt werden.
+# Genau das wurde bei "woocommerce-payments" (WooPayments, 1.458 Dateien,
+# 23MB) vergessen, wodurch es komplett mitversioniert wurde.
+#
+# Jetzt Allowlist: alles in plugins/ ist standardmäßig ignoriert (via
+# Third-Party-ZIP/Composer installieren), NUR eigene media-lab-*-Plugins
+# werden explizit wieder eingeschlossen. Neue Third-Party-Plugins sind
+# dadurch automatisch ausgeschlossen, ohne dass man daran denken muss.
+/cms/wp-content/plugins/*
+!/cms/wp-content/plugins/index.php
+!/cms/wp-content/plugins/media-lab-*/
 
 # ============================================
 # THEMES – Standard WP Themes
