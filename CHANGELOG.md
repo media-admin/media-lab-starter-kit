@@ -6,6 +6,24 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ---
 
+## [1.23.2] - 2026-08-06
+
+### custom-theme 1.15.1
+
+#### Fixed
+- **`Deprecated: Theme ohne sidebar.php`-Notice auf `/shop/`** –
+  `add_theme_support('woocommerce')` in `functions.php` deklarierte kein
+  `'wc-no-sidebar'`, wodurch WooCommerce auf Shop-/Archiv-Seiten
+  `get_sidebar('shop')` aufrief. Da das Theme nie eine `sidebar.php`
+  hatte (eigene Sidebar-Systeme: `ajax-filters__sidebar`,
+  `media-lab-woocommerce` filter-bar.php), fiel WordPress auf die
+  veraltete `wp-includes/theme-compat/sidebar.php` zurück und meldete
+  das als Deprecation-Warning. Fix: `'wc-no-sidebar' => true` ergänzt.
+  Bestand unabhängig von den Skeleton-/Wishlist-Änderungen dieser
+  Woche, ist nur zufällig beim Testen aufgefallen.
+
+---
+
 ## [1.23.1] - 2026-08-06
 
 ### media-lab-woocommerce 2.0.1

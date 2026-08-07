@@ -117,7 +117,15 @@ add_filter('excerpt_more', function($more) {
  * WooCommerce Support (if WooCommerce is active)
  */
 if (class_exists('WooCommerce')) {
-    add_theme_support('woocommerce');
+    // 'wc-no-sidebar': unterdrückt WooCommerce's native Sidebar-Suche
+    // (get_sidebar('shop')). Das Theme hat eigene Sidebar-Systeme
+    // (ajax-filters__sidebar, media-lab-woocommerce filter-bar.php) -
+    // ohne diesen Zusatz fällt WordPress auf die veraltete
+    // wp-includes/theme-compat/sidebar.php zurück (mangels eigener
+    // sidebar.php im Theme) und meldet das als "deprecated".
+    add_theme_support('woocommerce', array(
+        'wc-no-sidebar' => true,
+    ));
     add_theme_support('wc-product-gallery-zoom');
     add_theme_support('wc-product-gallery-lightbox');
     add_theme_support('wc-product-gallery-slider');
