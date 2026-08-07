@@ -545,6 +545,20 @@ class MLA_Security_Scanner {
 	}
 
 	/**
+	 * Erkennt, ob der Webserver nginx ist (z.B. über SERVER_SOFTWARE).
+	 * Wird von allen Health-Checks genutzt, deren Standard-Fix auf
+	 * .htaccess basiert und dadurch auf nginx wirkungslos/nicht prüfbar
+	 * ist - dort geben wir 'warn' statt 'fail' zurück (keine roten X,
+	 * keine Alarm-Mail für etwas, das der Kunde serverseitig im
+	 * nginx-Vhost lösen muss und das automatisiert nicht verifizierbar
+	 * ist).
+	 */
+	private function is_nginx() {
+		$server_software = isset( $_SERVER['SERVER_SOFTWARE'] ) ? strtolower( sanitize_text_field( wp_unslash( $_SERVER['SERVER_SOFTWARE'] ) ) ) : '';
+		return false !== strpos( $server_software, 'nginx' );
+	}
+
+	/**
 	 * Prüft, ob PHP-Ausführung im uploads-Verzeichnis blockiert ist.
 	 * Erkennt sowohl eine vorhandene .htaccess-Regel (Apache/LiteSpeed)
 	 * als auch den Umstand, dass .htaccess auf nginx wirkungslos ist -
@@ -556,10 +570,7 @@ class MLA_Security_Scanner {
 		$base_dir   = trailingslashit( $upload_dir['basedir'] );
 		$htaccess   = $base_dir . '.htaccess';
 
-		$server_software = isset( $_SERVER['SERVER_SOFTWARE'] ) ? strtolower( sanitize_text_field( wp_unslash( $_SERVER['SERVER_SOFTWARE'] ) ) ) : '';
-		$is_nginx         = false !== strpos( $server_software, 'nginx' );
-
-		if ( $is_nginx ) {
+		if ( $this->is_nginx() ) {
 			return array(
 				'id'          => 'uploads_php_blocked',
 				'label'       => 'PHP-Ausführung in uploads/ blockiert',
@@ -642,7 +653,7 @@ class MLA_Security_Scanner {
 			'description' => $responsive
 				? 'xmlrpc.php antwortet aktiv auf Methodenaufrufe. Falls nicht benötigt (kein Jetpack, keine Remote-Publishing-App), sollte der Zugriff gesperrt werden.'
 				: 'xmlrpc.php ist nicht aktiv erreichbar oder liefert keine Methodenliste.',
-			'fix' => "Falls nicht benötigt, in .htaccess sperren:\n<Files xmlrpc.php>\n    Require all denied\n</Files>",
+			'fix' => "Falls nicht benötigt, Zugriff auf xmlrpc.php sperren.\n\nApache (.htaccess):\n<Files xmlrpc.php>\n    Require all denied\n</Files>\n\nnginx (im Vhost):\nlocation = /xmlrpc.php {\n    deny all;\n}",
 		);
 	}
 
@@ -675,7 +686,7 @@ class MLA_Security_Scanner {
 			'description' => $looks_listing
 				? 'Der Uploads-Ordner zeigt eine Verzeichnisliste an, wenn direkt aufgerufen.'
 				: 'Kein offenes Directory-Listing erkennbar.',
-			'fix' => "In .htaccess im Webroot oder uploads/:\nOptions -Indexes",
+			'fix' => "Apache (.htaccess) im Webroot oder uploads/:\nOptions -Indexes\n\nnginx (im Vhost):\nautoindex off;",
 		);
 	}
 
@@ -740,6 +751,20 @@ class MLA_Security_Scanner {
 		$root_dir      = dirname( untrailingslashit( ABSPATH ) );
 		$root_htaccess = $root_dir . '/.htaccess';
 		$display_path  = str_replace( ABSPATH, '', $root_htaccess );
+
+		if ( $this->is_nginx() ) {
+			return array(
+				'id'          => 'subdirectory_htaccess_fix',
+				'label'       => 'Subdirectory-Fix für wp-content/wp-includes',
+				'status'      => 'warn',
+				'description' => sprintf(
+					'site_url (%s) weicht von home_url (%s) ab - Server läuft unter nginx, .htaccess wird dort nicht ausgewertet. Diese Prüfung kann automatisch nicht zuverlässig erfolgen.',
+					$site_path,
+					$home_path
+				),
+				'fix' => "Im nginx-Vhost sicherstellen, dass root-relative Aufrufe von wp-content/ und wp-includes/ auf das cms/-Unterverzeichnis umgeleitet werden, z.B.:\nlocation ^~ /wp-content/ {\n    rewrite ^/wp-content/(.*)\$ /cms/wp-content/\$1 last;\n}\nlocation ^~ /wp-includes/ {\n    rewrite ^/wp-includes/(.*)\$ /cms/wp-includes/\$1 last;\n}\n\n(Genaue Syntax hängt vom bestehenden nginx-Vhost ab - im Zweifel mit dem Hosting-Provider abstimmen.)",
+			);
+		}
 
 		$fix_snippet = "<IfModule mod_rewrite.c>\nRewriteEngine On\nRewriteCond %{REQUEST_FILENAME} !-f\nRewriteCond %{REQUEST_FILENAME} !-d\nRewriteRule ^wp-content/(.*)\$ /cms/wp-content/\$1 [L]\nRewriteCond %{REQUEST_FILENAME} !-f\nRewriteCond %{REQUEST_FILENAME} !-d\nRewriteRule ^wp-includes/(.*)\$ /cms/wp-includes/\$1 [L]\n</IfModule>\n\n(Muss VOR dem \"# BEGIN WordPress\"-Block stehen. Vollständiges Snippet: stubs/htaccess-subdirectory-staging.snippet im Starter Kit.)";
 
@@ -862,6 +887,16 @@ class MLA_Security_Scanner {
 		<div class="wrap">
 			<h1>Security Scan</h1>
 			<p>Scannt Core, Plugins und Dateisystem auf Malware-typische Muster. Läuft direkt im WP-Admin, kein SSH-Zugriff nötig.</p>
+
+			<?php if ( $this->is_nginx() ) : ?>
+				<p style="background:#f0f6fc;border-left:4px solid #72aee6;padding:8px 12px;">
+					ℹ️ Dieser Server läuft unter <strong>nginx</strong>. Prüfungen, deren Standard-Fix auf
+					<code>.htaccess</code> basiert, kann diese Seite dort nicht automatisch verifizieren
+					(nginx wertet <code>.htaccess</code>-Dateien nicht aus) - sie erscheinen daher als
+					⚠️ Hinweis statt als ❌ Fehler und lösen keine Alarm-E-Mail aus. Die passende Konfiguration
+					muss stattdessen im nginx-Vhost erfolgen, siehe jeweilige Anleitung.
+				</p>
+			<?php endif; ?>
 
 			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="margin-bottom:20px;">
 				<input type="hidden" name="action" value="mla_run_security_scan">
