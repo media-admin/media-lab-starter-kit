@@ -165,4 +165,4 @@ Desktop.ini
 # ============================================
 /scripts/deploy-*.js
 deploy-config.local.*
-cms/wp-content/themes/custom-theme/assets/hot
+cms/wp-content/themes/custom-theme/assets/hotcms/wp-content/languages/
