@@ -58,6 +58,19 @@ class MediaLab_Wishlist_Ajax {
             'attachments'     => is_array( $attachments ) ? array_map( 'intval', $attachments ) : [],
         ] );
 
+        // Falls die Konfiguration bereits Kontaktdaten enthält (aus dem
+        // Konfigurator-Kontaktdaten-Step), für die Vorausfüllung des
+        // Absende-Formulars auf der Wunschlisten-Seite merken.
+        if ( is_array( $config ) && ( ! empty( $config['customer_name'] ) || ! empty( $config['customer_email'] ) ) ) {
+            MediaLab_Wishlist_Storage::save_last_contact( [
+                'name'    => $config['customer_name']  ?? '',
+                'email'   => $config['customer_email'] ?? '',
+                'phone'   => $config['customer_phone'] ?? '',
+                'company' => $config['company']        ?? '',
+                'message' => sanitize_textarea_field( wp_unslash( $_POST['message'] ?? '' ) ),
+            ] );
+        }
+
         if ( is_wp_error( $result ) ) {
             wp_send_json_error( [ 'message' => $result->get_error_message() ] );
         }
@@ -173,7 +186,7 @@ class MediaLab_Wishlist_Ajax {
 
         wp_send_json_success( [
             'inquiry_id' => $result,
-            'message'    => MediaLab_Inquiry_Settings::wording( 'success' ),
+            'message'    => MediaLab_Inquiry_Settings::wording( 'wishlist_success' ),
         ] );
     }
 

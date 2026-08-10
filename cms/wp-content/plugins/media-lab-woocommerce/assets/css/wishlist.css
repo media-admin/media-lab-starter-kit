@@ -39,6 +39,7 @@
 }
 .mlw-wishlist-item__image img { width: 72px; height: 72px; object-fit: cover; border-radius: 8px; }
 .mlw-wishlist-item__name { font-weight: 600; text-decoration: none; }
+.mlw-wishlist-item__sku { display: block; font-size: 12px; color: #888; margin-top: 2px; }
 .mlw-wishlist-item__name--gone { opacity: 0.5; font-style: italic; }
 .mlw-wishlist-item__config { list-style: none; margin: 0.4rem 0 0; padding: 0; font-size: 13px; opacity: 0.75; }
 .mlw-wishlist-item__config li { margin-bottom: 0.2rem; }

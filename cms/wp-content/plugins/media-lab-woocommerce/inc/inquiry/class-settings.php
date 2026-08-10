@@ -100,7 +100,17 @@ class MediaLab_Inquiry_Settings {
                 'label'       => 'Erfolgsmeldung nach Absenden',
                 'name'        => 'mlw_success_message',
                 'type'        => 'text',
+                'instructions'=> 'Gilt für Cart-Anfrage und Konfigurator-Anfrage.',
                 'placeholder' => 'Vielen Dank! Ihre Anfrage wurde erfolgreich übermittelt. Wir melden uns in Kürze bei Ihnen.',
+                'conditional_logic' => $hide_if_multilang,
+            ],
+            [
+                'key'         => 'field_mlw_wishlist_success_message',
+                'label'       => 'Erfolgsmeldung Wunschliste',
+                'name'        => 'mlw_wishlist_success_message',
+                'type'        => 'text',
+                'instructions'=> 'Eigene Erfolgsmeldung nach dem Absenden der Wunschliste (unabhängig von der Anfrage-Erfolgsmeldung oben).',
+                'placeholder' => 'Vielen Dank für Ihre Wunschliste! Wir melden uns in Kürze bei Ihnen.',
                 'conditional_logic' => $hide_if_multilang,
             ],
             [
@@ -155,11 +165,12 @@ class MediaLab_Inquiry_Settings {
                     [ 'key' => 'field_mlw_lang_name', 'label' => 'Bezeichnung', 'name' => 'lang_name', 'type' => 'text', 'placeholder' => 'Deutsch', 'instructions' => 'Nur zur internen Orientierung.', 'wrapper' => [ 'width' => '30' ] ],
 
                     $sep( 'Wording' ),
-                    [ 'key' => 'field_mlw_lang_wishlist_label', 'label' => 'Bezeichnung Wunschliste', 'name' => 'wishlist_label', 'type' => 'text', 'wrapper' => [ 'width' => '20' ] ],
-                    [ 'key' => 'field_mlw_lang_add_button',     'label' => '„Hinzufügen"-Button',       'name' => 'add_button',      'type' => 'text', 'wrapper' => [ 'width' => '20' ] ],
-                    [ 'key' => 'field_mlw_lang_submit_button',  'label' => 'Absenden-Button',            'name' => 'submit_button',   'type' => 'text', 'wrapper' => [ 'width' => '20' ] ],
-                    [ 'key' => 'field_mlw_lang_success',        'label' => 'Erfolgsmeldung',             'name' => 'success',         'type' => 'text', 'wrapper' => [ 'width' => '20' ] ],
-                    [ 'key' => 'field_mlw_lang_price_notice',   'label' => 'Preis-Hinweistext',          'name' => 'price_notice',    'type' => 'text', 'placeholder' => 'zzgl. Versandkosten', 'wrapper' => [ 'width' => '20' ] ],
+                    [ 'key' => 'field_mlw_lang_wishlist_label', 'label' => 'Bezeichnung Wunschliste', 'name' => 'wishlist_label', 'type' => 'text', 'wrapper' => [ 'width' => '16' ] ],
+                    [ 'key' => 'field_mlw_lang_add_button',     'label' => '„Hinzufügen"-Button',       'name' => 'add_button',      'type' => 'text', 'wrapper' => [ 'width' => '16' ] ],
+                    [ 'key' => 'field_mlw_lang_submit_button',  'label' => 'Absenden-Button',            'name' => 'submit_button',   'type' => 'text', 'wrapper' => [ 'width' => '16' ] ],
+                    [ 'key' => 'field_mlw_lang_success',        'label' => 'Erfolgsmeldung',             'name' => 'success',         'type' => 'text', 'wrapper' => [ 'width' => '16' ] ],
+                    [ 'key' => 'field_mlw_lang_wishlist_success','label' => 'Erfolgsmeldung Wunschliste','name' => 'wishlist_success','type' => 'text', 'wrapper' => [ 'width' => '16' ] ],
+                    [ 'key' => 'field_mlw_lang_price_notice',   'label' => 'Preis-Hinweistext',          'name' => 'price_notice',    'type' => 'text', 'placeholder' => 'zzgl. Versandkosten', 'wrapper' => [ 'width' => '16' ] ],
                     [ 'key' => 'field_mlw_lang_privacy_text',   'label' => 'Datenschutz-Text',           'name' => 'privacy_text',    'type' => 'textarea', 'rows' => 2, 'wrapper' => [ 'width' => '100' ] ],
 
                     $sep( 'Navigation' ),
@@ -668,18 +679,20 @@ class MediaLab_Inquiry_Settings {
 
     public static function wording( string $key ): string {
         $defaults = [
-            'wishlist_label' => 'Wunschliste',
-            'add_button'     => 'Zur Wunschliste hinzufügen',
-            'submit_button'  => 'Anfrage senden',
-            'success'        => 'Vielen Dank! Ihre Anfrage wurde erfolgreich übermittelt. Wir melden uns in Kürze bei Ihnen.',
-            'price_notice'   => '',
+            'wishlist_label'   => 'Wunschliste',
+            'add_button'       => 'Zur Wunschliste hinzufügen',
+            'submit_button'    => 'Anfrage senden',
+            'success'          => 'Vielen Dank! Ihre Anfrage wurde erfolgreich übermittelt. Wir melden uns in Kürze bei Ihnen.',
+            'wishlist_success' => 'Vielen Dank für Ihre Wunschliste! Wir melden uns in Kürze bei Ihnen.',
+            'price_notice'     => '',
         ];
         $field_map = [
-            'wishlist_label' => 'mlw_wishlist_label',
-            'add_button'     => 'mlw_add_button_label',
-            'submit_button'  => 'mlw_submit_label',
-            'success'        => 'mlw_success_message',
-            'price_notice'   => 'mlw_price_notice',
+            'wishlist_label'   => 'mlw_wishlist_label',
+            'add_button'       => 'mlw_add_button_label',
+            'submit_button'    => 'mlw_submit_label',
+            'success'          => 'mlw_success_message',
+            'wishlist_success' => 'mlw_wishlist_success_message',
+            'price_notice'     => 'mlw_price_notice',
         ];
         if ( ! isset( $field_map[ $key ] ) ) return '';
 

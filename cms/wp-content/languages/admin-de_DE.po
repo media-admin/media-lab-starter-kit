@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the WordPress - 7.0.x - Development - Administration package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-08-03 17:24:43+0000\n"
+"PO-Revision-Date: 2026-08-10 01:27:18+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -4202,7 +4202,7 @@ msgstr "Diese Seite bietet direkten Zugriff auf deine Website-Einstellungen. Du 
 
 #: wp-admin/edit-form-advanced.php:373
 msgid "<strong>Format</strong> &mdash; Post Formats designate how your theme will display a specific post. For example, you could have a <em>standard</em> blog post with a title and paragraphs, or a short <em>aside</em> that omits the title and contains a short text blurb. Your theme could enable all or some of 10 possible formats. <a href=\"https://developer.wordpress.org/advanced-administration/wordpress/post-formats/#supported-formats\">Learn more about each post format</a>."
-msgstr "<strong>Format</strong> &ndash; Die Beitragsformate geben an, wie dein Theme einen bestimmten Beitrag anzeigt. Zum Beispiel kannst du einen <em>Standard</em>-Blogbeitrag mit Titel und Absätzen haben, oder eine <em>Kurzmitteilung</em>, die den Titel auslässt und einen kurzen Textabschnitt enthält. Dein Theme könnte alle oder einige der 10 möglichen Formate aktivieren. <a href=\"https://developer.wordpress.org/advanced-administration/wordpress/post-formats/#supported-formats\">Erfahre mehr über jedes Beitragsformat (engl.)</a>."
+msgstr "<strong>Format</strong> &ndash; Die Beitragsformate geben an, wie dein Theme einen bestimmten Beitrag anzeigt. Zum Beispiel kannst du einen <em>Standard</em>-Blogbeitrag mit Titel und Absätzen haben oder eine <em>Kurzmitteilung</em>, die den Titel auslässt und einen kurzen Textabschnitt enthält. Dein Theme könnte alle oder einige der 10 möglichen Formate aktivieren. <a href=\"https://developer.wordpress.org/advanced-administration/wordpress/post-formats/#supported-formats\">Erfahre mehr über jedes Beitragsformat (engl.)</a>."
 
 #: wp-admin/edit-form-advanced.php:330
 msgid "<a href=\"https://wordpress.org/documentation/article/pages-screen/\">Documentation on Editing Pages</a>"
@@ -7891,7 +7891,7 @@ msgstr "Textauszüge sind optionale, von Hand erstellte Zusammenfassungen deiner
 
 #: wp-admin/edit-form-advanced.php:288
 msgid "The Code mode allows you to enter HTML along with your post text. Note that &lt;p&gt; and &lt;br&gt; tags are converted to line breaks when switching to the Code editor to make it less cluttered. When you type, a single line break can be used instead of typing &lt;br&gt;, and two line breaks instead of paragraph tags. The line breaks are converted back to tags automatically."
-msgstr "Der Code-Modus ermöglicht es dir, den Beitragstext mit HTML zu formatieren. Beachte, dass die Tags &lt;p&gt; und &lt;br&gt; in Zeilenumbrüche konvertiert werden, wenn du zurück auf den Code-Editor schaltest. Bei der Eingabe kann ein einzelner Zeilenumbruch verwendet werden, anstatt &lt;br&gt; zu tippen, und zwei Umbrüche anstelle von Absatz-Tags. Die Zeilenumbrüche werden automatisch in Tags zurückgewandelt."
+msgstr "Der Code-Modus ermöglicht es dir, den Beitragstext mit HTML zu formatieren. Beachte, dass die Tags &lt;p&gt; und &lt;br&gt; in Zeilenumbrüche konvertiert werden, wenn du in den Code-Editor wechselst. Bei der Eingabe kann ein einzelner Zeilenumbruch verwendet werden, anstatt &lt;br&gt; zu tippen, und zwei Zeilenumbrüche anstelle von Absatz-Tags. Die Zeilenumbrüche werden automatisch in Tags zurückgewandelt."
 
 #: wp-admin/edit-form-advanced.php:287
 msgid "Visual mode gives you an editor that is similar to a word processor. Click the Toolbar Toggle button to get a second row of controls."
@@ -7968,7 +7968,7 @@ msgstr "%1$s, %2$s Uhr"
 
 #: wp-admin/edit-form-advanced.php:369
 msgid "<strong>Publish</strong> &mdash; You can set the terms of publishing your post in the Publish box. For Status, Visibility, and Publish (immediately), click on the Edit link to reveal more options. Visibility includes options for password-protecting a post or making it stay at the top of your blog indefinitely (sticky). The Password protected option allows you to set an arbitrary password for each post. The Private option hides the post from everyone except editors and administrators. Publish (immediately) allows you to set a future or past date and time, so you can schedule a post to be published in the future or backdate a post."
-msgstr "<strong>Veröffentlichen</strong> &ndash; Du kannst die Konditionen zur Veröffentlichung deines Beitrags in der Veröffentlichen-Box festlegen. Klicke bei Status, Sichtbarkeit und (sofort) Veröffentlichen auf den Bearbeiten-Link, um mehr Optionen einzublenden. Die Sichtbarkeit beinhaltet Optionen für den Passwortschutz eines Beitrags oder die Festlegung, dass der Beitrag dauerhaft oben gehalten werden soll (sticky). Die Einstellung zum Passwortschutz ermöglicht dir, für jeden Beitrag ein beliebiges Passwort festzulegen. Die Einstellung Privat versteckt Beiträge für jeden außer für Administratoren und Redakteure. (Sofort) Veröffentlichen ermöglicht dir, ein künftiges oder zurückliegendes Datum und eine Uhrzeit festzulegen, damit du die Veröffentlichung deines Beitrags planen oder Beiträge zurückdatieren kannst."
+msgstr "<strong>Veröffentlichen</strong> &ndash; Du kannst die Bedingungen für die Veröffentlichung deines Beitrags in der Veröffentlichen-Box festlegen. Klicke bei Status, Sichtbarkeit und (sofort) Veröffentlichen auf den Bearbeiten-Link, um mehr Optionen einzublenden. Die Sichtbarkeit beinhaltet Optionen für den Passwortschutz eines Beitrags oder die Festlegung, dass der Beitrag dauerhaft oben gehalten werden soll. Die Einstellung zum Passwortschutz ermöglicht dir, für jeden Beitrag ein beliebiges Passwort festzulegen. Die Einstellung „Privat“ versteckt Beiträge vor allen außer Administratoren und Redakteuren. (Sofort) Veröffentlichen ermöglicht dir, ein künftiges oder zurückliegendes Datum und eine Uhrzeit festzulegen, damit du die Veröffentlichung deines Beitrags planen oder Beiträge zurückdatieren kannst."
 
 #. translators: %s: New email.
 #: wp-admin/user-edit.php:577
@@ -8829,11 +8829,11 @@ msgstr "Seite anzeigen"
 
 #: wp-admin/edit-form-advanced.php:145 wp-admin/edit-form-advanced.php:152
 msgid "Preview page"
-msgstr "Vorschau der Seite"
+msgstr "Seiten-Vorschau anzeigen"
 
 #: wp-admin/edit-form-advanced.php:124 wp-admin/edit-form-advanced.php:131
 msgid "Preview post"
-msgstr "Beitrags-Vorschau"
+msgstr "Beitrags-Vorschau anzeigen"
 
 #: wp-admin/edit-comments.php:239
 msgid "Comments list"
@@ -9301,7 +9301,7 @@ msgstr "Diese Empfehlungen basieren auf Plugins, welche du und andere Anwender i
 
 #: wp-admin/edit-form-advanced.php:290
 msgid "You can enable distraction-free writing mode using the icon to the right. This feature is not available for old browsers or devices with small screens, and requires that the full-height editor be enabled in Screen Options."
-msgstr "Du kannst den Modus für das ablenkungsfreie Schreiben über das letzte Icon in der oberen Reihe aktivieren. Diese Funktion ist nicht in älteren Browsern oder Geräten mit kleinen Bildschirmen verfügbar und setzt voraus, dass die Anzeige des Editors in voller Höhe im Tab &#8222;Ansicht anpassen&#8220; aktiviert wurde."
+msgstr "Du kannst den Modus für das ablenkungsfreie Schreiben über das Icon auf der rechten Seite aktivieren. Diese Funktion ist in älteren Browsern oder auf Geräten mit kleinen Bildschirmen nicht verfügbar und erfordert, dass die Anzeige des Editors in voller Höhe im Tab „Ansicht anpassen“ aktiviert wurde."
 
 #: wp-admin/user-edit.php:778
 msgid "Log Out Everywhere"
@@ -9408,7 +9408,7 @@ msgstr "Du kannst Mediendateien einfügen, indem du den Button oberhalb des Beit
 
 #: wp-admin/edit-form-advanced.php:286
 msgid "<strong>Post editor</strong> &mdash; Enter the text for your post. There are two modes of editing: Visual and Code. Choose the mode by clicking on the appropriate tab."
-msgstr "<strong>Beitrags-Editor</strong> &ndash; Gib den Text für deinen Beitrag ein. Dafür stehen dir zwei Arten zur Verfügung: ein visueller und ein Code-Modus. Durch Anklicken des entsprechenden Tabs kannst du den Modus auswählen."
+msgstr "<strong>Beitrags-Editor</strong> &ndash; Gib den Text für deinen Beitrag ein. Es gibt zwei Bearbeitungsmodi: Visuell und Code. Durch Anklicken des entsprechenden Tabs kannst du den Modus auswählen."
 
 #. translators: %s: URL to header image configuration in Customizer.
 #: wp-admin/includes/class-custom-image-header.php:518
@@ -10404,7 +10404,7 @@ msgstr "Revision von %s"
 
 #: wp-admin/edit-form-advanced.php:461
 msgid "<strong>Connection lost.</strong> Saving has been disabled until you are reconnected."
-msgstr "<strong>Die Verbindung wurde unterbrochen.</strong> Das Speichern wurde deaktiviert, bis die Verbindung wieder hergestellt ist."
+msgstr "<strong>Die Verbindung wurde unterbrochen.</strong> Das Speichern wurde deaktiviert, bis die Verbindung wiederhergestellt ist."
 
 #: wp-admin/install.php:159 wp-admin/user-new.php:614
 msgid "Repeat Password"
@@ -11839,7 +11839,7 @@ msgstr "Seiten zu verwalten ist genauso einfach wie das Verwalten von Beiträgen
 
 #: wp-admin/edit-form-advanced.php:316 wp-admin/edit.php:311
 msgid "Pages are similar to posts in that they have a title, body text, and associated metadata, but they are different in that they are not part of the chronological blog stream, kind of like permanent posts. Pages are not categorized or tagged, but can have a hierarchy. You can nest pages under other pages by making one the &#8220;Parent&#8221; of the other, creating a group of pages."
-msgstr "Seiten sind Beiträgen recht ähnlich. Sie haben einen Titel, Inhalt und weitere Metadaten. Sie erscheinen jedoch nicht im chronologischen Blog-Stream und können auch nicht mit Kategorien und Schlagwörtern verknüpft werden. Dafür können Seiten hierarchisch angeordnet beziehungsweise verschachtelt werden, indem du eine Seite zur „übergeordneten Seite” der anderen machst und so eine Gruppe von Seiten erstellst."
+msgstr "Seiten sind Beiträgen recht ähnlich. Sie haben einen Titel, Inhalt und weitere Metadaten. Sie erscheinen jedoch nicht im chronologischen Blog-Stream und können auch nicht mit Kategorien und Schlagwörtern verknüpft werden. Dafür können Seiten hierarchisch angeordnet beziehungsweise verschachtelt werden, indem du eine Seite zur „übergeordneten Seite“ der anderen machst und so eine Gruppe von Seiten erstellst."
 
 #: wp-admin/edit-comments.php:223
 msgid "Many people take advantage of keyboard shortcuts to moderate their comments more quickly. Use the link to the side to learn more."
@@ -12620,7 +12620,7 @@ msgstr "Der Abschnitt „Verfügbare Widgets“ enthält alle Widgets, aus denen
 
 #: wp-admin/edit-form-advanced.php:342
 msgid "Remember to click Update to save metadata entered or changed."
-msgstr "Denke daran, auf Aktualisieren zu klicken, um die eingegebenen oder geänderten Metadaten zu speichern."
+msgstr "Denke daran, auf „Aktualisieren“ zu klicken, um die eingegebenen oder geänderten Metadaten zu speichern."
 
 #: wp-admin/edit-form-advanced.php:341
 msgid "Note that you crop the image by clicking on it (the Crop icon is already selected) and dragging the cropping frame to select the desired part. Then click Save to retain the cropping."
@@ -12852,7 +12852,7 @@ msgstr "Die meisten Themes zeigen den Website-Titel oben auf jeder Seite, in der
 
 #: wp-admin/edit-form-advanced.php:407
 msgid "<strong>Order</strong> &mdash; Pages are usually ordered alphabetically, but you can choose your own order by entering a number (1 for first, etc.) in this field."
-msgstr "<strong>Reihenfolge</strong> &ndash; Falls du nicht die Funktion des individuellen Menüs nutzt, kannst du hier festlegen, in welcher Reihenfolge die Seiten in der Seitenauflistung angezeigt werden sollen. Je größer die Zahl, desto weiter hinten wird die Seite angezeigt. Beachte, dass dies eventuell nicht bei allen Themes funktioniert."
+msgstr "<strong>Reihenfolge</strong> &ndash; Die Seiten sind in der Regel alphabetisch sortiert. Du kannst jedoch eine eigene Reihenfolge festlegen, indem du in dieses Feld eine Zahl (1 für die erste usw.) eingibst."
 
 #: wp-admin/includes/file.php:2573
 msgid "If you do not remember your credentials, you should contact your web host."
@@ -13064,7 +13064,7 @@ msgstr "<strong>Template</strong> &ndash; Manche Themes haben individuelle Templ
 
 #: wp-admin/edit-form-advanced.php:405
 msgid "<strong>Parent</strong> &mdash; You can arrange your pages in hierarchies. For example, you could have an &#8220;About&#8221; page that has &#8220;Life Story&#8221; and &#8220;My Dog&#8221; pages under it. There are no limits to how many levels you can nest pages."
-msgstr "<strong>Übergeordnet</strong> &ndash; Wähle eine andere Seite aus, der diese Seite untergeordnet werden soll, um verschachtelte Seitenstrukturen aufzubauen. Zum Beispiel kannst du eine Seite &#8222;Über mich&#8220; erstellen und dieser anschließend die Seiten &#8222;Mein Haus&#8220;, &#8222;Meine Familie&#8220; und &#8222;Mein Auto&#8220; unterordnen, indem du jeweils &#8222;Über mich&#8220; als übergeordnete Seite angibst."
+msgstr "<strong>Übergeordnet</strong> &ndash; Du kannst deine Seiten hierarchisch anordnen. Du kannst beispielsweise eine Seite „Über mich“ einrichten, der die Seiten „Lebenslauf“ und „Mein Hund“ untergeordnet sind. Die Anzahl der Ebenen, in denen du Seiten verschachteln kannst, ist unbegrenzt."
 
 #: wp-admin/includes/class-bulk-upgrader-skin.php:68
 msgid "All updates have been completed."
@@ -13159,7 +13159,7 @@ msgstr "<strong>Diskussion</strong> &ndash; Hier kannst du Kommentare und Ping-/
 #. translators: %s: Featured image.
 #: wp-admin/edit-form-advanced.php:379
 msgid "<strong>%s</strong> &mdash; This allows you to associate an image with your post without inserting it. This is usually useful only if your theme makes use of the image as a post thumbnail on the home page, a custom header, etc."
-msgstr "<strong>%s</strong> &ndash; Hier kannst du aus der Mediathek ein Bild auswählen oder ein neues hochladen, welches mit dem Beitrag verknüpft wird, ohne es direkt im Beitrag einzubinden. Dies ist jedoch nur dann sinnvoll, wenn das von dir verwendete Theme auch diese Funktion nutzt und beispielsweise ein Beitrags-Vorschaubild anzeigt."
+msgstr "<strong>%s</strong> &ndash; Hier kannst du diesem Beitrag ein Bild zuweisen, ohne es direkt in den Inhalt einzufügen. Dies ist gewöhnlich nur dann sinnvoll, wenn dein Theme das Bild als Beitrags-Vorschaubild auf der Homepage, im individuellen Header etc. verwendet."
 
 #: wp-admin/edit-form-advanced.php:285
 msgid "<strong>Title</strong> &mdash; Enter a title for your post. After you enter a title, you&#8217;ll see the permalink below, which you can edit."

@@ -6,6 +6,64 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ---
 
+## [2.2.0] - 2026-08-10
+
+### media-lab-woocommerce 2.2.0
+
+Kritische Bugfixes rund um bisher ungetestete Konfigurator-Step-Typen
+(size_matrix, color_picker, checkbox, radio, textarea), Wunschlisten-
+Übernahme aus dem Konfigurator, sowie zwei unabhängige Shop-Einstellungen.
+
+#### Added
+
+- Artikelnummer/SKU wird jetzt bei allen drei Inquiry-Quellen (Cart-Anfrage,
+  Konfigurator, Wunschliste) sowohl in der Mail als auch auf der
+  Wunschlisten-Seite angezeigt
+- Kontaktdaten (Name/E-Mail/Telefon/Firma) UND alle textarea-Felder
+  (z.B. "Besondere Wünsche") werden beim Übernehmen vom Konfigurator in die
+  Wunschliste automatisch gemerkt und das Wunschlisten-Formular damit
+  vorausgefüllt - bei mehreren textarea-Feldern werden diese zu einer
+  Nachricht mit Label-Präfix kombiniert
+- Eigene, unabhängig konfigurierbare und mehrsprachige Erfolgsmeldung für
+  die Wunschliste (vorher geteilt mit Cart-/Konfigurator-Anfrage)
+- Neues Feld "Produkte pro Seite" unter WooCommerce → Einstellungen →
+  Produkte → Anzeige (`inc/shop-products-per-page.php`) - überschreibt den
+  bisher im Theme hartcodierten Wert (12), wirkt auf Shop-/Kategorie-
+  Übersichtsseiten und die native Produktsuche, unabhängig von der
+  Inquiry-Engine nutzbar
+- Client-seitige Validierung vor "Zur Zusammenfassung": prüft jetzt auch
+  konfigurierte Pflicht-Zusatzfelder und die Datenschutz-Checkbox, nicht
+  mehr nur Name/E-Mail
+- Sanftes Scrollen zum Konfigurator-Anfang bei jedem Schrittwechsel
+
+#### Fixed
+
+- **Fataler Fehler `Call to undefined function wc_get_price_suffix()`** bei
+  jeder Ajax-Preisberechnung und jedem Absenden (Anfrage & Wunschliste) -
+  WooCommerce-Frontend-Funktionen sind bei reinen Ajax-Requests nicht
+  zuverlässig geladen, Datei wird jetzt bei Bedarf gezielt nachgeladen
+- Größen-Matrix-Aufpreise (z.B. XL/XXL) flossen nie in die Preisberechnung
+  ein - mengengewichteter Durchschnittsaufpreis pro Stück ergänzt
+- Wunschliste blieb nach Ajax-Hinzufügen leer: WooCommerce setzt seinen
+  Session-Cookie bei reinen Ajax-Requests nicht zuverlässig, wird jetzt
+  explizit erzwungen
+- Wunschlisten-Einzelpreis nutzte versehentlich `price_breakdown['total']`
+  (Gesamtpreis für die volle Konfigurations-Menge) statt `unit_price` -
+  führte bei Produkten mit Mengen-/Größen-Matrix-Step zu einer doppelten
+  Multiplikation und absurd hohen Anzeigepreisen
+- Wunschlisten-Badge zeigte die Summe aller Mengen statt der Positionsanzahl
+- `color_picker`-Auswahl zeigte den rohen Hex-Wert statt des Farbnamens
+  (fehlte bei der Label-Auflösung)
+- Platzhalterbild-Fallback fehlte im JS-Nachrendern der Wunschliste (nur im
+  PHP-Template vorhanden) - führte zu einem kaputten Bild-Icon nach
+  Mengen-Änderungen
+- `foreach()`-Warnung bei Step-Typen ohne Optionen (`contact_form`,
+  `file_upload`, `textarea`)
+- Native Browser-Validierungs-Sprechblase (nicht stylbar, nicht
+  mehrsprachig) durch `novalidate` + eigene, übersetzbare Validierung ersetzt
+
+---
+
 ## [2.1.0] - 2026-08-07
 
 ### media-lab-woocommerce 2.1.0

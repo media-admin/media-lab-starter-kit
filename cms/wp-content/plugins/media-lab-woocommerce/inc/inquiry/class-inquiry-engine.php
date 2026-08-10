@@ -76,6 +76,7 @@ class MediaLab_Inquiry_Engine {
                 'product_id'      => $product_id,
                 'quantity'        => max( 1, (int) ( $item['quantity'] ?? 1 ) ),
                 'name'            => $item['name'] ?? ( $product ? $product->get_name() : __( 'Unbekanntes Produkt', 'media-lab-woocommerce' ) ),
+                'sku'             => $product ? $product->get_sku() : '',
                 'config'          => $item['config']          ?? null,
                 'config_display'  => $item['config_display']  ?? null,
                 'price_breakdown' => $item['price_breakdown'] ?? null,

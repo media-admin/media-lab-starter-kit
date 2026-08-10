@@ -50,12 +50,12 @@ class MediaLab_Wishlist_Storage {
         return is_array( $items ) ? array_values( $items ) : [];
     }
 
+    /**
+     * Anzahl der Positionen (Zeilen) in der Wunschliste, NICHT die Summe
+     * aller Mengen - ein Eintrag mit Menge 90 zählt hier als "1", nicht "90".
+     */
     public static function count(): int {
-        $count = 0;
-        foreach ( self::get_items() as $item ) {
-            $count += (int) ( $item['quantity'] ?? 1 );
-        }
-        return $count;
+        return count( self::get_items() );
     }
 
     /**
@@ -141,14 +141,17 @@ class MediaLab_Wishlist_Storage {
         foreach ( self::get_items() as $item ) {
             $product = wc_get_product( $item['product_id'] );
 
-            // Einzelpreis: bei konfigurierten Produkten aus der Preisaufschlüsselung
-            // (siehe class-price-calculator.php get_breakdown() - 'total' ist dort
-            // bereits inkl. MwSt., aber bezogen auf config['quantity'] - bei Produkten
-            // OHNE eigenen Mengen-Step in der Konfiguration entspricht das dem Einzelpreis).
-            // Sonst der reguläre WooCommerce-Preis.
+            // Einzelpreis: bei konfigurierten Produkten aus 'unit_price' der
+            // Preisaufschlüsselung (siehe class-price-calculator.php - das ist
+            // der ECHTE Preis pro Stück, bereits korrekt netto/brutto gewählt).
+            // WICHTIG: NICHT 'total' verwenden - das ist der Gesamtpreis für
+            // die GESAMTE Konfigurations-Menge (z.B. 90 Stück bei einer
+            // Größen-Matrix), kein Einzelpreis. Das führte bei Produkten mit
+            // Mengen-/Größen-Matrix-Step zu einer doppelten Multiplikation
+            // (line_total = bereits-multipliziertes 'total' × quantity nochmal).
             $unit_price = null;
-            if ( ! empty( $item['price_breakdown']['total'] ) ) {
-                $unit_price = (float) $item['price_breakdown']['total'];
+            if ( isset( $item['price_breakdown']['unit_price'] ) && $item['price_breakdown']['unit_price'] !== null ) {
+                $unit_price = (float) $item['price_breakdown']['unit_price'];
             } elseif ( $product ) {
                 $unit_price = (float) $product->get_price();
             }
@@ -158,6 +161,7 @@ class MediaLab_Wishlist_Storage {
 
             $out[] = array_merge( $item, [
                 'name'          => $product ? $product->get_name() : __( 'Produkt nicht mehr verfügbar', 'media-lab-woocommerce' ),
+                'sku'           => $product ? $product->get_sku() : '',
                 'permalink'     => $product ? get_permalink( $product->get_id() ) : '',
                 'image'         => $product ? wp_get_attachment_image_url( $product->get_image_id(), 'thumbnail' ) : '',
                 'exists'        => (bool) $product,
@@ -179,6 +183,43 @@ class MediaLab_Wishlist_Storage {
             if ( $item['line_total'] !== null ) $total += $item['line_total'];
         }
         return $total;
+    }
+
+    // ── Zuletzt genutzte Kontaktdaten ────────────────────────────────────────
+    // Damit das Absende-Formular auf der Wunschlisten-Seite vorausgefüllt
+    // werden kann, wenn der Kunde die Kontaktdaten bereits im Konfigurator-
+    // Wizard eingegeben hat (bevor er "Zur Wunschliste hinzufügen" klickte).
+
+    const CONTACT_SESSION_KEY  = 'mlw_wishlist_contact';
+    const CONTACT_USER_META_KEY = 'mlw_wishlist_last_contact';
+
+    public static function save_last_contact( array $contact ): void {
+        // Nur die relevanten Felder übernehmen, kein beliebiges Array durchreichen.
+        $clean = [
+            'name'    => sanitize_text_field( $contact['name']    ?? '' ),
+            'email'   => sanitize_email( $contact['email']        ?? '' ),
+            'phone'   => sanitize_text_field( $contact['phone']   ?? '' ),
+            'company' => sanitize_text_field( $contact['company'] ?? '' ),
+            'message' => sanitize_textarea_field( $contact['message'] ?? '' ),
+        ];
+        if ( ! $clean['name'] && ! $clean['email'] ) return; // nichts Sinnvolles zu speichern
+
+        if ( is_user_logged_in() ) {
+            update_user_meta( get_current_user_id(), self::CONTACT_USER_META_KEY, $clean );
+        } elseif ( function_exists( 'WC' ) && WC()->session ) {
+            WC()->session->set( self::CONTACT_SESSION_KEY, $clean );
+        }
+    }
+
+    public static function get_last_contact(): array {
+        if ( is_user_logged_in() ) {
+            $contact = get_user_meta( get_current_user_id(), self::CONTACT_USER_META_KEY, true );
+        } elseif ( function_exists( 'WC' ) && WC()->session ) {
+            $contact = WC()->session->get( self::CONTACT_SESSION_KEY );
+        } else {
+            $contact = null;
+        }
+        return is_array( $contact ) ? $contact : [ 'name' => '', 'email' => '', 'phone' => '', 'company' => '', 'message' => '' ];
     }
 
     // ── Speicher-Backends ────────────────────────────────────────────────────
@@ -205,6 +246,17 @@ class MediaLab_Wishlist_Storage {
     private static function session_set( array $items ): void {
         if ( ! function_exists( 'WC' ) || ! WC()->session ) return;
         WC()->session->set( self::SESSION_KEY, $items );
+
+        // WICHTIG: WooCommerce setzt seinen Session-Cookie normalerweise über
+        // einen Hook, der bei einem normalen Seitenaufruf feuert - bei einem
+        // reinen Ajax-Request (admin-ajax.php, wie hier) greift dieser Hook
+        // nicht zuverlässig. Ohne diesen expliziten Aufruf bekommt der Gast
+        // nie einen Session-Cookie, wodurch die Wunschliste beim nächsten
+        // Seitenaufruf (z.B. nach einem Redirect) als leer erscheint, obwohl
+        // die Daten serverseitig korrekt gespeichert wurden.
+        if ( method_exists( WC()->session, 'set_customer_session_cookie' ) && ! WC()->session->has_session() ) {
+            WC()->session->set_customer_session_cookie( true );
+        }
     }
 
     // ── Login-Merge ──────────────────────────────────────────────────────────

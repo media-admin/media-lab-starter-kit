@@ -65,6 +65,42 @@ class MediaLab_Price_Calculator {
             
             $selected_value = $config[$step_id];
             $options = $step['options'];
+
+            // Manche Step-Typen (contact_form, file_upload, textarea) haben
+            // bewusst KEINE Optionen (options === false) - ohne diese Prüfung
+            // crasht foreach() darauf mit einer PHP-Warnung.
+            if ( ! is_array( $options ) ) continue;
+
+            // size_matrix braucht eine eigene Berechnung: pro Größe eine
+            // EIGENE Menge, daher ein nach Menge GEWICHTETER Durchschnitts-
+            // Aufpreis pro Stück statt eines einzelnen Auswahl-Aufpreises wie
+            // bei select/radio/checkbox. Die generische matches_selection()-
+            // Logik darunter kann das nicht abbilden (sie vergleicht einzelne
+            // Werte, hier ist $selected_value aber eine Größe→Menge-Zuordnung).
+            if ( $step['step_type'] === 'size_matrix' && is_array( $selected_value ) ) {
+                $total_qty = 0;
+                $weighted_sum = 0;
+                foreach ( $options as $option ) {
+                    $size_key = $option['value'];
+                    $qty = isset( $selected_value[ $size_key ] ) ? intval( $selected_value[ $size_key ] ) : 0;
+                    if ( $qty <= 0 ) continue;
+
+                    $total_qty += $qty;
+                    $price_modifier = floatval( $option['price_modifier'] );
+                    $weighted_sum  += $price_modifier * $qty;
+
+                    if ( $price_modifier != 0 ) {
+                        $breakdown['additions'][] = array(
+                            'label' => $option['label'] . ' (' . $qty . 'x)',
+                            'price' => $price_modifier,
+                        );
+                    }
+                }
+                if ( $total_qty > 0 ) {
+                    $breakdown['subtotal'] += $weighted_sum / $total_qty;
+                }
+                continue; // Für diesen Step ist die generische Logik unten nicht zutreffend.
+            }
             
             // Find selected option and add price
             foreach ($options as $option) {
@@ -126,7 +162,19 @@ class MediaLab_Price_Calculator {
         // Standard-WooCommerce-Hinweismechanismus (wc_get_price_suffix()) - läuft
         // bewusst UNABHÄNGIG von wc_tax_enabled(), da der Hinweistext auch bei
         // deaktivierten Steuern erscheinen soll (siehe inc/price-suffix.php).
-        if ( $product ) {
+        // WICHTIG: wc_get_price_suffix() gehört zu WooCommerce's Frontend-
+        // Funktionen, die bei reinen Ajax-Requests (admin-ajax.php) nicht
+        // zuverlässig geladen sind - das führte zu einem fatalen "Call to
+        // undefined function"-Fehler bei JEDER Ajax-Preisberechnung und jedem
+        // Absenden (Anfrage & Wunschliste). Datei bei Bedarf gezielt nachladen,
+        // statt den Hinweistext in der Live-Vorschau einfach wegzulassen.
+        if ( ! function_exists( 'wc_get_price_suffix' ) && defined( 'WC_ABSPATH' ) ) {
+            $wc_price_functions = WC_ABSPATH . 'includes/wc-price-functions.php';
+            if ( file_exists( $wc_price_functions ) ) {
+                require_once $wc_price_functions;
+            }
+        }
+        if ( $product && function_exists( 'wc_get_price_suffix' ) ) {
             $breakdown['price_suffix'] = wc_get_price_suffix( $product, $breakdown['unit_price'], 1 );
         }
         

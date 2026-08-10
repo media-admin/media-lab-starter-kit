@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - WooCommerce - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-08-06 22:37:19+0000\n"
+"PO-Revision-Date: 2026-08-09 23:28:19+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -10910,7 +10910,7 @@ msgstr "HPOS-Datencaching"
 #. translators: %s is the URL to the rate limiting documentation.
 #: src/Internal/Features/FeaturesController.php:317
 msgid "Enables rate limiting for Checkout place order and Store API /checkout endpoint. To further control this, refer to <a href=\"%s\" target=\"_blank\">rate limiting documentation</a>."
-msgstr "Aktiviert die Anfragebegrenzung für den Endpunkt „Checkout place order“ (Bezahlen – Bestellung aufgeben) und für den Endpunkt „Store API/checkout“ (Shop-API/Bezahlen). Weitere Steuerungsmöglichkeiten findest du in der <a href=\"%s\" target=\"_blank\">Dokumentation zur Anfragebegrenzung</a>."
+msgstr "Aktiviert die Anfragebegrenzung für den Endpunkt „Checkout place order“ (Kasse – Zahlungspflichtig bestellen) und für den Endpunkt „Store API /checkout“ (Shop-API – Kasse). Weitere Steuerungsmöglichkeiten findest du in der <a href=\"%s\" target=\"_blank\">Dokumentation zur Anfragebegrenzung</a>."
 
 #: src/Internal/Features/FeaturesController.php:314
 msgid "Rate limit Checkout"

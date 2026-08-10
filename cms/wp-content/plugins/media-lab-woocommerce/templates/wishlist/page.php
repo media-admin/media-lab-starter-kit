@@ -16,6 +16,9 @@ $mlw_submit_label      = MediaLab_Inquiry_Settings::wording( 'submit_button' );
 $mlw_extra_fields      = MediaLab_Inquiry_Settings::get_form_fields_localized();
 $mlw_privacy_required  = MediaLab_Inquiry_Settings::privacy_required();
 $mlw_privacy_text      = MediaLab_Inquiry_Settings::privacy_text();
+// Falls der Kunde die Kontaktdaten bereits im Konfigurator-Wizard eingegeben
+// hat (bevor er "Zur Wunschliste hinzufügen" klickte), Formular vorausfüllen.
+$mlw_last_contact      = MediaLab_Wishlist_Storage::get_last_contact();
 ?>
 <div class="mlw-wishlist-page">
     <h1 class="mlw-wishlist-page__title"><?php echo esc_html( $mlw_wishlist_label ); ?></h1>
@@ -41,22 +44,22 @@ $mlw_privacy_text      = MediaLab_Inquiry_Settings::privacy_text();
 
         <!-- Absende-Formular -->
         <div class="mlw-wishlist-page__form-col">
-            <form id="mlw-wishlist-form" class="mlw-wishlist-form">
+            <form id="mlw-wishlist-form" class="mlw-wishlist-form" novalidate>
                 <h2 class="mlw-wishlist-form__title"><?php esc_html_e( 'Ihre Kontaktdaten', 'media-lab-woocommerce' ); ?></h2>
 
                 <p class="mlw-form-row">
                     <label for="mlw_wf_name"><?php esc_html_e( 'Name', 'media-lab-woocommerce' ); ?> <span class="required">*</span></label>
-                    <input type="text" name="name" id="mlw_wf_name" required>
+                    <input type="text" name="name" id="mlw_wf_name" value="<?php echo esc_attr( $mlw_last_contact['name'] ?? '' ); ?>" required>
                 </p>
 
                 <p class="mlw-form-row">
                     <label for="mlw_wf_email"><?php esc_html_e( 'E-Mail', 'media-lab-woocommerce' ); ?> <span class="required">*</span></label>
-                    <input type="email" name="email" id="mlw_wf_email" required>
+                    <input type="email" name="email" id="mlw_wf_email" value="<?php echo esc_attr( $mlw_last_contact['email'] ?? '' ); ?>" required>
                 </p>
 
                 <p class="mlw-form-row">
                     <label for="mlw_wf_phone"><?php esc_html_e( 'Telefonnummer', 'media-lab-woocommerce' ); ?></label>
-                    <input type="tel" name="phone" id="mlw_wf_phone">
+                    <input type="tel" name="phone" id="mlw_wf_phone" value="<?php echo esc_attr( $mlw_last_contact['phone'] ?? '' ); ?>">
                 </p>
 
                 <?php foreach ( $mlw_extra_fields as $field ) :
@@ -80,14 +83,14 @@ $mlw_privacy_text      = MediaLab_Inquiry_Settings::privacy_text();
                         <?php elseif ( ( $field['field_type'] ?? 'text' ) === 'checkbox' ) : ?>
                             <label class="mlw-checkbox-label"><input type="checkbox" name="<?php echo $key; ?>" id="mlw_wf_<?php echo $key; ?>" value="1"> <?php echo $label; ?></label>
                         <?php else : ?>
-                            <input type="<?php echo esc_attr( $field['field_type'] ?? 'text' ); ?>" name="<?php echo $key; ?>" id="mlw_wf_<?php echo $key; ?>" placeholder="<?php echo $placeholder; ?>" <?php echo $required ? 'required' : ''; ?>>
+                            <input type="<?php echo esc_attr( $field['field_type'] ?? 'text' ); ?>" name="<?php echo $key; ?>" id="mlw_wf_<?php echo $key; ?>" placeholder="<?php echo $placeholder; ?>" value="<?php echo esc_attr( $key === 'company' ? ( $mlw_last_contact['company'] ?? '' ) : '' ); ?>" <?php echo $required ? 'required' : ''; ?>>
                         <?php endif; ?>
                     </p>
                 <?php endforeach; ?>
 
                 <p class="mlw-form-row">
                     <label for="mlw_wf_message"><?php esc_html_e( 'Ihre Nachricht', 'media-lab-woocommerce' ); ?></label>
-                    <textarea name="message" id="mlw_wf_message" rows="4"></textarea>
+                    <textarea name="message" id="mlw_wf_message" rows="4"><?php echo esc_textarea( $mlw_last_contact['message'] ?? '' ); ?></textarea>
                 </p>
 
                 <?php if ( $mlw_privacy_required ) : ?>

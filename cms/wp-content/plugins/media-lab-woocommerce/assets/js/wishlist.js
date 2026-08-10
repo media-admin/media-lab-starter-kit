@@ -127,8 +127,26 @@
         const msg = form.querySelector( '.mlw-wishlist-message' );
         const originalLabel = btn ? btn.textContent : '';
 
-        if ( btn ) btn.disabled = true;
         if ( msg ) { msg.style.display = 'none'; msg.className = 'mlw-wishlist-message'; }
+
+        // Eigene Pflichtfeld-Validierung statt der nativen Browser-Sprechblase
+        // (Formular hat "novalidate" - die Browser-eigene Meldung ist weder
+        // stylbar noch mehrsprachig pflegbar, da sie aus der Browser-UI-Sprache
+        // kommt, nicht aus unserem Projekt-Wording).
+        const firstInvalid = Array.from( form.querySelectorAll( '[required]' ) ).find( function ( el ) {
+            return el.type === 'checkbox' ? ! el.checked : ! el.value.trim();
+        } );
+        if ( firstInvalid ) {
+            if ( msg ) {
+                msg.textContent = mlwWishlist.i18n.formIncomplete || mlwWishlist.i18n.genericError;
+                msg.className = 'mlw-wishlist-message mlw-wishlist-message--error';
+                msg.style.display = 'block';
+            }
+            firstInvalid.focus();
+            return;
+        }
+
+        if ( btn ) btn.disabled = true;
 
         // Alle Formularfelder generisch einsammeln (Basisfelder + konfigurierte
         // Zusatzfelder + Datenschutz-Checkbox + Honeypot-Felder) statt einzeln
@@ -219,7 +237,7 @@
      */
     function renderItemRow( item ) {
         const name = escapeHtml( item.name || '' );
-        const image = item.image ? item.image : '';
+        const image = item.image || mlwWishlist.placeholderImage || '';
 
         let configHtml = '';
         if ( item.config_display && typeof item.config_display === 'object' ) {
@@ -249,10 +267,14 @@
             ? '<a class="mlw-wishlist-item__name" href="' + escapeAttr( item.permalink ) + '">' + name + '</a>'
             : '<span class="mlw-wishlist-item__name mlw-wishlist-item__name--gone">' + name + '</span>';
 
+        const skuHtml = item.sku
+            ? '<span class="mlw-wishlist-item__sku">' + escapeHtml( mlwWishlist.i18n.skuLabel || 'Art.-Nr.:' ) + ' ' + escapeHtml( item.sku ) + '</span>'
+            : '';
+
         return (
             '<div class="mlw-wishlist-item" data-item-id="' + escapeAttr( item.item_id ) + '">' +
                 '<div class="mlw-wishlist-item__image"><img src="' + escapeAttr( image ) + '" alt="' + escapeAttr( item.name || '' ) + '"></div>' +
-                '<div class="mlw-wishlist-item__details">' + nameHtml + configHtml + attachmentsHtml + priceHtml + '</div>' +
+                '<div class="mlw-wishlist-item__details">' + nameHtml + skuHtml + configHtml + attachmentsHtml + priceHtml + '</div>' +
                 '<div class="mlw-wishlist-item__quantity"><input type="number" class="mlw-wishlist-item__qty-input" min="1" value="' + escapeAttr( item.quantity ) + '" data-item-id="' + escapeAttr( item.item_id ) + '"></div>' +
                 '<div class="mlw-wishlist-item__remove"><button type="button" class="mlw-wishlist-item__remove-btn" data-item-id="' + escapeAttr( item.item_id ) + '" aria-label="Entfernen">✕</button></div>' +
             '</div>'

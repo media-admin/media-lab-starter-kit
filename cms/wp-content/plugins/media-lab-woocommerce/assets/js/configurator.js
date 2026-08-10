@@ -76,18 +76,35 @@ function productConfigurator(initialData) {
             } else {
                 this.currentStep++;
             }
+            this.scrollToConfiguratorTop();
         },
         
         prevStep() {
             if (this.currentStep > 1) {
                 this.currentStep--;
                 this.errors = [];
+                this.scrollToConfiguratorTop();
             }
         },
         
         goToStep(stepNumber) {
             this.currentStep = stepNumber;
             this.errors = [];
+            this.scrollToConfiguratorTop();
+        },
+
+        // Scrollt beim Schrittwechsel gezielt an den Anfang des Konfigurators,
+        // statt es dem Browser zu überlassen: Steps mit stark unterschiedlicher
+        // Höhe (z.B. der Mengen-Step mit Staffelpreis-Tabelle) verschieben beim
+        // Reflow sonst die Seite unvorhersehbar, was wie ein Sprung ans
+        // Seitenende wirkt.
+        scrollToConfiguratorTop() {
+            this.$nextTick(() => {
+                const el = this.$root.closest('.product-configurator') || this.$root;
+                if (el && el.scrollIntoView) {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
         },
         
         canProceed() {
@@ -116,10 +133,24 @@ function productConfigurator(initialData) {
 
             // Contact Form ZUERST prüfen
             if (stepData.step_type === 'contact_form') {
-                return this.config['customer_name'] &&
-                       this.config['customer_name'].trim() !== '' &&
-                       this.config['customer_email'] &&
-                       this.config['customer_email'].trim() !== '';
+                if (!this.config['customer_name'] || this.config['customer_name'].trim() === '') return false;
+                if (!this.config['customer_email'] || this.config['customer_email'].trim() === '') return false;
+
+                // Konfigurierte Pflicht-Zusatzfelder (z.B. "Firma") prüfen -
+                // vorher wurde hier nur Name/E-Mail geprüft, wodurch man mit
+                // "Zur Zusammenfassung" weiterkommen konnte, obwohl Pflicht-
+                // Zusatzfelder oder die Datenschutz-Checkbox noch fehlten.
+                const requiredKeys = (typeof configuratorData !== 'undefined' && configuratorData.requiredExtraFieldKeys) || [];
+                for (const key of requiredKeys) {
+                    const val = this.config[key];
+                    if (val === undefined || val === null || val === '' || val === false) return false;
+                }
+
+                if (typeof configuratorData !== 'undefined' && configuratorData.privacyRequired && !this.config['privacy_consent']) {
+                    return false;
+                }
+
+                return true;
             }
 
             const value = this.config[stepData.step_id];
@@ -380,6 +411,27 @@ function productConfigurator(initialData) {
             this.isProcessing = true;
             this.errors = [];
 
+            // Optionale "Nachricht"-Felder ermitteln: ALLE textarea/text-Steps
+            // AUSSERHALB des Kontaktformulars (z.B. "Besondere Wünsche"), damit
+            // sie beim Übernehmen in die Wunschliste als EINE kombinierte
+            // Nachricht mitgeschickt werden - falls ein Produkt mehrere solcher
+            // Felder hat, statt nur das erste zu übernehmen. Die Step-Keys sind
+            // projektspezifisch (z.B. "anmerkungen"), daher generisch über den
+            // Step-Typ statt hartcodiert ermittelt.
+            const messageSteps = this.steps.filter(
+                (s) => (s.step_type === 'textarea' || s.step_type === 'text') && s.step_type !== 'contact_form'
+            );
+            const messageValue = messageSteps
+                .map((s) => {
+                    const val = (this.config[s.step_id] || '').toString().trim();
+                    if (!val) return '';
+                    // Label voranstellen, sobald mehr als ein Feld befüllt ist -
+                    // bei nur einem Feld reicht der reine Wert (kein "Label: " nötig).
+                    return messageSteps.length > 1 ? `${s.step_label}: ${val}` : val;
+                })
+                .filter((v) => v !== '')
+                .join('\n\n');
+
             try {
                 const response = await fetch(configuratorData.ajax_url, {
                     method: 'POST',
@@ -391,7 +443,8 @@ function productConfigurator(initialData) {
                         nonce: configuratorData.wishlistNonce,
                         product_id: this.productId,
                         quantity: this.config.quantity || 1,
-                        config: JSON.stringify(this.config)
+                        config: JSON.stringify(this.config),
+                        message: messageValue
                     })
                 });
 

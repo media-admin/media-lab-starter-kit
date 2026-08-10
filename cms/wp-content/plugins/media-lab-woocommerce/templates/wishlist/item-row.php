@@ -26,6 +26,10 @@ if ( ! defined( 'ABSPATH' ) ) exit;
             <span class="mlw-wishlist-item__name mlw-wishlist-item__name--gone"><?php echo esc_html( $item['name'] ); ?></span>
         <?php endif; ?>
 
+        <?php if ( ! empty( $item['sku'] ) ) : ?>
+            <span class="mlw-wishlist-item__sku"><?php esc_html_e( 'Art.-Nr.:', 'media-lab-woocommerce' ); ?> <?php echo esc_html( $item['sku'] ); ?></span>
+        <?php endif; ?>
+
         <?php if ( ! empty( $item['config_display'] ) && is_array( $item['config_display'] ) ) : ?>
             <ul class="mlw-wishlist-item__config">
                 <?php foreach ( $item['config_display'] as $label => $value ) : ?>

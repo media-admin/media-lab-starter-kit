@@ -86,8 +86,12 @@ class MediaLab_Inquiry_Mail {
             $bg   = ( $i++ % 2 === 0 ) ? 'background:#f9f9f9' : '';
             $name = esc_html( $item['name'] ?? '' );
             $qty  = (int) ( $item['quantity'] ?? 1 );
+            $sku  = trim( (string) ( $item['sku'] ?? '' ) );
 
             $html .= '<tr style="' . $bg . '"><td colspan="2"><strong>' . $name . '</strong> (Menge: ' . $qty . ')';
+            if ( $sku !== '' ) {
+                $html .= '<br><span style="color:#888;font-size:12px">Art.-Nr.: ' . esc_html( $sku ) . '</span>';
+            }
 
             // Konfigurator-Details, falls vorhanden
             if ( ! empty( $item['config_display'] ) && is_array( $item['config_display'] ) ) {

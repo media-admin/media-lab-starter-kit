@@ -259,7 +259,7 @@ class MediaLab_Product_Configurator {
 
             $value = $config[$step_id];
 
-            if ( ($step['step_type'] === 'select' || $step['step_type'] === 'radio') && !empty($step['options']) ) {
+            if ( in_array( $step['step_type'], [ 'select', 'radio', 'color_picker' ], true ) && !empty($step['options']) ) {
                 $option  = null;
                 foreach ($step['options'] as $opt) {
                     if ($opt['value'] === $value) { $option = $opt; break; }
@@ -691,6 +691,12 @@ class MediaLab_Product_Configurator {
             // Zusatzfelder generisch mitsenden kann, ohne sie hier hart zu verdrahten.
             'extraFieldKeys' => class_exists( 'MediaLab_Inquiry_Settings' )
                 ? array_values( array_filter( array_map( fn( $f ) => $f['field_key'] ?? '', MediaLab_Inquiry_Settings::get_form_fields() ) ) )
+                : array(),
+            // Teilmenge der obigen Liste, die als Pflichtfeld markiert ist -
+            // für die client-seitige Validierung vor "Zur Zusammenfassung"
+            // (siehe isStepValid() in configurator.js).
+            'requiredExtraFieldKeys' => class_exists( 'MediaLab_Inquiry_Settings' )
+                ? array_values( array_filter( array_map( fn( $f ) => ! empty( $f['required'] ) ? ( $f['field_key'] ?? '' ) : '', MediaLab_Inquiry_Settings::get_form_fields() ) ) )
                 : array(),
             'privacyRequired' => class_exists( 'MediaLab_Inquiry_Settings' ) ? MediaLab_Inquiry_Settings::privacy_required() : false,
             // Für den "Zur Wunschliste hinzufügen"-Button im Wizard (eigener Nonce,
