@@ -6,6 +6,39 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ---
 
+## [2.5.1] - 2026-08-12
+
+### media-lab-woocommerce 2.5.1
+
+Hotfix, unabhängig von den BACKLOG.md-Paketen entdeckt (beim Testen von
+"Test - Step-Typen Abdeckung (Custom T-Shirt)").
+
+#### Fixed
+
+- **Kritisch: Jedes Produkt mit Konfigurator-Typ "Textilien" zeigte 0
+  Konfigurationsschritte** (Wizard sprang direkt zur Zusammenfassung,
+  "Schritt 1 von 1"), unabhängig davon wie viele Zeilen im
+  "Konfigurationsschritte"-Repeater tatsächlich gepflegt waren.
+
+  Ursache: `get_configuration_steps()` verzweigte bei `config_type ===
+  'textile'` in `get_textile_steps()` - eine Methode, die die Steps über
+  ein separates CPT-basiertes System laden sollte (Post-IDs in der
+  `config_steps`-Postmeta erwartet). Diese CPT-Registrierung existiert im
+  Plugin nirgends; die tatsächlichen Schritte werden für alle
+  Konfigurator-Typen im ACF-Repeater `config_steps` direkt auf dem
+  Produkt gespeichert. Ein roher `get_post_meta()`-Aufruf auf ein
+  ACF-Repeater-Feld liefert aber nur die interne Zeilenanzahl als String
+  (z.B. `"5"`) statt eines Arrays - der `is_array()`-Guard in
+  `get_textile_steps()` schlug dadurch immer fehl, die Methode gab immer
+  `array()` zurück.
+
+  Fix: `get_configuration_steps()` lädt jetzt für alle Konfigurator-Typen
+  konsistent aus dem ACF-Repeater. `get_textile_steps()` bleibt
+  unverändert (privat, ungenutzt) im Code, falls das CPT-basierte System
+  an anderer Stelle doch noch benötigt wird.
+
+---
+
 ## [2.5.0] - 2026-08-12
 
 ### media-lab-woocommerce 2.5.0
