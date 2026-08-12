@@ -47,6 +47,10 @@ Nur bei Bedarf einsetzen (Verdacht auf UA-Blocking, z. B. wenn der Timeout-Fix a
 
 ## Changelog
 
+### 1.20.1
+- WCAG-2.2.2-Fokus-Pause im Logo-Slider ergänzt (`ml-logo-slider.js`, Theme-seitig): Autoplay pausiert automatisch bei Tastatur-/Screenreader-Fokus auf ein Element innerhalb des Sliders. Die entfernte `assets/js/block-logo-slider.js` enthielt dieses Verhalten, die Theme-seitige Neuimplementierung hatte es nie übernommen (war laut damaligem Code-Kommentar durch einen Lade-Bug ohnehin nie aktiv, also keine neue Regression, aber bis jetzt ein fehlendes Feature)
+- Veraltete Kommentarverweise in `assets/css/block-slider.css` auf die gelöschte `assets/js/block-slider.js` korrigiert - verweisen jetzt auf `ml-slider.js` (Theme). Rein kosmetisch, keine Funktionsänderung
+
 ### 1.20.0
 - Heartbeat Monitoring hinzugefügt (Push-basiertes Uptime-Monitoring, Better Stack / Healthchecks.io kompatibel)
 - Leere, ungenutzte `inc/security.php` entfernt
@@ -56,4 +60,4 @@ Nur bei Bedarf einsetzen (Verdacht auf UA-Blocking, z. B. wenn der Timeout-Fix a
 
 ## Version
 
-1.20.0
+1.20.1
