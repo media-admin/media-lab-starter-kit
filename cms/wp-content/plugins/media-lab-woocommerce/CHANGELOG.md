@@ -6,6 +6,59 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ---
 
+## [2.3.0] - 2026-08-12
+
+### media-lab-woocommerce 2.3.0
+
+Bugfixes und ein neuer Shortcode, gefunden beim WooCommerce-Sync
+`at.janecka-2026` ↔ Starter Kit (siehe BACKLOG.md, "Paket A" - vorbestehende
+Bugs im Starter Kit selbst, unabhängig vom Janecka-Merge).
+
+#### Added
+
+- Neuer Shortcode `[mlw_inquiry_form]` (`inc/inquiry/class-shortcode.php`)
+  macht `templates/inquiry-form.php` nutzbar - das Template war zuvor an
+  keiner Stelle in `inc/` eingebunden (totes Template). Für Nutzung
+  außerhalb des automatischen Catalog-Mode-Checkout-Flows, z.B. auf einer
+  eigenen Landingpage. Unterstützt Theme-Override via
+  `yourtheme/media-lab-woocommerce/inquiry-form.php`.
+- ACF-Feldgruppe des Konfigurators: Step-Type `contact_form` als Auswahl
+  ergänzt (`inc/configurator/class-acf-fields.php`) - wurde von
+  `wizard.php`, `class-configurator.php` und `class-price-calculator.php`
+  bereits aktiv unterstützt, war im Produkt-Editor aber nicht auswählbar
+
+#### Fixed
+
+- **`templates/inquiry-checkout.php`:** hartcodierter Steuersatz
+  (`$tax_rate = 20`) durch echte `WC()->cart`-Steuerwerte
+  (`get_subtotal()`/`get_subtotal_tax()`/`get_total()`) ersetzt -
+  berücksichtigt jetzt Steuerklasse und Kundenland/-status statt eines
+  fixen österreichischen Standardsatzes
+- **`templates/configurator/fields/number.php`:** `isset()`-Bug behoben -
+  ACF liefert bei leer gelassenem Feld einen leeren String statt `null`,
+  wodurch der min/max-Fallback (1/10000) nie griff und die
+  Mengenschalter (+/-) ohne gesetztes Maximum funktionslos waren
+- **`templates/configurator/wizard.php`:** Wishlist-Button jetzt hinter
+  `class_exists('MediaLab_Wishlist_Ajax')`-Guard - Projekte ohne
+  `inc/wishlist/` (z.B. `at.janecka-2026`) zeigten zuvor einen sichtbaren,
+  aber funktionslosen Button
+- **`inc/inquiry/class-mail.php`:** Preisaufschlüsselung in der
+  Anfrage-Mail um Zwischensumme (pro Stück), Menge, Zwischensumme vor
+  Steuer und eine eigene MwSt.-Zeile erweitert - der angezeigte
+  Gesamtbetrag war zuvor korrekt, aber für den Kunden nicht
+  nachvollziehbar, wie er zustande kam
+
+#### Known Issues / Follow-ups
+
+- Kommentarverweis in `inc/catalog-mode.php`, der auf
+  `templates/inquiry-form.php` zeigt, ist vermutlich fehlgeleitet und
+  sollte im Zuge des neuen Shortcodes geprüft/korrigiert werden - Datei
+  lag bei diesem Release nicht vor
+- `templates/inquiry-form.php` selbst unverändert übernommen (kein
+  eigener Fix, nur über den neuen Shortcode erreichbar)
+
+---
+
 ## [2.2.0] - 2026-08-10
 
 ### media-lab-woocommerce 2.2.0
