@@ -330,6 +330,10 @@ return array(
 		'version' => 'dev-trunk',
 		'path'    => $baseDir . '/src/StoreNotices/StoreNoticesNotifier.php'
 	),
+	'Automattic\\WCServices\\Tax\\Address' => array(
+		'version' => 'dev-trunk',
+		'path'    => $baseDir . '/src/Tax/Address.php'
+	),
 	'Automattic\\WCServices\\Utils' => array(
 		'version' => 'dev-trunk',
 		'path'    => $baseDir . '/src/Utils.php'

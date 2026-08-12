@@ -84,6 +84,7 @@ return array(
     'Automattic\\WCServices\\StoreNotices\\StoreNoticeTypes' => $baseDir . '/src/StoreNotices/StoreNoticeTypes.php',
     'Automattic\\WCServices\\StoreNotices\\StoreNoticesController' => $baseDir . '/src/StoreNotices/StoreNoticesController.php',
     'Automattic\\WCServices\\StoreNotices\\StoreNoticesNotifier' => $baseDir . '/src/StoreNotices/StoreNoticesNotifier.php',
+    'Automattic\\WCServices\\Tax\\Address' => $baseDir . '/src/Tax/Address.php',
     'Automattic\\WCServices\\Utils' => $baseDir . '/src/Utils.php',
     'Composer\\InstalledVersions' => $vendorDir . '/composer/InstalledVersions.php',
     'Jetpack_IXR_Client' => $vendorDir . '/automattic/jetpack-connection/legacy/class-jetpack-ixr-client.php',

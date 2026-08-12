@@ -1,6 +1,7 @@
 <?php
 
 use Automattic\WCServices\StoreNotices\StoreNoticesNotifier;
+use Automattic\WCServices\Tax\Address;
 
 class WC_Connect_TaxJar_Integration {
 
@@ -84,6 +85,17 @@ class WC_Connect_TaxJar_Integration {
 	 * @var array
 	 */
 	private $backend_tax_classes;
+
+	/**
+	 * Line items WooCommerce will not apply item tax to.
+	 *
+	 * Recorded while the TaxJar request is built and read back when the response is
+	 * turned into tax rate rows, so both halves share a single taxability decision
+	 * instead of each re-deriving one. Keyed by TaxJar line item id, values unused.
+	 *
+	 * @var array<string, bool>
+	 */
+	private $non_taxable_line_items = array();
 
 	/**
 	 * Tracks instance.
@@ -445,6 +457,16 @@ class WC_Connect_TaxJar_Integration {
 	 * Modified version of TaxJar's plugin.
 	 * See: https://github.com/taxjar/taxjar-woocommerce-plugin/blob/4b481f5/includes/class-wc-taxjar-integration.php#L910
 	 *
+	 * The `taxjar_store_settings` return value is guaranteed to be an array carrying
+	 * all five address keys, matching this method's documented contract. The filter is
+	 * public and unguarded, so a callback returning null / false / a string would
+	 * otherwise flow into callers that index it — and, since the address value object
+	 * declares `array $settings`, into an uncaught TypeError on every cart and checkout
+	 * render that resolves a base address. A non-array return is treated as "no
+	 * opinion" and the unfiltered settings are used; keys missing from an array return
+	 * are backfilled from the unfiltered settings, so callers can keep indexing the
+	 * result directly.
+	 *
 	 * @return array
 	 */
 	public function get_store_settings() {
@@ -456,7 +478,15 @@ class WC_Connect_TaxJar_Integration {
 			'postcode' => WC()->countries->get_base_postcode(),
 		);
 
-		return apply_filters( 'taxjar_store_settings', $store_settings, array() );
+		$filtered = apply_filters( 'taxjar_store_settings', $store_settings, array() );
+
+		if ( ! is_array( $filtered ) ) {
+			$this->_log( 'Warning: the taxjar_store_settings filter returned a non-array value; ignoring it and using the store address.' );
+
+			return $store_settings;
+		}
+
+		return array_merge( $store_settings, $filtered );
 	}
 
 	/**
@@ -587,9 +617,11 @@ class WC_Connect_TaxJar_Integration {
 		}
 
 		foreach ( $wc_cart_object->get_cart() as $cart_item_key => $cart_item ) {
-			$product       = $cart_item['data'];
-			$line_item_key = $product->get_id() . '-' . $cart_item_key;
-			if ( isset( $taxes['line_items'][ $line_item_key ] ) && ! $taxes['line_items'][ $line_item_key ]->combined_tax_rate ) {
+			$product = $cart_item['data'];
+			// get_line_items() keys by cart item key and stores the canonical TaxJar ID
+			// under 'id'; the response is keyed by that canonical ID.
+			$line_item_key = $line_items[ $cart_item_key ]['id'] ?? null;
+			if ( null !== $line_item_key && isset( $taxes['line_items'][ $line_item_key ] ) && ! $taxes['line_items'][ $line_item_key ]->combined_tax_rate ) {
 				if ( method_exists( $product, 'set_tax_status' ) ) {
 					$product->set_tax_status( 'none' ); // Woo 3.0+
 				} else {
@@ -650,9 +682,10 @@ class WC_Connect_TaxJar_Integration {
 			 * @var WC_Order_Item_Product $item Product Order Item.
 			 */
 			foreach ( $order->get_items() as $item_key => $item ) {
-				$product_id    = $item->get_product_id();
-				$line_item_key = $product_id . '-' . $item_key;
-				if ( isset( $taxes['rate_ids'][ $line_item_key ] ) ) {
+				// get_backend_line_items() keys by order item ID and stores the canonical
+				// TaxJar ID under 'id'; the response is keyed by that canonical ID.
+				$line_item_key = $line_items[ $item_key ]['id'] ?? null;
+				if ( null !== $line_item_key && isset( $taxes['rate_ids'][ $line_item_key ] ) ) {
 					$rate_id  = $taxes['rate_ids'][ $line_item_key ];
 					$item_tax = new WC_Order_Item_Tax();
 					$item_tax->set_rate( $rate_id );
@@ -672,6 +705,10 @@ class WC_Connect_TaxJar_Integration {
 	/**
 	 * Get formatted address for tax calculation.
 	 *
+	 * Empty fields come back as `false` rather than `''`. That is the historic shape of
+	 * this array and `Address::to_legacy_options()` is the single place the choice is
+	 * made, so `get_backend_address()` cannot drift away from it.
+	 *
 	 * @param string|null $location_type Location type: 'base', 'shipping', or 'billing'.
 	 *                                   If null, uses default behavior from get_taxable_address().
 	 * @return array Address array with to_country, to_state, etc.
@@ -680,45 +717,38 @@ class WC_Connect_TaxJar_Integration {
 		$taxable_address = $this->get_taxable_address( $location_type );
 		$taxable_address = is_array( $taxable_address ) ? $taxable_address : array();
 
-		$to_country = isset( $taxable_address[0] ) && ! empty( $taxable_address[0] ) ? strtoupper( $taxable_address[0] ) : false;
-		$to_state   = isset( $taxable_address[1] ) && ! empty( $taxable_address[1] ) ? strtoupper( $taxable_address[1] ) : false;
-		$to_zip     = isset( $taxable_address[2] ) && ! empty( $taxable_address[2] ) ? $taxable_address[2] : false;
-		$to_city    = isset( $taxable_address[3] ) && ! empty( $taxable_address[3] ) ? self::normalize_city( $taxable_address[3] ) : false;
-		$to_street  = isset( $taxable_address[4] ) && ! empty( $taxable_address[4] ) ? $taxable_address[4] : false;
-
-		return array(
-			'to_country' => $to_country,
-			'to_state'   => $to_state,
-			'to_zip'     => $to_zip,
-			'to_city'    => $to_city,
-			'to_street'  => $to_street,
-		);
+		return Address::from_taxable_tuple( $taxable_address )->to_legacy_options();
 	}
 
 	/**
 	 * Allow street address to be passed when finding rates
 	 *
-	 * @param array  $matched_tax_rates
-	 * @param string $tax_class
+	 * Despite the name, no street ever reaches `WC_Tax::find_rates()` — it takes no
+	 * street argument, and the value this method used to unpack from the tuple was
+	 * never read. What the callback actually does is accept a location of *four or
+	 * more* elements where `WC_Tax::get_rates_from_location()` accepts exactly four,
+	 * so it supplies the rates core skips when this plugin's five-element taxable
+	 * address is in play. It is public and hooked on `woocommerce_matched_rates`,
+	 * which core fires from the price-display, shipping-tax and coupon paths.
+	 *
+	 * The lookup arguments now come from the same value object `create_or_update_tax_rate()`
+	 * writes with. Before, this method normalised the city but not the state, so it
+	 * could not see rows that method had just written: the rate rows existed and
+	 * these paths returned nothing for them.
+	 *
+	 * @param array  $matched_tax_rates Rates core matched; replaced wholesale.
+	 * @param string $tax_class         Tax class slug.
 	 * @return array
 	 */
 	public function allow_street_address_for_matched_rates( $matched_tax_rates, $tax_class = '' ) {
-		$tax_class         = sanitize_title( $tax_class );
-		$location          = WC_Tax::get_tax_location( $tax_class );
-		$matched_tax_rates = array();
-		if ( sizeof( $location ) >= 4 ) {
-			list( $country, $state, $postcode, $city, $street ) = array_pad( $location, 5, '' );
-			$matched_tax_rates                                  = WC_Tax::find_rates(
-				array(
-					'country'   => $country,
-					'state'     => $state,
-					'postcode'  => $postcode,
-					'city'      => strtoupper( self::normalize_city( $city ) ),
-					'tax_class' => $tax_class,
-				)
-			);
+		$tax_class = sanitize_title( $tax_class );
+		$location  = WC_Tax::get_tax_location( $tax_class );
+
+		if ( ! is_array( $location ) || count( $location ) < 4 ) {
+			return array();
 		}
-		return $matched_tax_rates;
+
+		return WC_Tax::find_rates( Address::from_taxable_tuple( $location )->to_find_rates_args( $tax_class ) );
 	}
 
 	public function cleanup_tax_label( $rate_name ) {
@@ -872,6 +902,11 @@ class WC_Connect_TaxJar_Integration {
 	/**
 	 * Get taxable address.
 	 *
+	 * The address is built through {@see Address}, so country/state casing, the
+	 * comma-list postcode split and the city semicolon rules are applied once here
+	 * rather than re-derived by each consumer. The return value stays WooCommerce's
+	 * positional 5-tuple — `Address` is internal and never crosses the filter.
+	 *
 	 * @param string|null $location_type Location type: 'base', 'shipping', or 'billing'.
 	 *                                   If null, uses woocommerce_tax_based_on option with
 	 *                                   local pickup override. Null is kept for backward
@@ -891,69 +926,62 @@ class WC_Connect_TaxJar_Integration {
 		}
 
 		if ( 'base' === $tax_based_on ) {
-			$store_settings = $this->get_store_settings();
-			$country        = $store_settings['country'];
-			$state          = $store_settings['state'];
-			$postcode       = $store_settings['postcode'];
-			$city           = $store_settings['city'];
-			$street         = $store_settings['street'];
+			$address = Address::from_store_settings( $this->get_store_settings() );
 		} elseif ( null === WC()->customer ) {
 			$this->_log( 'Warning: WC()->customer is null when resolving ' . $tax_based_on . ' address.' );
 			return array( '', '', '', '', '' );
 		} elseif ( 'billing' === $tax_based_on ) {
-			$country  = WC()->customer->get_billing_country();
-			$state    = WC()->customer->get_billing_state();
-			$postcode = WC()->customer->get_billing_postcode();
-			$city     = WC()->customer->get_billing_city();
-			$street   = WC()->customer->get_billing_address();
+			$address = Address::from_customer_billing( WC()->customer );
 		} else {
-			$country  = WC()->customer->get_shipping_country();
-			$state    = WC()->customer->get_shipping_state();
-			$postcode = WC()->customer->get_shipping_postcode();
-			$city     = WC()->customer->get_shipping_city();
-			$street   = WC()->customer->get_shipping_address();
+			$address = Address::from_customer_shipping( WC()->customer );
 		}
 
-		return apply_filters( 'woocommerce_customer_taxable_address', array( $country, $state, $postcode, $city, $street ) );
+		return apply_filters( 'woocommerce_customer_taxable_address', $address->to_taxable_tuple() );
 	}
 
 	/**
 	 * Get address details of customer for backend orders
 	 *
-	 * Unchanged from the TaxJar plugin.
+	 * Derived from the TaxJar plugin.
 	 * See: https://github.com/taxjar/taxjar-woocommerce-plugin/blob/4b481f5/includes/class-wc-taxjar-integration.php#L607
+	 *
+	 * Sanitization (and the `wp_unslash()` that used to be missing here) now lives in
+	 * `Address::from_post_request()`, and the empty-field representation comes from
+	 * `Address::to_legacy_options()` — the same one `get_address()` uses, so the cart and
+	 * admin-recalculate paths can no longer put different values on the wire for the
+	 * same empty input.
+	 *
+	 * Security: WooCommerce has already verified the nonce and capability by the time
+	 * `woocommerce_before_save_order_items` fires.
+	 *
+	 * This method used to `strtoupper()` postcode, city and street on top of that,
+	 * which `get_address()` did not — the same order recalculated from the admin and
+	 * from the cart put differently-cased values on the wire. The casing was kept only
+	 * because the city feeds the `wp_woocommerce_tax_rates` city column; now that the
+	 * rate-table seam upper-cases the city at both the write and the lookup, nothing
+	 * downstream depends on it and the two paths agree.
 	 *
 	 * @return array
 	 */
 	protected function get_backend_address() {
-    // phpcs:disable WordPress.Security.NonceVerification.Missing --- Security handled by WooCommerce
-		$to_country = isset( $_POST['country'] ) ? strtoupper( wc_clean( $_POST['country'] ) ) : false;
-		$to_state   = isset( $_POST['state'] ) ? strtoupper( wc_clean( $_POST['state'] ) ) : false;
-		$to_zip     = isset( $_POST['postcode'] ) ? strtoupper( wc_clean( $_POST['postcode'] ) ) : false;
-		$to_city    = isset( $_POST['city'] ) ? self::normalize_city( strtoupper( wc_clean( $_POST['city'] ) ) ) : false;
-		$to_street  = isset( $_POST['street'] ) ? strtoupper( wc_clean( $_POST['street'] ) ) : false;
-    // phpcs:enable WordPress.Security.NonceVerification.Missing
-
-		return array(
-			'to_country' => $to_country,
-			'to_state'   => $to_state,
-			'to_zip'     => $to_zip,
-			'to_city'    => $to_city,
-			'to_street'  => $to_street,
-		);
+		return Address::from_post_request()->to_legacy_options();
 	}
 
 	/**
 	 * Get line items at checkout
 	 *
-	 * Unchanged from the TaxJar plugin.
+	 * Based on the TaxJar plugin, with canonical line item IDs added.
 	 * See: https://github.com/taxjar/taxjar-woocommerce-plugin/blob/96b5d57/includes/class-wc-taxjar-integration.php#L645
 	 *
-	 * @return array
+	 * @param WC_Cart $wc_cart_object Cart object.
+	 *
+	 * @return array Line items keyed by cart item key. Each item's 'id' is the
+	 *               canonical TaxJar line item ID, not the cart item key.
 	 */
 	protected function get_line_items( $wc_cart_object ) {
-		$line_items       = array();
-		$default_location = get_option( 'woocommerce_tax_based_on', 'shipping' );
+		$line_items                   = array();
+		$this->non_taxable_line_items = array();
+		$default_location             = get_option( 'woocommerce_tax_based_on', 'shipping' );
 
 		foreach ( $wc_cart_object->get_cart() as $cart_item_key => $cart_item ) {
 			$product       = $cart_item['data'];
@@ -971,6 +999,29 @@ class WC_Connect_TaxJar_Integration {
 
 			if ( 'shipping' !== $product->get_tax_status() && ( ! $product->is_taxable() || 'zero-rate' == sanitize_title( $product->get_tax_class() ) ) ) {
 				$tax_code = '99999';
+			}
+
+			// WC_Cart_Totals gates item tax on is_taxable(), which is filterable, so a
+			// product can be untaxed while still reporting Tax Status "taxable". Record
+			// the decision here rather than re-deriving it from the response, where the
+			// two can disagree and a 0% line ends up overwriting a shared rate row.
+			//
+			// The 'shipping' exclusion mirrors the exempt branch directly above, and has
+			// to: a "Shipping only" product is excluded there, so this path sends it to
+			// TaxJar as taxable and its breakdown line comes back with a real, non-zero
+			// rate. Recording it would make get_itemized_tax_rates() skip that write --
+			// the one case where skipping discards good data instead of preventing a 0%
+			// clobber. WooCommerce applies no *item* tax to such a product, but the row
+			// still matters: it carries `tax_rate_shipping`, and with the default
+			// `woocommerce_shipping_tax_class = 'inherit'` WooCommerce resolves the
+			// shipping tax class to this product's class and looks the rate up there.
+			// TaxJar's own shipping write only ever covers the standard class.
+			//
+			// The backend order path records on `'taxable' !== $tax_status` instead, and
+			// that is correct rather than inconsistent: there the same condition is what
+			// sets the 99999 exempt code, so it too records exactly what it emitted.
+			if ( 'shipping' !== $product->get_tax_status() && ! $product->is_taxable() ) {
+				$this->non_taxable_line_items[ $id . '-' . $cart_item_key ] = true;
 			}
 
 			// Get WC Subscription sign-up fees for calculations
@@ -1004,18 +1055,28 @@ class WC_Connect_TaxJar_Integration {
 				$this->_log( 'Tax location override for product ' . $id . ': ' . $default_location . ' -> ' . $tax_location );
 			}
 
-			array_push(
-				$line_items,
-				array(
-					'id'               => $id . '-' . $cart_item_key,
-					'quantity'         => $quantity,
-					'product_tax_code' => $tax_code,
-					'unit_price'       => $unit_price,
-					'discount'         => $discount,
-					'tax_location'     => $tax_location,
-				)
+			$line_items[ $cart_item_key ] = array(
+				'id'               => $id,
+				'quantity'         => $quantity,
+				'product_tax_code' => $tax_code,
+				'unit_price'       => $unit_price,
+				'discount'         => $discount,
+				'tax_location'     => $tax_location,
 			);
 		}
+
+		$line_items = $this->assign_canonical_line_item_ids( $line_items );
+
+		// The exempt record was keyed while ids were still context-specific; move it onto
+		// the canonical ids, which is what get_itemized_tax_rates() looks up.
+		$non_taxable = array();
+		foreach ( array_keys( $this->non_taxable_line_items ) as $legacy_key ) {
+			$item_key = substr( $legacy_key, (int) strpos( $legacy_key, '-' ) + 1 );
+			if ( isset( $line_items[ $item_key ] ) ) {
+				$non_taxable[ $line_items[ $item_key ]['id'] ] = true;
+			}
+		}
+		$this->non_taxable_line_items = $non_taxable;
 
 		return $line_items;
 	}
@@ -1023,15 +1084,19 @@ class WC_Connect_TaxJar_Integration {
 	/**
 	 * Get line items for backend orders
 	 *
-	 * Unchanged from the TaxJar plugin.
+	 * Based on the TaxJar plugin, with canonical line item IDs added.
 	 * See: https://github.com/taxjar/taxjar-woocommerce-plugin/blob/96b5d57/includes/class-wc-taxjar-integration.php#L695
 	 *
-	 * @return array
+	 * @param WC_Order $order Order object.
+	 *
+	 * @return array Line items keyed by order item ID. Each item's 'id' is the
+	 *               canonical TaxJar line item ID, not the order item ID.
 	 */
 	protected function get_backend_line_items( $order ) {
-		$line_items                = array();
-		$this->backend_tax_classes = array();
-		$default_location          = get_option( 'woocommerce_tax_based_on', 'shipping' );
+		$line_items                   = array();
+		$this->backend_tax_classes    = array();
+		$this->non_taxable_line_items = array();
+		$default_location             = get_option( 'woocommerce_tax_based_on', 'shipping' );
 
 		foreach ( $order->get_items() as $item_key => $item ) {
 			if ( is_object( $item ) ) { // Woo 3.0+
@@ -1059,6 +1124,11 @@ class WC_Connect_TaxJar_Integration {
 			}
 			if ( 'taxable' !== $tax_status ) {
 				$tax_code = '99999';
+
+				// WC_Order_Item::calculate_taxes() gates item tax on the raw tax status,
+				// so the order path records exactly what it emitted as exempt. See the
+				// matching note in get_line_items() for why this is recorded, not derived.
+				$this->non_taxable_line_items[ $id . '-' . $item_key ] = true;
 			}
 
 			/** This filter is documented in get_line_items() */
@@ -1069,19 +1139,30 @@ class WC_Connect_TaxJar_Integration {
 			}
 
 			if ( $unit_price ) {
-				array_push(
-					$line_items,
-					array(
-						'id'               => $id . '-' . $item_key,
-						'quantity'         => $quantity,
-						'product_tax_code' => $tax_code,
-						'unit_price'       => $unit_price,
-						'discount'         => $discount,
-						'tax_location'     => $tax_location,
-					)
+				$line_items[ $item_key ] = array(
+					'id'               => $id,
+					'quantity'         => $quantity,
+					'product_tax_code' => $tax_code,
+					'unit_price'       => $unit_price,
+					'discount'         => $discount,
+					'tax_location'     => $tax_location,
 				);
 			}
 		}
+
+		$line_items = $this->assign_canonical_line_item_ids( $line_items );
+
+		// The exempt record was keyed while ids were still context-specific; move it onto
+		// the canonical ids, which is what get_itemized_tax_rates() looks up.
+		$non_taxable = array();
+		foreach ( array_keys( $this->non_taxable_line_items ) as $legacy_key ) {
+			$item_key = substr( $legacy_key, (int) strpos( $legacy_key, '-' ) + 1 );
+			if ( isset( $line_items[ $item_key ] ) ) {
+				$non_taxable[ $line_items[ $item_key ]['id'] ] = true;
+			}
+		}
+		$this->non_taxable_line_items = $non_taxable;
+
 		return $line_items;
 	}
 
@@ -1092,6 +1173,195 @@ class WC_Connect_TaxJar_Integration {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Replace each line item's product ID with a canonical TaxJar line item ID.
+	 *
+	 * The cart path used to key line items by WooCommerce's cart item key and the
+	 * order path by the numeric order item ID, so the same basket produced two
+	 * different request bodies — and therefore two different cache keys — depending
+	 * on which path built it. TaxJar treats `id` as an opaque echo field, so the two
+	 * paths can agree on one value derived purely from the tax-relevant inputs:
+	 * product, tax code, quantity, unit price, discount and tax location.
+	 *
+	 * Format is `<product_id>-<fingerprint>-<occurrence>`. The product ID stays the
+	 * first `-` segment because `get_itemized_tax_rates()` recovers the product from
+	 * it, and `override_cart_item_tax_rates()` / `override_order_item_taxes()` match
+	 * on the `<product_id>-` prefix. The occurrence counter keeps two otherwise
+	 * identical lines — an order can legitimately hold the same product twice at the
+	 * same price — distinct, so neither loses its rate.
+	 *
+	 * @since 3.6.12
+	 *
+	 * @param array $line_items Line items whose 'id' is currently the bare product ID.
+	 *
+	 * @return array The same array with 'id' expanded to the canonical ID.
+	 */
+	private function assign_canonical_line_item_ids( array $line_items ): array {
+		$occurrences = array();
+
+		foreach ( $line_items as $key => $line_item ) {
+			$product_id = $line_item['id'];
+
+			$fingerprint = hash(
+				'md5',
+				(string) wp_json_encode(
+					array(
+						'product_id'       => (string) $product_id,
+						'product_tax_code' => $this->normalize_cache_string( $line_item['product_tax_code'] ),
+						'quantity'         => $this->normalize_cache_number( $line_item['quantity'] ),
+						'unit_price'       => $this->normalize_cache_number( $line_item['unit_price'] ),
+						'discount'         => $this->normalize_cache_number( $line_item['discount'] ),
+						'tax_location'     => $this->normalize_cache_string( $line_item['tax_location'] ),
+					)
+				)
+			);
+
+			$occurrences[ $fingerprint ] = isset( $occurrences[ $fingerprint ] ) ? $occurrences[ $fingerprint ] + 1 : 0;
+
+			$line_items[ $key ]['id'] = $product_id . '-' . substr( $fingerprint, 0, 12 ) . '-' . $occurrences[ $fingerprint ];
+		}
+
+		return $line_items;
+	}
+
+	/**
+	 * Normalize a string for cache-key purposes.
+	 *
+	 * Trims, collapses runs of whitespace and upper-cases, so that "beverly hills",
+	 * "Beverly  Hills" and "Beverly Hills " all hash the same. Used only to derive
+	 * cache keys and line item fingerprints — never to build the request sent to
+	 * TaxJar, which keeps the merchant's values verbatim.
+	 *
+	 * @since 3.6.12
+	 *
+	 * @param mixed $value Value to normalize.
+	 *
+	 * @return string
+	 */
+	private function normalize_cache_string( $value ): string {
+		if ( is_bool( $value ) ) {
+			$value = $value ? '1' : '0';
+		}
+
+		if ( ! is_scalar( $value ) && null !== $value ) {
+			return '';
+		}
+
+		$value = preg_replace( '/\s+/u', ' ', trim( (string) $value ) );
+
+		return function_exists( 'mb_strtoupper' ) ? mb_strtoupper( $value, 'UTF-8' ) : strtoupper( $value );
+	}
+
+	/**
+	 * Normalize a numeric value for cache-key purposes.
+	 *
+	 * Amounts reach the request body as `wc_format_decimal()` strings with varying
+	 * precision, so 5, "5" and "5.00" are the same money but three different bytes.
+	 * Collapses them to one representation. Non-numeric input is left to
+	 * normalize_cache_string() so a value that is not really a number cannot be
+	 * silently reinterpreted — notably ZIP codes, where "01234" must never become
+	 * "1234".
+	 *
+	 * @since 3.6.12
+	 *
+	 * @param mixed $value Value to normalize.
+	 *
+	 * @return string
+	 */
+	private function normalize_cache_number( $value ): string {
+		if ( ! is_numeric( $value ) ) {
+			return $this->normalize_cache_string( $value );
+		}
+
+		$normalized = number_format( (float) $value, 6, '.', '' );
+
+		if ( false !== strpos( $normalized, '.' ) ) {
+			$normalized = rtrim( rtrim( $normalized, '0' ), '.' );
+		}
+
+		// rtrim() eats the whole string for 0.000000, and -0 is still 0.
+		if ( '' === $normalized || '-' === $normalized || '-0' === $normalized ) {
+			$normalized = '0';
+		}
+
+		return $normalized;
+	}
+
+	/**
+	 * Build the cache signature for a TaxJar request body.
+	 *
+	 * Hashing the raw JSON makes the cache byte-sensitive: a differently-cased city,
+	 * a stray double space in a street address or "5" versus "5.00" for the same
+	 * price all miss a cache entry that would have answered correctly. This projects
+	 * the body onto a canonical form first — whitespace and case folded, amounts
+	 * given one representation, key order fixed, line items sorted — so equivalent
+	 * requests share one entry.
+	 *
+	 * Only the cache key is derived from this. The body sent to TaxJar is untouched.
+	 *
+	 * @since 3.6.12
+	 *
+	 * @param string $json Encoded TaxJar request body.
+	 *
+	 * @return string Canonical signature, or the input unchanged if it will not decode.
+	 */
+	private function get_cache_signature( $json ): string {
+		$body = json_decode( (string) $json, true );
+
+		if ( ! is_array( $body ) ) {
+			return (string) $json;
+		}
+
+		return (string) wp_json_encode( $this->canonicalize_cache_payload( $body ) );
+	}
+
+	/**
+	 * Recursively canonicalize a request body for cache-key derivation.
+	 *
+	 * Numeric normalization is applied by field name rather than by looking at the
+	 * value, because several address fields hold digit-only strings that must keep
+	 * their exact form (a leading-zero ZIP above all).
+	 *
+	 * @since 3.6.12
+	 *
+	 * @param mixed  $value Value to canonicalize.
+	 * @param string $key   Key the value was found under.
+	 *
+	 * @return mixed
+	 */
+	private function canonicalize_cache_payload( $value, $key = '' ) {
+		$numeric_fields = array( 'amount', 'shipping', 'quantity', 'unit_price', 'discount' );
+
+		if ( is_array( $value ) ) {
+			$canonical = array();
+
+			foreach ( $value as $child_key => $child_value ) {
+				$canonical[ $child_key ] = $this->canonicalize_cache_payload( $child_value, (string) $child_key );
+			}
+
+			if ( wp_is_numeric_array( $canonical ) ) {
+				// Lists (line items, nexus addresses) carry no meaning in their order,
+				// so sort them to keep the signature independent of how they were built.
+				usort(
+					$canonical,
+					function ( $first, $second ) {
+						return strcmp( (string) wp_json_encode( $first ), (string) wp_json_encode( $second ) );
+					}
+				);
+			} else {
+				ksort( $canonical );
+			}
+
+			return $canonical;
+		}
+
+		if ( in_array( $key, $numeric_fields, true ) ) {
+			return $this->normalize_cache_number( $value );
+		}
+
+		return $this->normalize_cache_string( $value );
 	}
 
 	/**
@@ -1122,7 +1392,7 @@ class WC_Connect_TaxJar_Integration {
 		$product_id = $product->get_id();
 
 		// Find the matching line_item_key in response_rate_ids.
-		// Format is "product_id-cart_item_key". The trailing "-" delimiter prevents
+		// Format is "product_id-fingerprint-occurrence". The trailing "-" delimiter prevents
 		// false prefix matches (e.g. product ID 1 won't match "10-xyz" because "1-" != "10").
 		// First-match-wins is safe: if the same product ID appears multiple times (e.g.
 		// two bookings), they share the same tax_location and thus the same tax rates.
@@ -1189,7 +1459,7 @@ class WC_Connect_TaxJar_Integration {
 			return;
 		}
 
-		// Find matching rate_ids by product_id prefix (format: "product_id-cart_item_key").
+		// Find matching rate_ids by product_id prefix (format: "product_id-fingerprint-occurrence").
 		// The trailing "-" delimiter prevents false prefix matches between IDs (e.g. 1 vs 10).
 		// First-match-wins is safe: same product always shares the same tax_location and rates.
 		$matching_rate_ids = null;
@@ -1293,13 +1563,32 @@ class WC_Connect_TaxJar_Integration {
 	/**
 	 * Set customer zip code and state to store if local shipping option set
 	 *
-	 * Unchanged from the TaxJar plugin.
+	 * Derived from the TaxJar plugin.
 	 * See: https://github.com/taxjar/taxjar-woocommerce-plugin/blob/82bf7c587/includes/class-wc-taxjar-integration.php#L653
 	 *
-	 * @return array
+	 * This is a callback on `woocommerce_customer_taxable_address`, and that filter is
+	 * fired with two different tuple lengths depending on who fires it:
+	 *
+	 * - WooCommerce core (`WC_Customer::get_taxable_address()`) passes **four** elements —
+	 *   country, state, postcode, city. `WC_Tax::get_rates_from_location()` then gates on
+	 *   `count( $location ) === 4`, a strict comparison, so a five-element return makes
+	 *   core skip `WC_Tax::find_rates()` and hand back an empty rate set.
+	 * - This plugin (`get_taxable_address()`) passes **five**, the fifth being the street,
+	 *   which `get_address()` reads off index `[4]`.
+	 *
+	 * The callback therefore returns a tuple of exactly the length it was handed. It used
+	 * to key the length off whether the street was empty instead, which returned five
+	 * elements into core's four-element pipeline on any local-pickup checkout where the
+	 * store has a street address configured, and dropped the street slot from the
+	 * plugin's own pipeline whenever the street was empty.
+	 *
+	 * @param array $address Positional taxable-address tuple, four or five elements.
+	 * @return array The tuple with the base address substituted for local pickup,
+	 *               its length clamped to four or five elements to match the input.
 	 */
 	public function append_base_address_to_customer_taxable_address( $address ) {
 		$tax_based_on = '';
+		$tuple_length = count( $address );
 
 		list( $country, $state, $postcode, $city, $street ) = array_pad( $address, 5, '' );
 
@@ -1320,11 +1609,16 @@ class WC_Connect_TaxJar_Integration {
 			$street         = $store_settings['street'];
 		}
 
-		if ( '' != $street ) {
-			return array( $country, $state, $postcode, $city, $street );
-		}
+		$tuple = Address::from_taxable_tuple( array( $country, $state, $postcode, $city, $street ) )->to_taxable_tuple();
 
-		return array( $country, $state, $postcode, $city );
+		/*
+		 * Return the arity we were handed, clamped to the two shapes this filter is
+		 * known to carry: four elements (core) or five (this plugin). `$tuple` is
+		 * rebuilt with exactly five elements, so a longer input loses anything past
+		 * the street slot, and a shorter one is padded up to the four fields every
+		 * consumer of this filter reads.
+		 */
+		return array_slice( $tuple, 0, max( 4, $tuple_length ) );
 	}
 
 	/**
@@ -1397,55 +1691,24 @@ class WC_Connect_TaxJar_Integration {
 	}
 
 	/**
-	 * Validates TaxJar nexus address.
+	 * Validates a TaxJar nexus address against the shared address schema.
 	 *
-	 * @param  array $address
+	 * Delegates to `Address::validate()`, and because `calculate_tax()` sends the
+	 * normalised address, the address is checked in the shape it is sent.
+	 *
+	 * Country is always required. State is required for the US only; see the inline
+	 * comment for the measurement behind that, and for why requiring it everywhere
+	 * would reject the plugin's own nexus for stores without a base state.
+	 *
+	 * Validation is deliberately confined to the fields the value object reads. Extra
+	 * keys supplied by a filter are neither validated nor rewritten; `calculate_tax()`
+	 * passes them straight through to the request body.
+	 *
+	 * @param  mixed $address Nexus address, as returned by `woocommerce_taxjar_nexus_address`.
 	 *
 	 * @return bool
 	 */
 	private function is_nexus_address_valid( $address ): bool {
-		$errors = array();
-		$schema = array(
-			'id'      => array(
-				'type'        => 'string',
-				'required'    => false,
-				'description' => 'Unique identifier for the nexus address (optional).',
-				'max_length'  => 255,
-			),
-			'country' => array(
-				'type'        => 'string',
-				'required'    => true,
-				'pattern'     => '/^[A-Z]{2}$/', // two-letter ISO alpha-2 (upper-case)
-				'description' => 'Two-letter ISO country code (e.g. "US").',
-				'max_length'  => 2,
-			),
-			'zip'     => array(
-				'type'        => 'string',
-				'required'    => false,
-				'description' => 'Postal code (format varies by country).',
-				'max_length'  => 20,
-			),
-			'state'   => array(
-				'type'        => 'string',
-				'required'    => true,
-				'pattern'     => '/^[A-Z0-9\-]{1,100}$/', // typical short code like "NY", "CA", "NSW"
-				'description' => 'Two-letter (or short) ISO state/province code where applicable.',
-				'max_length'  => 100,
-			),
-			'city'    => array(
-				'type'        => 'string',
-				'required'    => false,
-				'description' => 'City name.',
-				'max_length'  => 100,
-			),
-			'street'  => array(
-				'type'        => 'string',
-				'required'    => false,
-				'description' => 'Street address (line).',
-				'max_length'  => 255,
-			),
-		);
-
 		/**
 		 * Return without logging as empty array() or false
 		 * might be return on purpose from filter to remove nexus address.
@@ -1460,40 +1723,62 @@ class WC_Connect_TaxJar_Integration {
 			return false;
 		}
 
-		foreach ( $schema as $field => $rules ) {
-			$exists = array_key_exists( $field, $address );
-			$value  = $exists ? $address[ $field ] : null;
-
-			if ( ! empty( $rules['required'] ) && ! $exists ) {
-				$errors[] = "[$field] field is required";
+		// The value object casts these fields to string, so reject anything that cannot
+		// survive that cast rather than triggering an array-to-string conversion.
+		// Booleans survive the cast but silently change the sent value (false becomes
+		// "" and true becomes "1"), so they are rejected too, as the old schema did.
+		//
+		// Only the fields the value object reads are checked. Any other key a filter
+		// added is passed through untouched below and is never cast, so it carries no
+		// conversion risk — rejecting the whole address over it would turn the
+		// documented array-in / array-out contract into a whitelist.
+		foreach ( array( 'id', 'country', 'state', 'zip', 'city', 'street' ) as $field ) {
+			if ( ! array_key_exists( $field, $address ) ) {
 				continue;
 			}
 
-			if ( ! $exists || $value === '' || $value === null ) {
-				continue;
-			}
+			$value = $address[ $field ];
 
-			if ( isset( $rules['type'] ) ) {
-				if ( $rules['type'] === 'string' && ! is_string( $value ) ) {
-					$errors[] = "[$field] field must be a string";
-					continue;
-				}
-			}
+			if ( null !== $value && ( ! is_scalar( $value ) || is_bool( $value ) ) ) {
+				// wp_json_encode() returns false for unencodable payloads, which is
+				// what this branch catches; fall back so the log keeps the address.
+				$encoded = wp_json_encode( $address );
+				$this->logger->error( 'Nexus Address ERRORS: [' . $field . '] field must be a string' . PHP_EOL . 'Nexus address removed from request body.' . PHP_EOL . ( false === $encoded ? print_r( $address, true ) : $encoded ), 'WCS Tax' );
 
-			if ( isset( $rules['max_length'] ) && is_string( $value ) ) {
-				if ( strlen( $value ) > $rules['max_length'] ) {
-					$errors[] = "[$field] field exceeds maximum length of {$rules['max_length']}";
-				}
-			}
-
-			if ( isset( $rules['pattern'] ) && is_string( $value ) ) {
-				if ( ! preg_match( $rules['pattern'], $value ) ) {
-					$errors[] = "[$field] field format is invalid";
-				}
+				return false;
 			}
 		}
 
+		$nexus = Address::from_nexus( $address );
+
+		/*
+		 * The origin state is required for the US, and only for the US.
+		 *
+		 * US nexus is determined from the ORIGIN state; VAT and GST countries rate from
+		 * the destination and ignore a blank origin state. Measured against the live
+		 * TaxJar API rather than assumed -- GB, FR, NL, DK, DE, ES, IT, IE, CA and AU
+		 * all return an identical rate whether the nexus carries its state or an empty
+		 * string, while a US nexus with a blank state returns HTTP 200 with
+		 * `has_nexus: false` and zero tax. It fails silently, which is exactly why the
+		 * check has to stay for the US.
+		 *
+		 * The carve-out keeps this migration from introducing a rejection that the old
+		 * inline schema never made. That schema skipped fields that were present but
+		 * blank, so the blank state a stateless store carries always passed.
+		 * Address::validate() fails a blank required field, so requiring state
+		 * everywhere would newly reject the store's own nexus on every calculation
+		 * for those stores, and would drop a filter-supplied nexus back to the
+		 * store's from_* address, changing which origin TaxJar rates against.
+		 */
+		$required = ( 'US' === $nexus->country() ) ? array( 'country', 'state' ) : array( 'country' );
+
+		$errors = $nexus->validate( $required )->get_error_messages();
+
 		if ( ! empty( $errors ) ) {
+			// The schema names the field postcode; the nexus array key is zip. Report
+			// the key the filter author actually used.
+			$errors = str_replace( '[postcode]', '[zip]', $errors );
+
 			$this->logger->error( 'Nexus Address ERRORS: ' . implode( ', ', $errors ) . PHP_EOL . 'Nexus address removed from request body.' . PHP_EOL . print_r( $address, true ), 'WCS Tax' );
 
 			return false;
@@ -1516,11 +1801,9 @@ class WC_Connect_TaxJar_Integration {
 		// Normalize options to an array and safely map to local variables.
 		$options = is_array( $options ) ? $options : array();
 
-		$to_country      = isset( $options['to_country'] ) ? strtoupper( $options['to_country'] ) : null;
-		$to_state        = isset( $options['to_state'] ) ? strtoupper( $options['to_state'] ) : null;
-		$to_zip          = $options['to_zip'] ?? null;
-		$to_city         = $options['to_city'] ?? null;
-		$to_street       = $options['to_street'] ?? null;
+		// Both ends of the request go through the same normalisation, so the address
+		// that is validated is the address that is sent.
+		$destination     = Address::from_options( $options, 'to_' );
 		$shipping_amount = $options['shipping_amount'] ?? 0;
 		$line_items      = $options['line_items'] ?? null;
 
@@ -1532,50 +1815,35 @@ class WC_Connect_TaxJar_Integration {
 			'tax_rate'        => 0,
 		);
 
-		// Strict conditions to be met before API call can be conducted.
+		// Strict conditions to be met before API call can be conducted. The postcode
+		// check runs on the normalised value, so a postcode that collapses to an
+		// empty string (for example a lone comma) aborts here; log the abort so the
+		// stop is diagnosable.
 		if (
-			empty( $to_country ) ||
-			( empty( $to_zip ) && ! in_array( $to_country, WC()->countries->get_vat_countries() ) ) ||
+			empty( $destination->country() ) ||
+			( empty( $destination->postcode() ) && ! in_array( $destination->country(), WC()->countries->get_vat_countries(), true ) ) ||
 			( empty( $line_items ) && ( empty( $shipping_amount ) ) ) ||
 			WC()->customer->is_vat_exempt()
 		) {
+			$this->_log( 'Destination address or cart data is incomplete, or the customer is VAT exempt. Aborting.' );
 			return false;
 		}
 
-		$to_zip = explode( ',', $to_zip );
-		$to_zip = array_shift( $to_zip );
-
-		$store_settings = $this->get_store_settings();
-		$from_country   = strtoupper( $store_settings['country'] );
-		$from_state     = strtoupper( $store_settings['state'] );
-		$from_zip       = $store_settings['postcode'];
-		$from_city      = $store_settings['city'];
-		$from_street    = $store_settings['street'];
+		$store_address = Address::from_store_settings( $this->get_store_settings() );
+		$from_state    = $store_address->state();
 
 		$this->_log( ':::: TaxJar API called ::::' );
 
-		$body = array(
-			'from_country' => $from_country,
-			'from_state'   => $from_state,
-			'from_zip'     => $from_zip,
-			'from_city'    => $from_city,
-			'from_street'  => $from_street,
-			'to_country'   => $to_country,
-			'to_state'     => $to_state,
-			'to_zip'       => $to_zip,
-			'to_city'      => $to_city,
-			'to_street'    => $to_street,
-			'shipping'     => $shipping_amount,
-			'plugin'       => 'woo',
+		$body = array_merge(
+			$store_address->to_taxjar_body( 'from_' ),
+			$destination->to_taxjar_body( 'to_' ),
+			array(
+				'shipping' => $shipping_amount,
+				'plugin'   => 'woo',
+			)
 		);
 
-		$nexus_address = array(
-			'country' => $body['from_country'],
-			'zip'     => $body['from_zip'],
-			'state'   => $body['from_state'],
-			'city'    => $body['from_city'],
-			'street'  => $body['from_street'],
-		);
+		$nexus_address = $store_address->to_nexus_array();
 
 		/**
 		 * Filter to modify or disable the nexus address sent to TaxJar API.
@@ -1587,17 +1855,21 @@ class WC_Connect_TaxJar_Integration {
 		 * Return false or an empty array to disable sending nexus addresses entirely,
 		 * which will cause the request to use the standard from_* address fields instead.
 		 *
-		 * The nexus address array should contain the following keys:
+		 * The nexus address array may contain the following keys:
 		 * - country: Two-letter country code (required).
-		 * - state: Two-letter state/province code (required for US/CA).
-		 * - zip: Postal/ZIP code (required).
-		 * - city: City name (required).
+		 * - state: State/province code (required for US nexus addresses).
+		 * - zip: Postal/ZIP code (optional).
+		 * - city: City name (optional).
 		 * - street: Street address (optional).
+		 *
+		 * The known keys are normalised before sending: case is folded, whitespace
+		 * trimmed, and only the first segment of a comma-separated postcode is kept.
+		 * Unknown keys pass through to the request body unchanged.
 		 *
 		 * @since 3.3.0
 		 *
 		 * @param array $nexus_address The nexus address array to be sent to TaxJar.
-		 * @param array $body          The complete TaxJar API request body.
+		 * @param array $body          The complete TaxJar API request body, already normalised.
 		 *
 		 * @return array|false Modified nexus address array, or false to disable nexus addresses.
 		 *
@@ -1626,6 +1898,14 @@ class WC_Connect_TaxJar_Integration {
 			foreach ( $params_to_unset as $param ) {
 				unset( $body[ $param ] );
 			}
+
+			// Send the address in the shape it was validated in. Only the fields the
+			// value object knows about are rewritten; any other key a filter added is
+			// passed through untouched, so the documented array-in / array-out contract
+			// does not become a whitelist.
+			$normalized    = Address::from_nexus( $nexus_address )->to_nexus_array();
+			$nexus_address = array_merge( $nexus_address, array_intersect_key( $normalized, $nexus_address ) );
+
 			$body['nexus_addresses'] = array( $nexus_address );
 		}
 
@@ -1648,7 +1928,9 @@ class WC_Connect_TaxJar_Integration {
 		if ( empty( $line_items ) ) {
 			$body['amount'] = 0.01;
 		} else {
-			$body['line_items'] = $line_items;
+			// Line items arrive keyed by cart item key / order item ID; TaxJar expects a
+			// JSON array, and a string-keyed PHP array would encode as an object.
+			$body['line_items'] = array_values( $line_items );
 		}
 
 		$response = $this->smartcalcs_cache_request( wp_json_encode( $body ), $from_state );
@@ -1679,8 +1961,15 @@ class WC_Connect_TaxJar_Integration {
 
 
 	/**
-	 * Return address parts.
-	 * Primarily used in address validation to operate on normalized and predictable indexes.
+	 * Project the address out of a request body, for validation and the nexus gate.
+	 *
+	 * This must report what the body actually carries. Country and state are
+	 * upper-cased because they are compared against the literal `'US'` and against
+	 * each other, and this runs from the public `validate_taxjar_request()`, which
+	 * any caller can hand a hand-built body. Postcodes are returned verbatim:
+	 * normalising them here would make the value that is validated differ from the
+	 * value that is sent. Postcode normalisation belongs where the body is
+	 * assembled, in `calculate_tax()`.
 	 *
 	 * @param array $body Request body.
 	 *
@@ -1688,12 +1977,12 @@ class WC_Connect_TaxJar_Integration {
 	 */
 	private function get_address_parts( $body ) {
 		return array(
-			'from_country' => strtoupper( $body['nexus_addresses'][0]['country'] ?? $body['from_country'] ?? '' ),
-			'from_state'   => strtoupper( $body['nexus_addresses'][0]['state'] ?? $body['from_state'] ?? '' ),
-			'from_zip'     => strtoupper( $body['nexus_addresses'][0]['zip'] ?? $body['from_zip'] ?? '' ),
-			'to_country'   => strtoupper( $body['to_country'] ?? '' ),
-			'to_state'     => strtoupper( $body['to_state'] ?? '' ),
-			'to_zip'       => strtoupper( $body['to_zip'] ?? '' ),
+			'from_country' => strtoupper( (string) ( $body['nexus_addresses'][0]['country'] ?? $body['from_country'] ?? '' ) ),
+			'from_state'   => strtoupper( (string) ( $body['nexus_addresses'][0]['state'] ?? $body['from_state'] ?? '' ) ),
+			'from_zip'     => (string) ( $body['nexus_addresses'][0]['zip'] ?? $body['from_zip'] ?? '' ),
+			'to_country'   => strtoupper( (string) ( $body['to_country'] ?? '' ) ),
+			'to_state'     => strtoupper( (string) ( $body['to_state'] ?? '' ) ),
+			'to_zip'       => (string) ( $body['to_zip'] ?? '' ),
 		);
 	}
 
@@ -1753,6 +2042,15 @@ class WC_Connect_TaxJar_Integration {
 
 			// Add line item tax rates.
 			foreach ( $taxes['line_items'] as $line_item_key => $line_item ) {
+				// A line item WooCommerce will not tax was sent to TaxJar as exempt, so its
+				// breakdown line comes back at 0% — yet it keeps its Tax Class. Since rate
+				// rows are keyed by tax class, writing that 0% overwrites the shared row
+				// used by genuinely taxable products in the same class, zeroing tax for the
+				// whole cart. Skip the write; WooCommerce applies no item tax to it anyway.
+				if ( isset( $this->non_taxable_line_items[ $line_item_key ] ) ) {
+					continue;
+				}
+
 				$line_item_key_chunks = explode( '-', $line_item_key );
 				$product_id           = $line_item_key_chunks[0];
 				$product              = wc_get_product( $product_id );
@@ -1821,19 +2119,32 @@ class WC_Connect_TaxJar_Integration {
 	 * Stripping `;` (and collapsing the resulting whitespace runs) before any path
 	 * touches the tax-rate tables or the TaxJar API restores the round-trip.
 	 *
+	 * @deprecated 3.6.12 Use {@see \Automattic\WCServices\Tax\Address::normalize_city()} instead.
+	 *
+	 * The canonical implementation now lives on the address value object, so the
+	 * normalisation policy has one home rather than one copy per consumer. This
+	 * method is retained as a delegate — it is `protected static`, so a subclass
+	 * outside this repository may be calling it, and removing it would break that
+	 * subclass on load.
+	 *
+	 * The `_deprecated_function()` notice can be raised as of this release because
+	 * the last in-repo caller has moved to the value object. Until then the notice
+	 * would have fired on every checkout.
+	 *
+	 * The non-string guard is preserved: this method has always returned its
+	 * argument untouched when handed a non-string, and callers may rely on that.
+	 *
 	 * @param string $city Raw city value, possibly user-entered.
 	 * @return string Normalized city, safe for `_update_tax_rate_cities` and `find_rates`.
 	 */
 	protected static function normalize_city( $city ) {
-		if ( ! is_string( $city ) || '' === $city ) {
+		wc_deprecated_function( __METHOD__, '3.6.12', '\Automattic\WCServices\Tax\Address::normalize_city()' );
+
+		if ( ! is_string( $city ) ) {
 			return $city;
 		}
 
-		$city = str_replace( ';', ' ', $city );
-		$city = preg_replace( '/\s+/u', ' ', $city );
-
-		// `preg_replace` returns null on malformed UTF-8 with the /u flag; cast so trim() stays safe.
-		return trim( (string) $city );
+		return Address::normalize_city( $city );
 	}
 
 	/**
@@ -1849,10 +2160,33 @@ class WC_Connect_TaxJar_Integration {
 	 * @return int
 	 */
 	public function create_or_update_tax_rate( $location, $rate, $tax_class = '', $freight_taxable = 1, $rate_priority = 1, $tax_rate_name = 'Tax' ) {
-		// Prevent filling "State code" column for countries with VAT tax.
-		// VAT tax is country wide.
-		$to_state      = 'VAT' === $tax_rate_name ? '' : strtoupper( $location['to_state'] );
 		$rate_priority = absint( $rate_priority );
+
+		/*
+		 * One address, two consumers: the `find_rates()` lookup below and the location
+		 * rows written beside the rate. Deriving them separately is what let this
+		 * method insert a fresh row on every calculation for some addresses — it
+		 * looked up values it had never stored. The value object now owns both
+		 * projections, so they cannot drift apart.
+		 *
+		 * Non-scalars collapse to an empty string rather than reaching `(string)` and
+		 * becoming the literal "Array". This method is public and takes the location
+		 * it is handed.
+		 */
+		$field = static function ( $value ) {
+			return is_scalar( $value ) ? (string) $value : '';
+		};
+
+		$address = Address::from_options(
+			array(
+				'to_country' => $field( $location['to_country'] ?? '' ),
+				// Prevent filling "State code" column for countries with VAT tax.
+				// VAT tax is country wide.
+				'to_state'   => 'VAT' === $tax_rate_name ? '' : $field( $location['to_state'] ?? '' ),
+				'to_zip'     => $field( $location['to_zip'] ?? '' ),
+				'to_city'    => $field( $location['to_city'] ?? '' ),
+			)
+		);
 
 		/**
 		 * @see https://github.com/Automattic/woocommerce-services/issues/2531
@@ -1877,8 +2211,8 @@ class WC_Connect_TaxJar_Integration {
 		}
 
 		$tax_rate = array(
-			'tax_rate_country'  => $location['to_country'],
-			'tax_rate_state'    => $to_state,
+			'tax_rate_country'  => $address->country(),
+			'tax_rate_state'    => $address->state_compact(),
 			// For the US, we're going to modify the name of the tax rate to simplify the reporting and distinguish between the tax rates at the counties level.
 			// I would love to do this for other locations, but it looks like that would create issues.
 			// For example, for the UK it would continuously rename the rate name with an updated `state` "piece", each time a request is made
@@ -1890,15 +2224,7 @@ class WC_Connect_TaxJar_Integration {
 			'tax_rate_class'    => $tax_class,
 		);
 
-		$wc_rates = WC_Tax::find_rates(
-			array(
-				'country'   => $location['to_country'],
-				'state'     => str_replace( ' ', '', $to_state ),
-				'postcode'  => $location['to_zip'],
-				'city'      => strtoupper( self::normalize_city( $location['to_city'] ) ),
-				'tax_class' => $tax_class,
-			)
-		);
+		$wc_rates = WC_Tax::find_rates( $address->to_find_rates_args( $tax_class ) );
 
 		$wc_rates_ids = is_array( $wc_rates ) ? array_keys( $wc_rates ) : array();
 		if ( isset( $wc_rates_ids[ $rate_priority - 1 ] ) ) {
@@ -1929,8 +2255,10 @@ class WC_Connect_TaxJar_Integration {
 			$rate_id = WC_Tax::_insert_tax_rate( $tax_rate );
 			// VAT is always country wide, no need to create separate entires for each zip and city.
 			if ( 'VAT' !== $tax_rate_name ) {
-				WC_Tax::_update_tax_rate_postcodes( $rate_id, wc_normalize_postcode( wc_clean( $location['to_zip'] ) ) );
-				WC_Tax::_update_tax_rate_cities( $rate_id, self::normalize_city( wc_clean( $location['to_city'] ) ) );
+				$locations = $address->to_rate_table_locations();
+
+				WC_Tax::_update_tax_rate_postcodes( $rate_id, $locations['postcode'] );
+				WC_Tax::_update_tax_rate_cities( $rate_id, $locations['city'] );
 			}
 		}
 
@@ -2006,7 +2334,8 @@ class WC_Connect_TaxJar_Integration {
 	/**
 	 * Wrap SmartCalcs API requests in a transient-based caching layer.
 	 *
-	 * Unchanged from the TaxJar plugin.
+	 * Based on the TaxJar plugin. The cache key is derived from a canonical
+	 * projection of the body rather than its raw bytes — see get_cache_signature().
 	 * See: https://github.com/taxjar/taxjar-woocommerce-plugin/blob/4b481f5/includes/class-wc-taxjar-integration.php#L451
 	 *
 	 * @param $json
@@ -2015,7 +2344,7 @@ class WC_Connect_TaxJar_Integration {
 	 * @return mixed|WP_Error
 	 */
 	public function smartcalcs_cache_request( $json, $from_state ) {
-		$cache_key           = 'tj_tax_' . hash( 'md5', $json );
+		$cache_key           = 'tj_tax_' . hash( 'md5', $this->get_cache_signature( $json ) );
 		$zip_state_cache_key = false;
 		$request             = json_decode( $json );
 		$to_zip              = isset( $request->to_zip ) ? (string) $request->to_zip : false;

@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - WooCommerce - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-08-09 23:28:19+0000\n"
+"PO-Revision-Date: 2026-08-10 23:14:33+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -10,6 +10,22 @@ msgstr ""
 "X-Generator: GlotPress/4.0.3\n"
 "Language: de\n"
 "Project-Id-Version: Plugins - WooCommerce - Stable (latest release)\n"
+
+#: src/Admin/API/Reports/Export/Controller.php:109
+msgid "Invalid report type."
+msgstr "Ungültiger Berichtstyp."
+
+#: src/Admin/API/OnboardingThemes.php:74
+msgid "Sorry, you cannot install themes."
+msgstr "Du bist leider nicht berechtigt, Themes zu installieren."
+
+#: includes/admin/helper/class-wc-helper-subscriptions-api.php:337
+msgid "You do not have permission to activate plugins."
+msgstr "Du bist nicht berechtigt, Plugins zu aktivieren."
+
+#: includes/admin/helper/class-wc-helper-subscriptions-api.php:326
+msgid "This product type is not supported."
+msgstr "Dieser Produkttyp wird nicht unterstützt."
 
 #: assets/client/blocks/product-filters/block.json
 msgctxt "block description"
@@ -2715,24 +2731,24 @@ msgstr "Die Sicherheitsüberprüfung ist fehlgeschlagen."
 msgid "Skipped scheduling review-request email for order %1$d: %2$s."
 msgstr "Planung der Rezensionsanfrage-E-Mail für Bestellung %1$d übersprungen: %2$s."
 
-#: src/Internal/OrderReviews/Endpoint.php:755
+#: src/Internal/OrderReviews/Endpoint.php:759
 msgid "Please rate this product before submitting your review."
 msgstr "Bitte bewerte dieses Produkt, bevor du deine Rezension einreichst."
 
-#: src/Internal/OrderReviews/Endpoint.php:754
+#: src/Internal/OrderReviews/Endpoint.php:758
 msgid "Something went wrong, please try again."
 msgstr "Es ist ein Fehler aufgetreten. Bitte versuche es erneut."
 
-#: src/Internal/OrderReviews/Endpoint.php:753
+#: src/Internal/OrderReviews/Endpoint.php:757
 msgid "Thanks, your review is pending approval."
 msgstr "Danke, deine Rezension muss noch freigegeben werden."
 
-#: src/Internal/OrderReviews/Endpoint.php:752
+#: src/Internal/OrderReviews/Endpoint.php:756
 msgid "Thanks, your review is live."
 msgstr "Danke, deine Rezension ist jetzt online."
 
 #. translators: 1: order ID, 2: error message
-#: src/Internal/OrderReviews/Endpoint.php:611
+#: src/Internal/OrderReviews/Endpoint.php:615
 msgid "Could not stamp Review Order completion meta on order %1$d: %2$s."
 msgstr "Metadaten zum Abschluss von „Bestellung rezensieren“ für Bestellung %1$d konnten nicht gesetzt werden: %2$s."
 
@@ -5055,7 +5071,7 @@ msgid "Unique identifier for the checkout session."
 msgstr "Eindeutige Kennung für die Kassensitzung."
 
 #. translators: 1: current session status, 2: allowed statuses
-#: src/StoreApi/Routes/V1/Agentic/CheckoutSessionsUpdate.php:179
+#: src/StoreApi/Routes/V1/Agentic/CheckoutSessionsUpdate.php:180
 msgid "Checkout session cannot be updated. Current status: %1$s. Allowed statuses: %2$s"
 msgstr "Die Kassensitzung kann nicht aktualisiert werden. Aktueller Status: %1$s. Zulässige Status: %2$s"
 
@@ -5064,20 +5080,20 @@ msgstr "Die Kassensitzung kann nicht aktualisiert werden. Aktueller Status: %1$s
 msgid "Selected fulfillment option ID."
 msgstr "ID der ausgewählten Abwicklungsoption."
 
-#: src/StoreApi/Routes/V1/Agentic/CheckoutSessionsComplete.php:407
+#: src/StoreApi/Routes/V1/Agentic/CheckoutSessionsComplete.php:408
 msgid "No agentic-supported payment gateway available."
 msgstr "Keine von KI-Agenten unterstützte Zahlungsschnittstelle verfügbar."
 
-#: src/StoreApi/Routes/V1/Agentic/CheckoutSessionsComplete.php:396
+#: src/StoreApi/Routes/V1/Agentic/CheckoutSessionsComplete.php:397
 msgid "No payment gateway available."
 msgstr "Keine Zahlungsschnittstelle verfügbar."
 
-#: src/StoreApi/Routes/V1/Agentic/CheckoutSessionsComplete.php:336
+#: src/StoreApi/Routes/V1/Agentic/CheckoutSessionsComplete.php:337
 msgid "Payment was declined."
 msgstr "Die Zahlung wurde abgelehnt."
 
 #. translators: %s: current session status
-#: src/StoreApi/Routes/V1/Agentic/CheckoutSessionsComplete.php:226
+#: src/StoreApi/Routes/V1/Agentic/CheckoutSessionsComplete.php:227
 msgid "Checkout session is not ready for payment. Current status: %s"
 msgstr "Die Kassensitzung ist nicht bereit für die Zahlung. Aktueller Status: %s"
 
@@ -8640,12 +8656,12 @@ msgid "Order failed: #%s,"
 msgstr "Bestellung fehlgeschlagen: Nr. %s,"
 
 #. translators: %s Coupon codes.
-#: src/StoreApi/Utilities/OrderController.php:301
+#: src/StoreApi/Utilities/OrderController.php:315
 msgid "Invalid coupons were removed from the order: \"%s\""
 msgstr "Ungültige Gutscheine wurden aus der Bestellung entfernt: „%s“"
 
 #. translators: %1$s Coupon codes, %2$s Reason
-#: src/StoreApi/Utilities/OrderController.php:287
+#: src/StoreApi/Utilities/OrderController.php:301
 msgid "\"%1$s\" was removed from the order. %2$s"
 msgstr "„%1$s“ wurde aus der Bestellung entfernt. %2$s"
 
@@ -10856,7 +10872,7 @@ msgstr "Zeigt ein Eingabefeld an, damit Kunden die Anzahl der Produkte auswähle
 msgid "Products in cart"
 msgstr "Produkte im Warenkorb"
 
-#: src/Internal/OrderReviews/Endpoint.php:784
+#: src/Internal/OrderReviews/Endpoint.php:788
 msgid "Page not found"
 msgstr "Seite nicht gefunden"
 
@@ -14886,15 +14902,15 @@ msgstr "Keine Suchergebnisse."
 msgid "Could not access file."
 msgstr "Auf die Datei konnte nicht zugegriffen werden."
 
-#: src/Internal/Admin/Logging/FileV2/FileController.php:540
+#: src/Internal/Admin/Logging/FileV2/FileController.php:620
 msgid "Could not write to the temp directory. Try downloading files one at a time instead."
 msgstr "Es konnte nicht in das temporäre Verzeichnis geschrieben werden. Versuche stattdessen, eine Datei nach der anderen herunterzuladen."
 
-#: src/Internal/Admin/Logging/FileV2/FileController.php:531
+#: src/Internal/Admin/Logging/FileV2/FileController.php:611
 msgid "Could not access the specified files."
 msgstr "Auf die angegebenen Dateien konnte nicht zugegriffen werden."
 
-#: src/Internal/Admin/Logging/FileV2/FileController.php:363
+#: src/Internal/Admin/Logging/FileV2/FileController.php:355
 msgid "Multiple files match this ID."
 msgstr "Mit dieser ID stimmen mehrere Dateien überein."
 
@@ -14982,11 +14998,11 @@ msgstr "Vereinfachter Versand mit: "
 msgid "Shop the sale"
 msgstr "Jetzt Angebote entdecken"
 
-#: includes/admin/helper/class-wc-helper-subscriptions-api.php:387
+#: includes/admin/helper/class-wc-helper-subscriptions-api.php:413
 msgid "There was an error getting the install URL for this product."
 msgstr "Beim Abrufen der Installations-URL für dieses Produkt ist ein Fehler aufgetreten."
 
-#: includes/admin/helper/class-wc-helper-subscriptions-api.php:374
+#: includes/admin/helper/class-wc-helper-subscriptions-api.php:400
 msgid "This product is already installed."
 msgstr "Dieses Produkt ist bereits installiert."
 
@@ -15108,12 +15124,12 @@ msgstr "Nach Protokollquelle filtern"
 msgid "No log files found."
 msgstr "Keine Protokolldateien gefunden."
 
-#: src/Internal/Admin/Logging/FileV2/FileController.php:356
+#: src/Internal/Admin/Logging/FileV2/FileController.php:348
 msgid "This file does not exist."
 msgstr "Diese Datei existiert nicht."
 
-#: src/Internal/Admin/Logging/FileV2/FileController.php:212
-#: src/Internal/Admin/Logging/FileV2/FileController.php:457
+#: src/Internal/Admin/Logging/FileV2/FileController.php:204
+#: src/Internal/Admin/Logging/FileV2/FileController.php:469
 msgid "Could not access the log file directory."
 msgstr "Konnte nicht auf das Protokolldateiverzeichnis zugreifen."
 
@@ -15279,15 +15295,15 @@ msgstr "Unbekannter Fehler"
 msgid "Subscription not found"
 msgstr "Abonnement nicht gefunden"
 
-#: includes/admin/helper/class-wc-helper-subscriptions-api.php:348
+#: includes/admin/helper/class-wc-helper-subscriptions-api.php:374
 msgid "This product has been activated."
 msgstr "Dieses Produkt wurde aktiviert."
 
-#: includes/admin/helper/class-wc-helper-subscriptions-api.php:339
+#: includes/admin/helper/class-wc-helper-subscriptions-api.php:365
 msgid "There was an error activating this theme."
 msgstr "Beim Aktivieren dieses Themes ist ein Fehler aufgetreten."
 
-#: includes/admin/helper/class-wc-helper-subscriptions-api.php:328
+#: includes/admin/helper/class-wc-helper-subscriptions-api.php:346
 msgid "There was an error activating this plugin."
 msgstr "Beim Aktivieren dieses Plugins ist ein Fehler aufgetreten."
 
@@ -15300,7 +15316,7 @@ msgid "This product is not installed."
 msgstr "Dieses Produkt ist nicht installiert."
 
 #: includes/admin/helper/class-wc-helper-subscriptions-api.php:300
-#: includes/admin/helper/class-wc-helper-subscriptions-api.php:365
+#: includes/admin/helper/class-wc-helper-subscriptions-api.php:391
 msgid "We couldn't find a subscription for this product."
 msgstr "Es konnte kein Abonnement für dieses Produkt gefunden werden."
 
@@ -15321,7 +15337,7 @@ msgid "Your subscription has been connected."
 msgstr "Dein Abonnement wurde verbunden."
 
 #. translators: %1$s Coupon codes, %2$s Reason
-#: src/StoreApi/Utilities/OrderController.php:294
+#: src/StoreApi/Utilities/OrderController.php:308
 msgid "\"%1$s\" was removed from the cart. %2$s"
 msgstr "„%1$s“ wurde aus dem Warenkorb entfernt. %2$s"
 
@@ -15813,7 +15829,7 @@ msgstr "Illustration zum Anpassen des Shops"
 msgid "Customize your store "
 msgstr "Deinen Shop anpassen "
 
-#: src/StoreApi/Utilities/OrderController.php:685
+#: src/StoreApi/Utilities/OrderController.php:727
 msgid "Invalid order ID or key provided."
 msgstr "Ungültige(r) Bestellnummer/Schlüssel angegeben."
 
@@ -19519,12 +19535,12 @@ msgstr "Individuelle Bestellungstabellen wurden gelöscht."
 msgid "Delete the custom orders tables"
 msgstr "Die individuellen Bestellungstabellen löschen"
 
-#: src/StoreApi/Routes/V1/AbstractCartRoute.php:303
+#: src/StoreApi/Routes/V1/AbstractCartRoute.php:305
 #: src/StoreApi/Routes/V1/ShopperListsNonceCheck.php:91
 msgid "Nonce is invalid."
 msgstr "Nonce ist ungültig."
 
-#: src/StoreApi/Routes/V1/AbstractCartRoute.php:299
+#: src/StoreApi/Routes/V1/AbstractCartRoute.php:301
 #: src/StoreApi/Routes/V1/ShopperListsNonceCheck.php:83
 msgid "Missing the Nonce header. This endpoint requires a valid nonce."
 msgstr "Nonce-Header fehlt. Dieser Endpunkt erfordert eine gültige Nonce."
@@ -19890,7 +19906,7 @@ msgstr "Schnittstelle ignorieren"
 msgid "Task is not a subclass of `Task`"
 msgstr "Aufgabe ist keine Unterklasse von `Task`"
 
-#: includes/class-woocommerce.php:1404
+#: includes/class-woocommerce.php:1412
 msgid "You have installed a development version of WooCommerce which requires files to be built and minified. From the plugin directory, run <code>pnpm install</code> and then <code>pnpm --filter='@woocommerce/plugin-woocommerce' build</code> to build and minify assets."
 msgstr "Du hast eine Entwicklungsversion von WooCommerce installiert, für die Dateien erstellt und minimiert werden müssen. Führe im Plugin-Verzeichnis <code>pnpm install</code> und dann <code>pnpm --filter='@woocommerce/plugin-woocommerce' build</code> aus, um Assets zu erstellen und zu minimieren."
 
@@ -20825,7 +20841,7 @@ msgstr "Express-Kasse"
 msgid "Your cart"
 msgstr "Dein Warenkorb"
 
-#: src/StoreApi/Utilities/OrderController.php:653
+#: src/StoreApi/Utilities/OrderController.php:695
 #: assets/client/blocks/cart.js:2 assets/client/blocks/checkout.js:2
 #: assets/client/blocks/wc-cart-checkout-base-frontend.js:36
 msgid "Sorry, this order requires a shipping option."
@@ -21710,39 +21726,39 @@ msgstr "Die angegebene E-Mail-Adresse ist ungültig"
 #. translators: %s Field label.
 #: src/Blocks/Domain/Services/CheckoutFieldsFrontend.php:347
 #: src/StoreApi/Routes/V1/Checkout.php:286
-#: src/StoreApi/Utilities/OrderController.php:487
+#: src/StoreApi/Utilities/OrderController.php:501
 msgid "%s is required"
 msgstr "%s ist erforderlich"
 
-#: src/StoreApi/Utilities/OrderController.php:427
+#: src/StoreApi/Utilities/OrderController.php:441
 msgid "billing address"
 msgstr "Rechnungsadresse"
 
-#: src/StoreApi/Utilities/OrderController.php:427
+#: src/StoreApi/Utilities/OrderController.php:441
 msgid "shipping address"
 msgstr "Lieferadresse"
 
 #. translators: %s Address type.
-#: src/StoreApi/Utilities/OrderController.php:426
+#: src/StoreApi/Utilities/OrderController.php:440
 msgid "There was a problem with the provided %s:"
 msgstr "Es gab ein Problem mit der Angabe für %s:"
 
 #. translators: %s country name.
-#: src/StoreApi/Utilities/OrderController.php:394
+#: src/StoreApi/Utilities/OrderController.php:408
 msgid "Sorry, we do not allow orders from the provided country (%s)"
 msgstr "Wir akzeptieren leider keine Bestellungen aus dem angegebenen Land (%s)"
 
 #. translators: %s country name.
-#: src/StoreApi/Utilities/OrderController.php:376
+#: src/StoreApi/Utilities/OrderController.php:390
 msgid "Sorry, we do not ship orders to the provided country (%s)"
 msgstr "Wir liefern leider keine Bestellungen in das angegebene Land (%s)"
 
 #. translators: %s provided email.
-#: src/StoreApi/Utilities/OrderController.php:338
+#: src/StoreApi/Utilities/OrderController.php:352
 msgid "The provided email address (%s) is not valid—please provide a valid email address"
 msgstr "Die angegebene E-Mail-Adresse (%s) ist ungültig. Bitte gib eine gültige E-Mail-Adresse an."
 
-#: src/StoreApi/Utilities/OrderController.php:328
+#: src/StoreApi/Utilities/OrderController.php:342
 msgid "A valid email address is required"
 msgstr "Eine gültige E-Mail-Adresse ist erforderlich"
 
@@ -22544,15 +22560,15 @@ msgstr "Ergebnismenge auf Bestellungen beschränken, die keine Produkte mit den 
 msgid "Limit result set to orders that include products with the specified attributes."
 msgstr "Ergebnismenge auf Bestellungen beschränken, die Produkte mit den angegebenen Attributen enthalten."
 
-#: src/Admin/API/Reports/Export/Controller.php:107
+#: src/Admin/API/Reports/Export/Controller.php:145
 msgid "Export ID."
 msgstr "ID exportieren"
 
-#: src/Admin/API/Reports/Export/Controller.php:101
+#: src/Admin/API/Reports/Export/Controller.php:139
 msgid "Export status message."
 msgstr "Statusmeldung exportieren"
 
-#: src/Admin/API/Reports/Export/Controller.php:95
+#: src/Admin/API/Reports/Export/Controller.php:133
 msgid "Export status."
 msgstr "Status exportieren"
 
@@ -24457,7 +24473,7 @@ msgid "Cart item is invalid."
 msgstr "Warenkorbartikel ist ungültig."
 
 #. translators: %s Coupon codes.
-#: src/StoreApi/Utilities/OrderController.php:307
+#: src/StoreApi/Utilities/OrderController.php:321
 msgid "Invalid coupons were removed from the cart: \"%s\""
 msgstr "Ungültige Gutscheine wurden aus dem Warenkorb entfernt: „%s“"
 
@@ -25506,34 +25522,34 @@ msgstr "Das angeforderte Plugin `%s` konnte nicht installiert werden."
 msgid "Invalid plugin."
 msgstr "Ungültiges Plugin."
 
-#: src/Admin/API/OnboardingThemes.php:200
+#: src/Admin/API/OnboardingThemes.php:215
 msgid "Theme status."
 msgstr "Theme Status."
 
-#: src/Admin/API/OnboardingThemes.php:188
+#: src/Admin/API/OnboardingThemes.php:203
 msgid "Theme slug."
 msgstr "Theme Titelform."
 
-#: src/Admin/API/OnboardingThemes.php:166
+#: src/Admin/API/OnboardingThemes.php:181
 msgid "The requested theme could not be activated."
 msgstr "Das angeforderte Theme konnte nicht aktiviert werden."
 
 #. translators: %s: theme slug (example: woocommerce-services)
-#: src/Admin/API/OnboardingThemes.php:161
+#: src/Admin/API/OnboardingThemes.php:176
 msgid "Invalid theme %s."
 msgstr "Ungültiges Theme %s."
 
 #. translators: %s: theme slug (example: woocommerce-services)
-#: src/Admin/API/OnboardingThemes.php:132
+#: src/Admin/API/OnboardingThemes.php:147
 msgid "The requested theme `%s` could not be installed."
 msgstr "Das angeforderte Theme `%s` konnte nicht installiert werden."
 
 #. translators: %s: theme slug (example: woocommerce-services)
-#: src/Admin/API/OnboardingThemes.php:117
+#: src/Admin/API/OnboardingThemes.php:132
 msgid "The requested theme `%s` could not be installed. Theme API call failed."
 msgstr "Das angeforderte Theme `%s` konnte nicht installiert werden. Der Theme-API-Aufruf ist fehlgeschlagen."
 
-#: src/Admin/API/OnboardingThemes.php:72
+#: src/Admin/API/OnboardingThemes.php:87
 msgid "Sorry, you cannot manage themes."
 msgstr "Du bist leider nicht berechtigt, Themes zu verwalten."
 
@@ -26394,23 +26410,23 @@ msgstr "Nettoumsatz."
 msgid "Total sales."
 msgstr "Gesamtumsatz."
 
-#: src/Admin/API/Reports/Export/Controller.php:209
+#: src/Admin/API/Reports/Export/Controller.php:247
 msgid "Sorry, there is no export with that ID."
 msgstr "Leider gibt es keinen Export mit dieser ID."
 
-#: src/Admin/API/Reports/Export/Controller.php:176
+#: src/Admin/API/Reports/Export/Controller.php:214
 msgid "Your report file is being generated."
 msgstr "Deine Berichtsdatei wird generiert."
 
-#: src/Admin/API/Reports/Export/Controller.php:167
+#: src/Admin/API/Reports/Export/Controller.php:205
 msgid "There is no data to export for the given request."
 msgstr "Für die angegebene Anfrage liegen keine zu exportierenden Daten vor."
 
-#: src/Admin/API/Reports/Export/Controller.php:136
+#: src/Admin/API/Reports/Export/Controller.php:174
 msgid "Export download URL."
 msgstr "Download-URL exportieren."
 
-#: src/Admin/API/Reports/Export/Controller.php:130
+#: src/Admin/API/Reports/Export/Controller.php:168
 msgid "Percentage complete."
 msgstr "Abgeschlossener Prozentsatz."
 
@@ -26422,11 +26438,11 @@ msgstr "Datennachricht neu generieren."
 msgid "Regeneration status."
 msgstr "Status der erneuten Generierung."
 
-#: src/Admin/API/Reports/Export/Controller.php:76
+#: src/Admin/API/Reports/Export/Controller.php:77
 msgid "When true, email a link to download the export to the requesting user."
 msgstr "Wenn wahr, einen Link zum Herunterladen des Exports per E-Mail an den Anfragesteller senden."
 
-#: src/Admin/API/Reports/Export/Controller.php:71
+#: src/Admin/API/Reports/Export/Controller.php:72
 msgid "Parameters to pass on to the exported report."
 msgstr "An den exportierten Bericht zu übergebende Parameter."
 
@@ -28812,7 +28828,7 @@ msgstr "Für Steuerklasse ist ein gültiger Name erforderlich"
 
 #. translators: 1: URL of WordPress.org Repository 2: URL of the GitHub
 #. Repository release page
-#: includes/class-woocommerce.php:1407
+#: includes/class-woocommerce.php:1415
 msgid "Or you can download a pre-built version of the plugin from the <a href=\"%1$s\">WordPress.org repository</a> or by visiting <a href=\"%2$s\">the releases page in the GitHub repository</a>."
 msgstr "Oder du kannst eine vorkonfigurierte Version des Plugins aus dem <a href=\"%1$s\">WordPress.org-Repository</a> oder von der <a href=\"%2$s\">Release-Seite im GitHub-Repository </a> herunterladen."
 
@@ -30058,7 +30074,7 @@ msgstr "%1$s ist nicht gültig. Du kannst den richtigen Eircode <a target=\"_bla
 #. translators: %s: product name
 #: includes/class-wc-cart.php:915
 #: includes/shortcodes/class-wc-shortcode-checkout.php:170
-#: src/StoreApi/Utilities/OrderController.php:764
+#: src/StoreApi/Utilities/OrderController.php:806
 msgid "Sorry, we do not have enough \"%1$s\" in stock to fulfill your order (%2$s available). We apologize for any inconvenience caused."
 msgstr "Leider haben wir nicht genügend „%1$s“ vorrätig, um deine Bestellung abzuwickeln (%2$s verfügbar). Wir bitten um Entschuldigung für etwaige Unannehmlichkeiten."
 
@@ -31074,14 +31090,14 @@ msgstr "Bitte lies und akzeptiere die Allgemeinen Geschäftsbedingungen, um mit 
 
 #: includes/class-wc-checkout.php:202 includes/class-wc-emails.php:83
 #: includes/class-wc-payment-gateways.php:70 includes/class-wc-shipping.php:89
-#: includes/class-woocommerce.php:195
+#: includes/class-woocommerce.php:196
 #: includes/rest-api/Utilities/SingletonTrait.php:49
 msgid "Unserializing instances of this class is forbidden."
 msgstr "Das Deserialisieren von Instanzen dieser Klasse ist unzulässig."
 
 #: includes/class-wc-checkout.php:195 includes/class-wc-emails.php:73
 #: includes/class-wc-payment-gateways.php:61 includes/class-wc-shipping.php:80
-#: includes/class-woocommerce.php:184
+#: includes/class-woocommerce.php:185
 msgid "Cloning is forbidden."
 msgstr "Klonen ist unzulässig."
 
@@ -32840,7 +32856,7 @@ msgstr "Bitte gib eine gültige E-Mail-Adresse ein"
 
 #. translators: %s: product name
 #: includes/shortcodes/class-wc-shortcode-checkout.php:156
-#: src/StoreApi/Utilities/OrderController.php:737
+#: src/StoreApi/Utilities/OrderController.php:779
 msgid "Sorry, \"%s\" is no longer in stock so this order cannot be paid for. We apologize for any inconvenience caused."
 msgstr "Leider ist „%s“ nicht mehr vorrätig, sodass diese Bestellung nicht bezahlt werden kann. Wir bitten um Entschuldigung für etwaige Unannehmlichkeiten."
 
@@ -35496,7 +35512,7 @@ msgid "Theme version."
 msgstr "Theme Version."
 
 #: includes/rest-api/Controllers/Version2/class-wc-rest-system-status-v2-controller.php:487
-#: src/Admin/API/OnboardingThemes.php:194
+#: src/Admin/API/OnboardingThemes.php:209
 msgid "Theme name."
 msgstr "Theme Name."
 
@@ -36714,7 +36730,7 @@ msgstr "Um Produktvarianten zu bearbeiten, solltest du den Endpunkt /products/&l
 #: includes/rest-api/Controllers/Version3/class-wc-rest-crud-controller.php:43
 #: includes/rest-api/Controllers/Version3/class-wc-rest-crud-controller.php:114
 #: includes/rest-api/Controllers/Version3/class-wc-rest-crud-controller.php:127
-#: src/Admin/API/Reports/DataStore.php:280 src/Admin/API/Reports/Query.php:39
+#: src/Admin/API/Reports/DataStore.php:292 src/Admin/API/Reports/Query.php:39
 msgid "Method '%s' not implemented. Must be overridden in subclass."
 msgstr "Methode '%s' nicht implementiert. Muss in Sub-Klasse überschrieben werden."
 
@@ -44982,6 +44998,10 @@ msgstr "Gutschein wurde entfernt."
 #: includes/class-wc-ajax.php:319
 msgid "Sorry there was a problem removing this coupon."
 msgstr "Leider gab es ein Problem beim Löschen dieses Gutscheins."
+
+#: includes/admin/helper/class-wc-helper-subscriptions-api.php:355
+msgid "You do not have permission to switch themes."
+msgstr "Du hast keine Berechtigung, das Theme zu wechseln."
 
 #. translators: %s item name.
 #: includes/class-wc-ajax.php:1542

@@ -3,7 +3,7 @@
  * Plugin Name: Media Lab Agency Core
  * Plugin URI: https://github.com/media-admin/media-lab-starter-kit
  * Description: Core functionality for Media Lab agency websites. Provides shortcodes, security features, and admin customizations.
- * Version:           1.19.2
+ * Version:           1.20.0
  * Author: Media Lab
  * Author URI: https://medialab.at
  * Text Domain: media-lab-core
@@ -14,7 +14,7 @@
 
 if (!defined('ABSPATH')) { exit; }
 
-define('MEDIALAB_CORE_VERSION', '1.19.2');
+define('MEDIALAB_CORE_VERSION', '1.20.0');
 define('MEDIALAB_CORE_FILE', __FILE__);
 define('MEDIALAB_CORE_PATH', plugin_dir_path(__FILE__));
 define('MEDIALAB_CORE_URL', plugin_dir_url(__FILE__));
@@ -26,7 +26,6 @@ function medialab_core_init() {
     // ── Core ─────────────────────────────────────────────
     require_once MEDIALAB_CORE_PATH . 'inc/shortcodes.php';
     require_once MEDIALAB_CORE_PATH . 'inc/social-share.php';
-    require_once MEDIALAB_CORE_PATH . 'inc/security.php';
     require_once MEDIALAB_CORE_PATH . 'inc/admin.php';
     require_once MEDIALAB_CORE_PATH . 'inc/helpers.php';
     require_once MEDIALAB_CORE_PATH . 'inc/ajax-search.php';
@@ -75,6 +74,10 @@ function medialab_core_init() {
     require_once MEDIALAB_CORE_PATH . 'inc/class-mla-security-scanner.php';
     MLA_Security_Scanner::instance();
 
+    // ── Heartbeat Monitoring — since 1.20.0 ───────────────
+    require_once MEDIALAB_CORE_PATH . 'inc/heartbeat.php';
+
+    // ── SMTP OAuth — since 1.??.0 ─────────────────────────
     require_once MEDIALAB_CORE_PATH . 'inc/smtp-oauth.php';
     $GLOBALS['medialab_smtp_oauth'] = new MediaLab_SMTP_OAuth();
 
