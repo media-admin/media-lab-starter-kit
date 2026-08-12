@@ -180,6 +180,60 @@ class MediaLab_Price_Calculator {
         
         return $breakdown;
     }
+
+    /**
+     * Liefert für jede Preisstufe (get_all_tiers()) den korrekten Preis pro
+     * Stück - netto, brutto und den zur Shop-Anzeigeeinstellung passenden
+     * Wert - basierend auf dem übergebenen Preis pro Stück VOR Mengenrabatt
+     * (also demselben Wert wie $breakdown['subtotal'] aus get_breakdown()).
+     *
+     * Behebt den Staffelpreis-Doppelsteuer-Bug: configurator.js
+     * (calculateTierPrice()) hat den client-seitig übergebenen subtotal-Wert
+     * bislang IMMER als netto behandelt und bei Bruttopreis-Anzeige selbst
+     * Steuer aufgeschlagen. Bei Bruttopreis-EINGABE
+     * (woocommerce_prices_include_tax = yes, üblich bei DACH-B2C-Shops) ist
+     * subtotal aber bereits brutto - die Steuer wurde dadurch ein zweites
+     * Mal aufgeschlagen. Diese Methode nutzt stattdessen dieselben
+     * WooCommerce-Steuerfunktionen wie get_breakdown() (keine geratene
+     * Netto/Brutto-Logik mehr), sodass der Client den fertig berechneten
+     * Wert nur noch nachschlagen muss (siehe calculateTierPrice() in
+     * configurator.js und tiers_with_prices in ajax_calculate_price()).
+     *
+     * @param float $subtotal Preis pro Stück vor Mengenrabatt (Basispreis + Aufschläge).
+     * @return array<int,array{min_quantity:int,discount_percent:float,unit_price_net:float,unit_price_gross:float,unit_price:float}>
+     */
+    public function get_tiers_with_prices( float $subtotal ): array {
+        $product     = wc_get_product( $this->product_id );
+        $tiers       = $this->get_all_tiers();
+        $tax_display = get_option( 'woocommerce_tax_display_shop', 'excl' );
+        $result      = [];
+
+        foreach ( $tiers as $tier ) {
+            $discount_percent    = floatval( $tier['discount_percent'] ) / 100;
+            $unit_after_discount = $subtotal * ( 1 - $discount_percent );
+
+            if ( $product && wc_tax_enabled() && $product->is_taxable() ) {
+                $unit_net   = wc_get_price_excluding_tax( $product, array( 'qty' => 1, 'price' => $unit_after_discount ) );
+                $unit_gross = wc_get_price_including_tax( $product, array( 'qty' => 1, 'price' => $unit_after_discount ) );
+            } else {
+                $unit_net   = $unit_after_discount;
+                $unit_gross = $unit_after_discount;
+            }
+
+            $result[] = array(
+                'min_quantity'     => (int) $tier['min_quantity'],
+                'discount_percent' => floatval( $tier['discount_percent'] ),
+                'unit_price_net'   => $unit_net,
+                'unit_price_gross' => $unit_gross,
+                // Anzeige-Preis entsprechend derselben Shop-Einstellung wie
+                // unit_price in get_breakdown() - damit Live-Vorschau und
+                // Staffeltabelle immer konsistent zueinander sind.
+                'unit_price'       => $tax_display === 'incl' ? $unit_gross : $unit_net,
+            );
+        }
+
+        return $result;
+    }
     
     /**
      * Check if option matches selection
