@@ -283,10 +283,23 @@ if (!empty($remaining_tabs)) {
             </thead>
             <tbody>
                 <?php foreach ($tiers as $tier) : ?>
-                <tr :class="{ 'is-active': config.quantity >= <?php echo $tier['min_quantity']; ?> }">
-                    <td>ab <?php echo $tier['min_quantity']; ?> Stück</td>
-                    <td><?php echo $tier['discount_percent']; ?>%</td>
-                    <td x-text="calculateTierPrice(<?php echo $tier['discount_percent']; ?>)"></td>
+                <?php
+                // Explizite (int)/(float)-Casts beim Ausgeben in den JS-Kontext:
+                // ACF liefert Number-Felder je nach Konfiguration/Locale nicht
+                // zuverlässig als PHP-Zahl (z.B. numerischer String). Ohne Cast
+                // könnte calculateTierPrice() in configurator.js einen Wert
+                // erhalten, der beim client-seitigen parseFloat()-Vergleich
+                // gegen tiers_with_prices (siehe class-price-calculator.php)
+                // nicht matcht - die Funktion würde dann stumm auf ihren
+                // Fallback ausweichen statt den serverseitig korrekt
+                // berechneten Staffelpreis zu finden.
+                $tier_min_qty  = (int) $tier['min_quantity'];
+                $tier_discount = (float) $tier['discount_percent'];
+                ?>
+                <tr :class="{ 'is-active': config.quantity >= <?php echo $tier_min_qty; ?> }">
+                    <td>ab <?php echo $tier_min_qty; ?> Stück</td>
+                    <td><?php echo esc_html( $tier['discount_percent'] ); ?>%</td>
+                    <td x-text="calculateTierPrice(<?php echo $tier_discount; ?>)"></td>
                 </tr>
                 <?php endforeach; ?>
             </tbody>
