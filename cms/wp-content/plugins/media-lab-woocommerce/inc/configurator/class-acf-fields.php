@@ -109,6 +109,13 @@ class MediaLab_Configurator_ACF_Fields {
                                 'file_upload' => 'Datei-Upload',
                                 'size_matrix' => 'Größen-Matrix (für Textilien)',
                                 'color_picker' => 'Farbauswahl',
+                                // Wird von wizard.php, class-configurator.php und
+                                // class-price-calculator.php bereits aktiv unterstützt
+                                // (eigener switch-Case + Validierungslogik), fehlte hier
+                                // aber in den ACF-Choices - dadurch im Produkt-Editor
+                                // nicht auswählbar, obwohl die Inquiry-Engine serverseitig
+                                // Name/E-Mail aus genau diesem Step-Typ verlangt.
+                                'contact_form' => 'Kontaktformular',
                             ),
                             'default_value' => 'select',
                             'required' => 1,
