@@ -75,14 +75,31 @@ class MediaLab_Product_Configurator {
     }
     
     public function get_configuration_steps($product_id) {
-        $config_type = get_post_meta($product_id, 'config_type', true);
-        
-        // Textile System: Lade Steps aus Custom Post Types
-        if ($config_type === 'textile') {
-            return $this->get_textile_steps($product_id);
-        }
-        
-        // Standard System: Lade Steps aus ACF Repeater
+        /**
+         * Vormals: bei Konfigurator-Typ 'textile' wurden die Steps über
+         * get_textile_steps() aus separaten CPT-Posts geladen (Post-IDs
+         * erwartet in der 'config_steps'-Postmeta). Diese CPT-Registrierung
+         * existiert im Plugin nirgends - die tatsächlichen Konfigurations-
+         * schritte werden für ALLE Konfigurator-Typen im selben
+         * ACF-Repeater-Feld 'config_steps' direkt auf dem Produkt
+         * gespeichert (siehe class-acf-fields.php, field_config_steps).
+         *
+         * Der rohe get_post_meta($product_id, 'config_steps', true)-Aufruf
+         * in get_textile_steps() liefert bei einem ACF-Repeater aber NICHT
+         * die Zeilen, sondern nur die interne Zeilenanzahl als String
+         * (z.B. "5") - der is_array()-Check dort schlug dadurch IMMER fehl,
+         * get_textile_steps() gab IMMER ein leeres Array zurück. Jedes
+         * Produkt mit Konfigurator-Typ "Textilien" zeigte dadurch 0 Schritte
+         * (direkter Sprung zur Zusammenfassung), unabhängig davon wie viele
+         * Zeilen im Repeater tatsächlich gepflegt waren.
+         *
+         * Fix: ALLE Konfigurator-Typen laden konsistent aus dem
+         * ACF-Repeater. get_textile_steps() bleibt unverändert im Code
+         * stehen (privat, ungenutzt) statt sie zu löschen - falls das
+         * CPT-basierte System an anderer, uns nicht vorliegender Stelle
+         * doch noch benötigt wird, ist der Code weiterhin vorhanden und
+         * kann gezielt reaktiviert werden.
+         */
         $steps = get_field('config_steps', $product_id);
         return $steps ? $steps : array();
     }
@@ -116,6 +133,7 @@ class MediaLab_Product_Configurator {
             );
         }
         
+
         return $steps;
     }
     
