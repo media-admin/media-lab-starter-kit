@@ -342,10 +342,37 @@ function productConfigurator(initialData) {
         },
         
         calculateTierPrice(discountPercent) {
-            // Muss exakt derselben Logik folgen wie class-price-calculator.php:
-            // MwSt. nur aufschlagen, wenn der Shop laut WooCommerce-Einstellung
-            // (woocommerce_tax_display_shop) Bruttopreise anzeigt - sonst bleibt
-            // es netto, damit die Tabelle zur restlichen Shop-Darstellung passt.
+            // Bevorzugt den vom Server bereits fertig berechneten Preis nutzen
+            // (siehe class-price-calculator.php, get_tiers_with_prices() und
+            // class-configurator.php, ajax_calculate_price()). Die alte,
+            // rein client-seitige Berechnung unten nutzte fälschlich
+            // tax_display_mode (Anzeige-Einstellung) statt der tatsächlichen
+            // Preiseingabe-Basis als Kriterium dafür, ob nochmal Steuer
+            // aufgeschlagen wird - bei Bruttopreis-Eingabe (üblich in
+            // DACH-B2C-Shops) wurde die im subtotal bereits enthaltene
+            // Steuer dadurch ein zweites Mal aufgeschlagen (siehe
+            // BACKLOG.md, "doppelte MwSt.-Berechnung in der
+            // Staffelpreis-Tabelle").
+            //
+            // parseFloat() auf beiden Seiten des Vergleichs, da
+            // discount_percent aus PHP/ACF je nach Konfiguration mal als
+            // Zahl, mal als numerischer String im JSON ankommen kann und
+            // wizard.php den Parameter direkt als PHP-Ausgabewert übergibt
+            // (<?php echo $tier['discount_percent']; ?>).
+            if (this.priceBreakdown && Array.isArray(this.priceBreakdown.tiers_with_prices)) {
+                const tier = this.priceBreakdown.tiers_with_prices.find(
+                    (t) => parseFloat(t.discount_percent) === parseFloat(discountPercent)
+                );
+                if (tier) {
+                    return this.formatPrice(tier.unit_price);
+                }
+            }
+
+            // Fallback: alte, client-seitige Näherung - nur relevant, falls
+            // priceBreakdown ausnahmsweise noch KEIN tiers_with_prices enthält
+            // (z.B. während einer Deploy-Übergangsphase mit älterem
+            // Server-Stand). Absichtlich unverändert belassen als Sicherheitsnetz,
+            // NICHT als primärer Berechnungsweg.
             const price = this.priceBreakdown ? this.priceBreakdown.subtotal : this.basePrice;
             const taxRate = this.priceBreakdown ? this.priceBreakdown.tax_rate : 0;
             const showGross = this.priceBreakdown && this.priceBreakdown.tax_display_mode === 'incl';
