@@ -313,6 +313,16 @@ if (!empty($remaining_tabs)) {
                 x-text="currentStep === totalSteps ? 'Zur Zusammenfassung' : 'Weiter →'">
         </button>
         
+        <?php
+        /**
+         * Wishlist-Button nur ausgeben, wenn das Wishlist-Modul (inc/wishlist/)
+         * im Projekt tatsächlich mitgeliefert wird. Ohne Guard erschien der
+         * Button unconditional im Markup - für Projekte ohne Wishlist-Modul
+         * (z.B. at.janecka-2026) ein sichtbarer, aber funktionsloser Button,
+         * dessen AJAX-Request gegen einen nicht-existenten Endpoint lief.
+         */
+        if ( class_exists( 'MediaLab_Wishlist_Ajax' ) ) :
+        ?>
         <button type="button" 
                 class="button button--secondary configurator-nav__button"
                 @click="addToWishlist()"
@@ -321,6 +331,7 @@ if (!empty($remaining_tabs)) {
             <span x-show="!isProcessing" x-text="configuratorData.wishlistAddLabel || 'Zur Wunschliste hinzufügen'">Zur Wunschliste hinzufügen</span>
             <span x-show="isProcessing">…</span>
         </button>
+        <?php endif; ?>
 
         <button type="button" 
                 class="button button--primary button--large configurator-nav__button configurator-nav__button--full"
