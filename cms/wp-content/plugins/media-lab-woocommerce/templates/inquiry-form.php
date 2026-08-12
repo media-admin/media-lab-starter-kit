@@ -5,6 +5,10 @@
  * Rendert die in den Inquiry-Einstellungen konfigurierten Zusatzfelder
  * (Pflicht/Optional, je nach Projekt editierbar) sowie die Datenschutz-
  * Zustimmung dynamisch - siehe inc/inquiry/class-settings.php.
+ *
+ * Aufruf: Shortcode [mlw_inquiry_form], siehe inc/inquiry/class-shortcode.php.
+ * Für die Nutzung außerhalb des automatischen Catalog-Mode-Checkout-Flows
+ * gedacht, z.B. auf einer eigenen Landingpage oder in einem Content-Block.
  */
 defined('ABSPATH') || exit;
 
