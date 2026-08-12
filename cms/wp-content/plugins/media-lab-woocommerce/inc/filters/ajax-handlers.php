@@ -8,6 +8,31 @@
 defined( 'ABSPATH' ) || exit;
 
 // ---------------------------------------------------------------------------
+// Nonce-Prüfung mit Fallback auf abweichenden Nonce-Action-Namen
+// ---------------------------------------------------------------------------
+
+/**
+ * Prüft den Filter-Nonce gegen die eigenen ('mlwf_filter_nonce') UND eine
+ * bei manchen Theme-Konventionen abweichende ('ajax_filters_nonce')
+ * Nonce-Action - z.B. Janeckas Theme erzeugt den Nonce unter letzterem
+ * Namen. Ohne diesen Fallback schlägt jeder Filter-Request bei solchen
+ * Projekten mit 403 fehl, obwohl die Anfrage selbst legitim ist.
+ *
+ * Bricht die Anfrage mit einer JSON-Fehlerantwort ab, falls keiner der
+ * beiden Nonces gültig ist (Verhalten bewusst analog zu check_ajax_referer()
+ * mit $die = true, nur eben mit zwei akzeptierten Action-Namen statt einem).
+ */
+function mlwf_verify_filter_nonce(): void {
+	$nonce = sanitize_text_field( wp_unslash( $_POST['nonce'] ?? '' ) );
+
+	if ( wp_verify_nonce( $nonce, 'mlwf_filter_nonce' ) || wp_verify_nonce( $nonce, 'ajax_filters_nonce' ) ) {
+		return;
+	}
+
+	wp_send_json_error( __( 'Sicherheitsprüfung fehlgeschlagen. Bitte lade die Seite neu und versuche es erneut.', 'medialab-woo-filters' ), 403 );
+}
+
+// ---------------------------------------------------------------------------
 // Produkte filtern
 // ---------------------------------------------------------------------------
 
@@ -18,8 +43,17 @@ add_action( 'wp_ajax_nopriv_mlwf_filter_products', 'mlwf_ajax_filter_products' )
 add_action( 'wp_ajax_janecka_filter_products',        'mlwf_ajax_filter_products' );
 add_action( 'wp_ajax_nopriv_janecka_filter_products', 'mlwf_ajax_filter_products' );
 
+// Theme-Alias: manche Theme-Konventionen (z.B. Janeckas Theme) senden den
+// AJAX-Filter-Request unter der Action 'ajax_filter_posts' statt
+// 'janecka_filter_products'/'mlwf_filter_products'. Zusätzlicher, rein
+// additiver Alias - wirkungslos für Projekte, die den Namen nicht nutzen,
+// schützt aber vor einem stillen Totalausfall der Filterfunktion bei
+// Projekten mit ähnlicher Theme-Konvention wie Janecka.
+add_action( 'wp_ajax_ajax_filter_posts',        'mlwf_ajax_filter_products' );
+add_action( 'wp_ajax_nopriv_ajax_filter_posts', 'mlwf_ajax_filter_products' );
+
 function mlwf_ajax_filter_products(): void {
-	check_ajax_referer( 'mlwf_filter_nonce', 'nonce' );
+	mlwf_verify_filter_nonce();
 
 	// ── GZD Loop-Hooks bei AJAX-Pagination entfernen ────────────────────────
 	//
@@ -215,7 +249,10 @@ add_action( 'wp_ajax_janecka_get_price_range',        'mlwf_ajax_get_price_range
 add_action( 'wp_ajax_nopriv_janecka_get_price_range', 'mlwf_ajax_get_price_range' );
 
 function mlwf_ajax_get_price_range(): void {
-	check_ajax_referer( 'mlwf_filter_nonce', 'nonce' );
+	// Selber Nonce-Fallback wie mlwf_ajax_filter_products() - wird vom
+	// selben Filter-Bar-JS beim Öffnen des Preis-Sliders angefragt und
+	// wäre ohne den Fallback der gleichen 403-Falle ausgesetzt.
+	mlwf_verify_filter_nonce();
 
 	$category_slug = sanitize_text_field( $_POST['category'] ?? '' );
 	$brand_slug    = sanitize_text_field( $_POST['brand']    ?? '' );
