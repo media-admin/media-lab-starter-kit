@@ -253,3 +253,83 @@ selbst gefixt werden.
 eingegeben, `woocommerce_prices_include_tax = yes`. Menge auf die
 Rabatt-Schwelle setzen, Live-Vorschau (richtig) gegen Staffeltabellen-Wert
 (falsch) vergleichen.
+
+---
+
+## juwelier-janecka Theme: `janecka_product_card_show_actions`-Filter global statt lokal
+
+**Verifiziert offen** (08/2026, `inc/woocommerce/hooks-archive.php`,
+Zeile 385).
+
+```php
+remove_action( 'woocommerce_no_products_found', 'wc_no_products_found' );
+add_action( 'woocommerce_no_products_found', 'janecka_wc_no_products_found' );
+add_filter( 'janecka_product_card_show_actions', '__return_false' );   // ← global, Zeile 385
+
+function janecka_wc_no_products_found(): void {
+    // ...
+}
+```
+
+Der Filter wird auf oberster Dateiebene registriert, nicht innerhalb von
+`janecka_wc_no_products_found()`. Dadurch unterdrückt er die Action-Buttons
+(`janecka_product_card_actions_hook()`, Zeile 216: `if ( ! apply_filters(
+'janecka_product_card_show_actions', true ) ) return;`) auf **jeder**
+Archivseite dauerhaft, nicht nur im "keine Produkte gefunden"-Fall, für
+den er gedacht war.
+
+**Fix:** Filter-Registrierung in die Funktion verschieben:
+
+```php
+function janecka_wc_no_products_found(): void {
+    add_filter( 'janecka_product_card_show_actions', '__return_false' );
+    // ... restlicher Funktionsinhalt unverändert
+}
+```
+
+Niedriges Risiko (reine Verschiebung von einer Zeile), noch nicht
+eingespielt.
+
+---
+
+## media-lab-backup: `cleanup()` löscht Dateien anderer paralleler Jobs
+
+**Verifiziert offen** (08/2026,
+`includes/class-mlb-backup-runner.php`, Zeile 270–278).
+
+```php
+private function cleanup(): void {
+    $this->maybe_stop_caffeinate();
+    $this->log( '🧹 Temp-Dateien aufräumen …' );
+    $files = glob( $this->temp_dir . '*.{sql,sql.gz,zip}', GLOB_BRACE );
+    foreach ( (array) $files as $file ) {
+        @unlink( $file );
+    }
+}
+```
+
+`glob()` matched **alle** Backup-Dateien im gemeinsamen Temp-Verzeichnis,
+unabhängig vom Job, der sie erzeugt hat — kein Job-Präfix, kein
+Unterordner, kein Lock-Mechanismus gegen gleichzeitige Jobs.
+
+**Live reproduziert** (frühere Session): Ein paralleler DB-only-Job hat
+mit seinem `cleanup()`-Aufruf eine große ZIP-Datei eines anderen, noch
+laufenden Full-Backup-Jobs mitten im SFTP-Upload gelöscht — der Stream
+hing danach als Zombie-Status in der DB fest.
+
+**Skizzierter Fix:**
+- Pro-Job-Unterverzeichnis (`temp/{log_id}/`) statt gemeinsamem `temp_dir`,
+  oder
+- Glob-Filter mit Job-ID/Timestamp-Präfix im Dateinamen
+- Zusätzlich: genereller Lock-Mechanismus gegen gleichzeitig laufende
+  Backup-Jobs (aktuell keiner vorhanden)
+
+### Verwandt, noch nicht verifiziert: Live-Log-Persistenz
+
+Feature-Wunsch aus früherer Session, Verifikationsstatus unklar: Der
+Live-Log im "Backup starten"-Tab soll beim Zurückkehren zum Tab, während
+ein Job noch `status=running` in der DB steht, automatisch aus der DB
+wiederhergestellt und das Polling fortgesetzt werden — aktuell rein
+client-seitiges JS-Polling ohne Rehydrierung nach Tab-Wechsel. Vor
+Umsetzung: aktuellen Stand in `class-mlb-logger.php`/zugehörigem JS
+prüfen, ob das inzwischen schon existiert.
