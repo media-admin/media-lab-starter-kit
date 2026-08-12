@@ -445,6 +445,15 @@ class MediaLab_Product_Configurator {
         $calculator = new MediaLab_Price_Calculator($product_id);
         
         $price_breakdown = $calculator->get_breakdown($config);
+
+        // Serverseitig berechnete Staffelpreise ergänzen (siehe
+        // class-price-calculator.php, get_tiers_with_prices()). Ersetzt die
+        // bisherige rein client-seitige Berechnung in configurator.js
+        // (calculateTierPrice()), die bei Bruttopreis-Eingabe UND
+        // Anzeige-Einstellung 'incl' die Steuer doppelt aufschlug, weil sie
+        // fälschlich die Anzeige- statt der Eingabe-Einstellung als
+        // Kriterium nutzte (siehe BACKLOG.md).
+        $price_breakdown['tiers_with_prices'] = $calculator->get_tiers_with_prices( $price_breakdown['subtotal'] );
         
         wp_send_json_success($price_breakdown);
     }
