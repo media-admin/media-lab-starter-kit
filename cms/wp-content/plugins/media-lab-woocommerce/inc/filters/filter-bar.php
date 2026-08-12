@@ -201,6 +201,37 @@ function mlwf_render_filter_bar(): void {
 
 		</form>
 
+		<?php
+		/**
+		 * Sortier-Layout: Filter- und Sortier-Gruppe in zwei getrennten,
+		 * nebeneinanderliegenden Containern - generisch sinnvoller Kandidat
+		 * für den Starter Kit (im Gegensatz zu projektspezifischen Dingen
+		 * wie der brand-is-active-Filterung).
+		 *
+		 * Bewusst AUSSERHALB von .js-filter-form: woocommerce_catalog_ordering()
+		 * gibt selbst ein <form>-Tag aus, ein verschachteltes <form> wäre
+		 * ungültiges HTML und würde vom Browser aufgebrochen. Zwei getrennte
+		 * Gruppen-Container nebeneinander (per CSS) vermeiden das.
+		 *
+		 * Per apply_filters() abschaltbar, ohne filter-config.php anfassen zu
+		 * müssen:
+		 *   add_filter( 'mlwf_filter_bar_show_sort', '__return_false' );
+		 *
+		 * Hinweis: Für eine vollständig AJAX-integrierte Sortierung (ohne
+		 * volles Page-Reload beim Wechsel) muss das Sortier-Dropdown zusätzlich
+		 * im Filter-JS (ajax-filters.js) auf 'change' abgefangen und der Wert
+		 * als orderby-Parameter in den bestehenden Filter-Request eingespeist
+		 * werden - das JS lag bei dieser Umsetzung nicht vor, daher hier nur
+		 * die Markup-Seite. Bis dahin sortiert das Dropdown per normalem
+		 * WooCommerce-Verhalten (GET-Parameter + Page-Reload).
+		 */
+		if ( apply_filters( 'mlwf_filter_bar_show_sort', true ) ) :
+		?>
+		<div class="wc-filter-bar__groups-sort">
+			<?php woocommerce_catalog_ordering(); ?>
+		</div>
+		<?php endif; ?>
+
 		<div class="wc-active-filters js-active-filters"></div>
 
 	</div><!-- .wc-filter-bar -->
