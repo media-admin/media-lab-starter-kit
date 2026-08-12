@@ -102,22 +102,57 @@ class MediaLab_Inquiry_Mail {
                 $html .= '</table>';
             }
 
-            // Preisaufschlüsselung, falls vorhanden
+            // Preisaufschlüsselung, falls vorhanden.
+            //
+            // Vorher wurden nur base_price, additions, tier_discount und total
+            // gezeigt - der Gesamtbetrag war zwar korrekt (inkl. Steuer), für
+            // den Kunden aber nicht nachvollziehbar, wie er zustande kommt.
+            // Ergänzt um Zwischensumme/Stück, Menge, Zwischensumme vor Steuer
+            // und eine eigene MwSt.-Zeile. Alle neuen Felder sind optional
+            // (isset-Checks) - price_breakdown-Arrays im alten, schmaleren
+            // Format (z.B. aus älteren Aufrufern) werden weiterhin unterstützt.
             if ( ! empty( $item['price_breakdown'] ) && is_array( $item['price_breakdown'] ) && function_exists( 'wc_price' ) ) {
                 $pb = $item['price_breakdown'];
+                $breakdown_qty = isset( $pb['quantity'] ) ? (int) $pb['quantity'] : $qty;
+
                 $html .= '<table cellpadding="4" cellspacing="0" border="0" style="width:100%;margin-top:6px;border-top:1px solid #eee">';
+
                 if ( isset( $pb['base_price'] ) ) {
                     $html .= '<tr><td style="color:#666;width:40%">Basispreis</td><td>' . wp_kses_post( wc_price( $pb['base_price'] ) ) . '</td></tr>';
                 }
+
                 foreach ( $pb['additions'] ?? [] as $addition ) {
                     $html .= '<tr><td style="color:#666">+ ' . esc_html( $addition['label'] ?? '' ) . '</td><td>' . wp_kses_post( wc_price( $addition['price'] ?? 0 ) ) . '</td></tr>';
                 }
+
+                if ( isset( $pb['subtotal'] ) ) {
+                    $html .= '<tr><td style="color:#666;border-top:1px solid #f0f0f0"><strong>Zwischensumme (pro Stück)</strong></td><td style="border-top:1px solid #f0f0f0"><strong>' . wp_kses_post( wc_price( $pb['subtotal'] ) ) . '</strong></td></tr>';
+                }
+
+                if ( isset( $pb['quantity'] ) ) {
+                    $html .= '<tr><td style="color:#666">Menge</td><td>' . $breakdown_qty . ' Stück</td></tr>';
+                }
+
                 if ( ! empty( $pb['tier_discount'] ) ) {
-                    $html .= '<tr><td style="color:#666">Mengenrabatt</td><td>-' . wp_kses_post( wc_price( $pb['tier_discount'] * $qty ) ) . '</td></tr>';
+                    $discount_label = 'Mengenrabatt';
+                    if ( isset( $pb['tier_discount_percent'] ) ) {
+                        $discount_label .= ' (' . round( $pb['tier_discount_percent'] * 100 ) . '%)';
+                    }
+                    $html .= '<tr><td style="color:#666">' . esc_html( $discount_label ) . '</td><td>-' . wp_kses_post( wc_price( $pb['tier_discount'] * $breakdown_qty ) ) . '</td></tr>';
                 }
+
+                if ( isset( $pb['total_before_tax'] ) ) {
+                    $html .= '<tr><td style="color:#666;border-top:1px solid #eee">Zwischensumme</td><td style="border-top:1px solid #eee">' . wp_kses_post( wc_price( $pb['total_before_tax'] ) ) . '</td></tr>';
+                }
+
+                if ( ! empty( $pb['tax_rate'] ) && isset( $pb['tax_amount'] ) ) {
+                    $html .= '<tr><td style="color:#666">MwSt. (' . esc_html( (string) $pb['tax_rate'] ) . '%)</td><td>' . wp_kses_post( wc_price( $pb['tax_amount'] ) ) . '</td></tr>';
+                }
+
                 if ( isset( $pb['total'] ) ) {
-                    $html .= '<tr><td><strong>Gesamt</strong></td><td><strong>' . wp_kses_post( wc_price( $pb['total'] ) ) . '</strong></td></tr>';
+                    $html .= '<tr><td style="border-top:2px solid #ddd"><strong>Gesamt</strong></td><td style="border-top:2px solid #ddd"><strong>' . wp_kses_post( wc_price( $pb['total'] ) ) . '</strong></td></tr>';
                 }
+
                 $html .= '</table>';
             }
 
