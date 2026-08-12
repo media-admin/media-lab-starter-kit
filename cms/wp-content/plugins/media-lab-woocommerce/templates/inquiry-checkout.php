@@ -88,19 +88,28 @@ $mlw_submit_label     = class_exists( 'MediaLab_Inquiry_Settings' ) ? MediaLab_I
                             </tbody>
                             <tfoot>
                                 <?php
-                                // MwSt berechnen
-                                $tax_rate = 20; // Österreich Standard-Satz
-                                $tax_enabled = wc_tax_enabled();
-                                
-                                if ($tax_enabled) {
-                                    $tax_amount = $cart_subtotal * ($tax_rate / 100);
-                                    $cart_total = $cart_subtotal + $tax_amount;
-                                } else {
-                                    // Falls MwSt deaktiviert, aus Preis rausrechnen
-                                    $net_amount = $cart_subtotal / (1 + $tax_rate / 100);
-                                    $tax_amount = $cart_subtotal - $net_amount;
-                                    $cart_total = $cart_subtotal;
-                                }
+                                /**
+                                 * Steuerberechnung über die echten WooCommerce-Cart-Totals statt
+                                 * eines hartcodierten Satzes (vormals `$tax_rate = 20;`). Damit
+                                 * respektieren wir Steuerklasse, Kundenland/-Steuerstatus und
+                                 * ggf. abweichende Sätze pro Produkt - identisch zur Berechnung,
+                                 * die class-price-calculator.php für den Konfigurator nutzt
+                                 * (wc_get_price_excluding_tax()/wc_get_price_including_tax()).
+                                 *
+                                 * WC()->cart->get_subtotal() liefert die Netto-Zwischensumme,
+                                 * get_subtotal_tax() den darauf entfallenden Steuerbetrag,
+                                 * get_total('edit') den rohen (unformatierten) Bruttogesamtbetrag.
+                                 * $display_tax_rate dient NUR der Anzeige im Label und ist keine
+                                 * Berechnungsgrundlage mehr - bei gemischten Steuerklassen im
+                                 * Warenkorb zeigt er einen gerundeten Mischsatz.
+                                 */
+                                $tax_enabled             = wc_tax_enabled();
+                                $cart_subtotal_excl_tax  = (float) WC()->cart->get_subtotal();
+                                $cart_tax_amount         = (float) WC()->cart->get_subtotal_tax();
+                                $cart_total              = (float) WC()->cart->get_total( 'edit' );
+                                $display_tax_rate        = ( $tax_enabled && $cart_subtotal_excl_tax > 0 )
+                                    ? round( ( $cart_tax_amount / $cart_subtotal_excl_tax ) * 100, 1 )
+                                    : 0;
                                 ?>
                                 
                                 <tr style="border-top:1px solid #e0e0e0;">
@@ -108,18 +117,20 @@ $mlw_submit_label     = class_exists( 'MediaLab_Inquiry_Settings' ) ? MediaLab_I
                                         Zwischensumme:
                                     </td>
                                     <td style="text-align:right;padding:1rem 0;" class="cart-subtotal">
-                                        <strong><?php echo wc_price($cart_subtotal); ?></strong>
+                                        <strong><?php echo wc_price($cart_subtotal_excl_tax); ?></strong>
                                     </td>
                                 </tr>
                                 
+                                <?php if ( $tax_enabled ) : ?>
                                 <tr>
                                     <td colspan="3" style="text-align:right;padding:0.5rem 0;color:#666;font-size:14px;">
-                                        inkl. MwSt (<?php echo $tax_rate; ?>%):
+                                        zzgl. MwSt (<?php echo $display_tax_rate; ?>%):
                                     </td>
                                     <td style="text-align:right;padding:0.5rem 0;color:#666;font-size:14px;" class="cart-tax">
-                                        <?php echo wc_price($tax_amount); ?>
+                                        <?php echo wc_price($cart_tax_amount); ?>
                                     </td>
                                 </tr>
+                                <?php endif; ?>
                                 
                                 <tr style="border-top:2px solid #e0e0e0;">
                                     <td colspan="3" style="text-align:right;padding:1.5rem 0;font-size:18px;font-weight:700;">
