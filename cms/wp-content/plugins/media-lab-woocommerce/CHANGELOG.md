@@ -6,6 +6,43 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ---
 
+## [2.4.0] - 2026-08-12
+
+### media-lab-woocommerce 2.4.0
+
+Kompatibilitäts-Ergänzungen aus BACKLOG.md ("Paket B") - Filter-System
+kompatibler zu abweichenden Theme-Konventionen (Janecka-Merge), plus ein
+generisches Sortier-Layout für die Filter-Bar.
+
+#### Added
+
+- **Sortier-Layout** (`inc/filters/filter-bar.php`): WooCommerce's native
+  Sortierung (`woocommerce_catalog_ordering()`) wird jetzt standardmäßig in
+  einem eigenen `.wc-filter-bar__groups-sort`-Container neben den
+  Filter-Gruppen gerendert - abschaltbar per
+  `add_filter( 'mlwf_filter_bar_show_sort', '__return_false' )`. Bewusst
+  außerhalb von `.js-filter-form`, da `woocommerce_catalog_ordering()` ein
+  eigenes `<form>`-Tag ausgibt (kein verschachteltes `<form>` möglich).
+  **Follow-up offen:** volle AJAX-Integration (Sortierwechsel ohne
+  Page-Reload) erfordert einen zusätzlichen Change-Handler in
+  `ajax-filters.js` - lag bei diesem Release nicht vor.
+
+#### Fixed
+
+- **`inc/filters/ajax-handlers.php`:** Theme-Alias-Action `ajax_filter_posts`
+  ergänzt - manche Theme-Konventionen (z.B. Janeckas Theme) senden
+  AJAX-Filter-Requests unter diesem Namen statt
+  `janecka_filter_products`/`mlwf_filter_products`. Rein additiver Alias,
+  wirkungslos für Projekte, die den Namen nicht nutzen.
+- **`inc/filters/ajax-handlers.php`:** Duale Nonce-Prüfung
+  (`mlwf_filter_nonce` + `ajax_filters_nonce`) über neue
+  `mlwf_verify_filter_nonce()`-Hilfsfunktion, angewendet in
+  `mlwf_ajax_filter_products()` und `mlwf_ajax_get_price_range()`. Ohne
+  Fallback: 403 bei jedem Filter-Request in Projekten, deren Theme den
+  Nonce unter dem abweichenden Namen erzeugt.
+
+---
+
 ## [2.3.0] - 2026-08-12
 
 ### media-lab-woocommerce 2.3.0
