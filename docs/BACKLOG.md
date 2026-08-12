@@ -193,3 +193,63 @@ den damaligen WooCommerce-Sync richtig, ist aber durch dieses Ziel überholt.
 Eigene, dedizierte Session — vergleichbarer Umfang wie der Inquiry-Engine-
 Merge (7 Klassen, Frontend-Assets, Admin-Konfiguration), zusätzlich mit
 Migrations-/Cutover-Aufwand, den die Inquiry-Engine nicht hatte.
+
+---
+
+## Konfigurator: doppelte MwSt.-Berechnung in der Staffelpreis-Tabelle
+
+**Gefunden bei:** `at.janecka-2026`, Live-Test des Konfigurators (08/2026),
+Produkt mit `woocommerce_prices_include_tax = yes` (Bruttopreis-Eingabe).
+
+**Symptom:** Die Live-Preisvorschau (`estimatedPrice`, serverseitig über
+`class-price-calculator.php` → `get_breakdown()` berechnet) zeigt korrekte
+Werte. Die Staffelpreis-Tabelle im Wizard (`configurator.js`,
+`calculateTierPrice()`) zeigt bei identischer Menge/Rabatt einen
+**abweichenden, zu hohen** Preis/Stück.
+
+Beispiel: Basispreis 100€ + Material-Aufschlag 50€ = 150€/Stück,
+10% Mengenrabatt ab 5 Stück → korrekt 135€/Stück (Live-Vorschau, richtig),
+Tabelle zeigt 162€/Stück (falsch).
+
+**Ursache:** `calculateTierPrice()` in `assets/js/configurator.js` geht
+fest davon aus, dass `priceBreakdown.subtotal` ein **Nettopreis** ist, und
+schlägt bei `tax_display_mode === 'incl'` client-seitig nochmal 20% MwSt.
+drauf:
+
+```javascript
+let discounted = price * (1 - discountPercent / 100);
+if (showGross) {
+    discounted = discounted * (1 + taxRate / 100);
+}
+```
+
+Bei Brutto-Preiseingabe (`woocommerce_prices_include_tax = yes`, üblich
+für DACH-B2C-Shops) ist `subtotal` aber bereits brutto — die Funktion
+schlägt die Steuer dadurch ein zweites Mal auf. Betrifft vermutlich jedes
+Projekt mit Bruttopreis-Eingabe, nicht nur Janecka — sollte im Starter Kit
+selbst gefixt werden.
+
+**Skizzierter Fix** (im Detail durchdacht, noch nicht umgesetzt):
+
+1. `class-price-calculator.php`: neue Methode `get_tiers_with_prices( float $subtotal ): array`,
+   die pro Tier den korrekten `unit_price` mit denselben
+   `wc_get_price_excluding_tax()`/`wc_get_price_including_tax()`-Aufrufen
+   berechnet wie `get_breakdown()` — keine geratene Netto/Brutto-Logik mehr.
+2. `class-configurator.php`, `ajax_calculate_price()`: `price_breakdown`
+   um `tiers_with_prices` ergänzen (fertig berechnete Werte an den Client
+   mitgeben).
+3. `configurator.js`, `calculateTierPrice()`: statt selbst zu rechnen, nur
+   noch den vom Server gelieferten `unit_price` aus `tiers_with_prices`
+   nachschlagen (Fallback auf alte Logik, falls `tiers_with_prices` fehlt,
+   z.B. bei noch nicht aktualisiertem Server-Code).
+4. Vor dem Einspielen prüfen: `wizard.php` ruft
+   `calculateTierPrice(<?php echo $tier['discount_percent']; ?>)` mit
+   PHP-Wert auf — sicherstellen, dass der Vergleich in JS
+   (`parseFloat(t.discount_percent) === discountPercent`) typkompatibel
+   matcht (float vs. int/string aus PHP-Ausgabe).
+
+**Test-Setup zum Reproduzieren:** Konfigurierbares Produkt mit
+`tier_pricing` (z.B. ab 5 Stück: 10% Rabatt), Produktpreis brutto
+eingegeben, `woocommerce_prices_include_tax = yes`. Menge auf die
+Rabatt-Schwelle setzen, Live-Vorschau (richtig) gegen Staffeltabellen-Wert
+(falsch) vergleichen.
