@@ -5,6 +5,48 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ---
+## [1.25.0] - 2026-08-12
+
+### media-lab-agency-core 1.20.0
+
+#### Added
+- **Heartbeat Monitoring** (`inc/heartbeat.php`) – Push-basiertes
+  Monitoring als Ersatz für klassische Pull-Uptime-Checks (UptimeRobot,
+  Better-Stack-HTTP-Monitore). Löst wiederkehrende Fehlalarme, die durch
+  externe Prober bei Shared-Hosting-typischen Effekten entstehen
+  (langsame Antwortzeiten, WAF-/Ping-Blockaden, DNS-Hänger) – die Seite
+  meldet sich stattdessen selbst in festem Intervall.
+  - Neuer REST-Endpoint `/wp-json/medialab/v1/heartbeat` (Token-Auth via
+    `hash_equals()`, Token wird bei Erstaktivierung automatisch generiert)
+  - Führt vor jedem Ping einen Mini-Health-Check durch (DB-Verbindung);
+    bei Fehlschlag wird `/fail` an die Provider-URL angehängt statt
+    stillzuschweigen
+  - Kompatibel mit Better Stack Heartbeats und Healthchecks.io (beide
+    nutzen dasselbe simple HTTP-GET-Ping-Prinzip)
+  - Neue ACF-Options-Page „Heartbeat Monitoring" (`inc/acf-settings.php`):
+    Enable-Toggle, Provider-Auswahl (nur informativ), Heartbeat-URL,
+    fertig zusammengesetzter REST-Endpoint inkl. Token zum Copy-Paste
+    für den Server-Cronjob, Anzeige des letzten erfolgreichen Pings
+  - `medialab_heartbeat_get_setting()`: liest Config primär über
+    `get_field($name, 'option')` (berücksichtigt ACFs `options_`-Präfix
+    bei Optionsseiten), fällt auf direktes `get_option()` zurück –
+    bleibt damit auch für Sites ohne ACF-Konfiguration (z. B. Ersteinrichtung
+    per WP-CLI) funktionsfähig
+  - Empfohlenes Deployment-Modell: zentraler Dispatcher-Cronjob auf
+    eigenem Hetzner-Webhosting statt Einzel-Cronjobs pro Client-Site –
+    umgeht Cron-Restriktionen bei manchen Hostern (World4You u.a.) und
+    reduziert benötigte Cron-Slots auf 1 statt 1 pro Client
+
+#### Removed
+- **`inc/security.php` entfernt** – leerer Platzhalter seit dem ersten
+  Commit des Repos (`263c7d5`, „Inquiry Setup"), nie mit Inhalt befüllt.
+  Tatsächliche Security-Funktionalität war von Anfang an auf
+  `hcaptcha.php`, `honeypot.php`, `turnstile.php`,
+  `spam-content-filter.php` und `class-mla-security-scanner.php`
+  aufgeteilt. Entsprechender `require_once`-Aufruf in
+  `media-lab-agency-core.php` ebenfalls entfernt.
+
+---
 
 ## [1.24.2] - 2026-08-07
 

@@ -5,7 +5,7 @@ Core functionality plugin for Media Lab agency websites.
 ## Features
 
 - **Shortcodes**: Hero Slider, Accordion, Stats, Testimonials, etc.
-- **Security**: Enhanced WordPress security features
+- **Heartbeat Monitoring**: Push-basierte Uptime-Überwachung (Better Stack / Healthchecks.io)
 - **Admin**: Dashboard customizations
 - **Helpers**: Utility functions for theme development
 - **WP All Import Integration**: Timeout- und User-Agent-Blocking-Fixes für Bilder-Downloads (siehe Hinweis unten)
@@ -20,6 +20,16 @@ Core functionality plugin for Media Lab agency websites.
 1. Upload to `/wp-content/plugins/media-lab-agency-core/`
 2. Activate through WordPress admin
 3. Use shortcodes in your content
+
+## Heartbeat Monitoring
+
+Push-basiertes Monitoring statt klassischer Pull-Uptime-Checks. Konfiguration unter Agency Core → Heartbeat Monitoring:
+
+1. Heartbeat bei Better Stack oder Healthchecks.io anlegen, Ping-URL kopieren
+2. In Agency Core → Heartbeat Monitoring aktivieren, Ping-URL eintragen, speichern
+3. Den dort angezeigten REST-Endpoint (inkl. Token) per Server-Cronjob alle 5–10 Min aufrufen lassen (`curl` oder `wget`)
+
+Empfohlen: zentraler Dispatcher-Cronjob (ein Script, das mehrere Client-Sites nacheinander pingt) statt Einzel-Cronjob pro Site — siehe `heartbeat-runner.php`-Beispiel im Starter-Kit-Root.
 
 ## WP All Import – Bilder-Download-Fixes
 
@@ -37,9 +47,13 @@ Nur bei Bedarf einsetzen (Verdacht auf UA-Blocking, z. B. wenn der Timeout-Fix a
 
 ## Changelog
 
+### 1.20.0
+- Heartbeat Monitoring hinzugefügt (Push-basiertes Uptime-Monitoring, Better Stack / Healthchecks.io kompatibel)
+- Leere, ungenutzte `inc/security.php` entfernt
+
 ### 1.18.0
 - WP All Import: Timeout-Fix (`pmxi_image_download_timeout`) und `custom_file_download()`-Helper gegen UA-basiertes Blocking ergänzt. Backport aus dem Janecka-Projekt.
 
 ## Version
 
-1.18.0
+1.20.0
