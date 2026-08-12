@@ -134,3 +134,62 @@ wurden.
   nächsten Sync-Durchgang prüfen, ob andere Starter-Kit-Plugins
   (`media-lab-agency-core`, `media-lab-backup`, `media-lab-seo`) dort
   ebenfalls divergieren.
+
+---
+
+## TI WooCommerce Wishlist → media-lab-woocommerce Wishlist-Migration
+
+**Ziel:** TI WooCommerce Wishlist (Drittanbieter-Plugin) durch das im
+Starter Kit vorhandene, eigene Wishlist-Modul (`inc/wishlist/`) ersetzen —
+bei `at.janecka-2026` und mindestens einem weiteren, neu auf Basis des
+Starter Kits gebauten Projekt. Verdrängt damit den vorherigen Merge-
+Entscheid "Wishlist bewusst nicht übernehmen" (August 2026) — der war für
+den damaligen WooCommerce-Sync richtig, ist aber durch dieses Ziel überholt.
+
+### Bestandsaufnahme `at.janecka-2026` (Stand 08/2026)
+
+- Plugin-Slug: `ti-woocommerce-wishlist`
+- Keine eigenen DB-Tabellen (`SHOW TABLES LIKE '%wishlist%'` liefert leer) —
+  Datenhaltung vermutlich über User-/Post-Meta, genauer Speicherort noch
+  zu klären
+- Theme-Integration verteilt über mehrere Dateien:
+  - `functions.php` — vermutlich Plugin-Setup/Support-Deklaration
+  - `inc/woocommerce/hooks-single.php` — Wishlist-Button auf der
+    Produktseite
+  - `inc/woocommerce/hooks-archive.php` — Wishlist-Button im Shop-Loop
+  - `assets/src/scss/woocommerce/_wishlist.scss` — eigenständiges
+    Wishlist-Styling
+  - `assets/src/scss/woocommerce/_single.scss`,
+    `assets/src/scss/woocommerce/_archive.scss` — weitere Referenzen
+  - `assets/src/scss/woocommerce/_woocommerce.scss.bak` — Backup-Datei,
+    Inhalt/Relevanz ungeklärt (evtl. verworfener früherer Anlauf)
+
+### Offene Fragen für die Migrations-Session
+
+1. Wo genau liegen bestehende TI-Wishlist-Daten (User-Meta-Key?), und in
+   welchem Umfang sind produktiv Kundendaten vorhanden, die migriert
+   werden müssten?
+2. Migrationsstrategie: bestehende Wishlist-Einträge übernehmen, oder
+   akzeptierter Verlust bei hartem Cutover?
+3. Parallelbetrieb während der Umstellung nötig, oder direkter Wechsel?
+4. Alle 7 gefundenen Theme-Dateien einzeln durchgehen: TI-spezifische
+   Hooks/Shortcodes/CSS-Klassen identifizieren und durch die Äquivalente
+   aus `inc/wishlist/class-frontend.php` (Add-to-Wishlist-Buttons,
+   Shortcode `[mlw_wishlist_page]`, Menü-Icon) ersetzen
+5. `_woocommerce.scss.bak` inhaltlich prüfen, bevor sie ignoriert oder
+   gelöscht wird
+6. `inc/wishlist/` komplett diffen/durchlesen (analog zum Vorgehen bei
+   `inc/inquiry/` im August-2026-Merge) — sieben Dateien, inkl.
+   `class-storage.php` (Session/User-Meta-Handling, Login-Merge),
+   `class-ajax.php` (serverseitige Preis-Neuberechnung bei
+   konfigurierbaren Produkten)
+7. Zweites Projekt (neu, auf Starter-Kit-Basis): hier keine Bestandsdaten-
+   Migration nötig, aber von Anfang an mit dem eigenen Wishlist-Modul
+   statt TI Wishlist planen — als Referenzimplementierung für künftige
+   Projekte nutzbar
+
+### Empfehlung
+
+Eigene, dedizierte Session — vergleichbarer Umfang wie der Inquiry-Engine-
+Merge (7 Klassen, Frontend-Assets, Admin-Konfiguration), zusätzlich mit
+Migrations-/Cutover-Aufwand, den die Inquiry-Engine nicht hatte.
