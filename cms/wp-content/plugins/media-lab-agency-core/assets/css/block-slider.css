@@ -21,17 +21,22 @@
 
 /* ── Skeleton bis Swiper initialisiert ist ──────────────────────────
  * Swiper fügt seinem Root-Element automatisch die Klasse
- * "swiper-initialized" hinzu, sobald new Swiper() durchgelaufen ist
- * (siehe assets/js/block-slider.js). Solange sie fehlt, blenden wir
- * die (bereits im HTML vorhandenen, aber noch unstyled gestapelten)
- * Folien aus und zeigen stattdessen einen Shimmer-Platzhalter – rein
- * per CSS, kein zusätzliches JS zum Ein-/Ausblenden nötig.
+ * "swiper-initialized" hinzu, sobald new Swiper() durchgelaufen ist.
+ * Die Initialisierung übernimmt das Theme-Script ml-slider.js (siehe
+ * custom-theme/assets/src/js/ml-slider.js) - das frühere, gleichnamige
+ * Plugin-Script assets/js/block-slider.js wurde entfernt (window.Swiper
+ * war dort nie verfügbar, siehe ml-slider.js-Docblock). Solange die
+ * Klasse fehlt, blenden wir die (bereits im HTML vorhandenen, aber noch
+ * unstyled gestapelten) Folien aus und zeigen stattdessen einen
+ * Shimmer-Platzhalter – rein per CSS, kein zusätzliches JS zum
+ * Ein-/Ausblenden nötig.
  *
  * Sicherheitsnetz: falls Swiper aus irgendeinem Grund nie startet
- * (Bundle fehlt, ungültige Config, 0 Folien), setzt block-slider.js
- * stattdessen die Klasse "ml-slider__swiper--skeleton-done", die den
- * Skeleton ebenfalls beendet und die rohen Folien zeigt statt für
- * immer zu shimmern (@see :not(.ml-slider__swiper--skeleton-done)).
+ * (Bundle fehlt, ungültige Config, 0 Folien), setzt ml-slider.js
+ * (Theme, siehe revealSkeletonFallback()) stattdessen die Klasse
+ * "ml-slider__swiper--skeleton-done", die den Skeleton ebenfalls
+ * beendet und die rohen Folien zeigt statt für immer zu shimmern
+ * (@see :not(.ml-slider__swiper--skeleton-done)).
  *
  * Shimmer-Animation (@keyframes medialab-skeleton-shimmer) kommt aus
  * media-lab-agency-core/assets/css/skeleton.css, das site-weit auf
