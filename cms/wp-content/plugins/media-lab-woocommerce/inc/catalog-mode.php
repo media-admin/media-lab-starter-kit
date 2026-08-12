@@ -239,7 +239,10 @@ class MediaLab_WC_Catalog_Mode {
         }
 
         // Kontaktdaten: Basisfelder + alle konfigurierten Zusatzfelder generisch durchreichen
-        // (siehe templates/inquiry-form.php, das diese Felder jetzt dynamisch rendert).
+        // (siehe templates/inquiry-checkout.php, das diese Felder dynamisch rendert - dieser
+        // Handler bedient den wc_catalog_inquiry-Request aus dem Checkout-Override, siehe
+        // override_checkout_template() oben; NICHT templates/inquiry-form.php, das über den
+        // separaten Shortcode [mlw_inquiry_form] läuft und einen eigenen Ajax-Request nutzt).
         $contact = [
             'name'            => sanitize_text_field( $_POST['name']    ?? '' ),
             'email'           => sanitize_email( $_POST['email']        ?? '' ),
