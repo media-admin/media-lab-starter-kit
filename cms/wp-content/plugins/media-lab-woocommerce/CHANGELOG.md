@@ -6,6 +6,46 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ---
 
+## [2.5.0] - 2026-08-12
+
+### media-lab-woocommerce 2.5.0
+
+Behebt den Staffelpreis-Doppelsteuer-Bug aus BACKLOG.md ("Paket C") - kritisch
+für jedes Projekt mit Bruttopreis-Eingabe (`woocommerce_prices_include_tax = yes`,
+üblich bei DACH-B2C-Shops).
+
+#### Fixed
+
+- **Kritisch: Staffelpreis-Tabelle im Konfigurator zeigte bei
+  Bruttopreis-Eingabe einen zu hohen Preis/Stück.** Die Live-Preisvorschau
+  (`get_breakdown()`) war bereits korrekt (siehe 2.1.0), aber
+  `calculateTierPrice()` in `configurator.js` hat den client-seitig
+  übergebenen `subtotal`-Wert weiterhin immer als netto behandelt und bei
+  Bruttopreis-Anzeige selbst Steuer aufgeschlagen - obwohl `subtotal` bei
+  Bruttopreis-Eingabe bereits brutto war. Ergebnis: Steuer wurde ein
+  zweites Mal aufgeschlagen (Beispiel aus dem Backlog: 135€/Stück korrekt
+  vs. 162€/Stück fälschlich angezeigt in der Tabelle).
+
+  Umgesetzt wie im Backlog skizziert:
+  - `class-price-calculator.php`: neue Methode `get_tiers_with_prices()`
+    berechnet pro Preisstufe den korrekten Preis/Stück mit denselben
+    `wc_get_price_excluding_tax()`/`wc_get_price_including_tax()`-Aufrufen
+    wie `get_breakdown()` - keine geratene Netto/Brutto-Logik mehr.
+  - `class-configurator.php`, `ajax_calculate_price()`: `price_breakdown`
+    um `tiers_with_prices` ergänzt.
+  - `configurator.js`, `calculateTierPrice()`: schlägt jetzt bevorzugt den
+    vom Server gelieferten `unit_price` aus `tiers_with_prices` nach,
+    alte client-seitige Berechnung bleibt nur noch als Fallback (falls
+    `tiers_with_prices` einmal fehlen sollte, z.B. während einer
+    Deploy-Übergangsphase).
+  - `wizard.php`: `calculateTierPrice()`-Aufruf und `is-active`-Vergleich
+    casten `min_quantity`/`discount_percent` jetzt explizit zu (int)/(float)
+    beim Ausgeben in den JS-Kontext - verhindert einen stillen Fallback auf
+    die alte Berechnung durch einen Typ-Mismatch beim `parseFloat()`-Vergleich
+    in `configurator.js`.
+
+---
+
 ## [2.4.0] - 2026-08-12
 
 ### media-lab-woocommerce 2.4.0
