@@ -3,8 +3,12 @@
  * Number Field Template
  */
 
-$min = isset($step['min_value']) ? $step['min_value'] : 1;
-$max = isset($step['max_value']) ? $step['max_value'] : 10000;
+// ACF liefert bei leer gelassenem Feld einen leeren String zurück, nicht
+// null - isset('') ist true, der Fallback griff dadurch nie. Zusätzliche
+// Prüfung auf !== '' stellt sicher, dass min/max wirklich einen Wert
+// enthalten, bevor er statt des Defaults verwendet wird.
+$min = ( isset( $step['min_value'] ) && $step['min_value'] !== '' ) ? $step['min_value'] : 1;
+$max = ( isset( $step['max_value'] ) && $step['max_value'] !== '' ) ? $step['max_value'] : 10000;
 
 // Check if this is the quantity step
 $is_quantity = ($step_id === 'quantity');
