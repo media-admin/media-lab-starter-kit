@@ -6,6 +6,50 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ---
 
+## [1.7.0] - 2026-05-08
+
+### media-lab-bookings 1.7.0
+
+Versions-Bereinigung: Header (`Version:`) und Konstante (`MLB_VERSION`) liefen
+seit dem allerersten Feature-Release (14. April) auseinander und wurden nie
+synchron gepflegt (Header blieb u.a. lange bei `1.4.0` hängen, während die
+Konstante bereits bei `1.5.2`, später `1.8.0` stand). Mit diesem Release
+zusammengeführt auf eine gemeinsame, ab jetzt verbindliche Versionsnummer.
+Enthält außerdem die Blocked-Dates/Feiertags-Funktion, die am 8. Mai
+committed, aber nie im CHANGELOG dokumentiert wurde, sowie einen Fix für den
+Wording-Rollout aus 1.6.0.
+
+#### Added
+- **Blockierte Zeiträume pro Standort** (`inc/blocked-dates.php`, neu) –
+  einzelne Tage oder Zeiträume pro Standort können als nicht buchbar markiert
+  werden (z.B. Betriebsurlaub, Feiertage, Wartungsarbeiten); wirkt sich auf
+  die Slot-Generierung aus (`inc/slots.php`)
+- **Österreichischer Feiertags-Import** (`inc/blocked-dates.php`) – Feiertage
+  können automatisch als blockierte Tage importiert werden, statt sie einzeln
+  manuell zu pflegen
+- Integration in `inc/acf-fields.php` (neue Konfigurationsfelder),
+  `inc/ajax.php` (Slot-Berechnung berücksichtigt blockierte Zeiträume) und
+  `assets/js/booking-form.js` (Datepicker zeigt blockierte Tage entsprechend an)
+
+#### Fixed
+- **Wording-Konfiguration wirkte nie auf den Formular-Button** - der in
+  1.6.0 dokumentierte Fix ("Button-Label Fallback auf `mlb_term('verb')`")
+  landete durch einen falschen Dateipfad in einem automatisierten
+  Such-/Ersetzen-Skript versehentlich in `inc/shortcode.php` statt im
+  tatsächlichen `$labels`-Array in `templates/booking-form.php` - das Skript
+  fand dort keine Übereinstimmung und änderte stillschweigend nichts
+  (Python-`str.replace()` wirft bei fehlender Übereinstimmung keinen Fehler).
+  Der Button zeigte dadurch immer den hartcodierten Text "Buchung anfragen",
+  unabhängig von der konfigurierten Wording-Einstellung. Jetzt am korrekten
+  Ort behoben.
+
+#### Changed
+- Plugin-Header `Version:` und Konstante `MLB_VERSION` synchronisiert - ab
+  sofort einzige Quelle für die aktuelle Versionsnummer, zusammen mit diesem
+  CHANGELOG.
+
+---
+
 ## [1.6.0] - 2026-04-21
 
 ### media-lab-bookings 1.6.0
@@ -15,7 +59,7 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 - **Wording in CPT-Labels** (`inc/cpt.php`) – `mlb_booking` CPT-Labels (name, singular_name, add_new_item, edit_item, not_found) werden dynamisch aus `mlb_term()` befüllt → korrekte Bezeichnung im gesamten WP-Backend
 - **Wording im Admin-Menü** (`inc/admin.php`) – Untermenü-Einträge „Buchungen" und „Neue Buchung" sowie Dashboard-Statistik-Labels nutzen `mlb_term()`
 - **Wording in Erfolgsmeldung** (`inc/ajax.php`) – Formular-Erfolgsmeldung nutzt `mlb_term('singular')`; kann zusätzlich global unter **Einstellungen → Standard Erfolgsmeldung** überschrieben werden
-- **Wording im Shortcode** (`inc/shortcode.php`) – Button-Label Fallback auf `mlb_term('verb')` wenn kein standortspezifisches Label gesetzt ist
+- **Wording im Shortcode** (`inc/shortcode.php`) – Button-Label Fallback auf `mlb_term('verb')` wenn kein standortspezifisches Label gesetzt ist ⚠️ *Korrektur siehe 1.7.0: dieser Fix griff faktisch nie, da er versehentlich in der falschen Datei landete.*
 
 #### Fixed
 - **iCal-Anhang** (`inc/mail.php`) – Anhang aus der initialen Bestätigungsmail (Formular-Submit) entfernt. iCal wird nur noch bei Status-Mail „Bestätigt" und Erinnerungsmail angehängt.
