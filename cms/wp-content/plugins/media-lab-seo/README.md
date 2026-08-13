@@ -47,7 +47,7 @@ Entwickelt von [Media Lab Tritremmel GmbH](https://media-lab.at).
 
 1. Projekt in der [Google Cloud Console](https://console.cloud.google.com/) anlegen, **Search Console API** aktivieren
 2. OAuth2-Zugangsdaten erstellen (Typ: Webanwendung), autorisierte Redirect-URI eintragen (wird im Dashboard angezeigt)
-3. **SEO Toolkit → Dashboard → Einstellungen**: Client ID, Client Secret, Property-URL eintragen (exakt wie in GSC, z.B. `https://example.at/` oder `sc-domain:example.at`)
+3. **SEO Toolkit → Einstellungen**: Client ID, Client Secret, Property-URL eintragen (exakt wie in GSC, z.B. `https://example.at/` oder `sc-domain:example.at`)
 4. **SEO Toolkit → Dashboard → „Mit Google verbinden"** klicken, Google-Konto autorisieren
 
 Verbindung trennen: Dashboard oben rechts, löscht Tokens und Cache.
@@ -59,7 +59,7 @@ Verbindung trennen: Dashboard oben rechts, löscht Tokens und Cache.
 1. [bing.com/webmasters](https://www.bing.com/webmasters) aufrufen, mit Microsoft-Konto anmelden
 2. „Meine Website hinzufügen" → URL eintragen
 3. Verifizierungsmethode „Meta-Tag" wählen, den Wert aus dem `content`-Attribut kopieren
-4. Wert in **SEO Toolkit → Einstellungen → SEO → Bing Webmaster Tools** eintragen, speichern
+4. Wert in **SEO Toolkit → Einstellungen**, Karte „SEO" → Feld „Bing Webmaster Tools – Verification Code" eintragen, speichern
 5. In Bing Webmaster Tools auf „Überprüfen" klicken
 
 Tipp: Die GSC-Property lässt sich in Bing direkt importieren ("Aus GSC importieren") — dann entfällt der manuelle Sitemap-Upload.
