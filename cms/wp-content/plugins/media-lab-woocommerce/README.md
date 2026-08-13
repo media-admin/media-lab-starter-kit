@@ -6,6 +6,10 @@ vollständige **Wunschlisten-Funktion**, gebaut auf einer zentralen
 **Inquiry-Engine**, die Cart-Anfrage, Konfigurator-Anfrage und Wunschliste
 einheitlich verarbeitet.
 
+Entwickelt von [Media Lab Tritremmel GmbH](https://media-lab.at).
+
+---
+
 ## Features
 
 - **Catalog Mode**: Shop ohne Kauf-Funktion, Anfrage-Formular statt Checkout
@@ -14,7 +18,9 @@ einheitlich verarbeitet.
 - **Inquiry-Engine**: zentrale Anfrage-Verarbeitung (CPT, Validierung, Mail-Versand über mehrere Kanäle, Mehrsprachigkeit) – gemeinsam genutzt von Cart-Anfrage, Konfigurator-Anfrage und Wunschliste
 - **Filter & Suche**: AJAX-Produktfilter, Suche, Load-More
 
-## Requirements
+---
+
+## Voraussetzungen
 
 - WordPress 6.0+
 - PHP 8.0+
@@ -22,11 +28,15 @@ einheitlich verarbeitet.
 - Advanced Custom Fields Pro (für alle Einstellungsseiten)
 - `media-lab-agency-core` (für Honeypot-Spam-Schutz der Formulare)
 
+---
+
 ## Installation
 
 1. Upload nach `/wp-content/plugins/media-lab-woocommerce/`
 2. Im WordPress-Backend aktivieren
 3. Einstellungen unter **Anfragen → Einstellungen** konfigurieren (siehe unten)
+
+---
 
 ## Wunschliste einrichten
 
@@ -41,6 +51,13 @@ Produkt): `is_configurable = true`, `config_type = standard`, sowie
 mindestens einen `config_steps`-Eintrag vom Typ `contact_form` (rendert
 Name/E-Mail/Telefon + die konfigurierten Zusatzfelder) – ohne diesen Step
 gibt es im Wizard kein Kontaktformular.
+
+> **Hinweis:** Der `config_type` (Textilien/Drucksorten/Give-Aways/
+> Benutzerdefiniert) dient rein der Organisation im Backend - alle Typen
+> laden die Konfigurationsschritte identisch aus dem `config_steps`-Repeater
+> (seit dem Fix in 2.5.1, siehe CHANGELOG.md).
+
+---
 
 ## Einstellungen (Anfragen → Einstellungen)
 
@@ -57,6 +74,8 @@ Mehrsprachigkeit funktioniert unabhängig davon, ob WPML, Polylang oder gar
 kein Mehrsprachigkeits-Plugin installiert ist (eigene Sprach-Erkennung,
 Fallback auf `get_locale()`).
 
+---
+
 ## Architektur-Hinweis
 
 Die Inquiry-Engine (`inc/inquiry/`) ist absichtlich von der Wunschliste
@@ -66,10 +85,15 @@ Mail-Versand. `catalog-mode.php` und `class-configurator.php` reichen ihre
 Daten ebenfalls nur an die Engine durch. Neue Anfrage-Quellen lassen sich so
 ergänzen, ohne Mail-/Validierungs-/Mehrsprachigkeits-Logik zu duplizieren.
 
+---
+
 ## Changelog
 
-Siehe [CHANGELOG.md](./CHANGELOG.md).
+Siehe [CHANGELOG.md](./CHANGELOG.md) für die vollständige Versionshistorie.
+Aktuelle Version: siehe `Version:`-Header in `media-lab-woocommerce.php`.
 
-## Version
+---
 
-2.0.0
+## Lizenz
+
+GPL v2 or later — https://www.gnu.org/licenses/gpl-2.0.html
