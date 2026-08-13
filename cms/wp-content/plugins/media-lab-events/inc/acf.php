@@ -22,7 +22,18 @@ add_action('acf/init', function() {
                 'type'          => 'date_time_picker',
                 'required'      => 1,
                 'display_format' => 'd.m.Y H:i',
-                'return_format'  => 'd.m.Y H:i',
+                // return_format bewusst NICHT identisch zu display_format:
+                // 'd.m.Y H:i' (Tag zuerst) ist als String nicht chronologisch
+                // sortierbar (z.B. "01.03.2026" gilt string-sortiert als
+                // "kleiner" als "15.01.2026", obwohl 15. Januar früher liegt).
+                // 'Y-m-d H:i:s' (Jahr zuerst) sortiert als String korrekt und
+                // ist zusätzlich das Format, in dem ACF date_time_picker-Werte
+                // ohnehin intern in der Datenbank speichert - unabhängig vom
+                // return_format. Diese Änderung erfordert daher KEINE
+                // Datenmigration, nur die Ausgabe von get_field() ändert sich.
+                // Frontend-Anzeige entsprechend in shortcodes.php via
+                // date_i18n() zurück ins deutsche Format konvertiert.
+                'return_format'  => 'Y-m-d H:i:s',
                 'first_day'      => 1,
             ),
 
@@ -34,7 +45,7 @@ add_action('acf/init', function() {
                 'type'          => 'date_time_picker',
                 'required'      => 0,
                 'display_format' => 'd.m.Y H:i',
-                'return_format'  => 'd.m.Y H:i',
+                'return_format'  => 'Y-m-d H:i:s',
                 'first_day'      => 1,
             ),
 
