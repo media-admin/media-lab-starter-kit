@@ -185,3 +185,8 @@ Desktop.ini
 # ============================================
 /scripts/deploy-*.js
 deploy-config.local.*
+# ============================================
+# HEARTBEAT-RUNNER CONFIG (enthaelt echte Tokens, nie committen!)
+# ============================================
+/scripts/heartbeat-runner.config.php
+/scripts/heartbeat-runner.log
