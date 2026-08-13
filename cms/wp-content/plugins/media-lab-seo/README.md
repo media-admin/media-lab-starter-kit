@@ -1,7 +1,7 @@
 # Media Lab SEO Toolkit
 
 SEO- und Analytics-Plugin für Media Lab Kundenprojekte. Kombiniert Google
-Search Console (OAuth2), Google Analytics 4 / Matomo, Schema.org,
+Search Console (OAuth2), Google Analytics 4 (OAuth2) / Matomo, Schema.org,
 Breadcrumbs, einen Redirect-Manager, Consent-aware Tracking und einen
 wöchentlichen HTML-Report-Mailer in einem Plugin.
 
@@ -12,13 +12,14 @@ Entwickelt von [Media Lab Tritremmel GmbH](https://media-lab.at).
 ## Features
 
 - **SEO-Grundlagen**: Open Graph Tags, Twitter Cards, Canonical URLs (WordPress-eigene Canonical-Ausgabe wird deaktiviert, um Dopplung zu vermeiden)
-- **Schema.org JSON-LD**: Organization, WebSite (inkl. SearchAction), Article, Product (WooCommerce), BreadcrumbList — erweiterbar per Filter
+- **Schema.org JSON-LD**: WebSite (inkl. SearchAction), Organization, Article (bei Posts), BreadcrumbList — fest im Code hinterlegt, aktuell nicht per Filter erweiterbar
 - **Breadcrumbs**: PHP-Funktion für Templates + Schema.org-Markup
 - **Redirect-Manager**: 301/302, Wildcard-Pfade, Import/Export als CSV
-- **Google Search Console** — vollständige OAuth2-Anbindung (nicht nur ein Verifizierungs-Tag): automatischer Datenabruf, Token-Erneuerung, 1h-Cache
-- **Bing Webmaster Tools**: einfacher Verifizierungs-Meta-Tag (`msvalidate.01`)
-- **SEO-Dashboard** im WP-Backend + Dashboard-Widget: KPI-Kacheln (Klicks, Impressionen, Ø CTR, Ø Position) vs. Vorperiode, Top-10-Keywords, Top-10-Seiten, konfigurierbarer Datumsbereich
-- **Analytics-Adapter** (pluggbar): GA4 Data API (Service-Account-JWT, kein zweiter OAuth-Flow) oder Matomo Reporting API — austauschbar per Filter, auch eigene Adapter möglich
+- **Google Search Console** — vollständige OAuth2-Anbindung: automatischer Datenabruf, Token-Erneuerung, Cache
+- **Google Analytics 4** — OAuth2-Anbindung, nutzt **dieselben Zugangsdaten wie GSC** (ein Client-ID/Secret-Paar für beide); Service-Account-JSON nur als Legacy-Fallback für bestehende Setups
+- **Bing Webmaster Tools**: Verifizierungs-Meta-Tag (`msvalidate.01`)
+- **SEO-Dashboard** im WP-Backend + Dashboard-Widget: KPI-Kacheln (Klicks, Impressionen, Ø CTR, Ø Position) vs. Vorperiode, Top-Keywords, Top-Seiten, konfigurierbarer Datumsbereich
+- **Analytics-Adapter** (pluggbar): GA4 oder Matomo, austauschbar per Filter, eigene Adapter über ein PHP-Interface möglich
 - **Consent-aware Tracking**: GA4/GTM über Google Consent Mode v2, Tracking startet erst nach Cookie-Consent (Bridge zu Agency-Core Cookie Consent)
 - **Consent-Rate-Tracking**: DSGVO-Auswertung, wie viele Besucher Analytics-Consent geben
 - **Wöchentlicher Report-Mailer**: HTML-Report per E-Mail, dynamische Empfänger-Liste (nicht nur Admin-E-Mail), konfigurierbarer Versandtag/-uhrzeit, Test-Mail-Button
@@ -43,14 +44,23 @@ Entwickelt von [Media Lab Tritremmel GmbH](https://media-lab.at).
 
 ---
 
-## Google Search Console einrichten
+## Google Search Console & Google Analytics 4 einrichten
 
-1. Projekt in der [Google Cloud Console](https://console.cloud.google.com/) anlegen, **Search Console API** aktivieren
-2. OAuth2-Zugangsdaten erstellen (Typ: Webanwendung), autorisierte Redirect-URI eintragen (wird im Dashboard angezeigt)
-3. **SEO Toolkit → Einstellungen**: Client ID, Client Secret, Property-URL eintragen (exakt wie in GSC, z.B. `https://example.at/` oder `sc-domain:example.at`)
-4. **SEO Toolkit → Dashboard → „Mit Google verbinden"** klicken, Google-Konto autorisieren
+GSC und GA4 teilen sich **ein** OAuth-Zugangsdaten-Paar (Client ID + Secret)
+— einmal in der Google Cloud Console einrichten, deckt beide Dienste ab.
 
-Verbindung trennen: Dashboard oben rechts, löscht Tokens und Cache.
+1. Projekt in der [Google Cloud Console](https://console.cloud.google.com/) anlegen
+2. Beide APIs aktivieren: **Search Console API** und **Google Analytics Data API**
+3. OAuth2-Zugangsdaten erstellen (Typ: Webanwendung), **beide** Redirect-URIs eintragen:
+   - GSC: `{deine-domain}/wp-admin/admin.php?page=media-lab-seo&gsc_oauth=callback` *(genauer Parametername: im Dashboard/den Einstellungen nachsehen)*
+   - GA4: `{deine-domain}/wp-admin/admin.php?page=media-lab-seo&mlt_ga4_callback=1`
+4. **SEO Toolkit → Einstellungen**, Karte „Google Search Console": Client ID, Client Secret, Property-URL eintragen (z.B. `https://example.at/` oder `sc-domain:example.at`)
+5. **SEO Toolkit → Einstellungen**, Karte „Google Analytics 4": GA4 Property-ID eintragen (numerisch, z.B. `123456789` — **nicht** `G-XXXXXXXX`; zu finden unter GA4 → Verwaltung → Property-Einstellungen). Nutzt automatisch dieselbe Client ID/Secret wie GSC.
+6. **SEO Toolkit → Dashboard → „Mit Google verbinden"** klicken — autorisiert GSC **und** GA4 in einem Schritt
+
+Verbindung trennen: jeweils eigener „Verbindung trennen"-Link/Button (GSC und GA4 unabhängig voneinander trennbar).
+
+> **Legacy-Fallback GA4:** Falls ein Projekt noch mit dem älteren Service-Account-Verfahren läuft (JSON-Key statt OAuth), greift das automatisch als Fallback, sobald keine GA4-OAuth-Verbindung aktiv ist. Für neue Projekte ist der OAuth-Weg oben der vorgesehene.
 
 ---
 
@@ -66,31 +76,29 @@ Tipp: Die GSC-Property lässt sich in Bing direkt importieren ("Aus GSC importie
 
 ---
 
-## Analytics-Adapter einrichten
+## Matomo als Alternative zu GA4
 
-Nur **ein** Adapter ist gleichzeitig aktiv. Priorität: externer Filter `medialab_analytics_adapter` → GA4 (falls konfiguriert) → Matomo (falls konfiguriert) → Stub (0-Werte).
+Nur **ein** Analytics-Adapter ist gleichzeitig aktiv, gesteuert über die Einstellung „Provider" (`ga4` oder `matomo`).
 
-### GA4
-- Google Analytics Data API in der Cloud Console aktivieren
-- Service Account erstellen, JSON-Key herunterladen
-- Service-Account-E-Mail in GA4 → Verwaltung → Kontozugriff als **Betrachter** hinzufügen
-- **SEO Toolkit → Einstellungen → GA4**: Property-ID (numerisch, nicht `G-XXXXXXXX`) + Service-Account-JSON eintragen
-
-### Matomo
-- **SEO Toolkit → Einstellungen → Matomo**: URL, Site-ID, API-Token eintragen, „Verbindung testen"
-- Dev-Umgebung ohne SSL: `add_filter( 'medialab_matomo_sslverify', '__return_false' );`
+- **SEO Toolkit → Einstellungen**, Karte „Matomo": URL, Site-ID, API-Token eintragen
 
 ### Eigenen Adapter implementieren
 
+Der Adapter-Filter heißt `mlt_analytics_adapter` und erwartet ein Objekt, das `MLT_Analytics_Adapter_Interface` implementiert:
+
 ```php
-add_filter( 'medialab_analytics_adapter', function() {
-    return new class {
-        public function is_configured(): bool { return true; }
-        public function get_label(): string { return 'Mein Anbieter'; }
+add_filter( 'mlt_analytics_adapter', function( $adapter ) {
+    return new class implements MLT_Analytics_Adapter_Interface {
+        public function is_available(): bool { return true; }
         public function get_overview( string $start, string $end ): array {
-            return [ 'pageviews' => 0, 'sessions' => 0, 'users' => 0, 'bounce_rate' => 0.0 ];
+            return [ 'pageviews' => 0, 'sessions' => 0, 'users' => 0 ];
         }
-        public function get_top_sources( int $limit = 5 ): array { return []; }
+        public function get_sources( string $start, string $end, int $limit = 5 ): array {
+            return [];
+        }
+        public function get_top_pages( string $start, string $end, int $limit = 10 ): array {
+            return [];
+        }
     };
 } );
 ```
@@ -99,7 +107,7 @@ add_filter( 'medialab_analytics_adapter', function() {
 
 ## Wöchentlicher Report
 
-**SEO Toolkit → Einstellungen → Wöchentlicher Report**: Empfänger (beliebig viele), Versandtag, Uhrzeit konfigurieren. Test-Mail-Button für sofortiges Feedback.
+**SEO Toolkit → Einstellungen**, Karte „Wöchentlicher Report": Empfänger (beliebig viele), Versandtag, Uhrzeit konfigurieren. Test-Mail-Button für sofortiges Feedback.
 
 Report-Inhalt per Filter erweiterbar:
 
@@ -119,6 +127,8 @@ wp cron event list | grep mlt         # Nächsten geplanten Versand anzeigen
 
 ## Hooks
 
+Nur tatsächlich im Code vorhandene Hooks (Stand 1.9.1, verifiziert gegen den Quellcode):
+
 ### Actions
 | Hook | Beschreibung |
 |---|---|
@@ -129,9 +139,15 @@ wp cron event list | grep mlt         # Nächsten geplanten Versand anzeigen
 |---|---|---|
 | `mlt_weekly_report_html` | `$html`, `$data`, `$to` | Report-HTML vor dem Versand anpassen |
 | `mlt_weekly_report_subject` | `$subject`, `$week`, `$year` | Betreff anpassen |
-| `medialab_analytics_adapter` | – | Eigenen Analytics-Adapter registrieren |
-| `medialab_seo_schema_types` | `$types`, `$post` | Eigene Schema.org-Typen ergänzen |
-| `medialab_matomo_sslverify` | – | SSL-Verifikation für Matomo deaktivieren (Dev-Umgebungen) |
+| `mlt_analytics_adapter` | `$adapter` | Eigenen Analytics-Adapter einstecken (muss `MLT_Analytics_Adapter_Interface` implementieren) |
+
+> **Hinweis:** Frühere Versionen dieser README nannten zusätzlich
+> `medialab_seo_schema_types` (Schema.org-Erweiterung) und
+> `medialab_matomo_sslverify` (SSL-Verify für Matomo) — beide existieren
+> im aktuellen Code **nicht**. Schema.org-Typen sind in `class-schema.php`
+> fest hinterlegt (WebSite, Organization, Article, BreadcrumbList), ohne
+> Erweiterungs-Hook. Falls diese Funktionen gebraucht werden, müssten sie
+> neu gebaut werden - hier bewusst nicht als vorhanden dokumentiert.
 
 ---
 
@@ -143,7 +159,7 @@ wp cron event list | grep mlt         # Nächsten geplanten Versand anzeigen
 
 **Report-Mail kommt doppelt an** — sollte seit 1.9.0 behoben sein (Duplikat-Cron-Hook entfernt, siehe CHANGELOG). Falls es erneut auftritt: prüfen, ob `add_action( 'mlt_weekly_report', ...)` irgendwo außerhalb von `class-report-mailer.php` registriert wird.
 
-**GA4: „Token-Anfrage fehlgeschlagen"** — JSON-Key vollständig (inkl. `private_key`)? Service-Account-E-Mail in GA4 als Betrachter hinterlegt? Data API in der Cloud Console aktiviert?
+**GA4: Verbindung schlägt fehl** — Ist die GA4-Redirect-URI (`&mlt_ga4_callback=1`) zusätzlich zur GSC-URI in der Google Cloud Console eingetragen? Ist die „Google Analytics Data API" aktiviert (separat von der Search Console API)? Property-ID korrekt (numerisch, nicht `G-XXXXXXXX`)?
 
 **Matomo: „Site nicht gefunden"** — Site-ID korrekt? API-Token hat Lesezugriff auf diese Site?
 
