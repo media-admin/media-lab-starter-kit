@@ -223,3 +223,46 @@ ebenfalls divergieren. Unverändert offen.
 
 - `media-lab-agency-core`: eigenes CHANGELOG.md (aktuell inline in README)
 - `composer.json`/`composer.lock`/`uninstall.php` bei allen Plugins außer `media-lab-backup` nachziehen
+- `cms/wp-content/themes/custom-theme/README.md` (die **interne** Theme-README, nicht die Root-README) steht seit dem allerersten Release auf Version `1.0.0` und wurde nie wieder gepflegt — `style.css` steht inzwischen bei `1.15.2`. Beim Root-README-Cleanup (13.08.2026) mit entdeckt, aber bewusst nicht mit erledigt (eigener, nicht kleiner Umfang: Vite-Struktur, SCSS-Variablen, Component-Liste, Customizer-Doku — alles am echten Code zu verifizieren)
+- `media-lab-project-starter` fehlte bisher in **jeder** Doku (Root-README, `03_PLUGINS.md`, hier im Backlog) — beim Root-README-Cleanup entdeckt und dort in einem eigenen Abschnitt ergänzt (Scaffold-Charakter, wird pro Projekt dupliziert statt identisch deployt). `docs/03_PLUGINS.md` erwähnt es weiterhin nicht — sollte dort ergänzt werden
+
+### Root-README (`README.md`) — erledigt (13.08.2026)
+
+~~Komponenten-Tabelle unvollständig (nur Agency Core + SEO gelistet,
+`media-lab-woocommerce`/`-bookings`/`-events`/`-backup`/`-project-starter`
+fehlten komplett); Theme-Version falsch (1.14.0 statt tatsächlich 1.15.2);
+duplizierte "Versionshistorie"-Tabelle nutzte dasselbe Starter-Kit-weite
+Tag-Schema, das schon bei `media-lab-seo`s Git-Historie für Verwirrung
+gesorgt hatte (getrennt von den Plugin-eigenen Versionsnummern, garantiert
+irgendwann divergierend); WCAG-"11 Fixes"-Behauptung nicht verifizierbar;
+Gutenberg-Blocks implizit dem Theme statt `media-lab-agency-core`
+zugeordnet.~~ → **Komplett überarbeitet.** Versionshistorie-Tabelle
+ersatzlos gestrichen (Verweis auf die jeweiligen `CHANGELOG.md`-Dateien
+stattdessen), `media-lab-project-starter` als eigener Scaffold-Abschnitt
+ergänzt, alle Versionsangaben gegen den echten Code verifiziert.
+
+### Heartbeat-Monitoring — erledigt (13.08.2026)
+
+- ~~`heartbeat-runner.php` lag nur lokal vor, obwohl
+  `media-lab-agency-core/README.md` bereits darauf verweist~~ →
+  **ins Repo aufgenommen**, unter `scripts/heartbeat-runner.php` (Template,
+  token-frei) + `scripts/heartbeat-runner.config.example.php`
+  (Kopiervorlage) + `scripts/setup-heartbeat-cron.sh` (automatisiertes
+  Cronjob-Setup, analog zu `setup-cron.sh`). Echte Tokens liegen in
+  `scripts/heartbeat-runner.config.php`, per `.gitignore` vom Commit
+  ausgeschlossen.
+- **Gefunden, nicht im ursprünglichen Backlog:** Sporadische
+  "Missed heartbeat"-Alarme (auto-resolved nach 4–14 Min.) bei
+  `churum-meru.org` und `stadtwirt-berndorf.at` am 12./13.08.2026. Ursache
+  vermutlich ein einzelner ausgelassener Cron-Tick auf Hetzner Webhosting
+  (nicht 100% exakt getaktet) in Kombination mit einer zu knapp bemessenen
+  Better-Stack-Grace-Period (5 Min. bei 10-Min.-Intervall = nur 15 Min.
+  Toleranz, ein ausgelassener Tick erzeugt aber eine 20-Min.-Lücke). Fix:
+  Grace Period auf 15 Min. erhöht (Period bleibt bei 10 Min.) für
+  `churum-meru.org` — **noch zu prüfen/nachziehen für
+  `stadtwirt-berndorf.at`, `ib-mosbacher.at` und `womac.at`**, falls dort
+  dieselbe knappe Grace-Period-Konfiguration vorliegt. Falls die
+  Alarme trotz angepasster Grace Period häufiger als "vereinzelt"
+  auftreten, deutet das auf ein tieferliegendes Cron-Zuverlässigkeits-
+  Problem auf Hetzner Webhosting hin, das eine genauere Untersuchung
+  wert wäre (z.B. externer Cron-Trigger-Dienst statt Hosting-internem Cron).
