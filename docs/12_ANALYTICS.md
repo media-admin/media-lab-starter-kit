@@ -1,6 +1,6 @@
 # Analytics Dokumentation
 
-**Version:** 1.14.0 | **Letzte Aktualisierung:** 2026-06-28
+**Version:** 1.14.0 | **Letzte Aktualisierung:** 2026-08-13
 
 ---
 
@@ -19,14 +19,17 @@ Frontend-Tracking als auch die Backend-Dashboard-Daten.
 
 ## Frontend-Tracking (GA4 / GTM)
 
-Das Frontend-Tracking wird über `MLT_Analytics` in `media-lab-seo` gesteuert.
-Es wird nur eingebunden wenn `mlt_analytics_enabled = 1` gesetzt ist.
+Das Frontend-Tracking wird über `MLT_Analytics` in `media-lab-seo` gesteuert
+(`inc/class-analytics.php`). Es wird nur geladen, wenn `mlt_analytics_enabled = 1`
+gesetzt ist (Bedingung in der Haupt-Plugin-Datei), und bindet innerhalb der
+Klasse selbst nur ein Script ein, wenn zusätzlich eine Tracking-ID
+(`mlt_analytics_id`) gesetzt ist.
 
 **Unterstützte Provider:**
 - **Google Analytics 4** — direktes `gtag.js` Tracking
 - **Google Tag Manager** — GTM Container inkl. `<noscript>` Fallback
 
-**Konfiguration:** WP-Admin → SEO Toolkit → Analytics
+**Konfiguration:** WP-Admin → SEO Toolkit → Einstellungen
 
 ```
 ✅ Analytics-Tracking aktivieren
@@ -47,21 +50,27 @@ wp option update mlt_analytics_id 'G-XXXXXXXXXX'
 Das Tracking ist vollständig Consent-aware und integriert mit dem Agency Core Cookie Banner:
 
 - Beim ersten Besuch: alles `denied` (GA4 Consent Mode v2 Default)
-- Nach Consent: `analytics_storage: granted` + `page_view` Event
-- Wiederkehrende Besucher: Consent wird aus `localStorage` (`mlt_consent_analytics`) geladen
-- Admins werden nicht getrackt (`is_admin()` Check)
+- Nach Consent: `analytics_storage: granted` (bei GA4 zusätzlich sofortiges `page_view`-Event; bei GTM wird stattdessen der GTM-Container nachgeladen)
+- Wiederkehrende Besucher: Consent wird aus `localStorage` (`mlt_consent_analytics`) geladen, bevorzugt jedoch über `window.CookieConsent.hasConsent('statistics')` (Agency-Core-API) geprüft
 
-**Event-Bridge:**
+> **Korrektur:** „Admins werden nicht getrackt" (frühere Doku-Aussage) ist
+> ungenau. Der Code prüft `is_admin()` — das schließt **WP-Admin-
+> Backend-Seiten** aus (`wp-admin/...`), **nicht** Admin-Nutzer, die die
+> Website im Frontend als normale Besucher ansehen. Ein eingeloggter
+> Admin, der die Live-Website browst, wird getrackt wie jeder andere
+> Besucher.
+
+**Event-Bridge (verifiziert gegen `class-analytics.php`):**
 ```
 Agency Core cookies:changed { statistics: true }
   → localStorage.setItem('mlt_consent_analytics', '1')
   → CustomEvent 'mlt:consent:analytics'
-    → gtag consent update + page_view
+    → gtag consent update (+ page_view bei GA4 / GTM-Nachladen bei GTM)
 ```
 
 ### Manuelles Event-Tracking
 
-**Per JS:**
+**Per JS** (funktioniert, sobald `gtag` durch das Modul initialisiert und Consent erteilt wurde):
 ```javascript
 gtag('event', 'button_click', {
     button_name: 'Download PDF',
@@ -69,26 +78,26 @@ gtag('event', 'button_click', {
 });
 ```
 
-**Per PHP (Custom Event Hook):**
-```php
-do_action('medialab_track_event', 'button_click', [
-    'button_name'     => 'Download PDF',
-    'button_location' => 'Hero',
-]);
-```
+> **Korrektur:** Der vorher hier dokumentierte PHP-Hook
+> `do_action('medialab_track_event', ...)` existiert **nicht** —
+> `class-analytics.php` enthält keinen einzigen `do_action()`-Aufruf.
+> Server-seitiges Event-Tracking ist mit dem aktuellen Code nicht
+> vorgesehen; Events müssen client-seitig per `gtag()` (oben) ausgelöst
+> werden.
 
 ---
 
 ## Analytics-Adapter im SEO-Dashboard
 
-Pageview- und Traffic-Daten werden über einen pluggbaren Adapter in das SEO-Dashboard
-integriert. Der Kunde entscheidet, welcher Anbieter eingesetzt wird.
+Pageview- und Traffic-Daten werden über einen pluggbaren Adapter (`mlt_analytics_adapter`-Filter)
+in das SEO-Dashboard integriert. Der Kunde entscheidet, welcher Anbieter eingesetzt wird
+(Einstellung „Provider": `ga4` oder `matomo`).
 
 **Unterstützte Anbieter:**
-- **Google Analytics 4** — via Service Account (kein Cookie-Banner nötig für Backend-Abruf)
+- **Google Analytics 4** — primär via OAuth2 (teilt sich die Zugangsdaten mit der GSC-Anbindung, siehe [SEO-Dokumentation](13_SEO.md#google-search-console--google-analytics-4)); Service-Account-JSON ist nur noch ein Legacy-Fallback für ältere Projekte
 - **Matomo** — via Reporting API (DSGVO-konform, selbst gehostet)
 
-**Vollständige Einrichtung:** → [SEO-Dokumentation → Analytics-Adapter](13_SEO.md#analytics-adapter)
+**Vollständige Einrichtung:** → [SEO-Dokumentation → Google Search Console & Google Analytics 4](13_SEO.md#google-search-console--google-analytics-4)
 
 ---
 
