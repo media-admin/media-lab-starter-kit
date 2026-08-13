@@ -27,6 +27,14 @@
 /cms/wp-content/advanced-cache.php
 /cms/wp-content/db.php
 
+# Sprachdateien (.mo/.po) - automatisch von WordPress heruntergeladen
+# (Core, Plugins, Themes), kein Quellcode. War vorher fälschlich Teil
+# einer korrupten, mit der Zeile "assets/hot" (siehe Build & Dependencies
+# unten) zusammengeklebten Pfadangabe am Dateiende und wurde dadurch nie
+# wirksam ignoriert - dadurch wurden Sprachdateien fälschlich getrackt
+# und erzeugten Rauschen bei jedem `git status`.
+/cms/wp-content/languages/
+
 # ============================================
 # PLUGINS – nur eigene media-lab-*-Plugins tracken
 # ============================================
@@ -40,6 +48,12 @@
 # Third-Party-ZIP/Composer installieren), NUR eigene media-lab-*-Plugins
 # werden explizit wieder eingeschlossen. Neue Third-Party-Plugins sind
 # dadurch automatisch ausgeschlossen, ohne dass man daran denken muss.
+#
+# HINWEIS: Diese Allowlist wirkt nur auf noch nicht getrackte Dateien.
+# Drittanbieter-Plugins, die VOR dieser Umstellung bereits committed
+# wurden (z.B. woocommerce-services), bleiben trotzdem getrackt, bis sie
+# explizit per `git rm -r --cached` entfernt werden - siehe
+# git-commands-paket-e1.sh.
 /cms/wp-content/plugins/*
 !/cms/wp-content/plugins/index.php
 !/cms/wp-content/plugins/media-lab-*/
@@ -66,6 +80,12 @@ yarn.lock
 # Build-Output (wird generiert, nicht versionieren)
 /cms/wp-content/themes/custom-theme/assets/dist/
 *.map
+
+# Vite-Hot-Reload-Marker (wird nur während `npm run dev` erzeugt) - vorher
+# Teil derselben korrupten, zusammengeklebten Zeile wie /cms/wp-content/
+# languages/ oben und dadurch nie wirksam ignoriert.
+# Bitte prüfen/entfernen, falls dieser Pfad bei euch nicht (mehr) zutrifft.
+/cms/wp-content/themes/custom-theme/assets/hot
 
 # ============================================
 # BACKUP & TEMP FILES (aus Entwicklungsiterationen)
@@ -165,4 +185,3 @@ Desktop.ini
 # ============================================
 /scripts/deploy-*.js
 deploy-config.local.*
-cms/wp-content/themes/custom-theme/assets/hotcms/wp-content/languages/
