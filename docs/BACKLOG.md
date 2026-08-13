@@ -1,265 +1,160 @@
 # Backlog
 
-Offene Punkte, gefunden beim WooCommerce-Sync `at.janecka-2026` ↔ Starter Kit
-(August 2026). Nicht alle Punkte sind neu entstanden — einige sind
-vorbestehende Bugs im Starter Kit selbst, die beim Merge erstmals sichtbar
-wurden.
+Ursprünglich: Offene Punkte, gefunden beim WooCommerce-Sync `at.janecka-2026`
+↔ Starter Kit (August 2026). Nicht alle Punkte waren neu entstanden — einige
+waren vorbestehende Bugs im Starter Kit selbst, die beim Merge erstmals
+sichtbar wurden.
+
+**Update 13.08.2026:** Große Aufräum-Session — praktisch der gesamte
+ursprüngliche Backlog wurde abgearbeitet (Pakete A–E, siehe unten). Dabei
+wurden zusätzlich mehrere **neue, vom ursprünglichen Backlog unabhängige**
+Bugs und Doku-Fehler gefunden und behoben (Versions-Drift in
+`media-lab-bookings` und `media-lab-seo`, ein nie wirksam gewordener Fix aus
+2026-04, mehrere erfundene Funktions-/Filter-Namen in der SEO-Doku). Details
+in den jeweiligen Abschnitten und den CHANGELOG.md-Dateien der Plugins.
 
 ---
 
-## media-lab-woocommerce
+## ✅ Erledigt — media-lab-woocommerce (Paket A, v2.3.0)
 
-### Kompatibilität — sollte in den Starter Kit zurückfließen
+- ~~Theme-Alias-Hook (`ajax_filter_posts`) fehlt in `ajax-handlers.php`~~ → **Paket B, v2.4.0**
+- ~~Duale Nonce-Prüfung (`mlwf_filter_nonce` + `ajax_filters_nonce`) fehlt~~ → **Paket B, v2.4.0**
+- ~~`templates/inquiry-checkout.php`: hartcodierter Steuersatz~~ → **v2.3.0**
+- ~~`templates/inquiry-form.php`: totes Template~~ → **v2.3.0**, aktiviert über neuen Shortcode `[mlw_inquiry_form]`
+- ~~`templates/configurator/wizard.php`: Wishlist-Button ohne Guard~~ → **v2.3.0**
+- ~~`inc/configurator/class-acf-fields.php`: `step_type` Choice `contact_form` fehlt~~ → **v2.3.0**
+- ~~`templates/configurator/fields/number.php`: `isset()` reicht nicht~~ → **v2.3.0**
+- ~~`inc/inquiry/class-mail.php`: Preisaufschlüsselung unvollständig~~ → **v2.3.0**
+- ~~Sortier-Layout (`wc-filter-bar__groups-sort`) fehlt~~ → **Paket B, v2.4.0**
+- ~~Konfigurator: doppelte MwSt.-Berechnung in der Staffelpreis-Tabelle~~ → **Paket C, v2.5.0** (`get_tiers_with_prices()`, wie skizziert umgesetzt)
+- ~~fehlgeleiteter Kommentarverweis in `catalog-mode.php`~~ → **v2.3.0 Follow-up**
 
-- **Theme-Alias-Hook (`ajax_filter_posts`) fehlt in `ajax-handlers.php`.**
-  Janeckas Theme sendet AJAX-Filter-Requests unter `action: 'ajax_filter_posts'`
-  statt `janecka_filter_products`/`mlwf_filter_products`. Der Starter Kit
-  kennt nur die neueren Action-Namen. Sollte als zusätzlicher, dokumentierter
-  Alias ergänzt werden — wirkungslos für Projekte, die den alten Namen nicht
-  nutzen, aber schützt vor stillem Totalausfall der Filterfunktion bei
-  Projekten mit ähnlicher Theme-Konvention wie Janecka.
+### 🆕 Zusätzlich gefunden (nicht im ursprünglichen Backlog)
 
-- **Duale Nonce-Prüfung (`mlwf_filter_nonce` + `ajax_filters_nonce`) fehlt.**
-  Gleicher Hintergrund wie oben — Janeckas Theme erzeugt den Nonce unter
-  einem anderen Namen als der Starter Kit erwartet. Ohne Fallback: 403 bei
-  jedem Filter-Request.
-
-### Bugs — vorbestehend im Starter Kit, unabhängig vom Janecka-Merge
-
-- **`templates/inquiry-checkout.php`: hartcodierter Steuersatz.**
-  `$tax_rate = 20; // Österreich Standard-Satz` in der Cart-Review-Tabelle,
-  während `class-price-calculator.php` bereits korrekt über
-  `wc_get_price_excluding_tax()`/`wc_get_price_including_tax()` rechnet.
-  Führt zu falschen Beträgen bei abweichender Steuerklasse oder Land.
-
-- **`templates/inquiry-form.php`: totes Template.**
-  Nirgends in `inc/` eingebunden (nur ein vermutlich fehlgeleiteter
-  Kommentarverweis in `catalog-mode.php`). Klären: für Shortcode-Nutzung
-  vorgesehen und nachrüsten, oder entfernen.
-
-- **`templates/configurator/wizard.php`: Wishlist-Button ohne Guard.**
-  Der "Zur Wunschliste hinzufügen"-Button ist unconditional im Markup.
-  Für Projekte, die `inc/wishlist/` nicht mitnehmen (wie Janecka), zeigt
-  das Frontend einen sichtbaren, aber funktionslosen Button (AJAX-Request
-  gegen nicht-existenten Endpoint). Fix bei Janecka:
-  `<?php if ( class_exists( 'MediaLab_Wishlist_Ajax' ) ) : ?>` um den
-  Button. Sollte als Standard-Absicherung in den Starter Kit übernommen
-  werden, nicht nur projektspezifisch gepatcht.
-
-- **`inc/configurator/class-acf-fields.php`: `step_type` Choice `contact_form`
-  fehlt.** `wizard.php`, `class-configurator.php` und
-  `class-price-calculator.php` unterstützen den Step-Typ `contact_form`
-  aktiv (eigener `switch`-Case, eigene Validierungslogik), aber die
-  ACF-Feldgruppe listet ihn nicht in den `choices` von `field_step_type`.
-  Ergebnis: Im Produkt-Editor ist "Kontaktformular" nicht auswählbar,
-  obwohl der Konfigurator-Wizard ohne diesen Step gar nicht funktionsfähig
-  ist (die Inquiry-Engine verlangt serverseitig Name/E-Mail, die ohne
-  diesen Step nie erfasst werden). Bei Janecka nachgetragen:
-  `'contact_form' => 'Kontaktformular',`
-
-- **`templates/configurator/fields/number.php`: `isset()` reicht nicht.**
-```php
-  $min = isset($step['min_value']) ? $step['min_value'] : 1;
-  $max = isset($step['max_value']) ? $step['max_value'] : 10000;
-```
-  ACF liefert bei leer gelassenem Feld einen leeren String zurück, nicht
-  `null` — `isset('')` ist `true`, der Fallback greift also nie. Ergebnis:
-  Mengenschalter (+/-) ohne `max`-Wert im `@click`-Handler, Buttons ohne
-  Funktion. Robusterer Fix:
-```php
-  $min = (isset($step['min_value']) && $step['min_value'] !== '') ? $step['min_value'] : 1;
-  $max = (isset($step['max_value']) && $step['max_value'] !== '') ? $step['max_value'] : 10000;
-```
-
-- **`inc/inquiry/class-mail.php`: Preisaufschlüsselung in der Anfrage-Mail
-  unvollständig.** Zeigt nur `base_price`, `additions`, `tier_discount` und
-  `total` — keine Zwischensumme, Menge oder MwSt.-Zeile. Der angezeigte
-  Gesamtbetrag ist korrekt (inkl. Steuer), aber für den Kunden nicht
-  nachvollziehbar, wie er zustande kommt. Bei Janecka erweitert um
-  Zwischensumme (pro Stück), Menge, Zwischensumme vor Steuer, MwSt.-Zeile
-  — siehe Commit in `at.janecka-2026`, analog in Starter Kit nachziehen.
-
-### Feature-Kandidat aus `filter-bar.php`
-
-- **Sortier-Layout (`wc-filter-bar__groups-sort`) fehlt im Starter Kit.**
-  Janecka rendert Filter und `woocommerce_catalog_ordering()` in zwei
-  getrennten, nebeneinanderliegenden Gruppen-Containern. Generisch
-  sinnvoll, guter Kandidat für den Starter Kit — im Gegensatz zur
-  `brand-is-active`-Filterung (ACF-Feld `brand-is-active`) oder
-  `mlwf_render_filter_bar_for_category()` (aktuell ungenutzt bei
-  Janecka), die beide projektspezifisch bleiben sollten.
+- ~~**Kritisch: Konfigurator-Typ "Textilien" zeigte 0 Steps.**~~ → **Hotfix v2.5.1.**
+  `get_configuration_steps()` verzweigte bei `config_type === 'textile'` in
+  einen toten Code-Pfad (`get_textile_steps()`, erwartete ein CPT-System,
+  das im Plugin nirgends registriert ist). Roher `get_post_meta()`-Aufruf
+  auf ein ACF-Repeater-Feld lieferte nur die Zeilenanzahl als String statt
+  eines Arrays → `is_array()`-Guard schlug immer fehl. Alle Konfigurator-
+  Typen laden jetzt konsistent aus dem ACF-Repeater.
 
 ---
 
-## media-lab-agency-core
+## ✅ Erledigt — media-lab-agency-core (Paket D, v1.20.1)
 
-- **`assets/js/block-logo-slider.js` WCAG-2.2.2-Fokus-Pause nicht portiert.**
-  Die entfernte Datei enthielt eine Autoplay-Pause bei Tastaturfokus
-  (Barrierefreiheit). Die neue Theme-seitige Implementierung
-  (`ml-logo-slider.js`) hat dieses Verhalten nicht übernommen. War laut
-  Code-Kommentar durch einen Lade-Bug ohnehin nie aktiv (totes JS wurde nie
-  ausgeführt), ist also keine neue Regression — aber ein Feature, das
-  aktuell nirgends existiert. Relevant, falls Barrierefreiheit für ein
-  Projekt Anforderung ist.
-
-- **`assets/css/block-slider.css` Skeleton-Kommentar verweist auf gelöschte
-  Datei.** Kommentar nennt `assets/js/block-slider.js` als Quelle für die
-  `swiper-initialized`-Klasse — diese Datei existiert nicht mehr
-  (Funktionalität wanderte ins Theme). Kosmetisch, aber sollte
-  aktualisiert werden: der Fallback-Mechanismus (`skeleton-done`-Klasse)
-  muss vom initialisierenden Theme-Script gesetzt werden, nicht vom
-  Plugin. Referenzimplementierung: `at.janecka-2026/.../ml-slider.js`.
+- ~~`assets/js/block-logo-slider.js` WCAG-2.2.2-Fokus-Pause nicht portiert~~ →
+  **v1.20.1**, umgesetzt in `ml-logo-slider.js` (Theme, nicht Plugin — Feature
+  lebt seit der Migration im Theme)
+- ~~`assets/css/block-slider.css` Skeleton-Kommentar verweist auf gelöschte Datei~~ → **v1.20.1**
 
 ---
 
-## Struktur / Prozess (aus früheren Sessions, weiterhin offen)
+## ✅ Erledigt — Struktur/Prozess (Paket E)
 
-- Plugin-Struktur-Standardisierung: `media-lab-backup` ist Referenz
-  (README + CHANGELOG.md + composer.json/lock + uninstall.php).
-  `media-lab-agency-core` hat nur README, `media-lab-bookings` nur
-  CHANGELOG.md, `media-lab-events`/`media-lab-woocommerce` haben nichts,
-  `media-lab-seo` nutzt `CHANGES.md` statt `CHANGELOG.md`.
-  `media-lab-woocommerce` hat inzwischen ein aktuelles CHANGELOG.md,
-  weiterhin kein README/composer.json.
+- ~~`.gitignore`-Lücken: `cms/wp-content/languages/**` und
+  `cms/wp-content/plugins/woocommerce-services/**` fälschlich getrackt~~ →
+  **E1.** Root-Ursache war eine korrupte, ohne Zeilenumbruch zusammengeklebte
+  Zeile am Dateiende. Zusätzlich `git rm -r --cached` für ~400 bereits
+  getrackte Dateien in beiden Pfaden.
 
-- `.gitignore`-Lücken: `cms/wp-content/languages/**` und
-  `cms/wp-content/plugins/woocommerce-services/**` werden fälschlich
-  getrackt, erzeugen Rauschen bei jedem `git status`.
+**Plugin-Struktur-Standardisierung** (Referenz: `media-lab-backup` — README +
+CHANGELOG.md + composer.json/lock + uninstall.php):
 
----
+- ~~`media-lab-woocommerce`: hatte nichts~~ → **README.md + CHANGELOG.md ergänzt** (E2). Weiterhin kein composer.json (nicht benötigt, keine Composer-Dependencies).
+- ~~`media-lab-bookings`: nur CHANGELOG.md, kein README~~ → **README.md ergänzt** (E2b). Siehe auch 🆕 unten — dabei wurde eine unabhängige Versions-Drift entdeckt und bereinigt.
+- ~~`media-lab-seo`: nutzte `CHANGES.md` statt `CHANGELOG.md`~~ → **komplett neu aufgebaut** (E2c). Siehe 🆕 unten — deutlich größerer Umfang als ursprünglich angenommen.
 
-## Nächste Projekte / Sync-Ausblick
+**Weiterhin offen:**
 
-- `org.churum-meru-2026` nutzt `media-lab-woocommerce` nicht mehr — beim
-  nächsten Sync-Durchgang prüfen, ob andere Starter-Kit-Plugins
-  (`media-lab-agency-core`, `media-lab-backup`, `media-lab-seo`) dort
-  ebenfalls divergieren.
+- `media-lab-agency-core`: hat weiterhin nur README, kein eigenes
+  `CHANGELOG.md` (Changelog steht inline in der README) — nicht angefasst,
+  da außerhalb des Scopes von Paket D
+- `media-lab-events`: hat weiterhin **weder** README **noch** CHANGELOG.md —
+  nicht begonnen
+- `composer.json`/`composer.lock`/`uninstall.php` fehlen weiterhin bei den
+  meisten Plugins (nur `media-lab-backup` hat sie vollständig) — dieser Teil
+  der Struktur-Standardisierung wurde nicht angegangen, nur README/CHANGELOG
 
----
+### 🆕 Zusätzlich gefunden (nicht im ursprünglichen Backlog)
 
-## TI WooCommerce Wishlist → media-lab-woocommerce Wishlist-Migration
+**`media-lab-bookings` — Versions-Chaos, unabhängig vom eigentlichen
+README-Auftrag entdeckt (v1.7.0):**
 
-**Ziel:** TI WooCommerce Wishlist (Drittanbieter-Plugin) durch das im
-Starter Kit vorhandene, eigene Wishlist-Modul (`inc/wishlist/`) ersetzen —
-bei `at.janecka-2026` und mindestens einem weiteren, neu auf Basis des
-Starter Kits gebauten Projekt. Verdrängt damit den vorherigen Merge-
-Entscheid "Wishlist bewusst nicht übernehmen" (August 2026) — der war für
-den damaligen WooCommerce-Sync richtig, ist aber durch dieses Ziel überholt.
+- Plugin-Header (`Version:`) und Konstante (`MLB_VERSION`) liefen seit dem
+  allerersten Feature-Release (14. April) auseinander — nie synchron
+  gepflegt. Konstante sprang am 8. Mai sogar auf `1.8.0`, während der letzte
+  dokumentierte CHANGELOG-Stand `1.6.0` war (21. April) → eine ganze Version
+  (Blocked-Dates/Feiertags-Import, 8. Mai) war nirgends dokumentiert.
+  Bereinigt: Header + Konstante synchronisiert auf `1.7.0`, CHANGELOG-Eintrag
+  nachgetragen.
+- **Der in CHANGELOG 1.6.0 dokumentierte Wording-Fix ("Button-Label Fallback
+  auf `mlb_term('verb')`") war nie tatsächlich wirksam.** Ein automatisiertes
+  Such-/Ersetzen-Skript aus der damaligen Session zielte auf die falsche
+  Datei (`inc/shortcode.php` statt `templates/booking-form.php`, wo der
+  `$labels`-Array tatsächlich liegt) — Python `str.replace()` findet dort
+  keine Übereinstimmung und ändert stillschweigend nichts, ohne Fehler zu
+  werfen. Der Button zeigte seit 1.6.0 immer noch "Buchung anfragen",
+  unabhängig von der Wording-Konfiguration. Jetzt am korrekten Ort behoben.
 
-### Bestandsaufnahme `at.janecka-2026` (Stand 08/2026)
+**`media-lab-seo` — deutlich größerer Umfang als "CHANGES.md umbenennen"
+(mehrere Funde, v1.4.0–1.9.1):**
 
-- Plugin-Slug: `ti-woocommerce-wishlist`
-- Keine eigenen DB-Tabellen (`SHOW TABLES LIKE '%wishlist%'` liefert leer) —
-  Datenhaltung vermutlich über User-/Post-Meta, genauer Speicherort noch
-  zu klären
-- Theme-Integration verteilt über mehrere Dateien:
-  - `functions.php` — vermutlich Plugin-Setup/Support-Deklaration
-  - `inc/woocommerce/hooks-single.php` — Wishlist-Button auf der
-    Produktseite
-  - `inc/woocommerce/hooks-archive.php` — Wishlist-Button im Shop-Loop
-  - `assets/src/scss/woocommerce/_wishlist.scss` — eigenständiges
-    Wishlist-Styling
-  - `assets/src/scss/woocommerce/_single.scss`,
-    `assets/src/scss/woocommerce/_archive.scss` — weitere Referenzen
-  - `assets/src/scss/woocommerce/_woocommerce.scss.bak` — Backup-Datei,
-    Inhalt/Relevanz ungeklärt (evtl. verworfener früherer Anlauf)
-
-### Offene Fragen für die Migrations-Session
-
-1. Wo genau liegen bestehende TI-Wishlist-Daten (User-Meta-Key?), und in
-   welchem Umfang sind produktiv Kundendaten vorhanden, die migriert
-   werden müssten?
-2. Migrationsstrategie: bestehende Wishlist-Einträge übernehmen, oder
-   akzeptierter Verlust bei hartem Cutover?
-3. Parallelbetrieb während der Umstellung nötig, oder direkter Wechsel?
-4. Alle 7 gefundenen Theme-Dateien einzeln durchgehen: TI-spezifische
-   Hooks/Shortcodes/CSS-Klassen identifizieren und durch die Äquivalente
-   aus `inc/wishlist/class-frontend.php` (Add-to-Wishlist-Buttons,
-   Shortcode `[mlw_wishlist_page]`, Menü-Icon) ersetzen
-5. `_woocommerce.scss.bak` inhaltlich prüfen, bevor sie ignoriert oder
-   gelöscht wird
-6. `inc/wishlist/` komplett diffen/durchlesen (analog zum Vorgehen bei
-   `inc/inquiry/` im August-2026-Merge) — sieben Dateien, inkl.
-   `class-storage.php` (Session/User-Meta-Handling, Login-Merge),
-   `class-ajax.php` (serverseitige Preis-Neuberechnung bei
-   konfigurierbaren Produkten)
-7. Zweites Projekt (neu, auf Starter-Kit-Basis): hier keine Bestandsdaten-
-   Migration nötig, aber von Anfang an mit dem eigenen Wishlist-Modul
-   statt TI Wishlist planen — als Referenzimplementierung für künftige
-   Projekte nutzbar
-
-### Empfehlung
-
-Eigene, dedizierte Session — vergleichbarer Umfang wie der Inquiry-Engine-
-Merge (7 Klassen, Frontend-Assets, Admin-Konfiguration), zusätzlich mit
-Migrations-/Cutover-Aufwand, den die Inquiry-Engine nicht hatte.
-
----
-
-## Konfigurator: doppelte MwSt.-Berechnung in der Staffelpreis-Tabelle
-
-**Gefunden bei:** `at.janecka-2026`, Live-Test des Konfigurators (08/2026),
-Produkt mit `woocommerce_prices_include_tax = yes` (Bruttopreis-Eingabe).
-
-**Symptom:** Die Live-Preisvorschau (`estimatedPrice`, serverseitig über
-`class-price-calculator.php` → `get_breakdown()` berechnet) zeigt korrekte
-Werte. Die Staffelpreis-Tabelle im Wizard (`configurator.js`,
-`calculateTierPrice()`) zeigt bei identischer Menge/Rabatt einen
-**abweichenden, zu hohen** Preis/Stück.
-
-Beispiel: Basispreis 100€ + Material-Aufschlag 50€ = 150€/Stück,
-10% Mengenrabatt ab 5 Stück → korrekt 135€/Stück (Live-Vorschau, richtig),
-Tabelle zeigt 162€/Stück (falsch).
-
-**Ursache:** `calculateTierPrice()` in `assets/js/configurator.js` geht
-fest davon aus, dass `priceBreakdown.subtotal` ein **Nettopreis** ist, und
-schlägt bei `tax_display_mode === 'incl'` client-seitig nochmal 20% MwSt.
-drauf:
-
-```javascript
-let discounted = price * (1 - discountPercent / 100);
-if (showGross) {
-    discounted = discounted * (1 + taxRate / 100);
-}
-```
-
-Bei Brutto-Preiseingabe (`woocommerce_prices_include_tax = yes`, üblich
-für DACH-B2C-Shops) ist `subtotal` aber bereits brutto — die Funktion
-schlägt die Steuer dadurch ein zweites Mal auf. Betrifft vermutlich jedes
-Projekt mit Bruttopreis-Eingabe, nicht nur Janecka — sollte im Starter Kit
-selbst gefixt werden.
-
-**Skizzierter Fix** (im Detail durchdacht, noch nicht umgesetzt):
-
-1. `class-price-calculator.php`: neue Methode `get_tiers_with_prices( float $subtotal ): array`,
-   die pro Tier den korrekten `unit_price` mit denselben
-   `wc_get_price_excluding_tax()`/`wc_get_price_including_tax()`-Aufrufen
-   berechnet wie `get_breakdown()` — keine geratene Netto/Brutto-Logik mehr.
-2. `class-configurator.php`, `ajax_calculate_price()`: `price_breakdown`
-   um `tiers_with_prices` ergänzen (fertig berechnete Werte an den Client
-   mitgeben).
-3. `configurator.js`, `calculateTierPrice()`: statt selbst zu rechnen, nur
-   noch den vom Server gelieferten `unit_price` aus `tiers_with_prices`
-   nachschlagen (Fallback auf alte Logik, falls `tiers_with_prices` fehlt,
-   z.B. bei noch nicht aktualisiertem Server-Code).
-4. Vor dem Einspielen prüfen: `wizard.php` ruft
-   `calculateTierPrice(<?php echo $tier['discount_percent']; ?>)` mit
-   PHP-Wert auf — sicherstellen, dass der Vergleich in JS
-   (`parseFloat(t.discount_percent) === discountPercent`) typkompatibel
-   matcht (float vs. int/string aus PHP-Ausgabe).
-
-**Test-Setup zum Reproduzieren:** Konfigurierbares Produkt mit
-`tier_pricing` (z.B. ab 5 Stück: 10% Rabatt), Produktpreis brutto
-eingegeben, `woocommerce_prices_include_tax = yes`. Menge auf die
-Rabatt-Schwelle setzen, Live-Vorschau (richtig) gegen Staffeltabellen-Wert
-(falsch) vergleichen.
+- `CHANGES.md` war gar keine Changelog-Datei, sondern eine
+  Implementierungs-Notiz für das (inzwischen fertige) Bing-Feature —
+  entfernt, Inhalt in CHANGELOG (Feature) und README (Anleitung) überführt.
+- Versionsnummer lief zeitweise **nicht monoton**: bereits am 10. März bei
+  `1.3.0` (SEO-Dashboard, GSC OAuth2, Report-Mailer, GA4+Matomo-Adapter),
+  beim Merge mit dem separat entwickelten `media-lab-toolkit` am 25. März
+  fälschlich zurückgesetzt auf `1.1.0` — kein Feature-Verlust, aber zwei
+  unterschiedliche Feature-Stände beanspruchten zu verschiedenen Zeitpunkten
+  dieselbe Versionsnummer. Komplette Versionshistorie rekonstruiert und
+  neu durchnummeriert, Header/Konstante synchronisiert auf `1.9.1`.
+- **Mehrere erfundene Funktions-/Filter-Namen** in `docs/03_PLUGINS.md`,
+  `docs/13_SEO.md`, `docs/12_ANALYTICS.md` und (bevor korrigiert) auch in
+  der von uns neu geschriebenen README — alle aus derselben veralteten
+  Quelle stammend, falsches `medialab_`-Präfix statt `MLT_`/`mlt_`:
+  - `medialab_gsc_is_configured()`, `medialab_gsc_get_dashboard_data()` etc. existieren nicht (echt: `MLT_GSC_API`-Klasse)
+  - Filter `medialab_analytics_adapter` existiert nicht (echt: `mlt_analytics_adapter`)
+  - Filter `medialab_seo_schema_types` existiert nicht — Schema.org-Typen sind fest im Code, kein Erweiterungs-Hook
+  - Filter `medialab_matomo_sslverify` existiert nicht
+  - `do_action('medialab_track_event', ...)` existiert nicht — kein einziger `do_action()` in `class-analytics.php`
+  - Alle vier Doku-Dateien entsprechend korrigiert
+- **Menü-Struktur war falsch dokumentiert.** Menüpunkt heißt tatsächlich
+  „SEO Toolkit" (nicht „Media Lab SEO"); „Einstellungen" und „Dashboard"
+  sind zwei **gleichrangige** Untermenüpunkte, keine Verschachtelung wie
+  überall behauptet ("Dashboard → Einstellungen").
+- **GA4-Setup grundlegend falsch dokumentiert.** GA4 läuft primär über
+  OAuth2 und teilt sich die Client-ID/Secret **mit GSC** (ein gemeinsames
+  Zugangsdaten-Paar) — Service-Account-JSON ist nur noch Legacy-Fallback.
+  Alte Doku (und unser erster README-Entwurf) beschrieb ausschließlich den
+  veralteten Service-Account-Weg als wäre er die einzige Methode.
+- **`docs/03_PLUGINS.md` listete `media-lab-analytics` fälschlich als
+  eigenständiges, optionales Plugin** — wurde bereits am 25.03.2026
+  vollständig in `media-lab-seo` integriert, existiert im Repo nicht mehr
+  (verifiziert). Zeile entfernt, Korrektur-Hinweis ergänzt.
+- **Wöchentlicher Report wurde zeitweise doppelt versendet** (bei Janecka
+  aufgefallen) — zwei Handler auf demselben Cron-Hook `mlt_weekly_report`
+  (ein Legacy-Handler in `class-settings.php` + der eigentliche
+  `MLT_Report_Mailer`). **War zum Zeitpunkt dieser Session bereits gefixt**
+  (Legacy-Handler entfernt), aber ein veralteter Docblock-Kommentar
+  verwies noch auf den falschen Registrierungsort — korrigiert.
+- **Offen geblieben** (nicht am Code verifiziert, bewusst so markiert statt geraten):
+  - exakter GSC-OAuth-Redirect-Parameter (`class-gsc-api.php` lag nicht vor)
+  - exaktes Datum/Commit der GA4-OAuth-Migration (Service-Account → OAuth)
+  - genauer Aufbau des Report-Mail-HTML (`class-report-template.php` nicht geprüft)
 
 ---
 
-## juwelier-janecka Theme: `janecka_product_card_show_actions`-Filter global statt lokal
+## Weiterhin offen (nicht Teil der August-2026-Session)
 
-**Verifiziert offen** (08/2026, `inc/woocommerce/hooks-archive.php`,
-Zeile 385).
+Diese Punkte wurden bewusst nicht angegangen — entweder weil sie explizit
+als eigene, größere Sessions markiert waren, oder weil sie außerhalb des
+Struktur-Standardisierungs-Scopes lagen.
+
+### juwelier-janecka Theme: `janecka_product_card_show_actions`-Filter global statt lokal
+
+**Verifiziert offen** (08/2026, `inc/woocommerce/hooks-archive.php`, Zeile 385).
 
 ```php
 remove_action( 'woocommerce_no_products_found', 'wc_no_products_found' );
@@ -271,65 +166,43 @@ function janecka_wc_no_products_found(): void {
 }
 ```
 
-Der Filter wird auf oberster Dateiebene registriert, nicht innerhalb von
-`janecka_wc_no_products_found()`. Dadurch unterdrückt er die Action-Buttons
-(`janecka_product_card_actions_hook()`, Zeile 216: `if ( ! apply_filters(
-'janecka_product_card_show_actions', true ) ) return;`) auf **jeder**
-Archivseite dauerhaft, nicht nur im "keine Produkte gefunden"-Fall, für
-den er gedacht war.
+Filter wird auf oberster Dateiebene registriert statt innerhalb der
+Funktion — unterdrückt dadurch die Action-Buttons auf **jeder** Archivseite
+dauerhaft, nicht nur im "keine Produkte gefunden"-Fall. Fix: Registrierung
+in die Funktion verschieben. Niedriges Risiko, noch nicht eingespielt
+(client-spezifisch, nicht Teil des Starter Kits).
 
-**Fix:** Filter-Registrierung in die Funktion verschieben:
+### media-lab-backup: `cleanup()` löscht Dateien anderer paralleler Jobs
 
-```php
-function janecka_wc_no_products_found(): void {
-    add_filter( 'janecka_product_card_show_actions', '__return_false' );
-    // ... restlicher Funktionsinhalt unverändert
-}
-```
+**Verifiziert offen** (08/2026, `includes/class-mlb-backup-runner.php`, Zeile 270–278).
 
-Niedriges Risiko (reine Verschiebung von einer Zeile), noch nicht
-eingespielt.
+`glob()` matched alle Backup-Dateien im gemeinsamen Temp-Verzeichnis,
+unabhängig vom erzeugenden Job — kein Job-Präfix, kein Lock-Mechanismus.
+Live reproduziert: paralleler DB-only-Job hat eine ZIP-Datei eines noch
+laufenden Full-Backup-Jobs mitten im SFTP-Upload gelöscht.
 
----
+Skizzierter Fix: Pro-Job-Unterverzeichnis (`temp/{log_id}/`) oder
+Glob-Filter mit Job-ID-Präfix, zusätzlich genereller Lock-Mechanismus.
 
-## media-lab-backup: `cleanup()` löscht Dateien anderer paralleler Jobs
+**Verwandt, weiterhin unklar:** Live-Log-Persistenz beim Tab-Wechsel im
+"Backup starten"-Tab — Feature-Wunsch aus früherer Session,
+Verifikationsstatus gegen `class-mlb-logger.php` weiterhin ungeklärt.
 
-**Verifiziert offen** (08/2026,
-`includes/class-mlb-backup-runner.php`, Zeile 270–278).
+### TI WooCommerce Wishlist → media-lab-woocommerce Wishlist-Migration
 
-```php
-private function cleanup(): void {
-    $this->maybe_stop_caffeinate();
-    $this->log( '🧹 Temp-Dateien aufräumen …' );
-    $files = glob( $this->temp_dir . '*.{sql,sql.gz,zip}', GLOB_BRACE );
-    foreach ( (array) $files as $file ) {
-        @unlink( $file );
-    }
-}
-```
+Eigene, dedizierte Session empfohlen (vergleichbarer Umfang wie der
+Inquiry-Engine-Merge). Details siehe vorheriger Backlog-Stand — unverändert
+offen, nicht Teil dieser Session.
 
-`glob()` matched **alle** Backup-Dateien im gemeinsamen Temp-Verzeichnis,
-unabhängig vom Job, der sie erzeugt hat — kein Job-Präfix, kein
-Unterordner, kein Lock-Mechanismus gegen gleichzeitige Jobs.
+### Nächste Projekte / Sync-Ausblick
 
-**Live reproduziert** (frühere Session): Ein paralleler DB-only-Job hat
-mit seinem `cleanup()`-Aufruf eine große ZIP-Datei eines anderen, noch
-laufenden Full-Backup-Jobs mitten im SFTP-Upload gelöscht — der Stream
-hing danach als Zombie-Status in der DB fest.
+`org.churum-meru-2026` nutzt `media-lab-woocommerce` nicht mehr — beim
+nächsten Sync-Durchgang prüfen, ob andere Starter-Kit-Plugins
+(`media-lab-agency-core`, `media-lab-backup`, `media-lab-seo`) dort
+ebenfalls divergieren. Unverändert offen.
 
-**Skizzierter Fix:**
-- Pro-Job-Unterverzeichnis (`temp/{log_id}/`) statt gemeinsamem `temp_dir`,
-  oder
-- Glob-Filter mit Job-ID/Timestamp-Präfix im Dateinamen
-- Zusätzlich: genereller Lock-Mechanismus gegen gleichzeitig laufende
-  Backup-Jobs (aktuell keiner vorhanden)
+### Struktur/Prozess — Rest
 
-### Verwandt, noch nicht verifiziert: Live-Log-Persistenz
-
-Feature-Wunsch aus früherer Session, Verifikationsstatus unklar: Der
-Live-Log im "Backup starten"-Tab soll beim Zurückkehren zum Tab, während
-ein Job noch `status=running` in der DB steht, automatisch aus der DB
-wiederhergestellt und das Polling fortgesetzt werden — aktuell rein
-client-seitiges JS-Polling ohne Rehydrierung nach Tab-Wechsel. Vor
-Umsetzung: aktuellen Stand in `class-mlb-logger.php`/zugehörigem JS
-prüfen, ob das inzwischen schon existiert.
+- `media-lab-agency-core`: eigenes CHANGELOG.md (aktuell inline in README)
+- `media-lab-events`: README + CHANGELOG.md komplett neu
+- `composer.json`/`composer.lock`/`uninstall.php` bei allen Plugins außer `media-lab-backup` nachziehen
