@@ -1,6 +1,6 @@
 # Plugin-Dokumentation
 
-**Version:** 1.14.0 | **Letzte Aktualisierung:** 2026-03-24
+**Version:** 1.14.0 | **Letzte Aktualisierung:** 2026-08-13
 
 ---
 
@@ -9,7 +9,7 @@
 | Plugin | Version | Zweck | Modifizierbar? |
 |---|---|---|---|
 | media-lab-agency-core | 1.7.0 | Framework + Features | ❌ Nie |
-| media-lab-seo | 1.3.0 | SEO-Toolkit + Dashboard + Reports | ✅ Konfigurierbar |
+| media-lab-seo | 1.9.1 | SEO-Toolkit + Dashboard + Reports | ✅ Konfigurierbar |
 | advanced-custom-fields-pro | aktuell | Custom Fields | ✅ Konfigurierbar |
 
 ---
@@ -382,30 +382,42 @@ Startet bereits geöffnet.
 ---
 
 
-## media-lab-seo `v1.3.0`
+## media-lab-seo `v1.9.1`
 
 **Datei:** `cms/wp-content/plugins/media-lab-seo/media-lab-seo.php`
 
-Pro Projekt aktivieren und konfigurieren unter **Media Lab SEO → ⚙️ Einstellungen**.
+Pro Projekt aktivieren und konfigurieren unter **SEO Toolkit**. Benötigt
+zwingend `media-lab-agency-core` als aktives Plugin (Dependency-Check,
+sonst automatische Selbst-Deaktivierung mit Admin-Notice).
 
-**Neue Module seit v1.2.0 / v1.3.0:**
+**Module (Stand 1.9.1):**
 
 | Modul | Datei | Beschreibung |
 |---|---|---|
-| GSC API | `inc/gsc-api.php` | OAuth2, Token-Management, Datenabruf |
-| Analytics-Adapter | `inc/analytics-adapter.php` | GA4 / Matomo / Eigene Implementierung |
-| GA4 Adapter | `inc/adapter-ga4.php` | Service Account JWT, Data API |
-| Matomo Adapter | `inc/adapter-matomo.php` | Reporting API, Verbindungstest |
-| SEO Dashboard | `inc/seo-dashboard.php` | Admin-Seite + WP-Dashboard-Widget |
-| Report Template | `inc/seo-report-template.php` | HTML-Mail Inline-CSS |
-| Report Mailer | `inc/seo-report-mailer.php` | WP-Cron wöchentlich |
+| GSC API | `inc/class-gsc-api.php` | OAuth2, Token-Management, Datenabruf |
+| GA4 API | `inc/class-ga4-api.php` | GA4 OAuth (separater Flow von GSC) |
+| Analytics-Adapter | `inc/class-analytics-adapter.php` | Pluggbare Schnittstelle: GA4 / Matomo / eigene Implementierung |
+| Settings | `inc/class-settings.php` | Einstellungsseite: Grid aus Cards (SEO inkl. Bing, Google Search Console, GA4, Matomo, Wöchentlicher Report) |
+| SEO | `inc/class-seo.php` | Open Graph, Twitter Cards, Canonical, GSC- + Bing-Verifizierungs-Tags |
+| Schema | `inc/class-schema.php` | Schema.org JSON-LD |
+| Breadcrumbs | `inc/class-breadcrumbs.php` | Breadcrumbs + Schema.org BreadcrumbList |
+| Redirects | `inc/class-redirects.php` | 301/302-Manager |
+| Consent-Stats | `inc/class-consent-stats.php` | DSGVO Consent-Rate-Tracking (seit 1.9.0), liest read-only aus Agency-Core-Tabelle `wp_mlt_consent_log` |
+| SEO Dashboard | `inc/class-seo-dashboard.php` | Eigenständiger Admin-Menüpunkt + WP-Dashboard-Widget, konfigurierbarer Datumsbereich (seit 1.8.0) |
+| Report Template | `inc/class-report-template.php` | HTML-Mail, Inline-CSS |
+| Report Mailer | `inc/class-report-mailer.php` | WP-Cron wöchentlich - **einziger** Handler auf `mlt_weekly_report` (siehe Duplikat-Mail-Fix 1.9.0 im CHANGELOG des Plugins) |
+| Report Recipients | `inc/report-recipients.php` | Dynamische Empfänger-Liste statt nur Admin-E-Mail (seit 1.6.0) |
+| Report Schedule | `inc/report-schedule.php` | Konfigurierbarer Versandtag/-uhrzeit statt fix Montag 08:00 (seit 1.6.0) |
 
 **Menü-Struktur:**
 ```
-Media Lab SEO
-├── ⚙️ Einstellungen    → Schema, OG, Twitter, Weiterleitungen
-└── 📊 Dashboard        → GSC-KPIs, Analytics, Report-Konfiguration
+SEO Toolkit (Top-Level, eigenes Icon)
+├── Einstellungen   (slug: media-lab-seo)   → Cards: SEO (inkl. Bing-Tag), Google Search Console (OAuth), GA4, Matomo, Wöchentlicher Report
+└── Dashboard       (slug: mlt-dashboard)   → KPI-Kacheln, Top-Keywords/-Seiten, Datumsbereich-Picker, Consent-Rate-Card, „Mit Google verbinden"
 ```
+Einstellungen und Dashboard sind zwei **gleichrangige** Untermenüpunkte
+(getrennte `add_submenu_page()`-Aufrufe in `class-settings.php` bzw.
+`class-seo-dashboard.php`), keine Verschachtelung.
 
 ### Features
 
@@ -416,6 +428,9 @@ Media Lab SEO
 | Twitter Cards | Erweiterte Twitter-Vorschauen |
 | Canonical URLs | Duplicate Content verhindern |
 | Breadcrumbs | Automatische Brotkrummen-Navigation |
+| Google Search Console | Vollständige OAuth2-Anbindung (nicht nur ein Verifizierungs-Tag) |
+| Bing Webmaster Tools | Verifizierungs-Meta-Tag (`msvalidate.01`) |
+| Consent-Rate-Tracking | DSGVO-Auswertung, wie viele Besucher Analytics-Consent geben |
 
 ### Schema-Typen
 
@@ -439,11 +454,9 @@ if (function_exists('medialab_seo_breadcrumbs')) {
 
 ### Konfiguration
 
-1. **Einstellungen → SEO Toolkit**
-2. Site Name eintragen
-3. Twitter-Username (ohne @) eintragen
-4. Standard-Social-Image hochladen (1200×630px)
-5. Einzelne Features aktivieren/deaktivieren
+Ausführliche Einrichtung (GSC-OAuth, Bing, GA4, Matomo, Report-Empfänger)
+siehe [13_SEO.md](13_SEO.md) bzw. die Plugin-eigene README unter
+`cms/wp-content/plugins/media-lab-seo/README.md`.
 
 ---
 
@@ -469,8 +482,14 @@ Diese Plugins können bei Bedarf pro Projekt ergänzt werden:
 | Plugin | Zweck | Hinweis |
 |---|---|---|
 | WooCommerce | E-Commerce | SCSS-Partial `_woocommerce.scss` bereits vorhanden |
-| media-lab-analytics | GA4, GTM, Facebook Pixel | Optional, liegt im Repo |
 | media-lab-events | Event-Management | Optional, liegt im Repo |
+
+> **Korrektur (2026-08-13):** `media-lab-analytics` stand hier vorher als
+> separates, optionales Plugin gelistet - das ist veraltet. Analytics
+> (GA4/GTM-Frontend-Tracking + GA4/Matomo-Adapter fürs SEO-Dashboard)
+> wurde am 25.03.2026 vollständig in `media-lab-seo` integriert (siehe
+> CHANGELOG des Plugins, 1.4.0). Ein eigenständiges
+> `media-lab-analytics`-Plugin existiert im Repo nicht mehr (verifiziert).
 
 ---
 
