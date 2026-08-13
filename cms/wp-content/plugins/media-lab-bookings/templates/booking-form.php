@@ -36,7 +36,15 @@ $labels = [
     'email'       => mlb_label( 'mlb_label_email',       'E-Mail-Adresse',          $loc_id ),
     'phone'       => mlb_label( 'mlb_label_phone',       'Telefon',                 $loc_id ),
     'notes'       => mlb_label( 'mlb_label_notes',       'Anmerkungen',             $loc_id ),
-    'submit'      => mlb_label( 'mlb_label_submit',      'Buchung anfragen',        $loc_id ),
+    // Fallback jetzt mlb_term('verb') statt hartcodiert 'Buchung anfragen' - macht
+    // den Button-Text automatisch konsistent mit der Wording-Konfiguration
+    // (Bookings -> Einstellungen -> Wording), sofern kein standortspezifisches
+    // ACF-Label (mlb_label_submit) gesetzt ist. War in CHANGELOG 1.6.0 bereits
+    // als erledigt dokumentiert, der Fix landete damals aber versehentlich in
+    // inc/shortcode.php statt hier (falscher Dateipfad in einem automatisierten
+    // Such-/Ersetzen-Skript, das dort keine Übereinstimmung fand und daher
+    // stillschweigend nichts änderte) und griff faktisch nie. Siehe CHANGELOG.md, 1.7.0.
+    'submit'      => mlb_label( 'mlb_label_submit',      function_exists( 'mlb_term' ) ? mlb_term( 'verb' ) : 'Buchung anfragen', $loc_id ),
     'privacy'     => mlb_label( 'mlb_label_privacy',     'Ich habe die Datenschutzerklärung gelesen und stimme der Verarbeitung meiner Daten zu.', $loc_id ),
     'privacy_note'=> mlb_label( 'mlb_label_privacy_note', '', $loc_id ),
 ];
