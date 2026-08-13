@@ -29,7 +29,7 @@ Push-basiertes Monitoring statt klassischer Pull-Uptime-Checks. Konfiguration un
 2. In Agency Core → Heartbeat Monitoring aktivieren, Ping-URL eintragen, speichern
 3. Den dort angezeigten REST-Endpoint (inkl. Token) per Server-Cronjob alle 5–10 Min aufrufen lassen (`curl` oder `wget`)
 
-Empfohlen: zentraler Dispatcher-Cronjob (ein Script, das mehrere Client-Sites nacheinander pingt) statt Einzel-Cronjob pro Site — siehe `heartbeat-runner.php`-Beispiel im Starter-Kit-Root.
+Empfohlen: zentraler Dispatcher-Cronjob (ein Script, das mehrere Client-Sites nacheinander pingt) statt Einzel-Cronjob pro Site — siehe `scripts/heartbeat-runner.php` (Template, echte Tokens in lokaler `scripts/heartbeat-runner.config.php`, siehe `.example`-Datei).
 
 ## WP All Import – Bilder-Download-Fixes
 
