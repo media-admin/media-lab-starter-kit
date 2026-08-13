@@ -257,12 +257,12 @@ ergänzt, alle Versionsangaben gegen den echten Code verifiziert.
   vermutlich ein einzelner ausgelassener Cron-Tick auf Hetzner Webhosting
   (nicht 100% exakt getaktet) in Kombination mit einer zu knapp bemessenen
   Better-Stack-Grace-Period (5 Min. bei 10-Min.-Intervall = nur 15 Min.
-  Toleranz, ein ausgelassener Tick erzeugt aber eine 20-Min.-Lücke). Fix:
+  Toleranz, ein ausgelassener Tick erzeugt aber eine 20-Min.-Lücke). ~~Fix:
   Grace Period auf 15 Min. erhöht (Period bleibt bei 10 Min.) für
-  `churum-meru.org` — **noch zu prüfen/nachziehen für
-  `stadtwirt-berndorf.at`, `ib-mosbacher.at` und `womac.at`**, falls dort
-  dieselbe knappe Grace-Period-Konfiguration vorliegt. Falls die
-  Alarme trotz angepasster Grace Period häufiger als "vereinzelt"
+  `churum-meru.org` — noch zu prüfen/nachziehen für
+  `stadtwirt-berndorf.at`, `ib-mosbacher.at` und `womac.at`~~ → **für alle
+  vier Heartbeats nachgezogen** (manuell im Better-Stack-Dashboard, 13.08.2026).
+  Falls die Alarme trotz angepasster Grace Period häufiger als "vereinzelt"
   auftreten, deutet das auf ein tieferliegendes Cron-Zuverlässigkeits-
   Problem auf Hetzner Webhosting hin, das eine genauere Untersuchung
   wert wäre (z.B. externer Cron-Trigger-Dienst statt Hosting-internem Cron).
