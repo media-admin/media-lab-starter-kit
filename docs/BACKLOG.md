@@ -64,14 +64,13 @@ CHANGELOG.md + composer.json/lock + uninstall.php):
 - ~~`media-lab-woocommerce`: hatte nichts~~ → **README.md + CHANGELOG.md ergänzt** (E2). Weiterhin kein composer.json (nicht benötigt, keine Composer-Dependencies).
 - ~~`media-lab-bookings`: nur CHANGELOG.md, kein README~~ → **README.md ergänzt** (E2b). Siehe auch 🆕 unten — dabei wurde eine unabhängige Versions-Drift entdeckt und bereinigt.
 - ~~`media-lab-seo`: nutzte `CHANGES.md` statt `CHANGELOG.md`~~ → **komplett neu aufgebaut** (E2c). Siehe 🆕 unten — deutlich größerer Umfang als ursprünglich angenommen.
+- ~~`media-lab-events`: hatte weder README noch CHANGELOG.md~~ → **beides neu angelegt** (v1.0.1). Siehe 🆕 unten — dabei wurde ein unabhängiger kritischer Sortier-/Filter-Bug entdeckt und behoben.
 
 **Weiterhin offen:**
 
 - `media-lab-agency-core`: hat weiterhin nur README, kein eigenes
   `CHANGELOG.md` (Changelog steht inline in der README) — nicht angefasst,
   da außerhalb des Scopes von Paket D
-- `media-lab-events`: hat weiterhin **weder** README **noch** CHANGELOG.md —
-  nicht begonnen
 - `composer.json`/`composer.lock`/`uninstall.php` fehlen weiterhin bei den
   meisten Plugins (nur `media-lab-backup` hat sie vollständig) — dieser Teil
   der Struktur-Standardisierung wurde nicht angegangen, nur README/CHANGELOG
@@ -96,6 +95,25 @@ README-Auftrag entdeckt (v1.7.0):**
   keine Übereinstimmung und ändert stillschweigend nichts, ohne Fehler zu
   werfen. Der Button zeigte seit 1.6.0 immer noch "Buchung anfragen",
   unabhängig von der Wording-Konfiguration. Jetzt am korrekten Ort behoben.
+
+**`media-lab-events` — kritischer Sortier-/Filter-Bug, unabhängig vom
+README-Auftrag entdeckt (v1.0.1):**
+
+- ACF-Feld `event_date_start` nutzte `return_format => 'd.m.Y H:i'` (Tag
+  zuerst). `[events_grid]` sortierte und filterte dieses Feld als reinen
+  String ohne Typ-Angabe — bei diesem Format ist String-Vergleich **nicht**
+  chronologisch korrekt (`"01.03.2026"` gilt string-sortiert als "kleiner"
+  als `"15.01.2026"`, obwohl der 15. Januar chronologisch früher liegt).
+  Betraf jedes Projekt, das das Plugin nutzt, abhängig von der zufälligen
+  Tag/Monat-Konstellation der jeweiligen Events. Fix: `return_format` auf
+  `Y-m-d H:i:s` geändert (identisch zum internen ACF-Speicherformat, daher
+  **keine Datenmigration nötig**), `meta_type => 'DATETIME'` für Sortierung
+  und Filter ergänzt, Frontend-Anzeige über `date_i18n()` zurück ins
+  deutsche Format konvertiert.
+- Beim README-Schreiben zusätzlich dokumentiert (nicht behoben, da
+  Verhaltensänderung nötig gewesen wäre): `orderby`-Shortcode-Parameter
+  wird entgegengenommen, aber im `WP_Query`-Aufbau nie ausgewertet —
+  Sortierung ist fest auf `event_date_start` verdrahtet.
 
 **`media-lab-seo` — deutlich größerer Umfang als "CHANGES.md umbenennen"
 (mehrere Funde, v1.4.0–1.9.1):**
@@ -204,5 +222,4 @@ ebenfalls divergieren. Unverändert offen.
 ### Struktur/Prozess — Rest
 
 - `media-lab-agency-core`: eigenes CHANGELOG.md (aktuell inline in README)
-- `media-lab-events`: README + CHANGELOG.md komplett neu
 - `composer.json`/`composer.lock`/`uninstall.php` bei allen Plugins außer `media-lab-backup` nachziehen
