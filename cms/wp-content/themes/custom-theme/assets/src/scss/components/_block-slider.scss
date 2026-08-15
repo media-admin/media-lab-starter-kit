@@ -1,0 +1,130 @@
+@use '../abstracts' as *;
+
+// =============================================================================
+// Slider Block (medialab/slider) – Visuelles Styling
+//
+// Strukturelles CSS (Skeleton-Loading, Overflow, Basis-Layout) kommt aus dem
+// Plugin: media-lab-agency-core/assets/css/block-slider.css - hier NUR das
+// visuelle Overlay-Design (Bild + Text-Overlay), analog zum Hero-Slider.
+//
+// WICHTIG: Überschreibt bewusst zwei Struktur-Regeln aus der Plugin-CSS, die
+// dort für eine "Bild bestimmt die Höhe"-Darstellung gedacht sind, hier aber
+// ein festes Overlay-Banner brauchen (Text ÜBER dem Bild, nicht darunter):
+//   - .ml-slider__wrapper > .swiper-slide { height: auto; }  → feste Höhe
+//   - .ml-slider__wrapper > .swiper-slide img { height: auto; } → object-fit: cover
+// Beide Overrides mit !important, da identische Selektor-Spezifität wie im
+// Plugin-CSS - ohne !important würde nur die Ladereihenfolge der Assets
+// entscheiden, was hier zu fragil wäre.
+// =============================================================================
+
+.ml-block-slider .ml-slider__swiper {
+  // Fluid: dieselbe Bandbreite wie der Hero-Slider (480–700px)
+  height: clamp(480px, 55vw, 700px);
+}
+
+.ml-slider__wrapper > .swiper-slide {
+  height: 100% !important;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ml-slider__slide-media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.ml-slider__slide-img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover;
+  object-position: center;
+}
+
+.ml-slider__slide-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  max-width: 800px;
+  padding: var(--space-xl) var(--space-inner, 1.5rem);
+
+  // Dunkler Verlauf hinter dem Text - das Plugin-Markup hat keinen
+  // separaten Overlay-Layer wie der Hero-Slider (dort .hero-slide__overlay),
+  // daher hier direkt am Content per ::before, statt Lesbarkeit auf das
+  // Zufallsprinzip des jeweiligen Hintergrundbilds zu verlassen.
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -2rem -3rem;
+    z-index: -1;
+    background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.55), transparent 70%);
+  }
+}
+
+.ml-slider__slide-heading {
+  color: $color-white;
+  font-size: clamp(1.75rem, 5vw, 3.5rem);
+  font-weight: $font-weight-bold;
+  margin-bottom: var(--space-sm);
+  line-height: 1.2;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.ml-slider__slide-text {
+  color: $color-white;
+  font-size: clamp(1rem, 2vw, 1.125rem);
+  margin-bottom: var(--space-md);
+  line-height: 1.6;
+}
+
+// .ml-slider__slide-btn trägt im Markup bereits die Klasse .btn - die
+// Basis-Styles (Padding, Radius, Hover etc.) kommen daher schon aus
+// components/buttons.scss. Hier nur der Abstand zum Text darüber.
+.ml-slider__slide-content .btn.ml-slider__slide-btn {
+  margin-top: 0.25rem;
+}
+
+// ── Swiper Navigation – gleiches Muster wie beim Hero-Slider: eigene
+//    --swiper-navigation-size setzen, damit Swipers margin-top-Zentrierung
+//    zur tatsächlichen (hart gesetzten) Button-Größe passt ─────────────────
+
+.ml-slider__btn.swiper-button-prev,
+.ml-slider__btn.swiper-button-next {
+  --swiper-navigation-size: 50px;
+
+  width: 50px !important;
+  height: 50px !important;
+  background: rgba($color-white, 0.2) !important;
+  border-radius: 50% !important;
+  color: $color-white !important;
+
+  &::after { font-size: $font-size-xl !important; }
+  &:hover  { background: rgba($color-white, 0.3) !important; }
+
+  @include respond-below('sm') {
+    --swiper-navigation-size: 40px;
+    width: 40px !important;
+    height: 40px !important;
+  }
+}
+
+// ── Pagination – scoped auf .ml-slider__pagination, um andere Swiper-
+//    Instanzen (Logo-Carousel, Haupt-Carousel) nicht mit zu beeinflussen ──
+
+.ml-slider__pagination .swiper-pagination-bullet {
+  width:      12px !important;
+  height:     12px !important;
+  background: rgba($color-white, 0.5) !important;
+  opacity:    1 !important;
+
+  &:hover { background: rgba($color-white, 0.7) !important; }
+}
+
+.ml-slider__pagination .swiper-pagination-bullet-active {
+  background:    $color-primary !important;
+  width:         32px !important;
+  border-radius: 6px !important;
+}
