@@ -501,6 +501,16 @@ add_action('acf/init', function () {
                 'instructions'  => 'Zeigt den Dark/Light-Mode-Umschalter im Frontend an.',
             ),
 
+            array(
+                'key'           => 'field_search_enabled',
+                'label'         => 'Suche in Navigation',
+                'name'          => 'search_enabled',
+                'type'          => 'true_false',
+                'ui'            => 1,
+                'default_value' => 1,
+                'instructions'  => 'Zeigt ein Such-Icon in der Hauptnavigation an (Desktop + Mobile). Öffnet beim Klick das Such-Overlay.',
+            ),
+
         ),
         'location' => array(array(array(
             'param'    => 'options_page',
@@ -830,18 +840,6 @@ add_action('acf/init', function () {
                         'key'           => 'field_turnstile_woo_checkout',
                         'label'         => 'WooCommerce Checkout',
                         'name'          => 'turnstile_woo_checkout',
-                        'type'          => 'true_false',
-                        'ui'            => 1,
-                        'default_value' => 1,
-                        'conditional_logic' => array(array(array(
-                            'field' => 'field_turnstile_enabled', 'operator' => '==', 'value' => '1',
-                        ))),
-                    ),
-
-                    array(
-                        'key'           => 'field_turnstile_woo_login',
-                        'label'         => 'WooCommerce Login',
-                        'name'          => 'turnstile_woo_login',
                         'type'          => 'true_false',
                         'ui'            => 1,
                         'default_value' => 1,

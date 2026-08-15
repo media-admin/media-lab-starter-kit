@@ -29,6 +29,7 @@ function medialab_core_init() {
     require_once MEDIALAB_CORE_PATH . 'inc/admin.php';
     require_once MEDIALAB_CORE_PATH . 'inc/helpers.php';
     require_once MEDIALAB_CORE_PATH . 'inc/ajax-search.php';
+    require_once MEDIALAB_CORE_PATH . 'inc/nav-search-icon.php';
     require_once MEDIALAB_CORE_PATH . 'inc/ajax-load-more.php';
     require_once MEDIALAB_CORE_PATH . 'inc/ajax-filters.php';
     require_once MEDIALAB_CORE_PATH . 'inc/svg-support.php';

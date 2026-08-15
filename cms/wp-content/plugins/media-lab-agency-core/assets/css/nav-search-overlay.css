@@ -1,0 +1,88 @@
+/**
+ * Nav Search Overlay – Hülle (Backdrop + Panel + Nav-Icon-Button)
+ *
+ * Das eigentliche Aussehen der Suchbox (.ajax-search__*) kommt bewusst
+ * unverändert aus dem bereits geladenen Theme-Stylesheet - hier nur die
+ * Overlay-Mechanik drumherum, damit das Plugin nicht vom Theme-Sass-Build
+ * abhängt.
+ */
+
+.mlc-nav-search-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  color: inherit;
+  line-height: 0;
+}
+
+.mlc-nav-search-icon-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Explizite CSS-Größe statt nur SVG-width/height-Attribute - sonst kann ein
+   globaler SVG-Reset (z.B. "svg { width: 1em; }") das Icon schrumpfen,
+   da CSS immer gegen HTML-Attribute gewinnt. */
+.mlc-nav-search-icon {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+}
+
+.mlc-search-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.mlc-search-overlay.is-open {
+  visibility: visible;
+  opacity: 1;
+}
+
+.mlc-search-overlay__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.mlc-search-overlay__panel {
+  position: relative;
+  width: min(600px, calc(100% - 2rem));
+  margin-top: 10vh;
+  z-index: 1;
+}
+
+.mlc-search-overlay__close {
+  position: absolute;
+  top: -2.5rem;
+  right: 0;
+  background: transparent;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  padding: 0.5rem;
+  line-height: 0;
+}
+
+.mlc-search-overlay__close:focus-visible,
+.mlc-nav-search-toggle:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* Body-Scroll sperren, solange das Overlay offen ist */
+body.mlc-search-overlay-active {
+  overflow: hidden;
+}
