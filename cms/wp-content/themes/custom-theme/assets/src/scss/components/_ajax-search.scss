@@ -2,9 +2,14 @@
 
 // =============================================================================
 // AJAX Search
-// Version: 1.2.0 – Fluid Responsive System
+// Version: 1.2.1 – Highlight-Styling für Excerpt ergänzt
 //
-// Änderungen:
+// Änderungen v1.2.1:
+//   - mark-Styling auch für __excerpt/__result-excerpt (bisher nur __title) -
+//     Backend (ajax-search.php) markiert den Suchbegriff jetzt serverseitig
+//     per <mark> in Titel UND Excerpt, dezenter als beim Titel
+//
+// Änderungen v1.2.0 (Fluid Responsive System):
 //   - @media (max-width: 768px) → @include respond-below('md')
 //   - font-size → var(--text-*)
 // =============================================================================
@@ -171,6 +176,15 @@
     color:       $color-text-muted;
     line-height: 1.5;
     margin-bottom: 0.5rem;
+
+    // Dezenter als beim Titel - Excerpt-Text soll nicht mit der Primärfarbe
+    // um Aufmerksamkeit konkurrieren, nur die Fundstelle leicht absetzen.
+    mark {
+      background:    rgba($color-primary, 0.15);
+      color:         inherit;
+      padding:       0 0.15em;
+      border-radius: 2px;
+    }
   }
 
   &__meta,
