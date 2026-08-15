@@ -1,13 +1,20 @@
 // =============================================================================
 // DESIGN TOKENS
 // Media Lab Starter Kit – Single Source of Truth
-// Version: 1.2.0 – Fluid Responsive System
+// Version: 1.2.2 – Neutral Palette: Gray-Scale komplett (50–900)
+// Hinweis: Diese Versionsangabe ist rein dokumentarisch innerhalb der
+// SCSS-Datei und aktuell NICHT mit package.json synchron (offener
+// Backlog-Punkt: Theme-Versionierung). Nicht als Release-Version verwenden.
 //
 // REGELN:
 //  - Jede Variable NUR EINMAL definieren
 //  - Hardcodierte Werte in Components → immer Token verwenden
 //  - CSS Custom Properties und SCSS-Variablen sind synchron gehalten
 //  - Fluid Tokens (clamp) in :root → keine px-Breakpoints für Type/Spacing nötig
+//  - Neutral-Töne: $color-gray-* ist führend. Deskriptive Namen
+//    ($color-dark, $color-grey, $color-grey-dark, ...) sind reine
+//    Legacy-Aliase für Rückwärtskompatibilität – in neuem Code bitte
+//    ausschließlich $color-gray-* verwenden (siehe Abschnitt 2).
 // =============================================================================
 
 
@@ -26,24 +33,38 @@ $color-hero-gradient: #667eea;
 
 // ─────────────────────────────────────────────────────────────────
 // 2. NEUTRAL PALETTE
-//    Grau-Skala – keine Duplikate
+//    Gray-Scale (Tailwind-Konvention) ist das führende System.
+//    Alle Werte sind identisch zu vorher – nur die Alias-Richtung
+//    wurde gedreht, damit $color-gray-* die Quelle ist.
 // ─────────────────────────────────────────────────────────────────
 
-$color-black:      #000000;
-$color-dark:       #1a1a1a;
-$color-grey-dark:  #4a4a4a;
-$color-grey:       #9b9b9b;
-$color-grey-light: #e0e0e0;
-$color-light:      #f5f5f5;
-$color-white:      #ffffff;
+$color-black: #000000;
+$color-white: #ffffff;
 
-// Aliase für Konsistenz (verweisen auf obige Tokens)
-$color-gray-900: $color-dark;
-$color-gray-700: $color-grey-dark;
-$color-gray-400: $color-grey;
-$color-gray-200: $color-grey-light;
-$color-gray-100: #f0f0f0;  // Zwischen $color-grey-light und $color-light
-$color-gray-50:  $color-light;
+$color-gray-25:  #fafafa;  // interpoliert zwischen $color-white/50
+$color-gray-50:  #f5f5f5;
+$color-gray-100: #f0f0f0;
+$color-gray-200: #e0e0e0;
+$color-gray-300: #bebebe;  // interpoliert zwischen 200/400
+$color-gray-400: #9b9b9b;
+$color-gray-500: #808080;  // interpoliert zwischen 400/700
+$color-gray-600: #656565;  // interpoliert zwischen 400/700
+$color-gray-700: #4a4a4a;
+$color-gray-800: #323232;  // interpoliert zwischen 700/900
+$color-gray-900: #1a1a1a;
+
+// Skala komplett (25–900, 11 Stufen). Deckt sich strukturell mit dem
+// Figma-/Untitled-UI-Schema. Die konkreten Hex-Werte hier sind aber
+// eigene interpolierte Platzhalter, KEIN Import der Figma-Werte –
+// das passiert erst im eigentlichen Figma-Token-Mapping.
+
+// Legacy-Aliase – NICHT in neuem Code verwenden, nur für Bestandscode.
+// Werden schrittweise aus den Components entfernt.
+$color-dark:       $color-gray-900;
+$color-grey-dark:  $color-gray-700;
+$color-grey:       $color-gray-400;
+$color-grey-light: $color-gray-200;
+$color-light:      $color-gray-50;
 
 
 // ─────────────────────────────────────────────────────────────────
