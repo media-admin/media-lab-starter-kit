@@ -2,9 +2,18 @@
 
 // ==========================================================================
 // Hero Slider
-// Version: 1.2.0 – Fluid Responsive System
+// Version: 1.2.1 – Fix: Slide-Höhe + Pfeil-Zentrierung
 //
-// Änderungen:
+// Änderungen v1.2.1:
+//   - .hero-slide: width/height 100% ergänzt (fehlte seit Fluid-Umbau –
+//     dadurch griff .hero-slide__background { height: 100% } ins Leere,
+//     Content lag außerhalb der Bild-Box)
+//   - Swiper-Pfeile: --swiper-navigation-size lokal auf 50px/40px gesetzt,
+//     damit Swipers eigene margin-top-Zentrierung zur tatsächlichen
+//     Button-Größe passt (vorher: Zentrierung rechnete mit dem globalen
+//     Default 44px, während width/height hart auf 50px/40px standen)
+//
+// Änderungen v1.2.0 (Fluid Responsive System):
 //   - Fixe Heights 600px/700px/500px → clamp() fluid
 //   - @media (min/max-width: 768px) → @include respond-to/respond-below
 //   - font-size: $font-size-4xl/$font-size-7xl → clamp()
@@ -28,6 +37,8 @@ html, body {
 
 .hero-slide {
   position:        relative;
+  width:           100%;
+  height:          100%;   // Fix: fehlte seit Fluid-Umbau (siehe Changelog oben)
   display:         flex;
   align-items:     center;
   justify-content: center;
@@ -120,6 +131,11 @@ html, body {
 
 .swiper-button-prev,
 .swiper-button-next {
+  // Fix: hält Swipers eigene margin-top-Zentrierung synchron mit der
+  // hart gesetzten width/height (Swiper zentriert über diese Variable,
+  // nicht über die tatsächlichen width/height-Werte).
+  --swiper-navigation-size: 50px;
+
   width:      50px !important;  // Swiper-API erfordert !important
   height:     50px !important;
   background: rgba($color-white, 0.2) !important;
@@ -130,6 +146,7 @@ html, body {
   &:hover  { background: rgba($color-white, 0.3) !important; }
 
   @include respond-below('sm') {
+    --swiper-navigation-size: 40px;
     width:  40px !important;
     height: 40px !important;
   }
