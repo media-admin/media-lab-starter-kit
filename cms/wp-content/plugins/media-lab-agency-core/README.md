@@ -47,6 +47,37 @@ Nur bei Bedarf einsetzen (Verdacht auf UA-Blocking, z. B. wenn der Timeout-Fix a
 
 ## Changelog
 
+## [1.23.1] - 2026-08-14
+
+### Fixed
+- Suche: `post_type`-Filter (`post_types`-Parameter) griff bei mehreren
+  Post-Types nicht, weil `wp_magic_quotes()` (WP-Kernverhalten) den
+  `$_POST`-Wert vor `json_decode()` escaped hatte und der Fallback nicht
+  sauber geparst wurde. `wp_unslash()` vor `json_decode()` ergänzt.
+
+## [1.23.0] - 2026-08-14
+
+### Added
+- Suche: findet jetzt auch Produkte über WooCommerce-Attribute (globale
+  `pa_*`-Taxonomien und lokale/benutzerdefinierte Attribute) sowie über
+  Konfigurator-Optionen (`config_steps` → `options`). Zeigt bei reinen
+  Attribut-Treffern "Attribut: Wert" statt eines Content-Ausschnitts.
+
+## [1.22.0] - 2026-08-14
+
+### Added
+- Suche: Suchbegriff wird jetzt in Titel und Excerpt der Ergebnisse per
+  `<mark>` hervorgehoben.
+- Suche: Excerpt zeigt jetzt einen Ausschnitt um die tatsächliche
+  Fundstelle im Content, statt immer nur den Textanfang.
+
+## [1.21.0] - 2026-08-14
+
+### Added
+- Neue Einstellung "Suche in Navigation" (Logo / Globale Einstellungen →
+  UI-Features, Standard: an). Zeigt ein Such-Icon im Hauptmenü, das ein
+  Such-Overlay mit der bestehenden Ajax-Search-Komponente öffnet.
+
 ### 1.20.1
 - WCAG-2.2.2-Fokus-Pause im Logo-Slider ergänzt (`ml-logo-slider.js`, Theme-seitig): Autoplay pausiert automatisch bei Tastatur-/Screenreader-Fokus auf ein Element innerhalb des Sliders. Die entfernte `assets/js/block-logo-slider.js` enthielt dieses Verhalten, die Theme-seitige Neuimplementierung hatte es nie übernommen (war laut damaligem Code-Kommentar durch einen Lade-Bug ohnehin nie aktiv, also keine neue Regression, aber bis jetzt ein fehlendes Feature)
 - Veraltete Kommentarverweise in `assets/css/block-slider.css` auf die gelöschte `assets/js/block-slider.js` korrigiert - verweisen jetzt auf `ml-slider.js` (Theme). Rein kosmetisch, keine Funktionsänderung
