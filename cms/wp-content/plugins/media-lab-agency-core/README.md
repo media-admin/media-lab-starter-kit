@@ -5,6 +5,7 @@ Core functionality plugin for Media Lab agency websites.
 ## Features
 
 - **Shortcodes**: Hero Slider, Accordion, Stats, Testimonials, etc.
+- **Suche**: Ajax-Live-Suche mit Treffer-Highlighting, Kontext-Ausschnitt und WooCommerce-Attribut-/Konfigurator-Suche, optionales Such-Icon in der Hauptnavigation (siehe unten)
 - **Heartbeat Monitoring**: Push-basierte Uptime-Überwachung (Better Stack / Healthchecks.io)
 - **Admin**: Dashboard customizations
 - **Helpers**: Utility functions for theme development
@@ -20,6 +21,24 @@ Core functionality plugin for Media Lab agency websites.
 1. Upload to `/wp-content/plugins/media-lab-agency-core/`
 2. Activate through WordPress admin
 3. Use shortcodes in your content
+
+## Suche (Ajax Search)
+
+Live-Suche mit Ajax-Ergebnissen (`inc/ajax-search.php`), Frontend-Komponente im Theme (`.ajax-search`, siehe `assets/src/scss/components/_ajax-search.scss`).
+
+**Such-Icon in der Navigation** (optional, Standard: an):
+Agency Core → Logo / Globale Einstellungen → UI-Features → "Suche in Navigation". Zeigt ein Icon im Hauptmenü (Desktop + Mobile), das ein Such-Overlay mit derselben `.ajax-search`-Komponente öffnet (`inc/nav-search-icon.php`).
+
+**Was die Suche findet:**
+- Titel, Excerpt und Content (WordPress-Standard-Suche, `WP_Query` mit `s`)
+- WooCommerce-Produktattribute: sowohl globale (`pa_*`-Taxonomien) als auch lokale/benutzerdefinierte Attribute
+- Konfigurator-Optionen konfigurierbarer Produkte (`config_steps` → `options`, aus media-lab-woocommerce)
+
+Attribut-/Konfigurator-Treffer, bei denen der Suchbegriff nicht im Beschreibungstext steht, zeigen "Attribut: Wert" statt eines Text-Ausschnitts (z. B. "Farbe: Rot").
+
+**Ergebnis-Darstellung:**
+- Treffer werden per `<mark>` in Titel und Excerpt hervorgehoben
+- Excerpt zeigt einen Ausschnitt um die tatsächliche Fundstelle im Content, nicht immer nur den Textanfang
 
 ## Heartbeat Monitoring
 
@@ -47,36 +66,14 @@ Nur bei Bedarf einsetzen (Verdacht auf UA-Blocking, z. B. wenn der Timeout-Fix a
 
 ## Changelog
 
-## [1.23.1] - 2026-08-14
+### 1.22.0
+- Suche: Suchbegriff wird jetzt in Titel und Excerpt der Ergebnisse per `<mark>` hervorgehoben.
+- Suche: Excerpt zeigt jetzt einen Ausschnitt um die tatsächliche Fundstelle im Content, statt immer nur den Textanfang.
+- Suche: findet jetzt auch Produkte über WooCommerce-Attribute (globale `pa_*`-Taxonomien und lokale/benutzerdefinierte Attribute) sowie über Konfigurator-Optionen (`config_steps` → `options`). Reine Attribut-/Options-Treffer zeigen "Attribut: Wert" statt eines Content-Ausschnitts.
+- Fix: `post_type`-Filter griff bei mehreren durchsuchten Post-Types nicht - `wp_magic_quotes()` (WP-Kernverhalten) hatte den `$_POST`-Wert vor `json_decode()` escaped, der Fallback parste den kaputten String nicht sauber. `wp_unslash()` vor `json_decode()` ergänzt.
 
-### Fixed
-- Suche: `post_type`-Filter (`post_types`-Parameter) griff bei mehreren
-  Post-Types nicht, weil `wp_magic_quotes()` (WP-Kernverhalten) den
-  `$_POST`-Wert vor `json_decode()` escaped hatte und der Fallback nicht
-  sauber geparst wurde. `wp_unslash()` vor `json_decode()` ergänzt.
-
-## [1.23.0] - 2026-08-14
-
-### Added
-- Suche: findet jetzt auch Produkte über WooCommerce-Attribute (globale
-  `pa_*`-Taxonomien und lokale/benutzerdefinierte Attribute) sowie über
-  Konfigurator-Optionen (`config_steps` → `options`). Zeigt bei reinen
-  Attribut-Treffern "Attribut: Wert" statt eines Content-Ausschnitts.
-
-## [1.22.0] - 2026-08-14
-
-### Added
-- Suche: Suchbegriff wird jetzt in Titel und Excerpt der Ergebnisse per
-  `<mark>` hervorgehoben.
-- Suche: Excerpt zeigt jetzt einen Ausschnitt um die tatsächliche
-  Fundstelle im Content, statt immer nur den Textanfang.
-
-## [1.21.0] - 2026-08-14
-
-### Added
-- Neue Einstellung "Suche in Navigation" (Logo / Globale Einstellungen →
-  UI-Features, Standard: an). Zeigt ein Such-Icon im Hauptmenü, das ein
-  Such-Overlay mit der bestehenden Ajax-Search-Komponente öffnet.
+### 1.21.0
+- Neue Einstellung "Suche in Navigation" (Logo / Globale Einstellungen → UI-Features, Standard: an). Zeigt ein Such-Icon im Hauptmenü, das ein Such-Overlay mit der bestehenden Ajax-Search-Komponente öffnet.
 
 ### 1.20.1
 - WCAG-2.2.2-Fokus-Pause im Logo-Slider ergänzt (`ml-logo-slider.js`, Theme-seitig): Autoplay pausiert automatisch bei Tastatur-/Screenreader-Fokus auf ein Element innerhalb des Sliders. Die entfernte `assets/js/block-logo-slider.js` enthielt dieses Verhalten, die Theme-seitige Neuimplementierung hatte es nie übernommen (war laut damaligem Code-Kommentar durch einen Lade-Bug ohnehin nie aktiv, also keine neue Regression, aber bis jetzt ein fehlendes Feature)
@@ -91,4 +88,4 @@ Nur bei Bedarf einsetzen (Verdacht auf UA-Blocking, z. B. wenn der Timeout-Fix a
 
 ## Version
 
-1.20.1
+1.22.0
