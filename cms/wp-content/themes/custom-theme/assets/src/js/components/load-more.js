@@ -218,24 +218,48 @@ export default class LoadMore {
   renderProject(post) {
     const article = document.createElement('article');
     article.className = 'project-card';
-    
+    article.dataset.animate = 'fade-in-up';
+
+    const categoriesHtml = (post.categories && post.categories.length)
+      ? `<div class="project-card__categories">
+           ${post.categories.map(cat => `<span class="project-card__category">${this.esc(cat)}</span>`).join('')}
+         </div>`
+      : '';
+
+    const metaHtml = (post.client || post.project_date)
+      ? `<div class="project-card__meta">
+           ${post.client ? `<span>${this.esc(post.client)}</span>` : ''}
+           ${post.project_date ? `<span>${this.esc(post.project_date)}</span>` : ''}
+         </div>`
+      : '';
+
     article.innerHTML = `
       ${post.thumbnail_large ? `
         <div class="project-card__image">
-          <a href="${post.url}">
-            <img src="${post.thumbnail_large}" alt="${this.esc(post.title)}" loading="lazy">
-          </a>
+          <img src="${post.thumbnail_large}" alt="${this.esc(post.title)}" loading="lazy">
+          <div class="project-card__overlay">
+            <a href="${post.url}" class="project-card__link">
+              <span class="dashicons dashicons-visibility"></span>
+              Details ansehen
+            </a>
+          </div>
         </div>
       ` : ''}
       <div class="project-card__content">
+        ${categoriesHtml}
         <h3 class="project-card__title">
           <a href="${post.url}">${this.esc(post.title)}</a>
         </h3>
-        ${post.client ? `<p class="project-card__client">Client: ${this.esc(post.client)}</p>` : ''}
-        ${post.project_date ? `<p class="project-card__date">${this.esc(post.project_date)}</p>` : ''}
+        ${metaHtml}
+        ${post.excerpt ? `<div class="project-card__excerpt">${this.esc(post.excerpt)}</div>` : ''}
+        ${post.url_external ? `
+          <a href="${post.url_external}" target="_blank" rel="noopener noreferrer" class="project-card__url">
+            <span class="dashicons dashicons-external"></span> Live ansehen
+          </a>
+        ` : ''}
       </div>
     `;
-    
+
     return article;
   }
   
