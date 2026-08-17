@@ -66,6 +66,15 @@ Nur bei Bedarf einsetzen (Verdacht auf UA-Blocking, z. B. wenn der Timeout-Fix a
 
 ## Changelog
 
+## Changelog
+
+### 1.24.0
+- Neue Blöcke `medialab/facebook-video` und `medialab/social-embed`: Facebook-Video- und Instagram-Beitrag-Embeds über Zwei-Klick-Consent-Gate (Komfort-Kategorie), kein Datentransfer an Meta vor Einwilligung.
+- YouTube-Embeds (nativer `core/embed`-Block) werden jetzt automatisch über einen `render_block`-Filter hinter demselben Consent-Gate versteckt - kein neues Redakteur-Feld nötig, betrifft bestehende Embeds site-weit.
+- Fix: `vite.config.blocks.js` hat `blocks.scss` bisher nicht kompiliert (kein Build-Schritt hinterlegt, `emptyOutDir` löschte die manuell erzeugte `blocks.css` bei jedem Build). Jetzt automatisiert über `writeBundle`-Hook.
+
+### 1.23.0
+
 ### 1.22.0
 - Suche: Suchbegriff wird jetzt in Titel und Excerpt der Ergebnisse per `<mark>` hervorgehoben.
 - Suche: Excerpt zeigt jetzt einen Ausschnitt um die tatsächliche Fundstelle im Content, statt immer nur den Textanfang.
@@ -88,4 +97,4 @@ Nur bei Bedarf einsetzen (Verdacht auf UA-Blocking, z. B. wenn der Timeout-Fix a
 
 ## Version
 
-1.22.0
+1.24.0
