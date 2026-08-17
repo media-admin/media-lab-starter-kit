@@ -30,9 +30,9 @@
     transform: translateY(-5px);
     box-shadow: $shadow-xl;
   }
-  
-  // Adjust position if theme toggle exists
-  .theme-toggle ~ & {
-    right: calc($spacing-4 + 60px);
-  }
+
+  // Kein Overlap mehr mit .theme-toggle möglich - Toggle sitzt seit
+  // 2026-08-17 oben rechts (siehe _theme-toggle.scss), Back-to-Top bleibt
+  // unten rechts. Vorherige Sibling-Selector-Regel entfernt, die ohnehin
+  // nie griff (Toggle wurde nicht als direktes Geschwisterelement gerendert).
 }

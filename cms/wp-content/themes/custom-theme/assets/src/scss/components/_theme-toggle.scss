@@ -1,57 +1,66 @@
 @use '../abstracts' as *;
 
+// =============================================================================
 // Theme Toggle Button
+//
+// Position 2026-08-17 auf "oben rechts, unter dem Header" festgelegt (vorher:
+// unentschiedene Kommentar-Optionen im Code, faktisch bottom-right - kollidierte
+// dort mit Back-to-Top, siehe _back-to-top.scss - beide fast an derselben
+// Stelle, Back-to-Top (z-index 9999) lag über dem Toggle).
+//
+// Projektspezifisch überschreibbar: --theme-toggle-top / --theme-toggle-right
+// als CSS Custom Properties, z.B. in der Projekt-eigenen _variables.scss:
+//
+//   :root {
+//     --theme-toggle-top: 100px;     // z.B. falls Header höher ist
+//     --theme-toggle-right: 24px;
+//   }
+//
+// Kein Eingriff in diese Datei nötig, um die Position pro Projekt anzupassen.
+// =============================================================================
+
+:root {
+  --theme-toggle-top:   calc(var(--header-height, 64px) + #{$spacing-4});
+  --theme-toggle-right: #{$spacing-4};
+}
+
 .theme-toggle {
-  // Statt fixed bottom-right:
-  
-  // Option 1: Top right
-  // top: $spacing-4;
-  // right: $spacing-4;
-  
-  // Option 2: In Header integrieren
-  // position: relative;
-  // display: inline-flex;
-  position: fixed;
-  bottom: $spacing-4;
-  right: $spacing-4;
-  z-index: 1000;
-  width: 50px;
-  height: 50px;
-  border-radius: $radius-full;
-  background: $color-primary;
-  border: none;
-  cursor: pointer;
-  box-shadow: $shadow-lg;
-  transition: all $transition-base;
-  display: flex;
-  align-items: center;
+  position:        fixed;
+  top:             var(--theme-toggle-top);
+  right:           var(--theme-toggle-right);
+  z-index:         999; // unter dem Header (1000), über normalem Content
+  width:           50px;
+  height:          50px;
+  border-radius:   $radius-full;
+  background:      $color-primary;
+  border:          none;
+  cursor:          pointer;
+  box-shadow:      $shadow-lg;
+  transition:      $transition-base;
+  display:         flex;
+  align-items:     center;
   justify-content: center;
-  
+
   &:hover {
     transform: scale(1.1);
   }
-  
-  &__icon {
-    font-size: 24px;
-    position: absolute;
-    transition: all $transition-base;
-    
-    &--light {
-      opacity: 1;
-    }
-    
-    &--dark {
-      opacity: 0;
-    }
+
+  &:focus-visible {
+    outline:        2px solid $color-primary;
+    outline-offset: 3px;
   }
-  
+
+  &__icon {
+    font-size:  24px;
+    position:   absolute;
+    transition: $transition-base;
+
+    &--light { opacity: 1; }
+    &--dark  { opacity: 0; }
+  }
+
   &.is-dark {
-    .theme-toggle__icon--light {
-      opacity: 0;
-    }
-    
-    .theme-toggle__icon--dark {
-      opacity: 1;
-    }
+    .theme-toggle__icon--light { opacity: 0; }
+    .theme-toggle__icon--dark  { opacity: 1; }
   }
 }
