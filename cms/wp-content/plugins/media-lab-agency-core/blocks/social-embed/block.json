@@ -1,0 +1,24 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "medialab/social-embed",
+  "title": "Social Media Embed (Facebook/Instagram)",
+  "description": "Bettet ein Facebook-Video oder einen Instagram-Beitrag über eine Zwei-Klick Consent-Lösung ein (Komfort-Kategorie). Kein Datentransfer an Meta vor Einwilligung.",
+  "category": "media",
+  "icon": "share",
+  "keywords": ["facebook", "instagram", "video", "embed", "meta", "consent", "social"],
+  "textdomain": "media-lab-agency-core",
+  "acf": {
+    "mode": "edit",
+    "renderTemplate": "render.php"
+  },
+  "supports": {
+    "anchor": true,
+    "align": ["wide", "full"],
+    "spacing": {
+      "margin": true,
+      "padding": true
+    }
+  },
+  "example": {}
+}

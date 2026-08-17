@@ -157,10 +157,26 @@ const initApp = async () => {
     safeInit('AjaxFilters', () => new AjaxFilters());
   }
 
+  // Google Maps: Klasse aus PHP → .google-maps
   if (has('.google-map, [data-map]')) {
     const { default: GoogleMapConsent } = await import('./components/google-maps');
     safeInit('GoogleMapConsent', () => GoogleMapConsent.init());
   }
+
+  // Facebook Videos: Klasse aus PHP → .ml-block-facebook-video
+  if (has('.ml-block-facebook-video')) {
+    const { default: FacebookVideoConsent } = await import('./components/fb-video-consent');
+    safeInit('FacebookVideoConsent', () => FacebookVideoConsent.init());
+  }
+
+  // Social Videos: Klasse aus PHP → .ml-block-social-embed
+  if (has('.ml-block-social-embed')) {
+    const { default: SocialEmbedConsent } = await import('./components/social-embed-consent');
+    safeInit('SocialEmbedConsent', () => SocialEmbedConsent.init());
+  }
+
+  
+
 };
 
 

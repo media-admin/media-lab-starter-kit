@@ -67,6 +67,8 @@ function medialab_register_acf_blocks(): void {
         'social-share',
         'table-of-contents',
         'before-after',
+        'facebook-video',
+        'social-embed',
     ];
 
     foreach ( $acf_blocks as $block ) {
@@ -301,6 +303,19 @@ function medialab_enqueue_block_frontend_assets(): void {
             file_exists( $plugin_dir . 'assets/js/block-before-after.js' )
                 ? filemtime( $plugin_dir . 'assets/js/block-before-after.js' ) : MEDIALAB_CORE_VERSION,
             true
+        );
+    }
+
+    // Facebook Video Block
+    if ( has_block( 'medialab/facebook-video' ) ) {
+        $plugin_uri = plugin_dir_url( dirname( __FILE__ ) );
+        $plugin_dir = plugin_dir_path( dirname( __FILE__ ) );
+        wp_enqueue_style(
+            'medialab-block-facebook-video',
+            $plugin_uri . 'assets/css/block-facebook-video.css',
+            [],
+            file_exists( $plugin_dir . 'assets/css/block-facebook-video.css' )
+                ? filemtime( $plugin_dir . 'assets/css/block-facebook-video.css' ) : MEDIALAB_CORE_VERSION
         );
     }
 

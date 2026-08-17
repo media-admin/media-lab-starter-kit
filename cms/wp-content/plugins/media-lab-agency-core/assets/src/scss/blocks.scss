@@ -589,6 +589,334 @@
 
 
 // =============================================================================
+// FACEBOOK VIDEO (Consent-Gate)
+// =============================================================================
+
+.ml-block-facebook-video {
+    max-width: 100%;   // vorher: 734px
+
+    &.alignwide,
+    &.alignfull { max-width: none; }
+}
+
+.ml-fbv__container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-radius: var(--ml-radius-md, 8px);
+    background-color: var(--ml-color-dark, #000);
+}
+
+.ml-fbv__thumbnail {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.75);
+}
+
+.ml-fbv__iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+
+    &[hidden] { display: none; }
+}
+
+.ml-fbv__play-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    gap: var(--ml-space-xs, 8px);
+    padding: var(--ml-space-sm, 12px) var(--ml-space-md, 20px);
+    background: var(--ml-color-primary, #1877f2);
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    font-weight: 600;
+    cursor: pointer;
+    max-width: calc(100% - 32px);
+    text-align: center;
+
+    &:hover,
+    &:focus-visible { background: var(--ml-color-primary-dark, #145dbf); }
+}
+
+.ml-fbv__play-icon {
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 6px 0 6px 10px;
+    border-color: transparent transparent transparent #fff;
+    flex-shrink: 0;
+}
+
+.ml-fbv__hint {
+    margin-top: var(--ml-space-xs, 8px);
+    font-size: 0.8rem;
+    color: var(--ml-color-text-muted, #666);
+}
+
+.ml-fbv__settings-link {
+    background: none;
+    border: none;
+    padding: 0;
+    text-decoration: underline;
+    cursor: pointer;
+    color: inherit;
+    font: inherit;
+}
+
+.ml-fbv__caption {
+    margin-top: 4px;
+    font-size: 0.85rem;
+    font-style: italic;
+}
+
+
+// =============================================================================
+// SOCIAL EMBED (Facebook / Instagram, Consent-Gate)
+// =============================================================================
+
+.ml-block-social-embed {
+    max-width: 100%;   // vorher: 734px
+
+    &.alignwide,
+    &.alignfull { max-width: none; }
+}
+
+.ml-social-embed__container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-radius: var(--ml-radius, 8px);
+    background-color: var(--ml-color-dark, #1a1a1a);
+
+    // Instagram-Embeds sind von Haus aus eher quadratisch/vertikal - das
+    // finale iframe bringt seine eigene Höhe mit (embed.js setzt sie
+    // inline), daher hier keine erzwungene 16:9-Ratio für Instagram.
+    .ml-social-embed--instagram & {
+        aspect-ratio: auto;
+        min-height: 400px;
+    }
+}
+
+.ml-social-embed__thumbnail {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.75);
+    transition: opacity 0.2s ease;
+
+    &.is-hidden {
+        opacity: 0;
+        pointer-events: none;
+    }
+}
+
+.ml-social-embed__embed {
+    position: relative;
+    width: 100%;
+
+    .ml-social-embed--facebook & {
+        position: absolute;
+        inset: 0;
+        height: 100%;
+    }
+
+    &[hidden] { display: none; }
+
+    iframe {
+        width: 100%;
+        border: 0;
+    }
+
+    .ml-social-embed--facebook & iframe {
+        height: 100%;
+    }
+}
+
+.ml-social-embed__play-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    gap: var(--ml-space-xs, 8px);
+    padding: var(--ml-space-sm, 12px) var(--ml-space-md, 20px);
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: clamp(0.875rem, 1.5vw, 0.9375rem);
+    cursor: pointer;
+    max-width: calc(100% - 32px);
+    text-align: center;
+    transition: filter 0.2s;
+
+    .ml-social-embed--facebook &  { background: var(--ml-color-primary, #d40000); }
+    .ml-social-embed--instagram & {
+        background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+    }
+
+    &:hover,
+    &:focus-visible { filter: brightness(0.9); }
+
+    &.is-hidden {
+        opacity: 0;
+        pointer-events: none;
+    }
+}
+
+.ml-social-embed__play-icon {
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 6px 0 6px 10px;
+    border-color: transparent transparent transparent #fff;
+    flex-shrink: 0;
+}
+
+.ml-social-embed__hint {
+    margin-top: var(--ml-space-xs, 8px);
+    font-size: 0.8rem;
+    color: var(--ml-color-text-muted, #4a4a4a);
+}
+
+.ml-social-embed__settings-link {
+    background: none;
+    border: none;
+    padding: 0;
+    text-decoration: underline;
+    cursor: pointer;
+    color: inherit;
+    font: inherit;
+}
+
+.ml-social-embed__caption {
+    margin-top: 4px;
+    font-size: 0.85rem;
+    font-style: italic;
+}
+
+
+
+// =============================================================================
+// YOUTUBE EMBED (Consent-Gate, core/embed-Filter)
+// =============================================================================
+
+.ml-block-youtube-embed {
+    max-width: 100%;
+}
+
+.ml-youtube-embed__container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-radius: var(--ml-radius, 8px);
+    background-color: var(--ml-color-dark, #1a1a1a);
+}
+
+.ml-youtube-embed__thumbnail {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.75);
+    transition: opacity 0.2s ease;
+
+    &.is-hidden {
+        opacity: 0;
+        pointer-events: none;
+    }
+}
+
+.ml-youtube-embed__embed {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+
+    &[hidden] { display: none; }
+
+    iframe {
+        width: 100%;
+        height: 100%;
+        border: 0;
+    }
+}
+
+.ml-youtube-embed__play-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    gap: var(--ml-space-xs, 8px);
+    padding: var(--ml-space-sm, 12px) var(--ml-space-md, 20px);
+    background: #ff0000;
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: clamp(0.875rem, 1.5vw, 0.9375rem);
+    cursor: pointer;
+    max-width: calc(100% - 32px);
+    text-align: center;
+    transition: filter 0.2s;
+
+    &:hover,
+    &:focus-visible { filter: brightness(0.9); }
+
+    &.is-hidden {
+        opacity: 0;
+        pointer-events: none;
+    }
+}
+
+.ml-youtube-embed__play-icon {
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 6px 0 6px 10px;
+    border-color: transparent transparent transparent #fff;
+    flex-shrink: 0;
+}
+
+.ml-youtube-embed__hint {
+    margin-top: var(--ml-space-xs, 8px);
+    font-size: 0.8rem;
+    color: var(--ml-color-text-muted, #4a4a4a);
+}
+
+.ml-youtube-embed__settings-link {
+    background: none;
+    border: none;
+    padding: 0;
+    text-decoration: underline;
+    cursor: pointer;
+    color: inherit;
+    font: inherit;
+}
+
+
+
+
+// =============================================================================
 // WCAG 2.1 AA – ACCESSIBILITY
 // Vollständig integriert (kein separater Patch mehr).
 // =============================================================================
