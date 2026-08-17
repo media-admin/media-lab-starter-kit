@@ -3,19 +3,32 @@
 // ============================================
 // POST CARDS
 // ============================================
+//
+// WICHTIG: Diese Datei ist jetzt die EINZIGE Quelle für .post-card.
+// War vorher zusätzlich in components/_load-more.scss dupliziert (mit
+// abweichenden Werten - CSS hat die Properties beider Dateien gemischt,
+// je nachdem was zuletzt geladen wurde). Konsolidiert am 2026-08-14,
+// entspricht dem zuvor tatsächlich gerenderten Misch-Ergebnis - bis auf
+// einen Bugfix: .post-card__thumbnail hatte gleichzeitig aspect-ratio
+// UND padding-bottom (zwei konkurrierende Höhen-Techniken übereinander,
+// vermutlich unbeabsichtigt) - hier auf aspect-ratio allein bereinigt.
+//
+// .post-list-item (horizontale Variante) bleibt weiterhin in
+// components/_load-more.scss, da dort keine Dopplung vorlag.
+// ============================================
 
 .post-card {
   background: $color-white;
   border-radius: $radius-lg;
   overflow: hidden;
-  box-shadow: $shadow-sm;
+  box-shadow: $shadow-md;
   transition: $transition-base;
   display: flex;
   flex-direction: column;
   height: 100%;
 
   &:hover {
-    box-shadow: $shadow-lg;
+    box-shadow: $shadow-xl;
     transform: translateY(-4px);
   }
 
@@ -37,7 +50,7 @@
   }
 
   &__content {
-    padding: 1.5rem;
+    padding: var(--space-md);
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
@@ -45,9 +58,9 @@
   }
 
   &__title {
-    font-size: $font-size-lg;
+    font-size: var(--text-xl);
     font-weight: $font-weight-bold;
-    margin: 0;
+    margin: 0 0 0.5rem;
     line-height: $line-height-tight;
 
     a {
@@ -64,8 +77,9 @@
   &__meta {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    font-size: $font-size-sm;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-sm);
+    font-size: var(--text-sm);
     color: $color-text-muted;
   }
 
@@ -77,8 +91,9 @@
   &__excerpt {
     font-size: $font-size-sm;
     color: $color-text-muted;
-    line-height: $line-height-base;
+    line-height: 1.6;
     flex-grow: 1;
+    margin-bottom: var(--space-sm);
   }
 
   &__link {
