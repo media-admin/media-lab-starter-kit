@@ -131,9 +131,15 @@ function agency_core_get_post_data($template) {
             break;
             
         case 'project':
-            $base_data['client'] = get_field('client');
+            $base_data['client']       = get_field('client');
             $base_data['project_date'] = get_field('project_date');
             $base_data['technologies'] = get_field('technologies');
+            $base_data['url_external'] = get_field('project_url');
+
+            $terms = get_the_terms($post_id, 'project_category');
+            $base_data['categories'] = ($terms && !is_wp_error($terms))
+                ? wp_list_pluck($terms, 'name')
+                : array();
             break;
             
         case 'testimonial':

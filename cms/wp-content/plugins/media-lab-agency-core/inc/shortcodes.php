@@ -1520,9 +1520,9 @@ function projects_query_shortcode($atts) {
     <div class="projects-grid" data-columns="<?php echo esc_attr($columns); ?>">
         <?php while ($projects_query->have_posts()) : $projects_query->the_post(); ?>
             <?php
-            $client = get_field('client_name');
-            $year = get_field('project_year');
-            $url = get_field('project_url');
+            $client = get_field('client');
+            $date   = get_field('project_date');
+            $url    = get_field('project_url');
             $thumbnail_img = medialab_get_thumbnail(get_the_ID(), 'large', ['class' => 'project-card__img']);
             $categories = get_the_terms(get_the_ID(), 'project_category');
             ?>
@@ -1553,18 +1553,14 @@ function projects_query_shortcode($atts) {
                         <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
                     </h3>
                     
-                    <?php if ($client || $year) : ?>
+                    <?php if ($client || $date) : ?>
                         <div class="project-card__meta">
                             <?php if ($client) : ?>
                                 <span><?php echo esc_html($client); ?></span>
                             <?php endif; ?>
-                            
-                            <?php if ($client && $year) : ?>
-                                <span>·</span>
-                            <?php endif; ?>
-                            
-                            <?php if ($year) : ?>
-                                <span><?php echo esc_html($year); ?></span>
+
+                            <?php if ($date) : ?>
+                                <span><?php echo esc_html($date); ?></span>
                             <?php endif; ?>
                         </div>
                     <?php endif; ?>
@@ -1821,12 +1817,12 @@ function services_query_shortcode($atts) {
 
                 <?php if ( $cta && ! empty($cta['link']) ) : ?>
                     <a href="<?php echo esc_url($cta['link']['url']); ?>"
-                       class="service-card__cta button button--primary"
+                       class="service-card__cta btn btn--primary"
                        <?php echo ! empty($cta['link']['target']) ? 'target="' . esc_attr($cta['link']['target']) . '"' : ''; ?>>
                         <?php echo esc_html($cta['text']); ?>
                     </a>
                 <?php else : ?>
-                    <a href="<?php the_permalink(); ?>" class="service-card__cta button button--primary">
+                    <a href="<?php the_permalink(); ?>" class="service-card__cta btn btn--primary">
                         Mehr erfahren
                     </a>
                 <?php endif; ?>
@@ -2354,29 +2350,59 @@ function posts_load_more_template_team() {
  * Project Template
  */
 function posts_load_more_template_project() {
-    $client = get_field('client');
+    $client       = get_field('client');
     $project_date = get_field('project_date');
+    $url          = get_field('project_url');
+    $categories   = get_the_terms(get_the_ID(), 'project_category');
     ?>
-    <article class="project-card" data-post-id="<?php echo esc_attr( get_the_ID() ); ?>">
+    <article class="project-card" data-post-id="<?php echo esc_attr( get_the_ID() ); ?>" data-animate="fade-in-up">
         <?php if (has_post_thumbnail()) : ?>
             <div class="project-card__image">
-                <a href="<?php the_permalink(); ?>">
-                    <?php the_post_thumbnail('large'); ?>
-                </a>
+                <img src="<?php echo esc_url( get_the_post_thumbnail_url( get_the_ID(), 'large' ) ); ?>"
+                     alt="<?php echo esc_attr( get_the_title() ); ?>" loading="lazy">
+                <div class="project-card__overlay">
+                    <a href="<?php the_permalink(); ?>" class="project-card__link">
+                        <span class="dashicons dashicons-visibility"></span>
+                        Details ansehen
+                    </a>
+                </div>
             </div>
         <?php endif; ?>
-        
+
         <div class="project-card__content">
+            <?php if ($categories && !is_wp_error($categories)) : ?>
+                <div class="project-card__categories">
+                    <?php foreach ($categories as $cat) : ?>
+                        <span class="project-card__category"><?php echo esc_html($cat->name); ?></span>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+
             <h3 class="project-card__title">
                 <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
             </h3>
-            
-            <?php if ($client) : ?>
-                <p class="project-card__client">Client: <?php echo esc_html($client); ?></p>
+
+            <?php if ($client || $project_date) : ?>
+                <div class="project-card__meta">
+                    <?php if ($client) : ?>
+                        <span><?php echo esc_html($client); ?></span>
+                    <?php endif; ?>
+                    <?php if ($project_date) : ?>
+                        <span><?php echo esc_html($project_date); ?></span>
+                    <?php endif; ?>
+                </div>
             <?php endif; ?>
-            
-            <?php if ($project_date) : ?>
-                <p class="project-card__date"><?php echo esc_html($project_date); ?></p>
+
+            <?php if (has_excerpt()) : ?>
+                <div class="project-card__excerpt">
+                    <?php the_excerpt(); ?>
+                </div>
+            <?php endif; ?>
+
+            <?php if ($url) : ?>
+                <a href="<?php echo esc_url($url); ?>" target="_blank" rel="noopener noreferrer" class="project-card__url">
+                    <span class="dashicons dashicons-external"></span> Live ansehen
+                </a>
             <?php endif; ?>
         </div>
     </article>
