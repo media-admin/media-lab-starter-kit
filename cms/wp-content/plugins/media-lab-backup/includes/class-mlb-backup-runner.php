@@ -105,7 +105,7 @@ class MLBKP_Backup_Runner {
 
                 if ( $file_method === 'stream' ) {
                     $this->log( '📂 wp-content direkt via SFTP streamen (kein lokales ZIP) …' );
-                    $result = $sftp->stream_directory( WP_CONTENT_DIR, 'wpcontent', $extra_excludes, $log_id, [ $this, 'log' ] );
+                    $result = $sftp->stream_directory( WP_CONTENT_DIR, 'wpcontent', $extra_excludes, $log_id, fn( string $msg ) => $this->log( $msg ) );
                     $this->log( "   Dateien: {$result['file_count']} | Größe: " . MLBKP_Logger::format_bytes( $result['total_size'] ) );
                     if ( ! empty( $result['skipped'] ) ) {
                         $this->log( "   ⚠ {$result['skipped']} Datei(en) übersprungen." );
@@ -144,7 +144,7 @@ class MLBKP_Backup_Runner {
 
                 if ( $file_method === 'stream' ) {
                     $this->log( '📂 WP-Core direkt via SFTP streamen …' );
-                    $result = $sftp->stream_directory( ABSPATH, 'wpcore', $this->parse_excludes(), $log_id, [ $this, 'log' ] );
+                    $result = $sftp->stream_directory( ABSPATH, 'wpcore', $this->parse_excludes(), $log_id, fn( string $msg ) => $this->log( $msg ) );
                     $this->log( "   Dateien: {$result['file_count']} | Größe: " . MLBKP_Logger::format_bytes( $result['total_size'] ) );
                     $this->log( "✅ WP-Core gestreamt nach: {$result['remote_dir']}" );
                     $sftp->apply_retention_dirs( 'wpcore-', $retention );
