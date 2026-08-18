@@ -269,4 +269,30 @@ class MLBKP_File_Backup {
         }
         return $size;
     }
+
+    /**
+     * Erstellt ein ZIP für ein einzelnes Verzeichnis (für Chunk-Verarbeitung).
+     * Gibt den tatsächlichen Pfad zurück (kann nach Imunify-Umbenennung abweichen).
+     */
+    public function create_single_dir_zip( string $source, string $zip_path, array $extra_excludes = [] ): string {
+        $this->skipped = [];
+
+        $excludes = array_merge(
+            $this->default_excludes,
+            array_map( static fn( $e ) => rtrim( $e, '/' ), $extra_excludes )
+        );
+
+        $actual = $this->create_zip( $source, $zip_path, $excludes );
+
+        if ( ! file_exists( $actual ) ) {
+            $matches = glob( $zip_path . '*' );
+            if ( ! empty( $matches ) ) {
+                $actual = $matches[0];
+            } else {
+                throw new RuntimeException( "ZIP konnte nicht erstellt werden: {$zip_path}" );
+            }
+        }
+
+        return $actual;
+    }
 }

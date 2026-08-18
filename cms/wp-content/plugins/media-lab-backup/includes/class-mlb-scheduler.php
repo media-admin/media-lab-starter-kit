@@ -16,6 +16,9 @@ class MLBKP_Scheduler {
         add_action( self::CRON_HOOK_DAILY,  [ self::class, 'run_scheduled_backup' ] );
         add_action( self::CRON_HOOK_WEEKLY, [ self::class, 'run_scheduled_backup' ] );
         add_action( 'mlbkp_run_async_backup', [ self::class, 'run_async_backup' ], 10, 2 );
+        add_action( 'mlbkp_process_chunk',    static function( string $session_id ) {
+            MLBKP_Chunk_Runner::process( $session_id );
+        } );
         add_action( self::CRON_HOOK_CLEANUP,  [ self::class, 'run_cleanup' ] );
 
         // Benutzerdefinierter WP-Cron-Interval

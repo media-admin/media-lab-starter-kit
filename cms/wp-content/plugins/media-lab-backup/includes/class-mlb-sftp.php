@@ -384,4 +384,143 @@ class MLBKP_SFTP {
         }
         return self::get_suggested_folder();
     }
+
+    // ── Session-basierte Methoden (v2.0) ──────────────────────────────────────
+
+    /**
+     * Erstellt ein Verzeichnis für eine Backup-Session.
+     */
+    public function create_session_dir( string $timestamp ): string {
+        $dir = $this->get_remote_site_dir() . '/session-' . $timestamp;
+        $this->ensure_remote_dir( $dir );
+        return $dir;
+    }
+
+    /**
+     * Lädt eine Datei in das Session-Verzeichnis hoch.
+     */
+    public function upload_to_session( string $local_path, string $filename, string $session_dir ): string {
+        $remote_path = $session_dir . '/' . $filename;
+        $this->ensure_remote_dir( $session_dir );
+
+        if ( ! $this->sftp->put( $remote_path, $local_path, SFTP::SOURCE_LOCAL_FILE ) ) {
+            throw new RuntimeException( "Upload fehlgeschlagen: {$remote_path}" );
+        }
+
+        return $remote_path;
+    }
+
+    /**
+     * Erstellt ein Unterverzeichnis innerhalb einer Session.
+     */
+    public function get_session_subdir( string $session_dir, string $subdir_name ): string {
+        $dir = $session_dir . '/' . $subdir_name;
+        $this->ensure_remote_dir( $dir );
+        return $dir;
+    }
+
+    /**
+     * Streamt ein einzelnes Verzeichnis in ein Remote-Ziel (für Chunk-Streaming).
+     */
+    public function stream_single_directory( string $source, string $remote_dir, array $excludes, int $log_id = 0 ): array {
+        $source      = rtrim( $source, '/' );
+        $file_count  = 0;
+        $total_size  = 0;
+        $skipped     = 0;
+        $batch       = 0;
+
+        $default_excludes = [
+            'cache', 'wpo-cache', 'litespeed', 'mlbkp-temp',
+            '.quarantine', '_imunify', 'imunify-antivirus',
+            '.git', '.DS_Store', 'node_modules', 'upgrade',
+        ];
+        $all_excludes = array_merge( $default_excludes, $excludes );
+
+        try {
+            $iterator = new RecursiveIteratorIterator(
+                new RecursiveDirectoryIterator( $source, FilesystemIterator::SKIP_DOTS | FilesystemIterator::UNIX_PATHS ),
+                RecursiveIteratorIterator::SELF_FIRST
+            );
+        } catch ( \UnexpectedValueException $e ) {
+            return [ 'file_count' => 0, 'total_size' => 0, 'skipped' => 0 ];
+        }
+
+        foreach ( $iterator as $file ) {
+            try {
+                $file_path   = $file->getPathname();
+                $relative    = substr( $file_path, strlen( $source ) + 1 );
+                $remote_path = $remote_dir . '/' . $relative;
+            } catch ( \UnexpectedValueException $e ) {
+                $skipped++;
+                continue;
+            }
+
+            if ( $this->should_exclude_path( $relative, $all_excludes ) ) continue;
+
+            if ( $file->isDir() ) {
+                $this->ensure_remote_dir( $remote_path );
+                continue;
+            }
+
+            if ( ! $file->isFile() || ! $file->isReadable() ) { $skipped++; continue; }
+            $fh = @fopen( $file_path, 'rb' );
+            if ( ! $fh ) { $skipped++; continue; }
+
+            try {
+                $size = $file->getSize();
+                if ( $size > 524288000 ) { fclose( $fh ); $skipped++; continue; }
+
+                $this->ensure_remote_dir( dirname( $remote_path ) );
+
+                $offset = 0;
+                $chunk  = 1024 * 1024;
+                $this->sftp->put( $remote_path, '', SFTP::SOURCE_STRING );
+                while ( ! feof( $fh ) ) {
+                    $data = fread( $fh, $chunk );
+                    if ( $data === false ) break;
+                    $this->sftp->put( $remote_path, $data, SFTP::SOURCE_STRING, $offset );
+                    $offset += strlen( $data );
+                    unset( $data );
+                }
+
+                $file_count++;
+                $total_size += $size;
+                $batch++;
+            } finally {
+                fclose( $fh );
+            }
+
+            if ( $batch % 100 === 0 ) {
+                gc_collect_cycles();
+                if ( $log_id > 0 && MLBKP_Logger::is_cancelled( $log_id ) ) {
+                    throw new MLBKP_CancelledException();
+                }
+            }
+        }
+
+        return [ 'file_count' => $file_count, 'total_size' => $total_size, 'skipped' => $skipped ];
+    }
+
+    /**
+     * Retention für Session-Verzeichnisse — löscht die ältesten Sessions.
+     */
+    public function apply_retention_sessions( int $keep ): void {
+        if ( $keep <= 0 ) return;
+
+        $site_dir = $this->get_remote_site_dir();
+        $list     = $this->sftp->nlist( $site_dir );
+
+        if ( ! is_array( $list ) ) return;
+
+        $sessions = array_values( array_filter( $list, static fn( $f ) =>
+            ! in_array( $f, [ '.', '..' ], true ) && str_starts_with( $f, 'session-' )
+        ) );
+
+        sort( $sessions );
+
+        $to_delete = array_slice( $sessions, 0, max( 0, count( $sessions ) - $keep ) );
+        foreach ( $to_delete as $dir ) {
+            $this->sftp->delete( $site_dir . '/' . $dir, true );
+        }
+    }
 }

@@ -137,18 +137,19 @@ class MLBKP_Admin {
             wp_send_json_error( [ 'message' => 'Ungültiger Backup-Typ.' ] );
         }
 
-        // Log-Eintrag sofort erstellen → gibt die ID zurück für Polling
-        $log_id = MLBKP_Logger::start( $type, 'manual' );
+        $settings = mlbkp_get_settings();
+        $session  = MLBKP_Session::create( $type, 'manual', $settings );
 
-        // Backup als sofortigen Cron-Job einplanen (läuft außerhalb des HTTP-Requests)
-        wp_schedule_single_event( time(), 'mlbkp_run_async_backup', [ $log_id, $type ] );
-
-        // WP-Cron sofort triggern ohne auf den nächsten Seitenaufruf zu warten
+        // Ersten Chunk sofort planen
+        wp_schedule_single_event( time(), 'mlbkp_process_chunk', [ $session['id'] ] );
         spawn_cron();
 
         wp_send_json_success( [
-            'log_id'  => $log_id,
-            'message' => 'Backup gestartet.',
+            'session_id'   => $session['id'],
+            'log_id'       => $session['log_id'],
+            'chunks_total' => $session['chunks_total'],
+            'chunk_labels' => array_column( $session['chunks'], 'label' ),
+            'message'      => "Backup gestartet ({$session['chunks_total']} Chunks).",
         ] );
     }
 
@@ -161,7 +162,9 @@ class MLBKP_Admin {
             wp_send_json_error( [ 'message' => 'Keine Berechtigung.' ] );
         }
 
-        $log_id = (int) ( $_POST['log_id'] ?? 0 );
+        $log_id     = (int) ( $_POST['log_id'] ?? 0 );
+        $session_id = sanitize_text_field( $_POST['session_id'] ?? '' );
+
         if ( $log_id <= 0 ) {
             wp_send_json_error( [ 'message' => 'Ungültige Log-ID.' ] );
         }
@@ -179,13 +182,28 @@ class MLBKP_Admin {
             wp_send_json_error( [ 'message' => 'Log-Eintrag nicht gefunden.' ] );
         }
 
-        // Automatischer Timeout: Job läuft zu lange → als Fehler markieren
+        // Timeout-Check
         if ( $row['status'] === 'running' && MLBKP_Logger::is_timed_out( $log_id ) ) {
             MLBKP_Logger::finish( $log_id, 'error', [
-                'error_message' => 'Job-Timeout: Prozess nach ' . MLBKP_Logger::JOB_TIMEOUT_MINUTES . ' Minuten automatisch beendet.',
+                'error_message' => 'Job-Timeout nach ' . MLBKP_Logger::JOB_TIMEOUT_MINUTES . ' Minuten.',
             ] );
             $row['status']        = 'error';
             $row['error_message'] = 'Job-Timeout nach ' . MLBKP_Logger::JOB_TIMEOUT_MINUTES . ' Minuten.';
+        }
+
+        // Session-Chunks für Fortschrittsanzeige
+        $chunks = [];
+        if ( $session_id ) {
+            $session = MLBKP_Session::load( $session_id );
+            if ( $session ) {
+                $chunks = array_map( static fn( $c ) => [
+                    'id'     => $c['id'],
+                    'label'  => $c['label'],
+                    'status' => $c['status'],
+                    'size'   => $c['size'] ? MLBKP_Logger::format_bytes( (int) $c['size'] ) : '',
+                    'error'  => $c['error'] ?? '',
+                ], $session['chunks'] );
+            }
         }
 
         wp_send_json_success( [
@@ -193,6 +211,7 @@ class MLBKP_Admin {
             'error_message' => $row['error_message'] ?? '',
             'file_size'     => $row['file_size'] ? MLBKP_Logger::format_bytes( (int) $row['file_size'] ) : '',
             'duration'      => MLBKP_Logger::format_duration( isset( $row['duration_sec'] ) ? (int) $row['duration_sec'] : null ),
+            'chunks'        => $chunks,
         ] );
     }
 
