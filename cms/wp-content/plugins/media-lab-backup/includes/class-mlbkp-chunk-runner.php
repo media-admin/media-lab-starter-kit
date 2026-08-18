@@ -64,8 +64,9 @@ class MLBKP_Chunk_Runner {
 
         $this->log( "▶ Chunk {$chunk['id']}: {$chunk['label']}" );
 
-        // Chunk als laufend markieren
+        // Chunk als laufend markieren + Startzeit speichern
         MLBKP_Session::update_chunk( $this->session, $chunk['id'], [ 'status' => 'running' ] );
+        update_option( 'mlbkp_chunk_started_' . $this->session['id'] . '_' . $chunk['id'], time(), false );
         MLBKP_Session::save( $this->session );
 
         try {
@@ -126,8 +127,7 @@ class MLBKP_Chunk_Runner {
         // Nächsten Chunk planen
         $next = MLBKP_Session::get_next_chunk( $this->session );
         if ( $next ) {
-            wp_schedule_single_event( time(), 'mlbkp_process_chunk', [ $this->session['id'] ] );
-            spawn_cron();
+            MLBKP_Scheduler::schedule_chunk( $this->session['id'] );
         } else {
             $this->finish_session();
         }

@@ -141,8 +141,7 @@ class MLBKP_Admin {
         $session  = MLBKP_Session::create( $type, 'manual', $settings );
 
         // Ersten Chunk sofort planen
-        wp_schedule_single_event( time(), 'mlbkp_process_chunk', [ $session['id'] ] );
-        spawn_cron();
+        MLBKP_Scheduler::schedule_chunk( $session['id'] );
 
         wp_send_json_success( [
             'session_id'   => $session['id'],
@@ -196,6 +195,53 @@ class MLBKP_Admin {
         if ( $session_id ) {
             $session = MLBKP_Session::load( $session_id );
             if ( $session ) {
+
+                // Safety-Net: alle Chunks erledigt aber Log noch 'running' → jetzt finalisieren
+                if ( $row['status'] === 'running' ) {
+                    $pending = array_filter( $session['chunks'], static fn( $c ) =>
+                        in_array( $c['status'], [ 'pending', 'running' ], true )
+                    );
+
+                    if ( empty( $pending ) ) {
+                        $has_db_error = ! empty( array_filter( $session['chunks'], static fn( $c ) =>
+                            $c['status'] === 'error' && $c['type'] === 'database'
+                        ) );
+
+                        $final_status = $has_db_error ? 'error' : 'success';
+                        $filenames    = array_filter( array_column( $session['chunks'], 'filename' ) );
+                        $total_size   = array_sum( array_column( $session['chunks'], 'size' ) );
+
+                        MLBKP_Logger::finish( $session['log_id'], $final_status, [
+                            'file_name'   => implode( ', ', $filenames ),
+                            'file_size'   => $total_size,
+                            'remote_path' => $session['remote_session_dir'] ?? '',
+                        ] );
+
+                        $session['status']     = $final_status;
+                        $session['total_size'] = $total_size;
+                        MLBKP_Session::save( $session );
+
+                        $row['status'] = $final_status;
+                    }
+                }
+
+                // Chunk-Timeout: laufender Chunk seit > 15 Minuten → Fehler + weiter
+                foreach ( $session['chunks'] as &$chunk ) {
+                    if ( $chunk['status'] === 'running' ) {
+                        $started = get_option( 'mlbkp_chunk_started_' . $session_id . '_' . $chunk['id'] );
+                        if ( $started && ( time() - (int) $started ) > 900 ) {
+                            MLBKP_Session::update_chunk( $session, $chunk['id'], [
+                                'status' => 'error',
+                                'error'  => 'Chunk-Timeout nach 15 Minuten.',
+                            ] );
+                            MLBKP_Session::save( $session );
+                            MLBKP_Scheduler::schedule_chunk( $session_id );
+                        }
+                        break;
+                    }
+                }
+                unset( $chunk );
+
                 $chunks = array_map( static fn( $c ) => [
                     'id'     => $c['id'],
                     'label'  => $c['label'],
