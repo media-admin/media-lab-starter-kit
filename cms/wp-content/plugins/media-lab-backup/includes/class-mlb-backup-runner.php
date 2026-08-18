@@ -15,6 +15,7 @@ class MLBKP_Backup_Runner {
     private array   $settings;
     private string  $temp_dir;
     private array   $log = [];
+    private ?int $caffeinate_pid = null;
 
     public function __construct() {
         $this->settings = mlbkp_get_settings();
@@ -45,6 +46,8 @@ class MLBKP_Backup_Runner {
     private function execute( int $log_id, string $type ): array {
         @set_time_limit( 0 );
         @ini_set( 'memory_limit', '512M' );
+
+        $this->maybe_start_caffeinate();
 
         $this->log( "▶ Backup gestartet [Typ: {$type}]" );
         $this->log( '🖥  Site: ' . get_site_url() );
@@ -96,8 +99,8 @@ class MLBKP_Backup_Runner {
                 $result         = $file_backup->create( 'wpcontent', $extra_excludes );
 
                 $this->log( '   Größe: ' . MLBKP_Logger::format_bytes( $result['size'] ) );
-                if ( ! empty( $result['skipped'] ) && $result['skipped'] > 0 ) {
-                    $this->log( "   ⚠ {$result['skipped']} Datei(en) übersprungen (nicht lesbar / Imunify-Quarantäne):" );
+                if ( ! empty( $result['skipped'] ) ) {
+                    $this->log( "   ⚠ {$result['skipped']} Datei(en) übersprungen (gesperrt/nicht lesbar):" );
                     foreach ( array_slice( $file_backup->get_skipped(), 0, 10 ) as $s ) {
                         $this->log( "     – {$s}" );
                     }
@@ -123,7 +126,7 @@ class MLBKP_Backup_Runner {
                 $result      = $file_backup->create( 'wpcore', $this->parse_excludes() );
 
                 $this->log( '   Größe: ' . MLBKP_Logger::format_bytes( $result['size'] ) );
-                if ( ! empty( $result['skipped'] ) && $result['skipped'] > 0 ) {
+                if ( ! empty( $result['skipped'] ) ) {
                     $this->log( "   ⚠ {$result['skipped']} Datei(en) übersprungen." );
                 }
 
@@ -214,7 +217,71 @@ class MLBKP_Backup_Runner {
         return $dir;
     }
 
+    /**
+     * macOS-only: verhindert System-/Display-Sleep für die Dauer des Backups.
+     * Lokale Backups auf Laravel Valet (Mac) können 30–90+ Minuten dauern
+     * (ZIP-Erstellung + SFTP-Upload) und wurden durch den Sleep-Modus des
+     * Macs abgebrochen — sichtbar als "Unable to write X bytes"-Fehler.
+     * Auf Production (Linux) ist diese Methode ein No-Op.
+     */
+    private function maybe_start_caffeinate(): void {
+        if ( PHP_OS_FAMILY !== 'Darwin' ) return;
+        if ( ! function_exists( 'shell_exec' ) ) return;
+
+        // WICHTIG: nohup ist notwendig! Ein einfaches "caffeinate ... &" wird
+        // per SIGHUP beendet, sobald die von shell_exec() gestartete Subshell
+        // terminiert — der Prozess würde sofort wieder sterben, bevor das
+        // eigentliche Backup überhaupt fertig ist.
+        //
+        // WICHTIG #2: "launchctl asuser $(id -u)" ist ebenfalls notwendig!
+        // Valets php-fpm läuft als LaunchDaemon (root-Master-Prozess,
+        // Worker unter dem Mac-User). Ein caffeinate, das direkt aus diesem
+        // Kontext heraus gestartet wird, läuft zwar als Prozess (verifiziert
+        // via ps, PPID 1 nach nohup) — hält aber KEINE Power-Management-
+        // Assertion, da IOPMAssertionCreate an die aktive GUI-Session
+        // gebunden ist und der LaunchDaemon-Kontext nicht als solche zählt.
+        // "launchctl asuser $(id -u)" reicht den Aufruf explizit in die
+        // GUI-Session des Users durch, wodurch die Assertion korrekt
+        // registriert wird. Verifiziert via `pmset -g assertions` über zwei
+        // unabhängige Testläufe im asynchronen WP-Cron-Loopback-Kontext:
+        // PreventUserIdleSystemSleep, PreventUserIdleDisplaySleep und
+        // PreventSystemSleep waren jeweils aktiv.
+        //
+        // WICHTIG #3: PHP-FPM-Worker haben oft eine leere PATH-Variable
+        // (kein "clear_env = no" in der Pool-Config). "which"-Aufrufe zur
+        // Verifikation schlagen daher fehl (leerer String), auch wenn die
+        // Binaries via Shell-Default-PATH ("/usr/bin:/bin:/usr/sbin:/sbin")
+        // trotzdem gefunden und ausgeführt werden — kein Grund zur Sorge,
+        // wenn "which xyz" im selben Kontext leer zurückkommt.
+        $cmd = 'nohup launchctl asuser $(id -u) caffeinate -d -i -s > /tmp/mlbkp-caffeinate-stdout.log 2>&1 & echo $!';
+        $pid = trim( (string) @shell_exec( $cmd ) );
+
+        if ( ctype_digit( $pid ) ) {
+            $this->caffeinate_pid = (int) $pid;
+            $this->log( "☕ caffeinate gestartet (PID {$this->caffeinate_pid}) — verhindert Sleep während des Backups." );
+        } else {
+            $this->log( "⚠ caffeinate konnte nicht gestartet werden (Rückgabe: '{$pid}')." );
+        }
+    }
+
+    private function maybe_stop_caffeinate(): void {
+        if ( $this->caffeinate_pid === null ) return;
+        if ( function_exists( 'shell_exec' ) ) {
+            // WICHTIG: Die über $! erfasste PID (in maybe_start_caffeinate())
+            // gehört zu "launchctl", nicht zu "caffeinate" selbst — launchctl
+            // asuser reparented caffeinate als eigenständigen Prozess in der
+            // GUI-Session. Ein kill auf die getrackte PID trifft daher ins
+            // Leere, caffeinate läuft für immer weiter (verifiziert: über
+            // 2 Stunden verwaister Prozess beobachtet). Stattdessen gezielt
+            // per pkill anhand des Kommandostrings beenden.
+            @shell_exec( "pkill -f 'caffeinate -d -i -s' 2>/dev/null" );
+        }
+        $this->caffeinate_pid = null;
+    }
+
     private function cleanup(): void {
+        $this->maybe_stop_caffeinate();
+
         $this->log( '🧹 Temp-Dateien aufräumen …' );
         $files = glob( $this->temp_dir . '*.{sql,sql.gz,zip}', GLOB_BRACE );
         foreach ( (array) $files as $file ) {
