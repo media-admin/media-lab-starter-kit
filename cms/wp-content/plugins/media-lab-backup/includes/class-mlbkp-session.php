@@ -185,11 +185,56 @@ class MLBKP_Session {
                 $sub_chunks = self::scan_uploads_chunks( $id, $base . '/uploads', $excludes );
                 $chunks     = array_merge( $chunks, $sub_chunks );
                 $id        += count( $sub_chunks );
+            } elseif ( $entry === 'plugins' ) {
+                // plugins/ nach einzelnen Plugins splitten (können sehr groß sein)
+                $sub_chunks = self::scan_subdir_chunks( $id, $base . '/plugins', 'wp-content/plugins', $excludes );
+                $chunks     = array_merge( $chunks, $sub_chunks );
+                $id        += count( $sub_chunks );
+            } elseif ( $entry === 'themes' ) {
+                // themes/ nach einzelnen Themes splitten
+                $sub_chunks = self::scan_subdir_chunks( $id, $base . '/themes', 'wp-content/themes', $excludes );
+                $chunks     = array_merge( $chunks, $sub_chunks );
+                $id        += count( $sub_chunks );
             } else {
                 // Alle anderen Top-Level-Verzeichnisse: je ein Chunk
                 $size     = self::estimate_dir_size( $base . '/' . $entry );
                 $chunks[] = self::make_chunk( $id++, 'dir', "wp-content/{$entry}", $base . '/' . $entry, $size );
             }
+        }
+
+        return $chunks;
+    }
+
+    /**
+     * Splittet ein Verzeichnis nach seinen direkten Unterverzeichnissen.
+     * Für plugins/ und themes/ um Timeouts zu vermeiden.
+     */
+    private static function scan_subdir_chunks( int &$id, string $dir, string $label_prefix, array $excludes ): array {
+        $chunks  = [];
+        $entries = @scandir( $dir );
+        if ( ! $entries ) return [];
+
+        $has_root_files = false;
+
+        foreach ( $entries as $entry ) {
+            if ( in_array( $entry, [ '.', '..' ], true ) ) continue;
+
+            $full_path = $dir . '/' . $entry;
+
+            if ( is_dir( $full_path ) ) {
+                if ( in_array( $entry, self::SKIP_DIRS, true ) ) continue;
+                if ( self::is_excluded( "{$label_prefix}/{$entry}", $excludes ) ) continue;
+
+                $size     = self::estimate_dir_size( $full_path );
+                $chunks[] = self::make_chunk( $id++, 'dir', "{$label_prefix}/{$entry}", $full_path, $size );
+            } else {
+                $has_root_files = true;
+            }
+        }
+
+        // Dateien direkt im Verzeichnis (z.B. plugins/index.php)
+        if ( $has_root_files ) {
+            $chunks[] = self::make_chunk( $id++, 'dir_files_only', "{$label_prefix} (Dateien)", $dir );
         }
 
         return $chunks;
