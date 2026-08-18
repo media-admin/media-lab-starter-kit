@@ -3,7 +3,7 @@
  * Plugin Name: Media Lab Backup
  * Plugin URI:  https://media-lab.at
  * Description: Automatische WordPress-Backups (Datenbank + Dateien) zur Hetzner Storage Box via SFTP. Unterstützt manuelle und geplante Backups mit konfigurierbarer Aufbewahrungszeit.
- * Version:     1.3.5
+ * Version:     1.3.7
  * Requires at least: 6.0
  * Requires PHP: 8.0
  * Author:      Media Lab Tritremmel GmbH
@@ -21,7 +21,7 @@ if ( defined( 'MLBKP_VERSION' ) ) {
 }
 
 // ─── Plugin-Konstanten ───────────────────────────────────────────────────────
-define( 'MLBKP_VERSION',       '1.3.5' );
+define( 'MLBKP_VERSION',       '1.3.7' );
 define( 'MLBKP_PLUGIN_FILE',   __FILE__ );
 define( 'MLBKP_PLUGIN_DIR',    plugin_dir_path( __FILE__ ) );
 define( 'MLBKP_PLUGIN_URL',    plugin_dir_url( __FILE__ ) );
@@ -46,6 +46,18 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
     require_once MLBKP_PLUGIN_DIR . 'includes/class-mlbkp-cli.php';
     WP_CLI::add_command( 'mlbkp', 'MLBKP_CLI' );
 }
+
+// ─── WooCommerce-Kompatibilität ───────────────────────────────────────────────
+// Deklariert HPOS-Kompatibilität — Media Lab Backup berührt keine WC-Orders.
+add_action( 'before_woocommerce_init', static function () {
+    if ( class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class ) ) {
+        \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility(
+            'custom_order_tables',
+            MLBKP_PLUGIN_FILE,
+            true
+        );
+    }
+} );
 
 // ─── Plugin initialisieren ───────────────────────────────────────────────────
 add_action( 'plugins_loaded', static function () {

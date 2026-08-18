@@ -95,19 +95,10 @@ class MLBKP_Backup_Runner {
                 $this->check_cancelled( $log_id );
                 $this->log( '📦 wp-content ZIP erstellen …' );
                 $extra_excludes = $this->parse_excludes();
-                $file_backup    = new MLBKP_File_Backup( $this->temp_dir, $log_id );
+                $file_backup    = new MLBKP_File_Backup( $this->temp_dir );
                 $result         = $file_backup->create( 'wpcontent', $extra_excludes );
 
                 $this->log( '   Größe: ' . MLBKP_Logger::format_bytes( $result['size'] ) );
-                if ( ! empty( $result['skipped'] ) ) {
-                    $this->log( "   ⚠ {$result['skipped']} Datei(en) übersprungen (gesperrt/nicht lesbar):" );
-                    foreach ( array_slice( $file_backup->get_skipped(), 0, 10 ) as $s ) {
-                        $this->log( "     – {$s}" );
-                    }
-                    if ( $result['skipped'] > 10 ) {
-                        $this->log( '     … und ' . ( $result['skipped'] - 10 ) . ' weitere.' );
-                    }
-                }
 
                 $this->check_cancelled( $log_id );
                 $this->log( '📤 wp-content ZIP hochladen …' );
@@ -122,13 +113,10 @@ class MLBKP_Backup_Runner {
             if ( $type === 'wpcore' ) {
                 $this->check_cancelled( $log_id );
                 $this->log( '📦 WordPress-Core ZIP erstellen …' );
-                $file_backup = new MLBKP_File_Backup( $this->temp_dir, $log_id );
+                $file_backup = new MLBKP_File_Backup( $this->temp_dir );
                 $result      = $file_backup->create( 'wpcore', $this->parse_excludes() );
 
                 $this->log( '   Größe: ' . MLBKP_Logger::format_bytes( $result['size'] ) );
-                if ( ! empty( $result['skipped'] ) ) {
-                    $this->log( "   ⚠ {$result['skipped']} Datei(en) übersprungen." );
-                }
 
                 $this->check_cancelled( $log_id );
                 $this->log( '📤 WP-Core ZIP hochladen …' );
@@ -151,6 +139,7 @@ class MLBKP_Backup_Runner {
             ] );
 
             $this->log( '🎉 Backup erfolgreich abgeschlossen.' );
+            $this->release_lock();
             $this->maybe_send_notification( true, '' );
 
         } catch ( MLBKP_CancelledException $e ) {
@@ -159,6 +148,7 @@ class MLBKP_Backup_Runner {
                 'error_message' => 'Manuell abgebrochen.',
             ] );
             MLBKP_Logger::clear_cancel_flag( $log_id );
+            $this->release_lock();
             $this->cleanup();
 
             return [
@@ -176,6 +166,7 @@ class MLBKP_Backup_Runner {
             ] );
 
             $this->maybe_send_notification( false, $error );
+            $this->release_lock();
             $this->cleanup();
 
             return [
@@ -287,6 +278,30 @@ class MLBKP_Backup_Runner {
         foreach ( (array) $files as $file ) {
             @unlink( $file );
         }
+    }
+
+    // ── Lock-Mechanismus ──────────────────────────────────────────────────────
+
+    private function acquire_lock( int $log_id ): bool {
+        $existing = get_option( self::LOCK_OPTION );
+
+        if ( $existing ) {
+            // Lock vorhanden — prüfen ob er abgelaufen ist
+            $lock_data = get_option( self::LOCK_OPTION . '_time' );
+            if ( $lock_data && ( time() - (int) $lock_data ) < self::LOCK_TIMEOUT ) {
+                return false; // Aktiver Lock
+            }
+            // Abgelaufener Lock — überschreiben
+        }
+
+        update_option( self::LOCK_OPTION,          $log_id, false );
+        update_option( self::LOCK_OPTION . '_time', time(),  false );
+        return true;
+    }
+
+    private function release_lock(): void {
+        delete_option( self::LOCK_OPTION );
+        delete_option( self::LOCK_OPTION . '_time' );
     }
 
     private function parse_excludes(): array {

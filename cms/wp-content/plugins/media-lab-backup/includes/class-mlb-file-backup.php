@@ -120,18 +120,28 @@ class MLBKP_File_Backup {
         $base_name  = basename( $source );
         $file_count = 0;
 
-        $iterator = new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator(
-                $source,
-                FilesystemIterator::SKIP_DOTS | FilesystemIterator::UNIX_PATHS
-            ),
-            RecursiveIteratorIterator::SELF_FIRST
-        );
+        try {
+            $iterator = new RecursiveIteratorIterator(
+                new RecursiveDirectoryIterator(
+                    $source,
+                    FilesystemIterator::SKIP_DOTS | FilesystemIterator::UNIX_PATHS
+                ),
+                RecursiveIteratorIterator::SELF_FIRST
+            );
+        } catch ( \UnexpectedValueException $e ) {
+            throw new RuntimeException( "Quellverzeichnis nicht lesbar (open_basedir?): {$source} — " . $e->getMessage() );
+        }
 
         foreach ( $iterator as $file ) {
-            $file_path = $file->getPathname();
-            $relative  = substr( $file_path, strlen( $source ) + 1 );
-            $zip_entry = $base_name . '/' . $relative;
+            try {
+                $file_path = $file->getPathname();
+                $relative  = substr( $file_path, strlen( $source ) + 1 );
+                $zip_entry = $base_name . '/' . $relative;
+            } catch ( \UnexpectedValueException $e ) {
+                // open_basedir oder Berechtigungsfehler beim Verzeichnis-Listing
+                $this->skipped[] = '(Verzeichnis nicht lesbar: ' . $e->getMessage() . ')';
+                continue;
+            }
 
             // Ausschlüsse prüfen
             if ( $this->should_exclude( $relative, $excludes ) ) {

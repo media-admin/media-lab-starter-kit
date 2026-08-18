@@ -34,7 +34,8 @@ class MLBKP_SFTP {
             throw new RuntimeException( 'SFTP-Host und Benutzername dürfen nicht leer sein.' );
         }
 
-        $this->sftp = new SFTP( $host, $port, 60 );
+        $this->sftp = new SFTP( $host, $port, 300 ); // 300s Timeout (ZIP-Erstellung kann lange dauern)
+        $this->sftp->setKeepAlive( 60 ); // Keep-alive alle 60 Sekunden
 
         $auth_method = $settings['sftp_auth_method'] ?? 'password';
 
@@ -128,7 +129,7 @@ class MLBKP_SFTP {
 
     // ── Verbindungstest ──────────────────────────────────────────────────────
 
-    public static function test_connection( array $settings ): true|string {
+    public static function test_connection( array $settings ): bool|string {
         try {
             $instance = new self( $settings );
             $instance->sftp->nlist( $instance->remote_base );
