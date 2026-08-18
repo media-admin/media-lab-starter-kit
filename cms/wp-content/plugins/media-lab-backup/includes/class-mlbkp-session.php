@@ -103,7 +103,7 @@ class MLBKP_Session {
         // Log-Eintrag abschließen
         $filenames = array_filter( array_column( $session['chunks'], 'filename' ) );
         MLBKP_Logger::finish( $session['log_id'], $status, [
-            'file_name'   => implode( ', ', $filenames ),
+            'file_name'   => self::truncate_filenames( $filenames ),
             'file_size'   => $session['total_size'],
             'remote_path' => $session['remote_session_dir'],
             'error_message' => $error ?: null,
@@ -287,4 +287,17 @@ class MLBKP_Session {
         }
         return false;
     }
+
+    /**
+     * Kürzt die Dateinamen-Liste auf max. 250 Zeichen (VARCHAR 255 Limit).
+     */
+    private static function truncate_filenames( array $filenames ): string {
+        $result = implode( ', ', $filenames );
+        if ( strlen( $result ) <= 250 ) return $result;
+        // Zu lang: ersten Dateinamen + Anzahl restliche
+        $first = reset( $filenames );
+        $rest  = count( $filenames ) - 1;
+        return mb_strimwidth( $first, 0, 200, '…' ) . " (+{$rest} weitere)";
+    }
+
 }

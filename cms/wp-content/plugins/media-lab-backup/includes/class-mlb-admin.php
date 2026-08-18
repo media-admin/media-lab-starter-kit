@@ -213,7 +213,7 @@ class MLBKP_Admin {
                         $total_size   = array_sum( array_column( $session['chunks'], 'size' ) );
 
                         MLBKP_Logger::finish( $session['log_id'], $final_status, [
-                            'file_name'   => implode( ', ', $filenames ),
+                            'file_name'   => mb_strimwidth( implode( ', ', $filenames ), 0, 250, '…' ),
                             'file_size'   => $total_size,
                             'remote_path' => $session['remote_session_dir'] ?? '',
                         ] );
@@ -279,50 +279,58 @@ class MLBKP_Admin {
         }
 
         global $wpdb;
+        $table = MLBKP_Logger::get_table();
 
-        // Session laden und finalisieren
-        $session = MLBKP_Session::load( $session_id );
+        // Session laden
+        $session      = MLBKP_Session::load( $session_id );
+        $final_status = 'success';
+        $file_name    = '';
+        $file_size    = 0;
+        $remote_path  = '';
+        $duration     = null;
 
         if ( $session ) {
             $has_db_error = ! empty( array_filter( $session['chunks'], static fn( $c ) =>
                 $c['status'] === 'error' && $c['type'] === 'database'
             ) );
             $final_status = $has_db_error ? 'error' : 'success';
-            $filenames    = array_filter( array_column( $session['chunks'], 'filename' ) );
-            $total_size   = array_sum( array_column( $session['chunks'], 'size' ) );
+            $all_names    = array_filter( array_column( $session['chunks'], 'filename' ) );
+            $file_name    = mb_strimwidth( implode( ', ', $all_names ), 0, 250, '…' );
+            $file_size    = (int) array_sum( array_column( $session['chunks'], 'size' ) );
+            $remote_path  = $session['remote_session_dir'] ?? '';
+            $duration     = round( microtime( true ) - strtotime( $session['started_at'] ) );
 
-            // Direkte DB-Aktualisierung
-            $wpdb->update(
-                MLBKP_Logger::get_table(),
-                [
-                    'status'      => $final_status,
-                    'finished_at' => current_time( 'mysql' ),
-                    'file_name'   => implode( ', ', $filenames ),
-                    'file_size'   => $total_size,
-                    'remote_path' => $session['remote_session_dir'] ?? '',
-                    'duration_sec' => $session['finished_at']
-                        ? ( strtotime( $session['finished_at'] ) - strtotime( $session['started_at'] ) )
-                        : ( current_time( 'timestamp' ) - strtotime( $session['started_at'] ) ),
-                ],
-                [ 'id' => $log_id ]
-            );
-
-            $session['status'] = $final_status;
+            $session['status']     = $final_status;
+            $session['total_size'] = $file_size;
             MLBKP_Session::save( $session );
-
-            wp_send_json_success( [
-                'status'    => $final_status,
-                'file_size' => MLBKP_Logger::format_bytes( $total_size ),
-            ] );
-        } else {
-            // Session nicht gefunden: Log direkt aktualisieren
-            $wpdb->update(
-                MLBKP_Logger::get_table(),
-                [ 'status' => 'success', 'finished_at' => current_time( 'mysql' ) ],
-                [ 'id' => $log_id ]
-            );
-            wp_send_json_success( [ 'status' => 'success' ] );
         }
+
+        $now = current_time( 'mysql' );
+
+        // Rohes SQL — zuverlässigste Methode
+        $rows_affected = $wpdb->query( $wpdb->prepare(
+            "UPDATE `{$table}` SET
+                status       = %s,
+                finished_at  = %s,
+                file_name    = %s,
+                file_size    = %d,
+                remote_path  = %s
+            WHERE id = %d AND status = 'running'",
+            $final_status,
+            $now,
+            $file_name,
+            $file_size,
+            $remote_path,
+            $log_id
+        ) );
+
+        // Falls der Row bereits finalisiert wurde (rows_affected = 0), trotzdem Erfolg zurückgeben
+        wp_send_json_success( [
+            'status'        => $final_status,
+            'file_size'     => MLBKP_Logger::format_bytes( $file_size ),
+            'rows_affected' => $rows_affected,
+            'db_error'      => $wpdb->last_error ?: null,
+        ] );
     }
 
     // ── AJAX: Hängende Jobs bereinigen ────────────────────────────────────────
