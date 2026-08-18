@@ -91,16 +91,22 @@ class MLBKP_File_Backup {
         $excludes = array_merge( $this->default_excludes, $extra_excludes );
         $excludes = array_map( static fn( $e ) => rtrim( $e, '/' ), $excludes );
 
-        $this->create_zip( $source_dir, $zip_path, $excludes );
+        $actual_zip_path = $this->create_zip( $source_dir, $zip_path, $excludes );
 
-        if ( ! file_exists( $zip_path ) ) {
-            throw new RuntimeException( "ZIP-Datei konnte nicht erstellt werden: {$zip_path}" );
+        if ( ! file_exists( $actual_zip_path ) ) {
+            // Letzter Versuch: nach Imunify-umbenannten Dateien suchen
+            $fallback = glob( $zip_path . '*' );
+            if ( ! empty( $fallback ) ) {
+                $actual_zip_path = $fallback[0];
+            } else {
+                throw new RuntimeException( "ZIP-Datei konnte nicht erstellt werden: {$zip_path}" );
+            }
         }
 
         return [
-            'path'     => $zip_path,
-            'filename' => $filename,
-            'size'     => filesize( $zip_path ),
+            'path'     => $actual_zip_path,
+            'filename' => basename( $actual_zip_path ),
+            'size'     => filesize( $actual_zip_path ),
             'skipped'  => count( $this->skipped ),
         ];
     }
@@ -108,9 +114,10 @@ class MLBKP_File_Backup {
     // ── ZIP-Erstellung ────────────────────────────────────────────────────────
 
     /**
+     * @return string  Tatsächlicher Pfad der ZIP-Datei (kann von $zip_path abweichen wenn Imunify umbenennt)
      * @throws RuntimeException
      */
-    private function create_zip( string $source, string $zip_path, array $excludes ): void {
+    private function create_zip( string $source, string $zip_path, array $excludes ): string {
         $zip = new ZipArchive();
 
         if ( $zip->open( $zip_path, ZipArchive::CREATE | ZipArchive::OVERWRITE ) !== true ) {
@@ -203,6 +210,26 @@ class MLBKP_File_Backup {
         }
 
         $zip->close();
+
+        // ── Imunify360-Check ──────────────────────────────────────────────────
+        // Imunify360 benennt ZIP-Dateien während der Erstellung um (fügt zufällige
+        // Endung hinzu, z.B. .zip.ecYg2q). Falls die Datei am erwarteten Pfad
+        // nicht mehr existiert, nach der umbenannten Version suchen und zurückbenennen.
+        if ( ! file_exists( $zip_path ) ) {
+            $matches = glob( $zip_path . '.*' );
+
+            if ( ! empty( $matches ) ) {
+                usort( $matches, static fn( $a, $b ) => filemtime( $b ) - filemtime( $a ) );
+                $renamed = $matches[0];
+
+                if ( ! @rename( $renamed, $zip_path ) ) {
+                    // rename() nicht möglich → Datei unter dem gefundenen Namen hochladen
+                    $zip_path = $renamed;
+                }
+            }
+        }
+
+        return $zip_path;
     }
 
     /**

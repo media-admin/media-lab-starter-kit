@@ -12,6 +12,9 @@ class MLBKP_CancelledException extends RuntimeException {}
  */
 class MLBKP_Backup_Runner {
 
+    const LOCK_OPTION  = 'mlbkp_backup_running';
+    const LOCK_TIMEOUT = 300;
+
     private array   $settings;
     private string  $temp_dir;
     private array   $log = [];
@@ -274,8 +277,16 @@ class MLBKP_Backup_Runner {
         $this->maybe_stop_caffeinate();
 
         $this->log( '🧹 Temp-Dateien aufräumen …' );
+
+        // Standard-Dateien
         $files = glob( $this->temp_dir . '*.{sql,sql.gz,zip}', GLOB_BRACE );
         foreach ( (array) $files as $file ) {
+            @unlink( $file );
+        }
+
+        // Imunify360-umbenannte Dateien (z.B. files-wpcontent-....zip.ecYg2q)
+        $renamed = glob( $this->temp_dir . '*.zip.*' );
+        foreach ( (array) $renamed as $file ) {
             @unlink( $file );
         }
     }
