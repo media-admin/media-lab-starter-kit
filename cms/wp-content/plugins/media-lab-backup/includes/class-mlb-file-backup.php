@@ -5,61 +5,41 @@ defined( 'ABSPATH' ) || exit;
  * MLBKP_File_Backup
  *
  * Erstellt ZIP-Archive von WordPress-Verzeichnissen.
- * Unterstützt: wp-content, vollständiges WP-Verzeichnis.
- *
- * Speicher-Optimierungen für Shared Hosting:
- *
- *  1. ZIP_COMPRESSION_METHOD = ZipArchive::CM_STORE (keine Komprimierung):
- *     Komprimierung spart bei bereits komprimierten Medien (JPEG, PNG, MP4)
- *     kaum Speicher, verbraucht aber viel CPU und Zeit. CM_STORE ist 3–10×
- *     schneller und vermeidet PHP-Speicher-Erschöpfung bei großen Verzeichnissen.
- *
- *  2. Periodisches gc_collect_cycles() + memory_get_usage()-Check:
- *     ZipArchive puffert intern — bei tausenden Dateien kann das kumulativ
- *     viel Speicher belegen. Alle MLBKP_ZIP_FLUSH_EVERY Dateien wird der
- *     Garbage Collector explizit aufgerufen.
- *
- *  3. Einzelne Dateien > 500 MB werden übersprungen (unverändert).
+ * Überspringt unlesbare Dateien (Imunify360-Quarantäne, open_basedir etc.)
+ * und prüft zwischen Dateien auf Abbruch-Signal.
  */
 class MLBKP_File_Backup {
 
     private string $temp_dir;
+    private int    $log_id;
+    private array  $skipped = [];
 
-    /**
-     * ZIP-Komprimierungsmethode.
-     * CM_STORE (0) = unkomprimiert, deutlich schneller auf Shared Hosting.
-     * CM_DEFLATE  = Standard-Komprimierung (langsamer, kleiner bei Text/PHP-Dateien).
-     */
-    private const ZIP_COMPRESSION_METHOD = ZipArchive::CM_STORE;
-
-    /**
-     * Alle N Dateien Garbage Collector aufrufen und Speicher loggen.
-     */
-    private const GC_EVERY_FILES = 500;
-
-    /** Standardmäßig ausgeschlossene Pfade (relativ zum Quellverzeichnis) */
+    /** Standardmäßig ausgeschlossene Pfade */
     private array $default_excludes = [
-        'wp-content/cache',
-        'wp-content/uploads/media-lab-backup', // Eigene Temp-Dateien ausschließen
-        'wp-content/wpo-cache',
-        'wp-content/litespeed',
+        'cache',
+        'wpo-cache',
+        'litespeed',
+        'uploads/media-lab-backup',
+        '.quarantine',         // Imunify360 Quarantäne-Verzeichnis
+        '_imunify',           // Imunify360 interne Dateien
+        'upgrade',
         '.git',
         '.DS_Store',
         'node_modules',
         '.sass-cache',
-        'wp-content/upgrade',
     ];
 
-    public function __construct( string $temp_dir ) {
+    public function __construct( string $temp_dir, int $log_id = 0 ) {
         $this->temp_dir = $temp_dir;
+        $this->log_id   = $log_id;
     }
 
     /**
      * Erstellt ein ZIP-Archiv des angegebenen Verzeichnisses.
      *
-     * @param string $type          'wpcontent' | 'wpcore'
+     * @param string $type            'wpcontent' | 'wpcore'
      * @param array  $extra_excludes  Zusätzliche auszuschließende Pfade
-     * @return array{path: string, filename: string, size: int}
+     * @return array{path: string, filename: string, size: int, skipped: int}
      * @throws RuntimeException
      */
     public function create( string $type, array $extra_excludes = [] ): array {
@@ -77,8 +57,10 @@ class MLBKP_File_Backup {
         $filename   = "files-{$label}-" . gmdate( 'Y-m-d_H-i-s' ) . '.zip';
         $zip_path   = $this->temp_dir . $filename;
 
-        $excludes = array_merge( $this->default_excludes, $extra_excludes );
-        $excludes = array_map( static fn( $e ) => rtrim( $e, '/' ), $excludes );
+        $excludes = array_merge(
+            $this->default_excludes,
+            array_map( static fn( $e ) => rtrim( $e, '/' ), $extra_excludes )
+        );
 
         $this->create_zip( $source_dir, $zip_path, $excludes );
 
@@ -90,23 +72,26 @@ class MLBKP_File_Backup {
             'path'     => $zip_path,
             'filename' => $filename,
             'size'     => filesize( $zip_path ),
+            'skipped'  => count( $this->skipped ),
         ];
+    }
+
+    public function get_skipped(): array {
+        return $this->skipped;
     }
 
     // ── ZIP-Erstellung ────────────────────────────────────────────────────────
 
-    /**
-     * @throws RuntimeException
-     */
     private function create_zip( string $source, string $zip_path, array $excludes ): void {
         $zip = new ZipArchive();
 
         if ( $zip->open( $zip_path, ZipArchive::CREATE | ZipArchive::OVERWRITE ) !== true ) {
-            throw new RuntimeException( "Konnte ZIP-Datei nicht erstellen: {$zip_path}" );
+            throw new RuntimeException( "Konnte ZIP-Datei nicht öffnen: {$zip_path}" );
         }
 
-        $base_name  = basename( $source );
-        $file_count = 0;
+        $base_name   = basename( $source );
+        $file_count  = 0;
+        $cancel_check_every = 500; // Alle 500 Dateien auf Abbruch prüfen
 
         $iterator = new RecursiveIteratorIterator(
             new RecursiveDirectoryIterator(
@@ -123,64 +108,71 @@ class MLBKP_File_Backup {
 
             // Ausschlüsse prüfen
             if ( $this->should_exclude( $relative, $excludes ) ) {
-                if ( $file->isDir() ) {
-                    $iterator->getInnerIterator()->current();
-                }
                 continue;
             }
 
             if ( $file->isDir() ) {
                 $zip->addEmptyDir( $zip_entry );
+                continue;
+            }
 
-            } elseif ( $file->isFile() && $file->isReadable() ) {
+            if ( ! $file->isFile() ) continue;
 
-                // Sehr große Einzeldateien (>500 MB) überspringen
-                if ( $file->getSize() > 524288000 ) {
-                    $zip->addFromString(
-                        $zip_entry . '.skipped',
-                        "Diese Datei wurde übersprungen (>500 MB): " . $file_path
-                    );
-                    continue;
-                }
+            // ── Sicherheitschecks vor addFile() ──────────────────────────────
 
-                $zip->addFile( $file_path, $zip_entry );
+            // 1. Lesbarkeit prüfen (Imunify-Quarantäne, chmod 000)
+            if ( ! $file->isReadable() ) {
+                $this->skipped[] = $relative . ' (nicht lesbar)';
+                continue;
+            }
 
-                // Komprimierungsmethode setzen: CM_STORE = kein Overhead
-                $zip->setCompressionName( $zip_entry, self::ZIP_COMPRESSION_METHOD );
+            // 2. Dateigröße prüfen
+            $size = $file->getSize();
+            if ( $size === false ) {
+                $this->skipped[] = $relative . ' (Größe nicht ermittelbar)';
+                continue;
+            }
 
-                $file_count++;
+            // 3. Sehr große Einzeldateien überspringen (>500MB)
+            if ( $size > 524288000 ) {
+                $this->skipped[] = $relative . ' (>500MB, übersprungen)';
+                $zip->addFromString( $zip_entry . '.skipped.txt', "Datei übersprungen (>500MB): {$file_path}" );
+                continue;
+            }
 
-                // Periodisch Speicher freigeben
-                if ( $file_count % self::GC_EVERY_FILES === 0 ) {
-                    gc_collect_cycles();
+            // Datei hinzufügen
+            $zip->addFile( $file_path, $zip_entry );
+            $file_count++;
+
+            // ── Abbruch-Check alle N Dateien ──────────────────────────────────
+            if ( $this->log_id > 0 && $file_count % $cancel_check_every === 0 ) {
+                if ( MLBKP_Logger::is_cancelled( $this->log_id ) ) {
+                    $zip->close();
+                    @unlink( $zip_path );
+                    throw new MLBKP_CancelledException();
                 }
             }
         }
 
         $zip->close();
+
+        // Sicherstellen dass ZIP nicht leer/korrupt ist
+        if ( ! file_exists( $zip_path ) || filesize( $zip_path ) < 22 ) {
+            throw new RuntimeException( "ZIP-Datei ist leer oder korrupt: {$zip_path}" );
+        }
     }
 
-    /**
-     * Prüft ob ein relativer Pfad von der Sicherung ausgeschlossen werden soll.
-     */
+    // ── Hilfsmethoden ─────────────────────────────────────────────────────────
+
     private function should_exclude( string $relative_path, array $excludes ): bool {
         foreach ( $excludes as $exclude ) {
-            if ( $relative_path === $exclude || str_starts_with( $relative_path, $exclude . '/' ) ) {
-                return true;
-            }
-            if ( ! str_contains( $exclude, '/' ) && basename( $relative_path ) === $exclude ) {
-                return true;
-            }
+            if ( $relative_path === $exclude ) return true;
+            if ( str_starts_with( $relative_path, $exclude . '/' ) ) return true;
+            if ( ! str_contains( $exclude, '/' ) && basename( $relative_path ) === $exclude ) return true;
         }
         return false;
     }
 
-    // ── Utilities ─────────────────────────────────────────────────────────────
-
-    /**
-     * Schätzt die Größe eines Verzeichnisses (rekursiv, schnell).
-     * Für Anzeige im Admin-Bereich.
-     */
     public static function estimate_size( string $dir ): int {
         $size = 0;
         try {
@@ -188,13 +180,11 @@ class MLBKP_File_Backup {
                 new RecursiveDirectoryIterator( $dir, FilesystemIterator::SKIP_DOTS )
             );
             foreach ( $iterator as $file ) {
-                if ( $file->isFile() ) {
+                if ( $file->isFile() && $file->isReadable() ) {
                     $size += $file->getSize();
                 }
             }
-        } catch ( \Throwable ) {
-            // Ignore permission errors
-        }
+        } catch ( \Throwable ) {}
         return $size;
     }
 }

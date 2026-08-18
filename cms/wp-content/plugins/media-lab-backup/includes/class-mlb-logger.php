@@ -12,10 +12,8 @@ class MLBKP_Logger {
     const OPTION_DB_VERSION = 'mlbkp_db_version';
     const DB_VERSION = '1.1';
 
-    // Job-Timeout in Minuten — Jobs die länger laufen werden als Fehler markiert.
-    // 240 min (4 h) — großzügig gewählt, da File-Backups auf Shared Hosting bei
-    // großen wp-content-Verzeichnissen (1–3 GB) deutlich länger als 60 min dauern können.
-    const JOB_TIMEOUT_MINUTES = 240;
+    // Job-Timeout in Minuten — Jobs die länger laufen werden als Fehler markiert
+    const JOB_TIMEOUT_MINUTES = 60;
 
     // ── Tabellen-Management ──────────────────────────────────────────────────
 

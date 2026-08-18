@@ -47,19 +47,6 @@ class MLBKP_SFTP {
 
     // ── Upload ───────────────────────────────────────────────────────────────
 
-    /**
-     * Lädt eine lokale Datei via SFTP hoch.
-     *
-     * Chunked-Transfer: Die Datei wird in 8-MB-Blöcken gelesen und gesendet,
-     * statt die gesamte Datei auf einmal in den RAM zu laden.
-     * Das verhindert Timeouts und Speicher-Erschöpfung bei großen ZIP-Archiven
-     * (typisch: wp-content 500 MB – 3 GB) auf Shared-Hosting-Umgebungen.
-     *
-     * Chunk-Größe 8 MB: gutes Gleichgewicht zwischen Durchsatz und Speicherbedarf.
-     * phpseclib3 puffert intern ca. 1 weiteres Paket — effektiver Peak ~16 MB.
-     *
-     * @throws RuntimeException
-     */
     public function upload( string $local_path, string $remote_filename ): string {
         if ( ! file_exists( $local_path ) ) {
             throw new RuntimeException( "Lokale Datei nicht gefunden: {$local_path}" );
@@ -70,42 +57,8 @@ class MLBKP_SFTP {
 
         $this->ensure_remote_dir( $remote_dir );
 
-        $chunk_size = 8 * 1024 * 1024; // 8 MB
-        $fh = @fopen( $local_path, 'rb' );
-
-        if ( $fh === false ) {
-            throw new RuntimeException( "Lokale Datei konnte nicht geöffnet werden: {$local_path}" );
-        }
-
-        try {
-            // Datei auf dem Remote-Server anlegen / überschreiben
-            if ( ! $this->sftp->put( $remote_path, '', SFTP::SOURCE_STRING ) ) {
-                throw new RuntimeException( "SFTP: Remote-Datei konnte nicht angelegt werden: {$remote_path}" );
-            }
-
-            $offset = 0;
-            while ( ! feof( $fh ) ) {
-                $chunk = fread( $fh, $chunk_size );
-                if ( $chunk === false ) {
-                    throw new RuntimeException( "Lesefehler bei Datei: {$local_path}" );
-                }
-
-                if ( ! $this->sftp->put( $remote_path, $chunk, SFTP::SOURCE_STRING, $offset ) ) {
-                    throw new RuntimeException(
-                        "SFTP-Upload fehlgeschlagen bei Offset {$offset}: {$remote_path}"
-                    );
-                }
-
-                $offset += strlen( $chunk );
-
-                // Speicher nach jedem Chunk freigeben
-                unset( $chunk );
-                if ( $offset % ( 64 * 1024 * 1024 ) === 0 ) {
-                    gc_collect_cycles();
-                }
-            }
-        } finally {
-            fclose( $fh );
+        if ( ! $this->sftp->put( $remote_path, $local_path, SFTP::SOURCE_LOCAL_FILE ) ) {
+            throw new RuntimeException( "SFTP-Upload fehlgeschlagen: {$remote_path}" );
         }
 
         return $remote_path;
