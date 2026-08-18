@@ -326,13 +326,38 @@
                             // Chunk-Fortschritt aktualisieren
                             if (poll.data.chunks && poll.data.chunks.length) {
                                 $logOut.empty();
+                                var doneCount = 0;
+                                var allDone   = true;
                                 poll.data.chunks.forEach(function (c) {
                                     var icon = { pending: '⏸', running: '⏳', done: '✅', error: '❌', skipped: '⏭' }[c.status] || '•';
                                     var line = icon + ' ' + c.label + (c.size ? ' (' + c.size + ')' : '') + (c.error ? ' — ' + c.error : '');
                                     appendLog(line);
+                                    if (c.status === 'done' || c.status === 'error' || c.status === 'skipped') doneCount++;
+                                    if (c.status === 'pending' || c.status === 'running') allDone = false;
                                 });
-                                var done = poll.data.chunks.filter(function(c) { return c.status === 'done'; }).length;
-                                $btn.text('⏳ ' + done + '/' + total + ' Chunks …');
+                                $btn.text('⏳ ' + doneCount + '/' + total + ' Chunks …');
+
+                                // Alle Chunks fertig aber Status noch running → explizit finalisieren
+                                if (allDone && s === 'running') {
+                                    clearInterval(pollInterval);
+                                    $.ajax({
+                                        url:    mlbkpData.ajaxUrl,
+                                        method: 'POST',
+                                        data:   { action: 'mlbkp_finalize_session', nonce: mlbkpData.nonce, session_id: sessionId, log_id: logId },
+                                        success: function (fin) {
+                                            $btn.prop('disabled', false).text('▶ Backup starten');
+                                            $('#mlb-cancel-backup').hide();
+                                            appendLog('🎉 Backup erfolgreich abgeschlossen.' + (fin.data && fin.data.file_size ? ' Gesamt: ' + fin.data.file_size : ''));
+                                            setStatus($status, mlbkpData.strings.success, 'ok');
+                                            $logCard.addClass('mlb-log-success');
+                                        },
+                                        error: function () {
+                                            $btn.prop('disabled', false).text('▶ Backup starten');
+                                            appendLog('⚠ Backup abgeschlossen aber Status-Update fehlgeschlagen. Bitte Protokoll prüfen.');
+                                        }
+                                    });
+                                    return;
+                                }
                             }
 
                             if (s === 'running') return;

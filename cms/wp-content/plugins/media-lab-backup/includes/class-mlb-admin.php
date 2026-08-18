@@ -23,6 +23,7 @@ class MLBKP_Admin {
         add_action( 'wp_ajax_mlbkp_check_status',      [ self::class, 'ajax_backup_status' ] );
         add_action( 'wp_ajax_mlbkp_cancel_backup',     [ self::class, 'ajax_cancel_backup' ] );
         add_action( 'wp_ajax_mlbkp_cleanup_stuck',     [ self::class, 'ajax_cleanup_stuck' ] );
+        add_action( 'wp_ajax_mlbkp_finalize_session',  [ self::class, 'ajax_finalize_session' ] );
         // AJAX: SFTP-Verbindung testen
         add_action( 'wp_ajax_mlbkp_test_connection',   [ self::class, 'ajax_test_connection' ] );
         // AJAX: Einstellungen speichern
@@ -259,6 +260,69 @@ class MLBKP_Admin {
             'duration'      => MLBKP_Logger::format_duration( isset( $row['duration_sec'] ) ? (int) $row['duration_sec'] : null ),
             'chunks'        => $chunks,
         ] );
+    }
+
+    // ── AJAX: Session finalisieren ────────────────────────────────────────────
+
+    public static function ajax_finalize_session(): void {
+        check_ajax_referer( self::NONCE_ACTION, 'nonce' );
+
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( [ 'message' => 'Keine Berechtigung.' ] );
+        }
+
+        $session_id = sanitize_text_field( $_POST['session_id'] ?? '' );
+        $log_id     = (int) ( $_POST['log_id'] ?? 0 );
+
+        if ( ! $session_id || ! $log_id ) {
+            wp_send_json_error( [ 'message' => 'Fehlende Parameter.' ] );
+        }
+
+        global $wpdb;
+
+        // Session laden und finalisieren
+        $session = MLBKP_Session::load( $session_id );
+
+        if ( $session ) {
+            $has_db_error = ! empty( array_filter( $session['chunks'], static fn( $c ) =>
+                $c['status'] === 'error' && $c['type'] === 'database'
+            ) );
+            $final_status = $has_db_error ? 'error' : 'success';
+            $filenames    = array_filter( array_column( $session['chunks'], 'filename' ) );
+            $total_size   = array_sum( array_column( $session['chunks'], 'size' ) );
+
+            // Direkte DB-Aktualisierung
+            $wpdb->update(
+                MLBKP_Logger::get_table(),
+                [
+                    'status'      => $final_status,
+                    'finished_at' => current_time( 'mysql' ),
+                    'file_name'   => implode( ', ', $filenames ),
+                    'file_size'   => $total_size,
+                    'remote_path' => $session['remote_session_dir'] ?? '',
+                    'duration_sec' => $session['finished_at']
+                        ? ( strtotime( $session['finished_at'] ) - strtotime( $session['started_at'] ) )
+                        : ( current_time( 'timestamp' ) - strtotime( $session['started_at'] ) ),
+                ],
+                [ 'id' => $log_id ]
+            );
+
+            $session['status'] = $final_status;
+            MLBKP_Session::save( $session );
+
+            wp_send_json_success( [
+                'status'    => $final_status,
+                'file_size' => MLBKP_Logger::format_bytes( $total_size ),
+            ] );
+        } else {
+            // Session nicht gefunden: Log direkt aktualisieren
+            $wpdb->update(
+                MLBKP_Logger::get_table(),
+                [ 'status' => 'success', 'finished_at' => current_time( 'mysql' ) ],
+                [ 'id' => $log_id ]
+            );
+            wp_send_json_success( [ 'status' => 'success' ] );
+        }
     }
 
     // ── AJAX: Hängende Jobs bereinigen ────────────────────────────────────────
