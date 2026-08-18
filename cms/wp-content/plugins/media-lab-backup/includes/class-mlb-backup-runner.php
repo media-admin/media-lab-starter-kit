@@ -54,7 +54,11 @@ class MLBKP_Backup_Runner {
 
         $this->log( "▶ Backup gestartet [Typ: {$type}]" );
         $this->log( '🖥  Site: ' . get_site_url() );
-        $this->log( '📁 Temp: ' . $this->temp_dir );
+        $this->log( "📁 Temp: {$this->temp_dir}" );
+        $in_uploads = str_contains( $this->temp_dir, '/uploads/' );
+        if ( $in_uploads ) {
+            $this->log( '   ⚠ Temp-Verzeichnis liegt in uploads/ — Imunify360 könnte ZIP-Dateien umbenennen.' );
+        }
 
         $uploaded_files = [];
 
@@ -191,13 +195,34 @@ class MLBKP_Backup_Runner {
     // ── Private Hilfsmethoden ─────────────────────────────────────────────────
 
     private function prepare_temp_dir(): string {
-        $dir = WP_CONTENT_DIR . '/uploads/media-lab-backup/temp/';
+        // WICHTIG: Temp-Verzeichnis NICHT in wp-content/uploads/ anlegen.
+        // Imunify360 überwacht uploads/ gezielt auf Malware-Uploads und benennt
+        // ZIP-Dateien dort um (z.B. .zip → .zip.ecYg2q), was den Upload verhindert.
+        // wp-content/mlbkp-temp/ liegt außerhalb des überwachten Bereichs.
+        $candidates = [
+            WP_CONTENT_DIR . '/mlbkp-temp/',       // Bevorzugt: außerhalb uploads/
+            sys_get_temp_dir() . '/mlbkp-' . sanitize_key( parse_url( get_site_url(), PHP_URL_HOST ) ) . '/',
+            WP_CONTENT_DIR . '/uploads/media-lab-backup/temp/', // Fallback
+        ];
 
-        if ( ! is_dir( $dir ) ) {
-            wp_mkdir_p( $dir );
+        $dir = null;
+        foreach ( $candidates as $candidate ) {
+            if ( is_dir( $candidate ) || wp_mkdir_p( $candidate ) ) {
+                // Schreibtest
+                $test_file = $candidate . '.write-test';
+                if ( @file_put_contents( $test_file, '1' ) !== false ) {
+                    @unlink( $test_file );
+                    $dir = $candidate;
+                    break;
+                }
+            }
         }
 
-        // Vor direktem Zugriff schützen
+        if ( $dir === null ) {
+            throw new RuntimeException( 'Kein beschreibbares Temp-Verzeichnis gefunden.' );
+        }
+
+        // Vor direktem Webzugriff schützen
         $htaccess = $dir . '.htaccess';
         if ( ! file_exists( $htaccess ) ) {
             file_put_contents( $htaccess, "Order deny,allow\nDeny from all\n" );
