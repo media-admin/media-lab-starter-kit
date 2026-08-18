@@ -100,38 +100,71 @@ class MLBKP_Backup_Runner {
             // ── wp-content Backup ─────────────────────────────────────────────
             if ( in_array( $type, [ 'wpcontent', 'full' ], true ) ) {
                 $this->check_cancelled( $log_id );
-                $this->log( '📦 wp-content ZIP erstellen …' );
-                $extra_excludes = $this->parse_excludes();
-                $file_backup    = new MLBKP_File_Backup( $this->temp_dir );
-                $result         = $file_backup->create( 'wpcontent', $extra_excludes );
+                $extra_excludes  = $this->parse_excludes();
+                $file_method     = $this->settings['backup_file_method'] ?? 'zip';
 
-                $this->log( '   Größe: ' . MLBKP_Logger::format_bytes( $result['size'] ) );
+                if ( $file_method === 'stream' ) {
+                    $this->log( '📂 wp-content direkt via SFTP streamen (kein lokales ZIP) …' );
+                    $result = $sftp->stream_directory( WP_CONTENT_DIR, 'wpcontent', $extra_excludes, $log_id, [ $this, 'log' ] );
+                    $this->log( "   Dateien: {$result['file_count']} | Größe: " . MLBKP_Logger::format_bytes( $result['total_size'] ) );
+                    if ( ! empty( $result['skipped'] ) ) {
+                        $this->log( "   ⚠ {$result['skipped']} Datei(en) übersprungen." );
+                    }
+                    $this->log( "✅ wp-content gestreamt nach: {$result['remote_dir']}" );
+                    $sftp->apply_retention_dirs( 'wpcontent-', $retention );
+                    $uploaded_files[] = [ 'size' => $result['total_size'], 'filename' => basename( $result['remote_dir'] ) ];
+                    $remote_path = $result['remote_dir'];
+                } else {
+                    $this->log( '📦 wp-content ZIP erstellen …' );
+                    $file_backup = new MLBKP_File_Backup( $this->temp_dir, $log_id );
+                    $result      = $file_backup->create( 'wpcontent', $extra_excludes );
 
-                $this->check_cancelled( $log_id );
-                $this->log( '📤 wp-content ZIP hochladen …' );
-                $remote_path = $sftp->upload( $result['path'], $result['filename'] );
-                $uploaded_files[] = $result;
+                    $this->log( '   Größe: ' . MLBKP_Logger::format_bytes( $result['size'] ) );
+                    if ( ! empty( $result['skipped'] ) ) {
+                        $this->log( "   ⚠ {$result['skipped']} Datei(en) übersprungen." );
+                        foreach ( array_slice( $file_backup->get_skipped(), 0, 5 ) as $s ) {
+                            $this->log( "     – {$s}" );
+                        }
+                    }
 
-                $this->log( "✅ wp-content hochgeladen: {$remote_path}" );
-                $sftp->apply_retention( 'files-wpcontent-', $retention );
+                    $this->check_cancelled( $log_id );
+                    $this->log( '📤 wp-content ZIP hochladen …' );
+                    $remote_path = $sftp->upload( $result['path'], $result['filename'] );
+                    $uploaded_files[] = $result;
+
+                    $this->log( "✅ wp-content hochgeladen: {$remote_path}" );
+                    $sftp->apply_retention( 'files-wpcontent-', $retention );
+                }
             }
 
             // ── WP-Core Backup ────────────────────────────────────────────────
             if ( $type === 'wpcore' ) {
                 $this->check_cancelled( $log_id );
-                $this->log( '📦 WordPress-Core ZIP erstellen …' );
-                $file_backup = new MLBKP_File_Backup( $this->temp_dir );
-                $result      = $file_backup->create( 'wpcore', $this->parse_excludes() );
+                $file_method = $this->settings['backup_file_method'] ?? 'zip';
 
-                $this->log( '   Größe: ' . MLBKP_Logger::format_bytes( $result['size'] ) );
+                if ( $file_method === 'stream' ) {
+                    $this->log( '📂 WP-Core direkt via SFTP streamen …' );
+                    $result = $sftp->stream_directory( ABSPATH, 'wpcore', $this->parse_excludes(), $log_id, [ $this, 'log' ] );
+                    $this->log( "   Dateien: {$result['file_count']} | Größe: " . MLBKP_Logger::format_bytes( $result['total_size'] ) );
+                    $this->log( "✅ WP-Core gestreamt nach: {$result['remote_dir']}" );
+                    $sftp->apply_retention_dirs( 'wpcore-', $retention );
+                    $uploaded_files[] = [ 'size' => $result['total_size'], 'filename' => basename( $result['remote_dir'] ) ];
+                    $remote_path = $result['remote_dir'];
+                } else {
+                    $this->log( '📦 WordPress-Core ZIP erstellen …' );
+                    $file_backup = new MLBKP_File_Backup( $this->temp_dir, $log_id );
+                    $result      = $file_backup->create( 'wpcore', $this->parse_excludes() );
 
-                $this->check_cancelled( $log_id );
-                $this->log( '📤 WP-Core ZIP hochladen …' );
-                $remote_path = $sftp->upload( $result['path'], $result['filename'] );
-                $uploaded_files[] = $result;
+                    $this->log( '   Größe: ' . MLBKP_Logger::format_bytes( $result['size'] ) );
 
-                $this->log( "✅ WP-Core hochgeladen: {$remote_path}" );
-                $sftp->apply_retention( 'files-wpcore-', $retention );
+                    $this->check_cancelled( $log_id );
+                    $this->log( '📤 WP-Core ZIP hochladen …' );
+                    $remote_path = $sftp->upload( $result['path'], $result['filename'] );
+                    $uploaded_files[] = $result;
+
+                    $this->log( "✅ WP-Core hochgeladen: {$remote_path}" );
+                    $sftp->apply_retention( 'files-wpcore-', $retention );
+                }
             }
 
             // ── Gesamt-Größe ──────────────────────────────────────────────────
@@ -397,9 +430,10 @@ function mlbkp_get_settings(): array {
         'sftp_key_passphrase' => '',
 
         // Backup-Scope
-        'backup_database'  => '1',
-        'backup_wpcontent' => '1',
-        'backup_wpcore'    => '0',
+        'backup_database'    => '1',
+        'backup_wpcontent'   => '1',
+        'backup_wpcore'      => '0',
+        'backup_file_method' => 'zip', // 'zip' | 'stream'
 
         // Ausschlüsse
         'exclude_paths' => '',

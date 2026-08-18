@@ -358,6 +358,30 @@
         });
     });
 
+    // ── Hängende Jobs bereinigen ──────────────────────────────────────────────
+
+    $(document).on('click', '#mlb-cleanup-stuck', function () {
+        var $btn = $(this).prop('disabled', true).text('⏳ Bereinige …');
+        $.ajax({
+            url:    mlbkpData.ajaxUrl,
+            method: 'POST',
+            data:   { action: 'mlbkp_cleanup_stuck', nonce: mlbkpData.nonce },
+            success: function (res) {
+                var $result = $('#mlb-cleanup-result').show();
+                if (res.success) {
+                    setStatus($result, '✅ ' + res.data.message, 'ok');
+                    // Seite nach kurzer Verzögerung neu laden damit Logs aktualisiert werden
+                    setTimeout(function () { location.reload(); }, 1500);
+                } else {
+                    setStatus($result, '❌ Fehler.', 'error');
+                }
+            },
+            complete: function () {
+                $btn.prop('disabled', false).text('🧹 Hängende Jobs bereinigen');
+            }
+        });
+    });
+
     // ── Backup abbrechen ──────────────────────────────────────────────────────
 
     $(document).on('click', '#mlb-cancel-backup', function () {

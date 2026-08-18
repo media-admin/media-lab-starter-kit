@@ -112,6 +112,148 @@ class MLBKP_SFTP {
         return $remote_path;
     }
 
+    // ── Direktes SFTP-Streaming (ohne lokales ZIP) ────────────────────────────
+
+    /**
+     * Streamt ein lokales Verzeichnis direkt via SFTP auf die Storage Box.
+     * Kein lokaler ZIP-Schreibvorgang — umgeht Imunify360-Einschränkungen.
+     *
+     * @param string   $source_dir    Lokales Quellverzeichnis
+     * @param string   $type_label    'wpcontent' | 'wpcore'
+     * @param array    $excludes      Auszuschließende Pfade
+     * @param int      $log_id        Für Cancel-Checks
+     * @param callable $logger        Callback für Log-Ausgaben
+     * @return array{remote_dir: string, file_count: int, total_size: int, skipped: int}
+     * @throws RuntimeException
+     */
+    public function stream_directory( string $source_dir, string $type_label, array $excludes, int $log_id, callable $logger ): array {
+        $source_dir  = rtrim( $source_dir, '/' );
+        $timestamp   = gmdate( 'Y-m-d_H-i-s' );
+        $remote_dir  = $this->get_remote_site_dir() . '/' . $type_label . '-' . $timestamp;
+
+        $this->ensure_remote_dir( $remote_dir );
+
+        $base_name   = basename( $source_dir );
+        $file_count  = 0;
+        $total_size  = 0;
+        $skipped     = 0;
+        $batch_count = 0;
+
+        $default_excludes = [
+            'cache', 'wpo-cache', 'litespeed', 'uploads/media-lab-backup',
+            'mlbkp-temp', '.quarantine', '_imunify', 'imunify-antivirus',
+            '.git', '.DS_Store', 'node_modules', '.sass-cache', 'upgrade',
+        ];
+        $all_excludes = array_merge( $default_excludes, $excludes );
+
+        try {
+            $iterator = new RecursiveIteratorIterator(
+                new RecursiveDirectoryIterator( $source_dir, FilesystemIterator::SKIP_DOTS | FilesystemIterator::UNIX_PATHS ),
+                RecursiveIteratorIterator::SELF_FIRST
+            );
+        } catch ( \UnexpectedValueException $e ) {
+            throw new RuntimeException( "Quellverzeichnis nicht lesbar: {$source_dir}" );
+        }
+
+        foreach ( $iterator as $file ) {
+            try {
+                $file_path    = $file->getPathname();
+                $relative     = substr( $file_path, strlen( $source_dir ) + 1 );
+                $remote_path  = $remote_dir . '/' . $base_name . '/' . $relative;
+            } catch ( \UnexpectedValueException $e ) {
+                $skipped++;
+                continue;
+            }
+
+            // Ausschlüsse
+            if ( $this->should_exclude_path( $relative, $all_excludes ) ) continue;
+
+            if ( $file->isDir() ) {
+                $this->ensure_remote_dir( $remote_path );
+                continue;
+            }
+
+            if ( ! $file->isFile() ) continue;
+
+            // Lesbarkeit prüfen
+            if ( ! $file->isReadable() ) { $skipped++; continue; }
+            $fh = @fopen( $file_path, 'rb' );
+            if ( $fh === false ) { $skipped++; continue; }
+
+            // Datei streamen
+            try {
+                $size = $file->getSize();
+                if ( $size > 524288000 ) { fclose( $fh ); $skipped++; continue; } // >500MB
+
+                $this->ensure_remote_dir( dirname( $remote_path ) );
+
+                // Chunked upload direkt aus Datei-Handle
+                $chunk_size = 1024 * 1024; // 1MB Chunks
+                $offset     = 0;
+                $this->sftp->put( $remote_path, '', SFTP::SOURCE_STRING ); // Datei anlegen
+
+                while ( ! feof( $fh ) ) {
+                    $chunk = fread( $fh, $chunk_size );
+                    if ( $chunk === false ) break;
+                    $this->sftp->put( $remote_path, $chunk, SFTP::SOURCE_STRING, $offset );
+                    $offset += strlen( $chunk );
+                    unset( $chunk );
+                }
+
+                $file_count++;
+                $total_size += $size;
+                $batch_count++;
+
+            } finally {
+                fclose( $fh );
+            }
+
+            // Alle 100 Dateien: Cancel prüfen + Speicher freigeben
+            if ( $batch_count % 100 === 0 ) {
+                gc_collect_cycles();
+                if ( $log_id > 0 && MLBKP_Logger::is_cancelled( $log_id ) ) {
+                    throw new MLBKP_CancelledException();
+                }
+                // Fortschritt loggen
+                if ( $batch_count % 500 === 0 ) {
+                    $logger( "   📂 {$file_count} Dateien gestreamt (" . MLBKP_Logger::format_bytes( $total_size ) . ') …' );
+                }
+            }
+        }
+
+        return [
+            'remote_dir'  => $remote_dir,
+            'file_count'  => $file_count,
+            'total_size'  => $total_size,
+            'skipped'     => $skipped,
+        ];
+    }
+
+    /**
+     * Retention für verzeichnisbasierte Backups (Streaming-Methode).
+     * Löscht die ältesten Verzeichnisse mit dem gegebenen Prefix.
+     */
+    public function apply_retention_dirs( string $prefix, int $keep ): void {
+        if ( $keep <= 0 ) return;
+
+        $site_dir = $this->get_remote_site_dir();
+        $list     = $this->sftp->nlist( $site_dir );
+
+        if ( ! is_array( $list ) ) return;
+
+        $dirs = array_filter( $list, static fn( $f ) =>
+            ! in_array( $f, [ '.', '..' ], true ) && str_starts_with( $f, $prefix )
+        );
+
+        sort( $dirs ); // Älteste zuerst (Datum im Namen)
+
+        $to_delete = array_slice( $dirs, 0, max( 0, count( $dirs ) - $keep ) );
+
+        foreach ( $to_delete as $dir ) {
+            $this->sftp->delete( $site_dir . '/' . $dir, true ); // recursive
+        }
+    }
+
     // ── Retention ────────────────────────────────────────────────────────────
 
     public function apply_retention( string $prefix, int $keep ): void {
@@ -177,6 +319,15 @@ class MLBKP_SFTP {
     }
 
     // ── Private Hilfsmethoden ─────────────────────────────────────────────────
+
+    private function should_exclude_path( string $relative, array $excludes ): bool {
+        foreach ( $excludes as $exclude ) {
+            if ( $relative === $exclude ) return true;
+            if ( str_starts_with( $relative, $exclude . '/' ) ) return true;
+            if ( ! str_contains( $exclude, '/' ) && basename( $relative ) === $exclude ) return true;
+        }
+        return false;
+    }
 
     private function get_remote_site_dir(): string {
         if ( $this->remote_base === '/' ) {

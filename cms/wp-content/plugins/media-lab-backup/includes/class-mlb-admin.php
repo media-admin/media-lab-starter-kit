@@ -22,6 +22,7 @@ class MLBKP_Admin {
         add_action( 'wp_ajax_mlbkp_run_backup',        [ self::class, 'ajax_run_backup' ] );
         add_action( 'wp_ajax_mlbkp_check_status',      [ self::class, 'ajax_backup_status' ] );
         add_action( 'wp_ajax_mlbkp_cancel_backup',     [ self::class, 'ajax_cancel_backup' ] );
+        add_action( 'wp_ajax_mlbkp_cleanup_stuck',     [ self::class, 'ajax_cleanup_stuck' ] );
         // AJAX: SFTP-Verbindung testen
         add_action( 'wp_ajax_mlbkp_test_connection',   [ self::class, 'ajax_test_connection' ] );
         // AJAX: Einstellungen speichern
@@ -195,6 +196,41 @@ class MLBKP_Admin {
         ] );
     }
 
+    // ── AJAX: Hängende Jobs bereinigen ────────────────────────────────────────
+
+    public static function ajax_cleanup_stuck(): void {
+        check_ajax_referer( self::NONCE_ACTION, 'nonce' );
+
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( [ 'message' => 'Keine Berechtigung.' ] );
+        }
+
+        global $wpdb;
+
+        // Alle running-Einträge auf error setzen
+        $count = $wpdb->update(
+            MLBKP_Logger::get_table(),
+            [
+                'status'        => 'error',
+                'finished_at'   => current_time( 'mysql' ),
+                'error_message' => 'Manuell bereinigt.',
+            ],
+            [ 'status' => 'running' ]
+        );
+
+        // Lock löschen
+        delete_option( 'mlbkp_backup_running' );
+        delete_option( 'mlbkp_backup_running_time' );
+
+        // Alle Cancel-Flags löschen
+        $wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE 'mlbkp_cancel_%'" );
+
+        wp_send_json_success( [
+            'message' => "{$count} hängende(r) Job(s) bereinigt.",
+            'count'   => $count,
+        ] );
+    }
+
     // ── AJAX: Backup abbrechen ────────────────────────────────────────────────
 
     public static function ajax_cancel_backup(): void {
@@ -335,9 +371,11 @@ class MLBKP_Admin {
             'sftp_key_passphrase' => $kp,
 
             // Scope
-            'backup_database'  => ! empty( $_POST['backup_database'] )  ? '1' : '0',
-            'backup_wpcontent' => ! empty( $_POST['backup_wpcontent'] ) ? '1' : '0',
-            'backup_wpcore'    => ! empty( $_POST['backup_wpcore'] )    ? '1' : '0',
+            'backup_database'    => ! empty( $_POST['backup_database'] )  ? '1' : '0',
+            'backup_wpcontent'   => ! empty( $_POST['backup_wpcontent'] ) ? '1' : '0',
+            'backup_wpcore'      => ! empty( $_POST['backup_wpcore'] )    ? '1' : '0',
+            'backup_file_method' => in_array( $_POST['backup_file_method'] ?? 'zip', [ 'zip', 'stream' ], true )
+                                        ? $_POST['backup_file_method'] : 'zip',
 
             // Ausschlüsse
             'exclude_paths' => sanitize_textarea_field( $_POST['exclude_paths'] ?? '' ),

@@ -180,6 +180,29 @@ $suggested_folder = MLBKP_SFTP::get_suggested_folder();
 
         </div>
 
+        <div class="mlb-field" style="margin-top:20px;">
+            <label>Datei-Backup Methode</label>
+            <div class="mlb-method-options">
+                <label class="mlb-method-option">
+                    <input type="radio" name="backup_file_method" value="zip"
+                           <?php checked( ( $s['backup_file_method'] ?? 'zip' ), 'zip' ); ?> />
+                    <div class="mlb-method-card">
+                        <strong>📦 ZIP-Archiv</strong>
+                        <span>Standard — erstellt ein lokales ZIP und lädt es hoch. Schnell und kompakt.</span>
+                    </div>
+                </label>
+                <label class="mlb-method-option">
+                    <input type="radio" name="backup_file_method" value="stream"
+                           <?php checked( ( $s['backup_file_method'] ?? 'zip' ), 'stream' ); ?> />
+                    <div class="mlb-method-card">
+                        <strong>📂 Direktes SFTP-Streaming</strong>
+                        <span>Für restriktive Hosts (Imunify360 Kill Modus, Magenta) — streamt Dateien einzeln ohne lokalen ZIP-Schreibvorgang. Langsamer, aber funktioniert überall.</span>
+                    </div>
+                </label>
+            </div>
+            <p class="description" style="margin-top:8px;">ZIP empfohlen für die meisten Hoster. Streaming wählen wenn File-Backups mit ZIP immer timeout-en.</p>
+        </div>
+
         <div class="mlb-field mlb-excludes-field" style="margin-top:20px;">
             <label>Ausschlüsse <span style="font-weight:400;color:#646970;">(optional)</span></label>
 

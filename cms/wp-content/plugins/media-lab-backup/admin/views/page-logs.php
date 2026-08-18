@@ -5,7 +5,13 @@ $logs = MLBKP_Logger::get_logs( 100 );
 ?>
 
 <div class="mlb-card">
-    <h2 class="mlb-card-title">📋 Backup-Protokoll</h2>
+    <div class="mlb-logs-header">
+        <h2 class="mlb-card-title" style="margin-bottom:0 !important; border-bottom:none; padding-bottom:0;">📋 Backup-Protokoll</h2>
+        <button type="button" id="mlb-cleanup-stuck" class="button button-secondary">
+            🧹 Hängende Jobs bereinigen
+        </button>
+    </div>
+    <p id="mlb-cleanup-result" class="mlb-inline-status" style="margin:8px 0 16px; display:none;"></p>
 
     <?php if ( empty( $logs ) ): ?>
         <p class="mlb-empty">Noch keine Backups ausgeführt.</p>

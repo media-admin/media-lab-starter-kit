@@ -3,7 +3,7 @@
  * Plugin Name: Media Lab Backup
  * Plugin URI:  https://media-lab.at
  * Description: Automatische WordPress-Backups (Datenbank + Dateien) zur Hetzner Storage Box via SFTP. Unterstützt manuelle und geplante Backups mit konfigurierbarer Aufbewahrungszeit.
- * Version:     1.4.0
+ * Version:     1.5.0
  * Requires at least: 6.0
  * Requires PHP: 8.0
  * Author:      Media Lab Tritremmel GmbH
@@ -21,7 +21,7 @@ if ( defined( 'MLBKP_VERSION' ) ) {
 }
 
 // ─── Plugin-Konstanten ───────────────────────────────────────────────────────
-define( 'MLBKP_VERSION',       '1.4.0' );
+define( 'MLBKP_VERSION',       '1.5.0' );
 define( 'MLBKP_PLUGIN_FILE',   __FILE__ );
 define( 'MLBKP_PLUGIN_DIR',    plugin_dir_path( __FILE__ ) );
 define( 'MLBKP_PLUGIN_URL',    plugin_dir_url( __FILE__ ) );
