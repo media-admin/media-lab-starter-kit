@@ -1,5 +1,7 @@
 import { defineConfig } from 'vite';
 import path from 'path';
+import fs from 'fs';
+import * as sass from 'sass';
 import { fileURLToPath } from 'url';
 import autoprefixer from 'autoprefixer';
 
@@ -22,9 +24,33 @@ const pluginDir  = path.resolve(__dirname, 'cms/wp-content/plugins/media-lab-age
  *
  * @since 1.6.0
  */
+
+// NEU: kompiliert blocks.scss -> assets/dist/css/blocks.css nach jedem
+// Build. writeBundle läuft NACH emptyOutDir, die Datei überlebt also den
+// nächsten "npm run build"-Lauf (im Gegensatz zu vorher, manuell reinkopiert).
+const compileBlocksScssPlugin = {
+  name: 'compile-blocks-scss',
+  writeBundle() {
+    const src = path.resolve(pluginDir, 'assets/src/scss/blocks.scss');
+    const dst = path.resolve(pluginDir, 'assets/dist/css/blocks.css');
+
+    if (!fs.existsSync(src)) {
+      console.warn('[compile-blocks-scss] blocks.scss nicht gefunden:', src);
+      return;
+    }
+
+    const result = sass.compile(src, { style: 'compressed', sourceMap: false });
+    fs.mkdirSync(path.dirname(dst), { recursive: true });
+    fs.writeFileSync(dst, result.css);
+    console.log('[compile-blocks-scss] ✓ blocks.css kompiliert');
+  },
+};
+
 export default defineConfig({
   root: path.resolve(pluginDir, 'assets/src'),
   base: '/wp-content/plugins/media-lab-agency-core/assets/dist/',
+
+  plugins: [compileBlocksScssPlugin],
 
   build: {
     outDir:      path.resolve(pluginDir, 'assets/dist'),

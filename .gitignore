@@ -190,3 +190,7 @@ deploy-config.local.*
 # ============================================
 /scripts/heartbeat-runner.config.php
 /scripts/heartbeat-runner.log
+cms/wp-content/mlbkp-temp/
+cms/wp-content/themes/*.zip
+cms/wp-content/mlbkp-temp/
+cms/wp-content/themes/*.zip
