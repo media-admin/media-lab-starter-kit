@@ -115,7 +115,14 @@ class MLBKP_Database_Backup {
 
         $args[] = escapeshellarg( $dbname );
 
-        $cmd = implode( ' ', $args );
+        // `timeout`-Kommando vorschalten falls verfügbar (verhindert ewig hängenden mysqldump)
+        $timeout_cmd = '';
+        $which = @exec( 'which timeout 2>/dev/null' );
+        if ( $which ) {
+            $timeout_cmd = 'timeout 300 '; // max 5 Minuten für mysqldump
+        }
+
+        $cmd = $timeout_cmd . implode( ' ', $args );
 
         // proc_open für sauberes stdout/stderr-Handling
         if ( ! function_exists( 'proc_open' ) ) {
@@ -123,9 +130,9 @@ class MLBKP_Database_Backup {
         }
 
         $spec = [
-            0 => [ 'pipe', 'r' ],  // stdin
-            1 => [ 'file', $filepath, 'w' ],  // stdout → direkt in Datei
-            2 => [ 'pipe', 'w' ],  // stderr
+            0 => [ 'pipe', 'r' ],
+            1 => [ 'file', $filepath, 'w' ],
+            2 => [ 'pipe', 'w' ],
         ];
 
         $proc = proc_open( $cmd, $spec, $pipes );
@@ -135,7 +142,36 @@ class MLBKP_Database_Backup {
         }
 
         fclose( $pipes[0] );
-        $stderr   = stream_get_contents( $pipes[2] );
+
+        // stderr non-blocking lesen mit eigenem Timeout (300s)
+        stream_set_blocking( $pipes[2], false );
+        $stderr    = '';
+        $start     = time();
+        $max_wait  = 300;
+
+        while ( time() - $start < $max_wait ) {
+            $status = proc_get_status( $proc );
+            if ( ! $status['running'] ) break;
+
+            $chunk = fread( $pipes[2], 4096 );
+            if ( $chunk !== false ) $stderr .= $chunk;
+            usleep( 200000 ); // 200ms warten
+        }
+
+        // Falls Prozess noch läuft → zwangsbeenden
+        $status = proc_get_status( $proc );
+        if ( $status['running'] ) {
+            proc_terminate( $proc, 9 );
+            fclose( $pipes[2] );
+            proc_close( $proc );
+            throw new RuntimeException(
+                'mysqldump Timeout nach 300 Sekunden — Prozess abgebrochen. PHP-Fallback wird verwendet.'
+            );
+        }
+
+        // Restlichen stderr lesen
+        stream_set_blocking( $pipes[2], true );
+        $stderr   .= stream_get_contents( $pipes[2] );
         fclose( $pipes[2] );
         $exit_code = proc_close( $proc );
 

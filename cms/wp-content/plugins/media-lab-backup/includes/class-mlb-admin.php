@@ -226,14 +226,17 @@ class MLBKP_Admin {
                     }
                 }
 
-                // Chunk-Timeout: laufender Chunk seit > 15 Minuten → Fehler + weiter
+                // Chunk-Timeout: DB-Chunks 6 Min, Datei-Chunks 20 Min
                 foreach ( $session['chunks'] as &$chunk ) {
                     if ( $chunk['status'] === 'running' ) {
-                        $started = get_option( 'mlbkp_chunk_started_' . $session_id . '_' . $chunk['id'] );
-                        if ( $started && ( time() - (int) $started ) > 900 ) {
+                        $started     = get_option( 'mlbkp_chunk_started_' . $session_id . '_' . $chunk['id'] );
+                        $max_seconds = $chunk['type'] === 'database' ? 360 : 1200; // 6 vs 20 Minuten
+                        $label       = $chunk['type'] === 'database' ? '6 Minuten' : '20 Minuten';
+
+                        if ( $started && ( time() - (int) $started ) > $max_seconds ) {
                             MLBKP_Session::update_chunk( $session, $chunk['id'], [
                                 'status' => 'error',
-                                'error'  => 'Chunk-Timeout nach 15 Minuten.',
+                                'error'  => "Chunk-Timeout nach {$label}.",
                             ] );
                             MLBKP_Session::save( $session );
                             MLBKP_Scheduler::schedule_chunk( $session_id );
