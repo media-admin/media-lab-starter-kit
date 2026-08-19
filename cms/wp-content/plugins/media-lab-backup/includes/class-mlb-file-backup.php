@@ -46,7 +46,8 @@ class MLBKP_File_Backup {
         'wp-content/wpo-cache',
         'wp-content/litespeed',
         '.git',
-        '.DS_Store',
+        '.DS_Store',         // macOS Finder-Metadaten
+        '__MACOSX',          // macOS Archiv-Metadaten
         'node_modules',
         '.sass-cache',
         'wp-content/upgrade',
@@ -189,7 +190,11 @@ class MLBKP_File_Backup {
                     continue;
                 }
 
-                $zip->addFile( $file_path, $zip_entry );
+                // Datei hinzufügen — Rückgabewert prüfen
+                if ( ! $zip->addFile( $file_path, $zip_entry ) ) {
+                    $this->skipped[] = $relative . ' (addFile fehlgeschlagen)';
+                    continue;
+                }
 
                 // Komprimierungsmethode setzen: CM_STORE = kein Overhead
                 $zip->setCompressionName( $zip_entry, self::ZIP_COMPRESSION_METHOD );
@@ -210,6 +215,12 @@ class MLBKP_File_Backup {
         }
 
         $close_result = $zip->close();
+
+        // Leeres Verzeichnis: keine Dateien hinzugefügt → ZIP wurde von close() gelöscht
+        if ( $file_count === 0 ) {
+            @unlink( $zip_path ); // sicherstellen dass keine leere Datei zurückbleibt
+            throw new RuntimeException( "Verzeichnis ist leer (keine sicherungsfähigen Dateien): {$source}" );
+        }
 
         // ── Imunify360-Check ──────────────────────────────────────────────────
         // Imunify360 benennt ZIP-Dateien während der Erstellung um (fügt zufällige
@@ -246,13 +257,15 @@ class MLBKP_File_Backup {
      * Prüft ob ein relativer Pfad von der Sicherung ausgeschlossen werden soll.
      */
     private function should_exclude( string $relative_path, array $excludes ): bool {
+        $basename = basename( $relative_path );
+
+        // macOS Resource-Fork-Dateien (._filename) immer ausschließen
+        if ( str_starts_with( $basename, '._' ) ) return true;
+
         foreach ( $excludes as $exclude ) {
-            if ( $relative_path === $exclude || str_starts_with( $relative_path, $exclude . '/' ) ) {
-                return true;
-            }
-            if ( ! str_contains( $exclude, '/' ) && basename( $relative_path ) === $exclude ) {
-                return true;
-            }
+            if ( $relative_path === $exclude ) return true;
+            if ( str_starts_with( $relative_path, $exclude . '/' ) ) return true;
+            if ( ! str_contains( $exclude, '/' ) && $basename === $exclude ) return true;
         }
         return false;
     }

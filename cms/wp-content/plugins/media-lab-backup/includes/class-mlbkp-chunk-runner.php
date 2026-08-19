@@ -104,22 +104,33 @@ class MLBKP_Chunk_Runner {
 
         } catch ( \Throwable $e ) {
             $error = $e->getMessage();
-            $this->log( "❌ Fehler: {$error}" );
+
+            // Leeres Verzeichnis → als 'skipped' markieren statt 'error'
+            $is_empty_dir = str_contains( $error, 'ist leer' );
+            $chunk_status = $is_empty_dir ? 'skipped' : 'error';
+
+            if ( $is_empty_dir ) {
+                $this->log( "⏭ Übersprungen: {$chunk['label']} (leeres Verzeichnis)" );
+            } else {
+                $this->log( "❌ Fehler: {$error}" );
+            }
 
             MLBKP_Session::update_chunk( $this->session, $chunk['id'], [
-                'status' => 'error',
-                'error'  => $error,
+                'status' => $chunk_status,
+                'error'  => $is_empty_dir ? '' : $error,
             ] );
 
             // Bei DB-Fehler oder kritischem Fehler: Session abbrechen
-            if ( $chunk['type'] === 'database' ) {
+            if ( $chunk['type'] === 'database' && ! $is_empty_dir ) {
                 MLBKP_Session::finish( $this->session, 'error', $error );
                 $this->maybe_send_notification( false, $error );
                 return;
             }
 
             // Bei Datei-Chunk: Warnung aber weitermachen
-            $this->log( "⚠ Chunk übersprungen, nächster Chunk wird gestartet." );
+            if ( ! $is_empty_dir ) {
+                $this->log( "⚠ Chunk übersprungen, nächster Chunk wird gestartet." );
+            }
         }
 
         MLBKP_Session::save( $this->session );
