@@ -15,6 +15,21 @@ ist hierbei **kein Feature verloren gegangen**, nur die Zählung war falsch.
 
 ---
 
+## [1.9.2] - 2026-08-19
+
+### media-lab-seo 1.9.2
+
+#### Fixed
+- Wöchentlicher Report nutzte für Analytics-Daten und die angezeigte
+  Datumsspanne einen hart codierten 28-Tage-Zeitraum statt der
+  konfigurierten `mlt_default_range`-Einstellung, wodurch GSC- und
+  Analytics-Zahlen bei geändertem Standard-Zeitraum aus verschiedenen
+  Perioden stammten. Zeitraum wird jetzt einmalig über
+  `MLT_GSC_API::get_active_range()` bestimmt und für GSC, Analytics
+  und die Header-Anzeige einheitlich verwendet.
+  
+---
+
 ## [1.9.1] - 2026-08-13
 
 ### media-lab-seo 1.9.1

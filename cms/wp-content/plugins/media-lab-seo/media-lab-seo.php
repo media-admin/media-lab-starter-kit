@@ -3,9 +3,9 @@
  * Plugin Name: Media Lab SEO Toolkit
  * Plugin URI:  https://github.com/media-admin/media-lab-starter-kit
  * Description: SEO-Toolkit für Media Lab Kundenprojekte. GSC-Integration, GA4 OAuth, Schema.org, Breadcrumbs, Redirect-Manager, Consent-aware Analytics und wöchentlicher Report-Mailer.
- * Version:     1.9.1
+ * Version:     1.9.2
  * Author:      Media Lab
- * Author URI:  https://medialab.at
+ * Author URI:  https://media-lab.at
  * Text Domain: media-lab-seo
  * Domain Path: /languages
  * Requires at least: 6.0
@@ -14,7 +14,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define( 'MLT_VERSION',  '1.9.1' );
+define( 'MLT_VERSION',  '1.9.2' );
 define( 'MLT_FILE',     __FILE__ );
 define( 'MLT_PATH',     plugin_dir_path( __FILE__ ) );
 define( 'MLT_URL',      plugin_dir_url( __FILE__ ) );

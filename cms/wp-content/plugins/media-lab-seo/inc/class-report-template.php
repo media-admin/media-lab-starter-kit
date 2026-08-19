@@ -15,8 +15,14 @@ class MLT_Report_Template {
         $url       = home_url( '/' );
         $week      = wp_date( 'W' );
         $year      = wp_date( 'Y' );
-        $date_from = wp_date( 'd.m.Y', strtotime( '-28 days' ) );
-        $date_to   = wp_date( 'd.m.Y', strtotime( '-2 days' ) );
+
+        // Zeitraum kommt jetzt aus den echten Report-Daten statt eigener Berechnung
+        $range       = $data['range'] ?? [];
+        $range_start = $range['start'] ?? gmdate( 'Y-m-d', strtotime( '-28 days' ) );
+        $range_end   = $range['end']   ?? gmdate( 'Y-m-d', strtotime( '-2 days' ) );
+        $date_from   = wp_date( 'd.m.Y', strtotime( $range_start ) );
+        $date_to     = wp_date( 'd.m.Y', strtotime( $range_end ) );
+        $range_days  = (int) round( ( strtotime( $range_end ) - strtotime( $range_start )
 
         $gsc      = $data['gsc_overview']   ?? [];
         $queries  = $data['gsc_queries']    ?? [];
@@ -44,8 +50,9 @@ class MLT_Report_Template {
         <td style="background:#1a1a2e;border-radius:8px 8px 0 0;padding:28px 32px">
             <h1 style="margin:0 0 4px;font-size:22px;font-weight:700;color:#fff"><?php echo esc_html( $site ); ?></h1>
             <p style="margin:0;font-size:13px;color:#9ca3af">
-                Wöchentlicher SEO-Report &nbsp;·&nbsp; KW <?php echo (int) $week; ?>/<?php echo (int) $year; ?>
-                &nbsp;·&nbsp; <?php echo esc_html( $date_from ); ?> – <?php echo esc_html( $date_to ); ?>
+                SEO Report &nbsp;·&nbsp; KW <?php echo (int) $week; ?>/<?php echo (int) $year; ?>
+                &nbsp;·&nbsp; Zeitraum: letzte <?php echo $range_days; ?> Tage
+                <span style="color:#6b7280">(<?php echo esc_html( $date_from ); ?> – <?php echo esc_html( $date_to ); ?>)</span>
             </p>
         </td>
     </tr>

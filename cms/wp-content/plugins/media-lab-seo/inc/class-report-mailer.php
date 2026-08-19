@@ -58,27 +58,33 @@ class MLT_Report_Mailer {
     }
     private function collect_data() : array {
         $data = [
+            'range'             => [],
             'gsc_overview'      => [],
             'gsc_queries'       => [],
             'gsc_pages'         => [],
             'analytics'         => [],
             'analytics_sources' => [],
         ];
+
+        // Einheitlicher Zeitraum für GSC UND Analytics, aus den Einstellungen
+        [ 'start' => $start, 'end' => $end ] = MLT_GSC_API::get_active_range();
+        $data['range'] = [ 'start' => $start, 'end' => $end ];
+
         // GSC-Daten
         $gsc = MLT_GSC_API::instance();
         if ( $gsc->is_connected() && $gsc->is_configured() ) {
-            $data['gsc_overview'] = $gsc->get_overview();
-            $data['gsc_queries']  = $gsc->get_top_queries( 10 );
-            $data['gsc_pages']    = $gsc->get_top_pages( 10 );
+            $data['gsc_overview'] = $gsc->get_overview( $start, $end );
+            $data['gsc_queries']  = $gsc->get_top_queries( 10, $start, $end );
+            $data['gsc_pages']    = $gsc->get_top_pages( 10, $start, $end );
         }
+
         // Analytics-Daten
         $adapter = MLT_Analytics_Adapter_Factory::get();
         if ( $adapter ) {
-            $start = gmdate( 'Y-m-d', strtotime( '-28 days' ) );
-            $end   = gmdate( 'Y-m-d', strtotime( '-2 days' ) );
             $data['analytics']         = $adapter->get_overview( $start, $end );
             $data['analytics_sources'] = $adapter->get_sources( $start, $end, 5 );
         }
+
         return $data;
     }
 }
