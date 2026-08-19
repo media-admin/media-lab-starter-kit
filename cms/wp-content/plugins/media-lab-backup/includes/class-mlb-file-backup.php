@@ -209,7 +209,7 @@ class MLBKP_File_Backup {
             }
         }
 
-        $zip->close();
+        $close_result = $zip->close();
 
         // ── Imunify360-Check ──────────────────────────────────────────────────
         // Imunify360 benennt ZIP-Dateien während der Erstellung um (fügt zufällige
@@ -223,9 +223,19 @@ class MLBKP_File_Backup {
                 $renamed = $matches[0];
 
                 if ( ! @rename( $renamed, $zip_path ) ) {
-                    // rename() nicht möglich → Datei unter dem gefundenen Namen hochladen
                     $zip_path = $renamed;
                 }
+            } elseif ( $close_result === false ) {
+                // ZipArchive::close() ist fehlgeschlagen (Disk voll, Datei gesperrt etc.)
+                @unlink( $zip_path );
+                throw new RuntimeException(
+                    "ZipArchive::close() fehlgeschlagen — Datei möglicherweise gesperrt oder Disk voll: {$zip_path}"
+                );
+            } else {
+                // Datei fehlt ohne bekannten Grund
+                throw new RuntimeException(
+                    "ZIP-Datei nach close() nicht vorhanden: {$zip_path}"
+                );
             }
         }
 

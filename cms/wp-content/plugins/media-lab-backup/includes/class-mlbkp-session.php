@@ -240,7 +240,7 @@ class MLBKP_Session {
         return $chunks;
     }
 
-    private static function scan_uploads_chunks( int $id, string $uploads_dir, array $excludes ): array {
+    private static function scan_uploads_chunks( int &$id, string $uploads_dir, array $excludes ): array {
         $chunks  = [];
         $entries = @scandir( $uploads_dir );
         if ( ! $entries ) return [];
@@ -256,6 +256,16 @@ class MLBKP_Session {
                 if ( in_array( $entry, self::SKIP_DIRS, true ) ) continue;
                 if ( self::is_excluded( "uploads/{$entry}", $excludes ) ) continue;
 
+                // Jahres-Ordner (z.B. 2021, 2022) → nach Monaten aufteilen
+                if ( preg_match( '/^\d{4}$/', $entry ) ) {
+                    $month_chunks = self::scan_year_by_month( $id, $full_path, "wp-content/uploads/{$entry}", $excludes );
+                    if ( ! empty( $month_chunks ) ) {
+                        $chunks = array_merge( $chunks, $month_chunks );
+                        $id    += count( $month_chunks );
+                        continue;
+                    }
+                }
+
                 $size     = self::estimate_dir_size( $full_path );
                 $chunks[] = self::make_chunk( $id++, 'dir', "wp-content/uploads/{$entry}", $full_path, $size );
             } else {
@@ -266,6 +276,48 @@ class MLBKP_Session {
         // Dateien direkt in uploads/ (nicht in Unterverzeichnissen)
         if ( $has_root_files && ! self::is_excluded( 'uploads', $excludes ) ) {
             $chunks[] = self::make_chunk( $id++, 'dir_files_only', 'wp-content/uploads (Dateien)', $uploads_dir );
+        }
+
+        return $chunks;
+    }
+
+    /**
+     * Splittet einen Jahres-Ordner nach Monaten auf (WordPress-Standard: YYYY/MM/).
+     * Falls keine Monats-Unterordner vorhanden, wird null zurückgegeben.
+     */
+    private static function scan_year_by_month( int &$id, string $year_dir, string $label_prefix, array $excludes ): array {
+        $entries = @scandir( $year_dir );
+        if ( ! $entries ) return [];
+
+        $chunks         = [];
+        $has_root_files = false;
+        $has_month_dirs = false;
+
+        foreach ( $entries as $entry ) {
+            if ( in_array( $entry, [ '.', '..' ], true ) ) continue;
+            $full_path = $year_dir . '/' . $entry;
+
+            if ( is_dir( $full_path ) && preg_match( '/^\d{2}$/', $entry ) ) {
+                // Monats-Ordner (01-12)
+                $has_month_dirs = true;
+                if ( self::is_excluded( "{$label_prefix}/{$entry}", $excludes ) ) continue;
+                $size     = self::estimate_dir_size( $full_path );
+                $chunks[] = self::make_chunk( $id++, 'dir', "{$label_prefix}/{$entry}", $full_path, $size );
+            } elseif ( is_dir( $full_path ) ) {
+                // Nicht-Monats-Unterordner → eigener Chunk
+                $size     = self::estimate_dir_size( $full_path );
+                $chunks[] = self::make_chunk( $id++, 'dir', "{$label_prefix}/{$entry}", $full_path, $size );
+            } else {
+                $has_root_files = true;
+            }
+        }
+
+        // Wenn keine Monats-Ordner → leere Liste zurückgeben (Fallback auf Jahres-Chunk)
+        if ( ! $has_month_dirs ) return [];
+
+        // Dateien direkt im Jahres-Ordner
+        if ( $has_root_files ) {
+            $chunks[] = self::make_chunk( $id++, 'dir_files_only', "{$label_prefix} (Dateien)", $year_dir );
         }
 
         return $chunks;

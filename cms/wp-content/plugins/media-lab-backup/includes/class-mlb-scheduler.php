@@ -80,12 +80,13 @@ class MLBKP_Scheduler {
 
     public static function run_scheduled_backup(): void {
         $settings = mlbkp_get_settings();
+        $type     = self::determine_backup_type( $settings );
 
-        // Backup-Typ aus Einstellungen bestimmen
-        $type = self::determine_backup_type( $settings );
+        // Session + Chunk-Queue erstellen (genau wie manuelles Backup)
+        $session = MLBKP_Session::create( $type, 'cron', $settings );
 
-        $runner = new MLBKP_Backup_Runner();
-        $runner->run( $type, 'cron' );
+        // Ersten Chunk sofort starten
+        self::schedule_chunk( $session['id'] );
     }
 
     public static function add_cron_intervals( array $schedules ): array {
