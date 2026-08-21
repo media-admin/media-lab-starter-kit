@@ -66,35 +66,5 @@ Nur bei Bedarf einsetzen (Verdacht auf UA-Blocking, z. B. wenn der Timeout-Fix a
 
 ## Changelog
 
-## Changelog
-
-### 1.24.0
-- Neue Blöcke `medialab/facebook-video` und `medialab/social-embed`: Facebook-Video- und Instagram-Beitrag-Embeds über Zwei-Klick-Consent-Gate (Komfort-Kategorie), kein Datentransfer an Meta vor Einwilligung.
-- YouTube-Embeds (nativer `core/embed`-Block) werden jetzt automatisch über einen `render_block`-Filter hinter demselben Consent-Gate versteckt - kein neues Redakteur-Feld nötig, betrifft bestehende Embeds site-weit.
-- Fix: `vite.config.blocks.js` hat `blocks.scss` bisher nicht kompiliert (kein Build-Schritt hinterlegt, `emptyOutDir` löschte die manuell erzeugte `blocks.css` bei jedem Build). Jetzt automatisiert über `writeBundle`-Hook.
-
-### 1.23.0
-
-### 1.22.0
-- Suche: Suchbegriff wird jetzt in Titel und Excerpt der Ergebnisse per `<mark>` hervorgehoben.
-- Suche: Excerpt zeigt jetzt einen Ausschnitt um die tatsächliche Fundstelle im Content, statt immer nur den Textanfang.
-- Suche: findet jetzt auch Produkte über WooCommerce-Attribute (globale `pa_*`-Taxonomien und lokale/benutzerdefinierte Attribute) sowie über Konfigurator-Optionen (`config_steps` → `options`). Reine Attribut-/Options-Treffer zeigen "Attribut: Wert" statt eines Content-Ausschnitts.
-- Fix: `post_type`-Filter griff bei mehreren durchsuchten Post-Types nicht - `wp_magic_quotes()` (WP-Kernverhalten) hatte den `$_POST`-Wert vor `json_decode()` escaped, der Fallback parste den kaputten String nicht sauber. `wp_unslash()` vor `json_decode()` ergänzt.
-
-### 1.21.0
-- Neue Einstellung "Suche in Navigation" (Logo / Globale Einstellungen → UI-Features, Standard: an). Zeigt ein Such-Icon im Hauptmenü, das ein Such-Overlay mit der bestehenden Ajax-Search-Komponente öffnet.
-
-### 1.20.1
-- WCAG-2.2.2-Fokus-Pause im Logo-Slider ergänzt (`ml-logo-slider.js`, Theme-seitig): Autoplay pausiert automatisch bei Tastatur-/Screenreader-Fokus auf ein Element innerhalb des Sliders. Die entfernte `assets/js/block-logo-slider.js` enthielt dieses Verhalten, die Theme-seitige Neuimplementierung hatte es nie übernommen (war laut damaligem Code-Kommentar durch einen Lade-Bug ohnehin nie aktiv, also keine neue Regression, aber bis jetzt ein fehlendes Feature)
-- Veraltete Kommentarverweise in `assets/css/block-slider.css` auf die gelöschte `assets/js/block-slider.js` korrigiert - verweisen jetzt auf `ml-slider.js` (Theme). Rein kosmetisch, keine Funktionsänderung
-
-### 1.20.0
-- Heartbeat Monitoring hinzugefügt (Push-basiertes Uptime-Monitoring, Better Stack / Healthchecks.io kompatibel)
-- Leere, ungenutzte `inc/security.php` entfernt
-
-### 1.18.0
-- WP All Import: Timeout-Fix (`pmxi_image_download_timeout`) und `custom_file_download()`-Helper gegen UA-basiertes Blocking ergänzt. Backport aus dem Janecka-Projekt.
-
-## Version
-
-1.24.0
+Siehe [CHANGELOG.md](./CHANGELOG.md) für die vollständige Versionshistorie.
+Aktuelle Version: siehe `Version:`-Header in `media-lab-agency-core.php`.
