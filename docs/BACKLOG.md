@@ -71,9 +71,48 @@ CHANGELOG.md + composer.json/lock + uninstall.php):
 - `media-lab-agency-core`: hat weiterhin nur README, kein eigenes
   `CHANGELOG.md` (Changelog steht inline in der README) — nicht angefasst,
   da außerhalb des Scopes von Paket D
-- `composer.json`/`composer.lock`/`uninstall.php` fehlen weiterhin bei den
-  meisten Plugins (nur `media-lab-backup` hat sie vollständig) — dieser Teil
-  der Struktur-Standardisierung wurde nicht angegangen, nur README/CHANGELOG
+- ~~`composer.json`/`composer.lock`/`uninstall.php` bei allen Plugins außer
+  `media-lab-backup` nachziehen~~ → **composer.json/lock: geprüft
+  (21.08.2026), bei keinem der Plugins tatsächlich benötigt** — kein
+  Plugin außer `media-lab-backup` ruft `vendor/autoload.php` auf;
+  insbesondere `media-lab-seo`s GA4-Service-Account-JWT (RS256) läuft
+  komplett über PHP-native `openssl_sign()`, keine externe
+  JWT-Bibliothek. Statt leerer Attrappen-Dateien: explizite
+  "Dependencies"-Sektion in jeder README ergänzt (`media-lab-agency-core`,
+  `media-lab-seo`, `media-lab-woocommerce`, `media-lab-bookings`,
+  `media-lab-events`, `media-lab-project-starter`) — inklusive
+  `media-lab-woocommerce`, wo trotz der hier in Paket E bereits
+  vermerkten Entscheidung nie ein entsprechender Hinweis in die README
+  selbst übertragen worden war.
+  **`uninstall.php`: ergänzt (21.08.2026)** für alle sechs Plugins, Fußabdruck
+  jeweils gegen den echten Code verifiziert (keine geratenen Options-/
+  Tabellen-Namen):
+  - `media-lab-events`, `media-lab-project-starter`: kein eigener State
+    (nur CPTs/Taxonomien/ACF-JSON) — reine Stub-Datei mit auskommentiertem
+    Opt-in-Block für den Fall, dass die Inhalte doch mitgelöscht werden
+    sollen.
+  - `media-lab-bookings`: zwei Optionen, ein Single-Event-Cron
+    (`wp_unschedule_hook`), Buchungen/Standorte bewusst nicht gelöscht.
+  - `media-lab-agency-core`: pragmatischer Wildcard-Ansatz über die drei
+    im Plugin verwendeten Options-Präfixe (`medialab_`, `options_medialab_`
+    für ACF-Options-Page-Felder, `mla_` für den Security-Scanner —
+    abweichender Präfix, beim Durchsuchen entdeckt). Activity-Log-Tabelle
+    wird gelöscht, die DSGVO-Consent-Log-Tabelle (`wp_mlt_consent_log`)
+    **bewusst nicht** — sie ist Nachweis, wer wann welchem Cookie-Consent
+    zugestimmt hat.
+  - `media-lab-seo`: Wildcard über `mlt_` sowie das davon abweichende
+    `medialab_seo_`-Präfix der Report-Zeitplan-Optionen (ebenfalls beim
+    Durchsuchen entdeckt). Eigene `mlt_redirects`/`mlt_404_log`-Tabellen
+    werden gelöscht (operative Daten, kein DSGVO-Nachweis).
+  - `media-lab-woocommerce`: Wildcard über `mlw_`, zwei Wunschlisten-
+    User-Meta-Keys gelöscht, `mlw_inquiry`-Kundenanfragen bewusst nicht
+    gelöscht (echte Geschäftsdaten, wie bei den Bookings).
+
+  Durchgängiges Prinzip über alle sechs: Plugin-eigener technischer State
+  (Optionen, Transients, Cron, Cache-/Log-Tabellen ohne Nachweis-Charakter)
+  wird entfernt; echte Geschäfts-/Kundendaten (CPT-Content, DSGVO-Nachweise)
+  bleiben stehen, mit auskommentiertem Opt-in-Block falls doch gewünscht.
+
 
 ### 🆕 Zusätzlich gefunden (nicht im ursprünglichen Backlog)
 
