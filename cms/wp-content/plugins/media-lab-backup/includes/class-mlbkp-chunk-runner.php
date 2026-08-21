@@ -100,6 +100,7 @@ class MLBKP_Chunk_Runner {
 
         } catch ( MLBKP_CancelledException $e ) {
             MLBKP_Session::finish( $this->session, 'cancelled' );
+            $this->cleanup_temp_dir();
             return;
 
         } catch ( \Throwable $e ) {
@@ -124,6 +125,7 @@ class MLBKP_Chunk_Runner {
             if ( $chunk['type'] === 'database' && ! $is_empty_dir ) {
                 MLBKP_Session::finish( $this->session, 'error', $error );
                 $this->maybe_send_notification( false, $error );
+                $this->cleanup_temp_dir();
                 return;
             }
 
@@ -289,6 +291,9 @@ class MLBKP_Chunk_Runner {
         // E-Mail
         $this->maybe_send_notification( $status === 'success', $this->session['error_message'] ?? '' );
 
+        // Temp-Verzeichnis dieser Session entfernen
+        $this->cleanup_temp_dir();
+
         // Alte Sessions in wp_options bereinigen
         MLBKP_Session::cleanup_old_sessions( 20 );
     }
@@ -296,6 +301,22 @@ class MLBKP_Chunk_Runner {
     // ── Hilfsmethoden ─────────────────────────────────────────────────────────
 
     private function prepare_temp_dir(): string {
+        $base = $this->find_base_temp_dir();
+
+        // Eigenes Unterverzeichnis pro Session — verhindert, dass Dateien dieser
+        // Session von einem parallel laufenden Job (anderer Chunk-Runner oder
+        // Legacy-Runner) gelöscht werden. Siehe BACKLOG.md.
+        $dir = $base . 'session-' . $this->session['id'] . '/';
+
+        if ( ! is_dir( $dir ) && ! wp_mkdir_p( $dir ) ) {
+            // Fallback: gemeinsames Basisverzeichnis (sollte praktisch nie eintreten)
+            return $base;
+        }
+
+        return $dir;
+    }
+
+    private function find_base_temp_dir(): string {
         $candidates = [
             WP_CONTENT_DIR . '/mlbkp-temp/',
             sys_get_temp_dir() . '/mlbkp-' . sanitize_key( parse_url( get_site_url(), PHP_URL_HOST ) ) . '/',
@@ -307,7 +328,6 @@ class MLBKP_Chunk_Runner {
                 $test = $dir . '.write-test';
                 if ( @file_put_contents( $test, '1' ) !== false ) {
                     @unlink( $test );
-                    // .htaccess Schutz
                     if ( ! file_exists( $dir . '.htaccess' ) ) {
                         file_put_contents( $dir . '.htaccess', "Order deny,allow\nDeny from all\n" );
                     }
@@ -317,6 +337,26 @@ class MLBKP_Chunk_Runner {
         }
 
         return sys_get_temp_dir() . '/';
+    }
+
+    /**
+     * Entfernt das Session-Temp-Verzeichnis inkl. evtl. verbliebener Dateien.
+     * Läuft am Ende der Session bzw. bei Abbruch/Fehler — nicht nach jedem
+     * einzelnen Chunk, da nachfolgende Chunks dasselbe Verzeichnis weiterverwenden.
+     */
+    private function cleanup_temp_dir(): void {
+        if ( ! is_dir( $this->temp_dir ) ) return;
+
+        $items = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator( $this->temp_dir, FilesystemIterator::SKIP_DOTS ),
+            RecursiveIteratorIterator::CHILD_FIRST
+        );
+
+        foreach ( $items as $item ) {
+            $item->isDir() ? @rmdir( $item->getPathname() ) : @unlink( $item->getPathname() );
+        }
+
+        @rmdir( $this->temp_dir );
     }
 
     private function sanitize_label( string $label ): string {

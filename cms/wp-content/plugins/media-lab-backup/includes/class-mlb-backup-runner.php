@@ -16,13 +16,14 @@ class MLBKP_Backup_Runner {
     const LOCK_TIMEOUT = 300;
 
     private array   $settings;
+    private string  $base_temp_dir;
     private string  $temp_dir;
     private array   $log = [];
     private ?int $caffeinate_pid = null;
 
     public function __construct() {
-        $this->settings = mlbkp_get_settings();
-        $this->temp_dir = $this->prepare_temp_dir();
+        $this->settings      = mlbkp_get_settings();
+        $this->base_temp_dir = $this->prepare_temp_dir();
     }
 
     // ── Öffentliche API ───────────────────────────────────────────────────────
@@ -49,6 +50,11 @@ class MLBKP_Backup_Runner {
     private function execute( int $log_id, string $type ): array {
         @set_time_limit( 0 );
         @ini_set( 'memory_limit', '512M' );
+
+        // Eigenes Unterverzeichnis pro Job — verhindert, dass cleanup() Dateien
+        // eines parallel laufenden Jobs (Legacy-Runner oder Chunk-Runner) löscht.
+        // Siehe BACKLOG.md: "cleanup() löscht Dateien anderer paralleler Jobs".
+        $this->temp_dir = $this->job_temp_dir( $log_id );
 
         $this->maybe_start_caffeinate();
 
@@ -270,6 +276,20 @@ class MLBKP_Backup_Runner {
     }
 
     /**
+    * Erstellt/liefert ein Job-spezifisches Unterverzeichnis innerhalb des
+    * gemeinsamen Temp-Basisverzeichnisses.
+    */
+    private function job_temp_dir( int $log_id ): string {
+        $dir = $this->base_temp_dir . 'job-' . $log_id . '/';
+
+        if ( ! is_dir( $dir ) && ! wp_mkdir_p( $dir ) ) {
+            throw new RuntimeException( "Job-Temp-Verzeichnis konnte nicht angelegt werden: {$dir}" );
+        }
+
+        return $dir;
+    }
+
+    /**
      * macOS-only: verhindert System-/Display-Sleep für die Dauer des Backups.
      * Lokale Backups auf Laravel Valet (Mac) können 30–90+ Minuten dauern
      * (ZIP-Erstellung + SFTP-Upload) und wurden durch den Sleep-Modus des
@@ -336,17 +356,28 @@ class MLBKP_Backup_Runner {
 
         $this->log( '🧹 Temp-Dateien aufräumen …' );
 
-        // Standard-Dateien
-        $files = glob( $this->temp_dir . '*.{sql,sql.gz,zip}', GLOB_BRACE );
-        foreach ( (array) $files as $file ) {
-            @unlink( $file );
+        // Löscht ausschließlich das eigene Job-Unterverzeichnis (job-{log_id}/),
+        // nicht mehr das gemeinsame Basisverzeichnis — ein paralleler Job
+        // (Legacy-Runner oder Chunk-Runner) ist dadurch nie mehr betroffen.
+        $this->remove_dir_recursive( $this->temp_dir );
+    }
+
+    /**
+     * Entfernt ein Verzeichnis inkl. Inhalt rekursiv.
+     */
+    private function remove_dir_recursive( string $dir ): void {
+        if ( ! is_dir( $dir ) ) return;
+
+        $items = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator( $dir, FilesystemIterator::SKIP_DOTS ),
+            RecursiveIteratorIterator::CHILD_FIRST
+        );
+
+        foreach ( $items as $item ) {
+            $item->isDir() ? @rmdir( $item->getPathname() ) : @unlink( $item->getPathname() );
         }
 
-        // Imunify360-umbenannte Dateien (z.B. files-wpcontent-....zip.ecYg2q)
-        $renamed = glob( $this->temp_dir . '*.zip.*' );
-        foreach ( (array) $renamed as $file ) {
-            @unlink( $file );
-        }
+        @rmdir( $dir );
     }
 
     // ── Lock-Mechanismus ──────────────────────────────────────────────────────
