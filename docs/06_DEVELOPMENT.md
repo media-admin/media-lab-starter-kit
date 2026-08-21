@@ -1,6 +1,6 @@
 # Development Guide
 
-**Version:** 1.18.0 | **Letzte Aktualisierung:** 2026-03-26
+**Version:** 1.18.1 | **Letzte Aktualisierung:** 2026-08-21
 
 ---
 
@@ -304,6 +304,16 @@ Styling-Komponente für CF7 – keine PHP-Abhängigkeiten, rein SCSS.
 | `cf7-grid-3` | 3-spaltig ab 1024px |
 | `cf7-inline` | Inline-Zeile (Newsletter) |
 | `cf7-full` | Volle Breite innerhalb Grid |
+
+> ⚠️ **Exakte Klassennamen verwenden — es gibt keine Synonyme.**
+> Diese vier Klassennamen sind die einzigen, die im kompilierten CSS
+> existieren (`_contact-form-7.scss`). Naheliegende, aber falsche
+> Varianten wie `cf7-two-columns`, `cf7-two-column`, `cf7-full-width`
+> oder `cf7-3-col` erzeugen **keinen Fehler und keine Warnung** — das
+> Formular fällt einfach lautlos auf 1-spaltiges Block-Layout zurück,
+> ohne dass im Frontend oder in der Konsole ein Hinweis erscheint.
+> Beim Einrichten eines neuen mehrspaltigen Formulars im CF7-Editor
+> immer gegen diese Tabelle prüfen, nicht aus dem Gedächtnis tippen.
 
 **Varianten** (am `.wpcf7` Element):
 
