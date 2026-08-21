@@ -22,7 +22,7 @@ class MLT_Report_Template {
         $range_end   = $range['end']   ?? gmdate( 'Y-m-d', strtotime( '-2 days' ) );
         $date_from   = wp_date( 'd.m.Y', strtotime( $range_start ) );
         $date_to     = wp_date( 'd.m.Y', strtotime( $range_end ) );
-        $range_days  = (int) round( ( strtotime( $range_end ) - strtotime( $range_start )
+        $range_days  = (int) round( ( strtotime( $range_end ) - strtotime( $range_start ) ) / DAY_IN_SECONDS );
 
         $gsc      = $data['gsc_overview']   ?? [];
         $queries  = $data['gsc_queries']    ?? [];
