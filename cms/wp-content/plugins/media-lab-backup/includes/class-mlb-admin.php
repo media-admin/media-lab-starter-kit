@@ -47,7 +47,6 @@ class MLBKP_Admin {
     }
 
     // ── Assets ───────────────────────────────────────────────────────────────
-
     public static function enqueue_assets( string $hook ): void {
         if ( ! str_contains( $hook, self::MENU_SLUG ) ) return;
 
@@ -66,9 +65,19 @@ class MLBKP_Admin {
             true
         );
 
+        // Läuft aktuell eine Session? (z.B. nach Tab-Wechsel/Reload während
+        // eines Backups) — für das Live-Log-Resume im Frontend.
+        $running = MLBKP_Session::find_running();
+
         wp_localize_script( 'mlbkp-admin', 'mlbkpData', [
             'ajaxUrl'   => admin_url( 'admin-ajax.php' ),
             'nonce'     => wp_create_nonce( self::NONCE_ACTION ),
+            'running'   => $running ? [
+                'logId'       => $running['log_id'],
+                'sessionId'   => $running['id'],
+                'chunksTotal' => $running['chunks_total'],
+                'chunkLabels' => array_column( $running['chunks'], 'label' ),
+            ] : null,
             'strings'   => [
                 'running'       => 'Backup läuft …',
                 'success'       => '✅ Backup erfolgreich abgeschlossen.',
@@ -357,6 +366,16 @@ class MLBKP_Admin {
             ],
             [ 'status' => 'running' ]
         );
+
+        // Zugehörige MLBKP_Session-Einträge synchronisieren — sonst bleibt
+        // find_running() (Live-Log-Resume) diese Sessions dauerhaft als
+        // "running" ansehen, auch nachdem der Logger-Eintrag bereinigt wurde.
+        foreach ( MLBKP_Session::get_index() as $session_id ) {
+            $session = MLBKP_Session::load( $session_id );
+            if ( $session && $session['status'] === 'running' ) {
+                MLBKP_Session::finish( $session, 'error', 'Manuell bereinigt.' );
+            }
+        }
 
         // Lock löschen
         delete_option( 'mlbkp_backup_running' );

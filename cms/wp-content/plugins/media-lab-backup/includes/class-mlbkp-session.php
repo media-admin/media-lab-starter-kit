@@ -118,6 +118,21 @@ class MLBKP_Session {
         return get_option( self::INDEX_OPTION, [] );
     }
 
+    /**
+     * Findet die aktuell laufende Session, falls vorhanden. Wird beim
+     * Seitenaufruf des "Backup starten"-Tabs genutzt, um das Live-Protokoll
+     * nach einem Tab-Wechsel/Reload automatisch fortzusetzen.
+     */
+    public static function find_running(): ?array {
+        foreach ( array_reverse( self::get_index() ) as $id ) {
+            $session = self::load( $id );
+            if ( $session && $session['status'] === 'running' ) {
+                return $session;
+            }
+        }
+        return null;
+    }
+
     private static function add_to_index( string $id ): void {
         $index   = self::get_index();
         $index[] = $id;

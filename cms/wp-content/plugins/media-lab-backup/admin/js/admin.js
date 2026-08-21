@@ -279,6 +279,85 @@
     });
 
     // ── Backup starten (Session/Chunk-basiert) ────────────────────────────────
+    /**
+     * Pollt den Fortschritt einer laufenden Session und aktualisiert UI +
+     * Live-Log. Ausgelagert, damit sowohl ein frisch gestartetes Backup als
+     * auch ein beim Seitenaufruf bereits laufendes Backup (Tab-Wechsel/Reload
+     * während des Laufs) dieselbe Logik nutzen.
+     */
+    function startStatusPolling(logId, sessionId, total, $btn, $status, $logCard, $logOut) {
+        var pollInterval = setInterval(function () {
+            $.ajax({
+                url:    mlbkpData.ajaxUrl,
+                method: 'POST',
+                data: { action: 'mlbkp_check_status', nonce: mlbkpData.nonce, log_id: logId, session_id: sessionId },
+                success: function (poll) {
+                    if (!poll.success) return;
+
+                    var s = poll.data.status;
+
+                    // Chunk-Fortschritt aktualisieren
+                    if (poll.data.chunks && poll.data.chunks.length) {
+                        $logOut.empty();
+                        var doneCount = 0;
+                        var allDone   = true;
+                        poll.data.chunks.forEach(function (c) {
+                            var icon = { pending: '⏸', running: '⏳', done: '✅', error: '❌', skipped: '⏭' }[c.status] || '•';
+                            var line = icon + ' ' + c.label + (c.size ? ' (' + c.size + ')' : '') + (c.error ? ' — ' + c.error : '');
+                            appendLog(line);
+                            if (c.status === 'done' || c.status === 'error' || c.status === 'skipped') doneCount++;
+                            if (c.status === 'pending' || c.status === 'running') allDone = false;
+                        });
+                        $btn.text('⏳ ' + doneCount + '/' + total + ' Chunks …');
+
+                        // Alle Chunks fertig aber Status noch running → explizit finalisieren
+                        if (allDone && s === 'running') {
+                            clearInterval(pollInterval);
+                            $.ajax({
+                                url:    mlbkpData.ajaxUrl,
+                                method: 'POST',
+                                data:   { action: 'mlbkp_finalize_session', nonce: mlbkpData.nonce, session_id: sessionId, log_id: logId },
+                                success: function (fin) {
+                                    $btn.prop('disabled', false).text('▶ Backup starten');
+                                    $('#mlb-cancel-backup').hide();
+                                    appendLog('🎉 Backup erfolgreich abgeschlossen.' + (fin.data && fin.data.file_size ? ' Gesamt: ' + fin.data.file_size : ''));
+                                    setStatus($status, mlbkpData.strings.success, 'ok');
+                                    $logCard.addClass('mlb-log-success');
+                                },
+                                error: function () {
+                                    $btn.prop('disabled', false).text('▶ Backup starten');
+                                    appendLog('⚠ Backup abgeschlossen aber Status-Update fehlgeschlagen. Bitte Protokoll prüfen.');
+                                }
+                            });
+                            return;
+                        }
+                    }
+
+                    if (s === 'running') return;
+
+                    clearInterval(pollInterval);
+                    $btn.prop('disabled', false).text('▶ Backup starten');
+                    $('#mlb-cancel-backup').hide();
+
+                    if (s === 'success') {
+                        appendLog('🎉 Backup erfolgreich abgeschlossen.' + (poll.data.file_size ? ' Gesamt: ' + poll.data.file_size : '') + (poll.data.duration ? ' | ' + poll.data.duration : ''));
+                        setStatus($status, mlbkpData.strings.success, 'ok');
+                        $logCard.addClass('mlb-log-success');
+                    } else if (s === 'cancelled') {
+                        appendLog('🛑 Backup wurde abgebrochen.');
+                        setStatus($status, '🛑 Abgebrochen.', 'info');
+                    } else {
+                        appendLog('❌ ' + (poll.data.error_message || 'Fehler.'));
+                        setStatus($status, mlbkpData.strings.error, 'error');
+                        $logCard.addClass('mlb-log-error');
+                    }
+                },
+                error: function () {}
+            });
+        }, 4000);
+
+        return pollInterval;
+    }
 
     $('#mlb-start-backup').on('click', function () {
         var $btn      = $(this).prop('disabled', true).text('⏳ Wird gestartet …');
@@ -312,76 +391,7 @@
                 $btn.text('⏳ ' + total + ' Chunks läuft …');
                 $('#mlb-cancel-backup').data('log-id', logId).show();
 
-                // Polling
-                var pollInterval = setInterval(function () {
-                    $.ajax({
-                        url:    mlbkpData.ajaxUrl,
-                        method: 'POST',
-                        data: { action: 'mlbkp_check_status', nonce: mlbkpData.nonce, log_id: logId, session_id: sessionId },
-                        success: function (poll) {
-                            if (!poll.success) return;
-
-                            var s = poll.data.status;
-
-                            // Chunk-Fortschritt aktualisieren
-                            if (poll.data.chunks && poll.data.chunks.length) {
-                                $logOut.empty();
-                                var doneCount = 0;
-                                var allDone   = true;
-                                poll.data.chunks.forEach(function (c) {
-                                    var icon = { pending: '⏸', running: '⏳', done: '✅', error: '❌', skipped: '⏭' }[c.status] || '•';
-                                    var line = icon + ' ' + c.label + (c.size ? ' (' + c.size + ')' : '') + (c.error ? ' — ' + c.error : '');
-                                    appendLog(line);
-                                    if (c.status === 'done' || c.status === 'error' || c.status === 'skipped') doneCount++;
-                                    if (c.status === 'pending' || c.status === 'running') allDone = false;
-                                });
-                                $btn.text('⏳ ' + doneCount + '/' + total + ' Chunks …');
-
-                                // Alle Chunks fertig aber Status noch running → explizit finalisieren
-                                if (allDone && s === 'running') {
-                                    clearInterval(pollInterval);
-                                    $.ajax({
-                                        url:    mlbkpData.ajaxUrl,
-                                        method: 'POST',
-                                        data:   { action: 'mlbkp_finalize_session', nonce: mlbkpData.nonce, session_id: sessionId, log_id: logId },
-                                        success: function (fin) {
-                                            $btn.prop('disabled', false).text('▶ Backup starten');
-                                            $('#mlb-cancel-backup').hide();
-                                            appendLog('🎉 Backup erfolgreich abgeschlossen.' + (fin.data && fin.data.file_size ? ' Gesamt: ' + fin.data.file_size : ''));
-                                            setStatus($status, mlbkpData.strings.success, 'ok');
-                                            $logCard.addClass('mlb-log-success');
-                                        },
-                                        error: function () {
-                                            $btn.prop('disabled', false).text('▶ Backup starten');
-                                            appendLog('⚠ Backup abgeschlossen aber Status-Update fehlgeschlagen. Bitte Protokoll prüfen.');
-                                        }
-                                    });
-                                    return;
-                                }
-                            }
-
-                            if (s === 'running') return;
-
-                            clearInterval(pollInterval);
-                            $btn.prop('disabled', false).text('▶ Backup starten');
-                            $('#mlb-cancel-backup').hide();
-
-                            if (s === 'success') {
-                                appendLog('🎉 Backup erfolgreich abgeschlossen.' + (poll.data.file_size ? ' Gesamt: ' + poll.data.file_size : '') + (poll.data.duration ? ' | ' + poll.data.duration : ''));
-                                setStatus($status, mlbkpData.strings.success, 'ok');
-                                $logCard.addClass('mlb-log-success');
-                            } else if (s === 'cancelled') {
-                                appendLog('🛑 Backup wurde abgebrochen.');
-                                setStatus($status, '🛑 Abgebrochen.', 'info');
-                            } else {
-                                appendLog('❌ ' + (poll.data.error_message || 'Fehler.'));
-                                setStatus($status, mlbkpData.strings.error, 'error');
-                                $logCard.addClass('mlb-log-error');
-                            }
-                        },
-                        error: function () {}
-                    });
-                }, 4000);
+                startStatusPolling(logId, sessionId, total, $btn, $status, $logCard, $logOut);
             },
             error: function () {
                 setStatus($status, 'AJAX-Fehler.', 'error');
@@ -389,6 +399,27 @@
             },
         });
     });
+
+    // ── Live-Log nach Tab-Wechsel/Reload wiederherstellen ─────────────────────
+    // Falls beim Laden dieser Seite bereits eine Session läuft (z.B. weil der
+    // Nutzer auf "Protokoll" oder "Einstellungen" gewechselt und wieder zurück
+    // ist), Polling automatisch fortsetzen statt eine leere Seite mit aktivem
+    // "Backup starten"-Button zu zeigen (Risiko: versehentlicher Doppelstart).
+    if (mlbkpData.running && $('#mlb-start-backup').length) {
+        var resumeData = mlbkpData.running;
+        var $rBtn      = $('#mlb-start-backup').prop('disabled', true).text('⏳ ' + resumeData.chunksTotal + ' Chunks läuft …');
+        var $rStatus   = $('#mlb-run-status');
+        var $rLogCard  = $('#mlb-log-card').show();
+        var $rLogOut   = $('#mlb-log-output').empty();
+
+        setStatus($rStatus, mlbkpData.strings.running, 'info');
+        appendLog('[' + new Date().toLocaleTimeString('de-AT') + '] Laufendes Backup erkannt (Session ' + resumeData.sessionId + ') — Live-Protokoll wird fortgesetzt …');
+        resumeData.chunkLabels.forEach(function (l) { appendLog('   ⏸ ' + l); });
+
+        $('#mlb-cancel-backup').data('log-id', resumeData.logId).show();
+
+        startStatusPolling(resumeData.logId, resumeData.sessionId, resumeData.chunksTotal, $rBtn, $rStatus, $rLogCard, $rLogOut);
+    }
 
     // ── Hängende Jobs bereinigen ──────────────────────────────────────────────
 
