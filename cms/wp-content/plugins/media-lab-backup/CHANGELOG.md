@@ -4,6 +4,44 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format: [Keep a Changelog](https://keepachangelog.com/de/1.0.0/)
 Versionierung: [Semantic Versioning](https://semver.org/)
 
+## [2.1.0] - 2026-08-21
+
+### Fixed
+- **Race Condition: `cleanup()` löschte Dateien paralleler Backup-Jobs**
+  (`includes/class-mlb-backup-runner.php`, `includes/class-mlbkp-chunk-runner.php`)
+  – `MLBKP_Backup_Runner` (Legacy) und `MLBKP_Chunk_Runner`
+  (Session/Chunk-Architektur) teilten sich dasselbe physische
+  Temp-Verzeichnis. `cleanup()` im Legacy-Runner löschte per globalem
+  `glob()` alle `*.zip`/`*.sql`-Dateien darin, unabhängig vom erzeugenden
+  Job — ein paralleler Job konnte dadurch mitten im SFTP-Upload seine
+  eigene Datei verlieren. Live reproduziert (siehe BACKLOG.md).
+  Fix: Pro-Job- bzw. Pro-Session-Unterverzeichnis (`job-{log_id}/` bzw.
+  `session-{session_id}/`) statt gemeinsamem Ordner; `cleanup()` entfernt
+  jeweils nur noch das eigene Unterverzeichnis. `MLBKP_Chunk_Runner` hatte
+  bisher zudem kein Verzeichnis-Cleanup — ergänzt (`cleanup_temp_dir()`),
+  da Session-Unterordner sonst dauerhaft verwaist wären.
+- **`ajax_cleanup_stuck()` synchronisierte `MLBKP_Session` nicht**
+  (`includes/class-mlb-admin.php`) – „Hängende Jobs bereinigen" setzte nur
+  die `status`-Spalte in `wp_mlb_logs` auf `error`, ließ die zugehörige
+  `MLBKP_Session`-Option (separat in `wp_options`) aber unverändert auf
+  `running` stehen. Da die neue Live-Log-Resume-Funktion (s.u.)
+  `MLBKP_Session::status` direkt prüft, blieb ein bereinigter Job für die
+  UI dauerhaft "aktiv". Fix: alle noch laufenden Sessions werden jetzt
+  zusätzlich über `MLBKP_Session::finish()` sauber abgeschlossen.
+
+### Added
+- **Live-Log-Persistenz beim Tab-Wechsel** (`includes/class-mlbkp-session.php`,
+  `includes/class-mlb-admin.php`, `admin/js/admin.js`) – wechselte man
+  während eines laufenden Backups vom "Backup starten"-Tab weg (echte
+  Seiten-Navigation, kein SPA-Tab) und wieder zurück, ging der komplette
+  Live-Log-Status verloren; der "Backup starten"-Button war wieder aktiv,
+  ein versehentlicher Doppelstart einer zweiten Session war möglich.
+  Neue Methode `MLBKP_Session::find_running()` erkennt eine aktuell
+  laufende Session beim Seitenaufruf; das Frontend setzt das Polling in
+  diesem Fall automatisch fort (Polling-Logik dafür in
+  `startStatusPolling()` ausgelagert, von Klick-Handler und Resume-Block
+  gemeinsam genutzt).
+
 ---
 
 ## [1.3.4] - 2026-08-04
