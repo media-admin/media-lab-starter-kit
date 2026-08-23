@@ -76,8 +76,9 @@ class MediaLab_Wishlist_Ajax {
         }
 
         wp_send_json_success( [
-            'items' => MediaLab_Wishlist_Storage::get_items_for_display(),
-            'count' => MediaLab_Wishlist_Storage::count(),
+            'items'            => MediaLab_Wishlist_Storage::get_items_for_display(),
+            'count'            => MediaLab_Wishlist_Storage::count(),
+            'grand_total_html' => wc_price( MediaLab_Wishlist_Storage::get_grand_total() ),
         ] );
     }
 
@@ -92,8 +93,9 @@ class MediaLab_Wishlist_Ajax {
         MediaLab_Wishlist_Storage::remove( $item_id );
 
         wp_send_json_success( [
-            'items' => MediaLab_Wishlist_Storage::get_items_for_display(),
-            'count' => MediaLab_Wishlist_Storage::count(),
+            'items'            => MediaLab_Wishlist_Storage::get_items_for_display(),
+            'count'            => MediaLab_Wishlist_Storage::count(),
+            'grand_total_html' => wc_price( MediaLab_Wishlist_Storage::get_grand_total() ),
         ] );
     }
 
@@ -109,8 +111,9 @@ class MediaLab_Wishlist_Ajax {
         MediaLab_Wishlist_Storage::update_quantity( $item_id, $quantity );
 
         wp_send_json_success( [
-            'items' => MediaLab_Wishlist_Storage::get_items_for_display(),
-            'count' => MediaLab_Wishlist_Storage::count(),
+            'items'            => MediaLab_Wishlist_Storage::get_items_for_display(),
+            'count'            => MediaLab_Wishlist_Storage::count(),
+            'grand_total_html' => wc_price( MediaLab_Wishlist_Storage::get_grand_total() ),
         ] );
     }
 
@@ -120,8 +123,9 @@ class MediaLab_Wishlist_Ajax {
         check_ajax_referer( self::NONCE_ACTION, 'nonce' );
 
         wp_send_json_success( [
-            'items' => MediaLab_Wishlist_Storage::get_items_for_display(),
-            'count' => MediaLab_Wishlist_Storage::count(),
+            'items'            => MediaLab_Wishlist_Storage::get_items_for_display(),
+            'count'            => MediaLab_Wishlist_Storage::count(),
+            'grand_total_html' => wc_price( MediaLab_Wishlist_Storage::get_grand_total() ),
         ] );
     }
 
@@ -185,8 +189,9 @@ class MediaLab_Wishlist_Ajax {
         MediaLab_Wishlist_Storage::clear();
 
         wp_send_json_success( [
-            'inquiry_id' => $result,
-            'message'    => MediaLab_Inquiry_Settings::wording( 'wishlist_success' ),
+            'items'            => MediaLab_Wishlist_Storage::get_items_for_display(),
+            'count'            => MediaLab_Wishlist_Storage::count(),
+            'grand_total_html' => wc_price( MediaLab_Wishlist_Storage::get_grand_total() ),
         ] );
     }
 
