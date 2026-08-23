@@ -23,10 +23,10 @@ function mlwf_enqueue_frontend_data(): void {
 		'currency'   => get_woocommerce_currency_symbol(),
 		'actionFilter'     => 'mlwf_filter_products',
 		'actionPriceRange' => 'mlwf_get_price_range',
-		'i18n'       => [
-			'loading'    => __( 'Produkte werden geladen …', 'medialab-woo-filters' ),
-			'noProducts' => __( 'Keine Produkte gefunden.', 'medialab-woo-filters' ),
-			'reset'      => __( 'Filter zurücksetzen', 'medialab-woo-filters' ),
+		'i18n' => [
+			'loading'    => MediaLab_Filter_Settings::label( 'loading' ),
+			'noProducts' => MediaLab_Filter_Settings::label( 'no_products' ),
+			'reset'      => MediaLab_Filter_Settings::label( 'reset' ),
 		],
 	];
 

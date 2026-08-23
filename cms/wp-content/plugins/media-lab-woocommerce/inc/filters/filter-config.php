@@ -171,17 +171,20 @@ function mlwf_get_default_filter_config(): array {
 function mlwf_get_attribute_labels(): array {
 	$labels = [];
 
-	// WooCommerce-Attribute
 	$attributes = wc_get_attribute_taxonomies();
 	foreach ( $attributes as $attr ) {
-		$slug            = wc_attribute_taxonomy_name( $attr->attribute_name );
-		$labels[ $slug ] = $attr->attribute_label;
+		$slug   = wc_attribute_taxonomy_name( $attr->attribute_name );
+		$custom = class_exists( 'MediaLab_Filter_Settings' ) ? MediaLab_Filter_Settings::attribute_label( $slug ) : '';
+		$labels[ $slug ] = $custom !== '' ? $custom : $attr->attribute_label;
 	}
 
-	// product_brand
 	if ( taxonomy_exists( 'product_brand' ) ) {
+		$custom = class_exists( 'MediaLab_Filter_Settings' ) ? MediaLab_Filter_Settings::attribute_label( 'product_brand' ) : '';
+		if ( $custom === '' && class_exists( 'MediaLab_Filter_Settings' ) ) {
+			$custom = MediaLab_Filter_Settings::label( 'brand' );
+		}
 		$tax_obj = get_taxonomy( 'product_brand' );
-		$labels['product_brand'] = $tax_obj->labels->singular_name ?? 'Marke';
+		$labels['product_brand'] = $custom !== '' ? $custom : ( $tax_obj->labels->singular_name ?? 'Marke' );
 	}
 
 	return $labels;

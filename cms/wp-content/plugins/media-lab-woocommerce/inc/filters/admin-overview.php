@@ -63,12 +63,16 @@ function mlwf_render_admin_page(): void {
 		<h1>Produktfilter-Übersicht</h1>
 		<p class="description">Read-only Übersicht der Filter-Konfiguration. Klicke auf „Bearbeiten" um Filter anzupassen.</p>
 
+		<?php
+		$price_label    = MediaLab_Filter_Settings::label( 'price' );
+		$category_label = MediaLab_Filter_Settings::label( 'category' );
+		?>
 		<div class="legend">
 			<strong>Legende:</strong>
-			<span><span class="ft ft-price">Preis</span> Preis-Slider</span>
+			<span><span class="ft ft-price"><?php echo esc_html( $price_label ); ?></span> Preis-Slider</span>
 			<span><span class="ft ft-attr">Attribut</span> Produkt-Attribut</span>
 			<span><span class="ft ft-brand">Marke</span> Marken-Filter</span>
-			<span><span class="ft ft-sub">Unterkat.</span> Unterkategorie-Filter</span>
+			<span><span class="ft ft-sub"><?php echo esc_html( $category_label ); ?></span> Unterkategorie-Filter</span>
 			<span><span class="ft ft-inh">vererbt</span> Von Elternebene übernommen</span>
 			<span><span class="ft ft-none">Keine</span> Nicht konfiguriert</span>
 		</div>
@@ -129,10 +133,10 @@ function mlwf_render_term_row( WP_Term $term, string $taxonomy, array $labels, i
 		$cls = $inherited ? 'ft-inh' : '';
 
 		if ( $config['show_price'] )
-			echo '<span class="ft ft-price ' . $cls . '">Preis</span> ';
+			echo '<span class="ft ft-price ' . $cls . '">' . esc_html( MediaLab_Filter_Settings::label( 'price' ) ) . '</span> ';
 
 		if ( $config['show_subcategories'] )
-			echo '<span class="ft ft-sub ' . $cls . '">Unterkategorien</span> ';
+			echo '<span class="ft ft-sub ' . $cls . '">' . esc_html( MediaLab_Filter_Settings::label( 'category' ) ) . '</span> ';
 
 		foreach ( $config['attributes'] as $slug ) {
 			$label    = $labels[ $slug ] ?? $slug;
