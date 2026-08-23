@@ -1,4 +1,5 @@
 @use '../abstracts' as *;
+@use 'nouislider/dist/nouislider.css';
 
 // =============================================================================
 // WooCommerce – Basis-Styling
@@ -811,3 +812,390 @@
         span.current { background: $color-primary; color: $color-white; border-color: $color-primary; }
     }
 }
+
+
+// =============================================================================
+// WooCommerce Filterleiste
+// Portiert aus dem Janecka-Projekt (at.janecka-2026), angepasst:
+//  - bp(desktop) → respond-to('xl') (Breakpoint-System)
+//  - Fullwidth-Breakout entfernt: Bar liegt innerhalb von .container
+//  - Hartkodierte Farben → Design-Tokens. Gefüllte "aktiv"-Zustände (vorher
+//    #555/#333 + weiße Schrift) nutzen jetzt $color-primary + $color-white
+//    statt var(--color-text) - Letzteres würde im Dark Mode umkippen (dort
+//    ist --color-text nahezu weiß, weißer Text auf weißem Grund wäre
+//    unsichtbar). $color-primary matcht das bereits bestehende Muster für
+//    "aktiv/ausgewählt" im Theme (siehe nav.woocommerce-pagination .current).
+//  - Ausnahme: der SVG-Chevron im Sortier-Dropdown bleibt hartkodiert
+//    (stroke='%23666') - data-URIs lösen CSS Custom Properties nicht zur
+//    Laufzeit auf, hier nicht ohne Weiteres Dark-Mode-adaptiv machbar.
+// =============================================================================
+
+// ---------------------------------------------------------------------------
+// Filter-Bar Container
+// ---------------------------------------------------------------------------
+
+.wc-filter-bar {
+	padding-block: 0.75rem 0.5rem;
+}
+
+.wc-filter-bar__form {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.375rem;
+    flex-wrap: wrap;
+}
+
+.wc-filter-bar__groups {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 0.375rem;
+	flex-wrap: nowrap;
+	flex: 1;
+}
+
+.wc-filter-bar__groups-filters {
+	display: flex;
+	align-items: center;
+	gap: 0.375rem;
+	flex-wrap: wrap;
+}
+
+.wc-filter-bar__groups-sort {
+	display: flex;
+	align-items: center;
+	flex-shrink: 0;
+}
+
+.wc-filter-bar__reset {
+	font-size: 0.8125rem;
+	color: $color-primary;
+	background: none;
+	border: none;
+	padding: 0.375rem 0;
+	cursor: pointer;
+	text-decoration: underline;
+	white-space: nowrap;
+	margin-left: 0.5rem;
+
+	&:hover { opacity: 0.7; }
+}
+
+.wc-filter-bar__apply-mobile { display: none; }
+
+// ---------------------------------------------------------------------------
+// Aktive Filter Tags
+// ---------------------------------------------------------------------------
+
+.wc-active-filters {
+	display: flex;
+	align-items: center;
+	gap: 0.375rem;
+	flex-wrap: wrap;
+	min-height: 1.5rem;
+
+	&:empty { display: none; }
+}
+
+.wc-active-filter {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.25rem;
+	padding: 0.25rem 0.625rem;
+	background: $color-primary;
+	color: $color-white;
+	border-radius: 999px;
+	font-size: 0.75rem;
+	font-weight: 400;
+	line-height: 1.3;
+
+	&__remove {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 0.875rem;
+		height: 0.875rem;
+		background: none;
+		border: none;
+		color: $color-white;
+		cursor: pointer;
+		padding: 0;
+		font-size: 1rem;
+		line-height: 1;
+		opacity: 0.8;
+		margin-left: 0.1rem;
+
+		&:hover { opacity: 1; }
+	}
+}
+
+// ---------------------------------------------------------------------------
+// Filter-Gruppen Buttons
+// ---------------------------------------------------------------------------
+
+.wc-filter-group {
+	position: relative;
+}
+
+.wc-filter-group__toggle {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.375rem;
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-border);
+	border-radius: 999px;
+	background: var(--color-card-bg);
+	color: var(--color-text);
+	font-size: 0.875rem;
+	font-weight: 500;
+	cursor: pointer;
+	transition: background 0.2s, border-color 0.2s, color 0.2s;
+	white-space: nowrap;
+
+	&.has-active {
+		border-color: $color-primary;
+	}
+
+	&[aria-expanded="true"] {
+		background: $color-primary;
+		border-color: $color-primary;
+		color: $color-white;
+	}
+
+	&:hover:not([aria-expanded="true"]) {
+		border-color: $color-primary;
+	}
+}
+
+// Count-Badge
+.wc-filter-group__count {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 1.25rem;
+	height: 1.25rem;
+	padding: 0 0.25rem;
+	border-radius: 999px;
+	background: $color-primary;
+	color: $color-white;
+	font-size: 0.75rem;
+	font-weight: 600;
+	line-height: 1;
+}
+
+// Inverse: auf bereits primärfarbenem Toggle-Hintergrund (aria-expanded)
+// braucht der Badge selbst den umgekehrten Kontrast.
+.wc-filter-group__toggle[aria-expanded="true"] .wc-filter-group__count {
+	background: $color-white;
+	color: $color-primary;
+}
+
+// Icon +/—
+.wc-filter-group__icon {
+	font-style: normal;
+	font-size: 0.875rem;
+	flex-shrink: 0;
+	line-height: 1;
+
+	&::before { content: '+'; }
+	&::after  { display: none; }
+}
+
+.wc-filter-group__toggle[aria-expanded="true"] .wc-filter-group__icon::before {
+	content: '—';
+}
+
+// ---------------------------------------------------------------------------
+// Dropdown-Panel
+// ---------------------------------------------------------------------------
+
+.wc-filter-group__dropdown {
+	position: absolute;
+	top: calc(100% + 0.375rem);
+	left: 0;
+	z-index: 200;
+	background: var(--color-card-bg);
+	border: 1px solid var(--color-border);
+	border-radius: 8px;
+	padding: 0.875rem 1rem;
+	min-width: 200px;
+	max-height: 300px;
+	overflow-y: auto;
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+	opacity: 0;
+	transform: translateY(-6px);
+	transition: opacity 0.2s ease, transform 0.2s ease;
+	pointer-events: none;
+
+	&[hidden] { display: none; }
+
+	&.is-open {
+		opacity: 1;
+		transform: translateY(0);
+		pointer-events: auto;
+	}
+
+	.wc-filter-group:last-child & {
+		left: auto;
+		right: 0;
+	}
+}
+
+// ---------------------------------------------------------------------------
+// Checkbox-Liste
+// ---------------------------------------------------------------------------
+
+.wc-filter-checklist {
+	display: flex;
+	flex-direction: column;
+	gap: 0;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.wc-filter-option {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.375rem 0;
+	cursor: pointer;
+	font-size: 0.875rem;
+	border-bottom: 1px solid var(--color-border);
+
+	&:last-child { border-bottom: none; }
+
+	&__checkbox {
+		width: 1rem;
+		height: 1rem;
+		flex-shrink: 0;
+		accent-color: $color-primary;
+		cursor: pointer;
+	}
+
+	&__label {
+		flex: 1;
+		color: var(--color-text);
+		line-height: 1.3;
+		text-align: left;
+		padding-left: 0.25rem;
+	}
+
+	&__count {
+		font-size: 0.75rem;
+		color: var(--color-text-muted);
+	}
+
+	&:hover &__label { color: $color-primary; }
+}
+
+// ---------------------------------------------------------------------------
+// Preis-Slider (noUISlider)
+// ---------------------------------------------------------------------------
+
+.wc-filter-group--price .wc-filter-group__dropdown {
+	min-width: 260px;
+}
+
+.wc-price-slider {
+	margin-block: 0.75rem 1.25rem;
+
+	.noUi-target {
+		height: 3px;
+		border: none;
+		box-shadow: none;
+		background: var(--color-border);
+		border-radius: 999px;
+	}
+
+	.noUi-connect { background: $color-primary; }
+
+	.noUi-handle {
+		width: 1rem !important;
+		height: 1rem !important;
+		top: -0.4375rem !important;
+		right: -0.5rem !important;
+		border-radius: 50%;
+		background: $color-primary;
+		border: 2px solid var(--color-card-bg);
+		box-shadow: 0 1px 4px rgba(0,0,0,.2);
+		cursor: grab;
+
+		&::before, &::after { display: none; }
+		&:active { cursor: grabbing; }
+	}
+}
+
+.wc-price-inputs {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.wc-price-input {
+	flex: 1;
+	width: 0;
+	padding: 0.3rem 0.5rem;
+	border: 1px solid var(--color-border);
+	border-radius: 4px;
+	font-size: 0.8125rem;
+	text-align: center;
+	background: var(--color-input-bg);
+	color: var(--color-text);
+
+	&:focus { outline: none; border-color: $color-primary; }
+	&::-webkit-outer-spin-button,
+	&::-webkit-inner-spin-button { -webkit-appearance: none; }
+	& { -moz-appearance: textfield; }
+}
+
+.wc-price-separator {
+	font-size: 0.875rem;
+	color: var(--color-text-muted);
+	flex-shrink: 0;
+}
+
+// ---------------------------------------------------------------------------
+// Sortierung als Pill (in der Filter-Gruppen-Reihe)
+// Formatierung 1:1 von .wc-filter-group__toggle übernommen — bewusst OHNE
+// das +/— Icon-Pseudo-Element (existiert bei einem nativen <select> nicht,
+// eigener SVG-Chevron übernimmt visuell dieselbe Funktion).
+// ---------------------------------------------------------------------------
+
+.wc-filter-group--sort {
+
+    .woocommerce-ordering select,
+	select {
+        display: inline-flex !important;
+        align-items: center;
+        gap: 0.375rem;
+        padding: 0.5rem 1rem !important;
+        padding-right: 2rem !important;
+        border: 1px solid var(--color-border) !important;
+        border-radius: 999px !important;
+        background-color: var(--color-card-bg) !important;
+        color: var(--color-text);
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        white-space: nowrap;
+        appearance: none !important;
+        // SVG-Chevron: data-URI, kann var()-Tokens nicht zur Laufzeit auflösen -
+        // bewusst hartkodiert (#666), nicht Dark-Mode-adaptiv.
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") !important;
+        background-repeat: no-repeat !important;
+        background-position: right 0.75rem center !important;
+        transition: background 0.2s, border-color 0.2s, color 0.2s;
+
+        &:hover {
+            border-color: $color-primary;
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Mobile
+// ---------------------------------------------------------------------------
+
+.wc-filter-sidebar__footer { display: none; }
