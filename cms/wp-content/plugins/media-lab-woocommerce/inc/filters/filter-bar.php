@@ -58,7 +58,7 @@ function mlwf_render_filter_bar(): void {
 				?>
 				<div class="wc-filter-group wc-filter-group--price js-filter-group" data-filter-type="price">
 					<button class="wc-filter-group__toggle" type="button" aria-expanded="false">
-						<?php esc_html_e( 'Preis', 'medialab-woo-filters' ); ?>
+						<?php echo esc_html( MediaLab_Filter_Settings::label( 'price' ) ); ?>
 						<span class="wc-filter-group__icon" aria-hidden="true"></span>
 					</button>
 					<div class="wc-filter-group__dropdown" hidden>
@@ -91,7 +91,7 @@ function mlwf_render_filter_bar(): void {
 						type="button"
 						aria-expanded="false"
 						aria-controls="<?php echo esc_attr( $group_id ); ?>">
-						<?php esc_html_e( 'Kategorie', 'medialab-woo-filters' ); ?>
+						<?php echo esc_html( MediaLab_Filter_Settings::label( 'category' ) ); ?>
 						<?php if ( $active_subcat ) : ?>
 							<span class="wc-filter-group__count">1</span>
 						<?php endif; ?>
@@ -196,7 +196,7 @@ function mlwf_render_filter_bar(): void {
 			</div><!-- .wc-filter-bar__groups -->
 
 			<button class="wc-filter-bar__reset js-filter-reset" type="button" hidden>
-				<?php esc_html_e( 'Zurücksetzen', 'medialab-woo-filters' ); ?>
+				<?php echo esc_html( MediaLab_Filter_Settings::label( 'reset' ) ); ?>
 			</button>
 
 		</form>
@@ -256,7 +256,39 @@ function mlwf_get_context_product_ids( int $term_id, string $taxonomy ): array {
 	return array_unique( $product_ids );
 }
 
+/**
+ * An 'woocommerce_before_shop_loop' gehängt statt manuell im Theme
+ * eingebunden - macht die Filter-Bar sofort in jedem Projekt einsatzbereit,
+ * ohne dass jedes Theme sie separat verdrahten muss (Starter-Kit-Ziel:
+ * reusable, client-deployable). Priorität 15: nach woocommerce_output_all_notices
+ * (10), an der Stelle, an der woocommerce_result_count (20) und
+ * woocommerce_catalog_ordering (30) im Theme bereits entfernt wurden - die
+ * Filter-Bar übernimmt das Sortier-Dropdown selbst (siehe woocommerce_catalog_ordering()
+ * -Aufruf oben in dieser Datei).
+ */
+add_action( 'woocommerce_before_shop_loop', 'mlwf_render_filter_bar', 15 );
+
 // Alias für Theme-Kompatibilität
 function janecka_render_filter_bar(): void {
 	mlwf_render_filter_bar();
 }
+
+
+/**
+ * Öffnet/schließt einen Wrapper um ul.products + Pagination, den
+ * mlwf-filters.js beim AJAX-Filtern per innerHTML ersetzt. Ohne diesen
+ * Wrapper läuft der Request zwar durch, aber am Bildschirm ändert sich
+ * sichtbar nichts.
+ *
+ * Priorität 20 auf 'woocommerce_before_shop_loop' (nach der Filter-Bar
+ * selbst bei Priorität 15, direkt vor dem WooCommerce-eigenen Loop-Start).
+ * Priorität 20 auf 'woocommerce_after_shop_loop' (nach der Custom-
+ * Pagination des Themes bei Priorität 10 in inc/woocommerce.php).
+ */
+add_action( 'woocommerce_before_shop_loop', function () {
+	echo '<div class="wc-products-container">';
+}, 20 );
+
+add_action( 'woocommerce_after_shop_loop', function () {
+	echo '</div><!-- .wc-products-container -->';
+}, 20 );

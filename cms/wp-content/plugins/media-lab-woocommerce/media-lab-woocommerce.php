@@ -49,6 +49,7 @@ add_action( 'plugins_loaded', function () {
 
     require_once MEDIA_LAB_WC_PATH . 'inc/catalog-mode.php';
     require_once MEDIA_LAB_WC_PATH . 'inc/configurator/class-configurator.php';
+    require_once MEDIA_LAB_WC_PATH . 'inc/configurator/filter-sync.php';
 
     // ── Wunschliste (nutzt die Inquiry-Engine, siehe oben) ────────────────────
     require_once MEDIA_LAB_WC_PATH . 'inc/wishlist/class-storage.php';
@@ -58,12 +59,16 @@ add_action( 'plugins_loaded', function () {
     require_once MEDIA_LAB_WC_PATH . 'inc/wishlist/class-enqueue.php';
 
     // ── Medialab WooCommerce Filters ─────────────────────────────────────────
+    require_once MEDIA_LAB_WC_PATH . 'inc/filters/class-i18n.php';
+    require_once MEDIA_LAB_WC_PATH . 'inc/filters/class-settings.php';
     require_once MEDIA_LAB_WC_PATH . 'inc/filters/filter-config.php';
     require_once MEDIA_LAB_WC_PATH . 'inc/filters/acf-fields.php';
     require_once MEDIA_LAB_WC_PATH . 'inc/filters/ajax-handlers.php';
     require_once MEDIA_LAB_WC_PATH . 'inc/filters/filter-bar.php';
     require_once MEDIA_LAB_WC_PATH . 'inc/filters/setup.php';
     require_once MEDIA_LAB_WC_PATH . 'inc/filters/admin-overview.php';
+
+    MediaLab_Filter_Settings::init();
 } );
 
 // ─── Activation / Deactivation ───────────────────────────────────────────────
