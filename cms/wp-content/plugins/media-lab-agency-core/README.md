@@ -16,6 +16,13 @@ Core functionality plugin for Media Lab agency websites.
 - WordPress 6.0+
 - PHP 8.0+
 
+## Dependencies
+
+Keine Composer-Abhängigkeiten — kein `composer.json`/`composer.lock`
+vorhanden. Alle Funktionalität läuft über WordPress-Core-APIs
+(`wp_remote_*`, ACF-Hooks) ohne externe PHP-Bibliotheken. (Ausnahme im
+Starter Kit: `media-lab-backup`, das phpseclib3 für SSH-Key-Auth benötigt.)
+
 ## Installation
 
 1. Upload to `/wp-content/plugins/media-lab-agency-core/`
