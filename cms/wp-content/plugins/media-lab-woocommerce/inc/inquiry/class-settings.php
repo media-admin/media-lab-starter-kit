@@ -114,6 +114,15 @@ class MediaLab_Inquiry_Settings {
                 'conditional_logic' => $hide_if_multilang,
             ],
             [
+                'key'         => 'field_mlw_wishlist_empty_message',
+                'label'       => 'Hinweistext: Wunschliste leer',
+                'name'        => 'mlw_wishlist_empty_message',
+                'type'        => 'text',
+                'instructions'=> 'Wird angezeigt, wenn die Wunschliste keine Artikel enthält.',
+                'placeholder' => 'Ihre Wunschliste ist zurzeit leer.',
+                'conditional_logic' => $hide_if_multilang,
+            ],
+            [
                 'key'         => 'field_mlw_price_notice',
                 'label'       => 'Preis-Hinweistext',
                 'name'        => 'mlw_price_notice',
@@ -165,11 +174,12 @@ class MediaLab_Inquiry_Settings {
                     [ 'key' => 'field_mlw_lang_name', 'label' => 'Bezeichnung', 'name' => 'lang_name', 'type' => 'text', 'placeholder' => 'Deutsch', 'instructions' => 'Nur zur internen Orientierung.', 'wrapper' => [ 'width' => '30' ] ],
 
                     $sep( 'Wording' ),
-                    [ 'key' => 'field_mlw_lang_wishlist_label', 'label' => 'Bezeichnung Wunschliste', 'name' => 'wishlist_label', 'type' => 'text', 'wrapper' => [ 'width' => '16' ] ],
-                    [ 'key' => 'field_mlw_lang_add_button',     'label' => '„Hinzufügen"-Button',       'name' => 'add_button',      'type' => 'text', 'wrapper' => [ 'width' => '16' ] ],
-                    [ 'key' => 'field_mlw_lang_submit_button',  'label' => 'Absenden-Button',            'name' => 'submit_button',   'type' => 'text', 'wrapper' => [ 'width' => '16' ] ],
-                    [ 'key' => 'field_mlw_lang_success',        'label' => 'Erfolgsmeldung',             'name' => 'success',         'type' => 'text', 'wrapper' => [ 'width' => '16' ] ],
-                    [ 'key' => 'field_mlw_lang_wishlist_success','label' => 'Erfolgsmeldung Wunschliste','name' => 'wishlist_success','type' => 'text', 'wrapper' => [ 'width' => '16' ] ],
+                    [ 'key' => 'field_mlw_lang_wishlist_label', 'label' => 'Bezeichnung Wunschliste', 'name' => 'wishlist_label', 'type' => 'text', 'wrapper' => [ 'width' => '14' ] ],
+                    [ 'key' => 'field_mlw_lang_add_button',     'label' => '„Hinzufügen"-Button',       'name' => 'add_button',      'type' => 'text', 'wrapper' => [ 'width' => '14' ] ],
+                    [ 'key' => 'field_mlw_lang_submit_button',  'label' => 'Absenden-Button',            'name' => 'submit_button',   'type' => 'text', 'wrapper' => [ 'width' => '14' ] ],
+                    [ 'key' => 'field_mlw_lang_success',        'label' => 'Erfolgsmeldung',             'name' => 'success',         'type' => 'text', 'wrapper' => [ 'width' => '14' ] ],
+                    [ 'key' => 'field_mlw_lang_wishlist_success','label' => 'Erfolgsmeldung Wunschliste','name' => 'wishlist_success','type' => 'text', 'wrapper' => [ 'width' => '14' ] ],
+                    [ 'key' => 'field_mlw_lang_wishlist_empty', 'label' => 'Hinweistext: Liste leer',    'name' => 'wishlist_empty',  'type' => 'text', 'wrapper' => [ 'width' => '14' ] ],
                     [ 'key' => 'field_mlw_lang_price_notice',   'label' => 'Preis-Hinweistext',          'name' => 'price_notice',    'type' => 'text', 'placeholder' => 'zzgl. Versandkosten', 'wrapper' => [ 'width' => '16' ] ],
                     [ 'key' => 'field_mlw_lang_privacy_text',   'label' => 'Datenschutz-Text',           'name' => 'privacy_text',    'type' => 'textarea', 'rows' => 2, 'wrapper' => [ 'width' => '100' ] ],
 
@@ -684,6 +694,7 @@ class MediaLab_Inquiry_Settings {
             'submit_button'    => 'Anfrage senden',
             'success'          => 'Vielen Dank! Ihre Anfrage wurde erfolgreich übermittelt. Wir melden uns in Kürze bei Ihnen.',
             'wishlist_success' => 'Vielen Dank für Ihre Wunschliste! Wir melden uns in Kürze bei Ihnen.',
+            'wishlist_empty'   => 'Ihre Wunschliste ist zurzeit leer.',
             'price_notice'     => '',
         ];
         $field_map = [
@@ -692,6 +703,7 @@ class MediaLab_Inquiry_Settings {
             'submit_button'    => 'mlw_submit_label',
             'success'          => 'mlw_success_message',
             'wishlist_success' => 'mlw_wishlist_success_message',
+            'wishlist_empty'   => 'mlw_wishlist_empty_message',
             'price_notice'     => 'mlw_price_notice',
         ];
         if ( ! isset( $field_map[ $key ] ) ) return '';
