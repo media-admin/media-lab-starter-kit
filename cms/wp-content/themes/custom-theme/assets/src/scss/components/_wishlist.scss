@@ -1,0 +1,293 @@
+// components/_wishlist.scss
+@use '../abstracts' as *;
+
+// Gemeinsames Spalten-Raster für Item-Zeilen UND die Gesamtsumme-Zeile,
+// damit der Positionsgesamtpreis pro Artikel exakt über dem Gesamt-Betrag
+// unten ausgerichtet ist.
+// Bild | Details | Einzelpreis | Menge | Positionsgesamtpreis | Entfernen
+$mlw-item-grid: 72px 1fr 110px 80px 110px 36px;
+
+.mlw-wishlist {
+    &__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: $spacing-md;
+        margin-bottom: $spacing-lg;
+    }
+
+    &__title {
+        margin: 0;
+    }
+
+    &__form-row {
+        display: flex;
+        flex-direction: column;
+        gap: $spacing-xs;
+
+        label {
+            font-weight: 600;
+        }
+
+        input,
+        textarea,
+        select {
+            padding: $spacing-sm;
+            border: 1px solid var(--color-border, #ccc);
+            border-radius: 4px;
+            background: var(--color-input-bg, #fff);
+            color: inherit;
+            font: inherit;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        &--privacy label {
+            display: flex;
+            align-items: flex-start;
+            gap: $spacing-xs;
+            font-weight: 400;
+        }
+    }
+}
+
+// ── Hinweisbox (leer) + Zurück-zum-Shop ─────────────────────────────────────
+
+.mlw-wishlist-notice {
+    padding: $spacing-md $spacing-lg;
+    margin-bottom: $spacing-md;
+    border-radius: 4px;
+
+    &--empty {
+        background: var(--color-card-bg, #f5f7fa);
+        border-left: 4px solid $color-primary;
+
+        p {
+            margin: 0;
+        }
+    }
+
+    &--shared {
+        background: var(--color-card-bg, #f5f7fa);
+        border-left: 4px solid $color-primary;
+        margin: 0 0 $spacing-lg;
+    }
+}
+
+.mlw-wishlist-back-to-shop {
+    @include btn-base;
+    @include btn-primary;
+    display: inline-block;
+    margin-bottom: $spacing-lg;
+}
+
+.mlw-wishlist-empty {
+    color: var(--color-text-muted, #666);
+}
+
+// ── Item-Grid ────────────────────────────────────────────────────────────────
+
+.mlw-wishlist-items {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+    margin-bottom: $spacing-sm;
+}
+
+.mlw-wishlist-item {
+    display: grid;
+    grid-template-columns: $mlw-item-grid;
+    align-items: center;
+    gap: $spacing-sm;
+    padding: $spacing-sm 0;
+    border-bottom: 1px solid var(--color-border, #e5e5e5);
+
+    &__image {
+        img {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+    }
+
+    &__details {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 0; // erlaubt text-overflow bei langen Produktnamen
+    }
+
+    &__name {
+        font-weight: 600;
+        text-decoration: none;
+        color: inherit;
+
+        &--gone {
+            opacity: .6;
+            text-decoration: line-through;
+        }
+    }
+
+    &__sku {
+        font-size: var(--text-sm, 0.8rem);
+        opacity: .7;
+    }
+
+    &__config {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        font-size: var(--text-sm, 0.8rem);
+        opacity: .8;
+
+        li {
+            display: flex;
+            gap: 4px;
+        }
+    }
+
+    &__attachments a {
+        font-size: var(--text-sm, 0.8rem);
+    }
+
+    &__price {
+        text-align: right;
+        white-space: nowrap;
+    }
+
+    &__quantity {
+        input {
+            width: 100%;
+            text-align: center;
+            padding: $spacing-xs;
+        }
+    }
+
+    // Positionsgesamtpreis - eigene Spalte, exakt über der Gesamtsumme
+    // unten ausgerichtet (gleiches Grid-Template wie .mlw-wishlist-grand-total).
+    &__line-total {
+        font-weight: 700;
+        text-align: right;
+        white-space: nowrap;
+    }
+
+    &__remove {
+        text-align: center;
+
+        button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1em;
+            color: var(--color-text-muted, #888);
+            padding: $spacing-xs;
+
+            &:hover {
+                color: $color-error;
+            }
+        }
+    }
+
+    // Mobile: Grid auf zwei Spalten umschichten statt horizontal zu quetschen.
+    @include respond-below('sm') {
+        grid-template-columns: 60px 1fr auto;
+        grid-template-areas:
+            "image details details"
+            "image price    qty"
+            "image line-total remove";
+
+        &__image     { grid-area: image; }
+        &__details   { grid-area: details; }
+        &__price     { grid-area: price; text-align: left; }
+        &__quantity  { grid-area: qty; }
+        &__line-total{ grid-area: line-total; text-align: left; }
+        &__remove    { grid-area: remove; }
+    }
+}
+
+// ── Gesamtsumme ──────────────────────────────────────────────────────────────
+
+.mlw-wishlist-grand-total {
+    display: grid;
+    grid-template-columns: $mlw-item-grid;
+    padding: $spacing-sm 0;
+    margin-bottom: $spacing-lg;
+    border-top: 2px solid var(--color-text, #1a1a1a);
+    font-weight: 700;
+
+    &__label {
+        grid-column: 2 / 5;
+        text-align: right;
+        padding-right: $spacing-sm;
+    }
+
+    &__amount {
+        grid-column: 5;
+        text-align: right;
+        white-space: nowrap;
+    }
+
+    @include respond-below('sm') {
+        grid-template-columns: 1fr auto;
+
+        &__label  { grid-column: 1; text-align: left; padding-right: 0; }
+        &__amount { grid-column: 2; }
+    }
+}
+
+// ── Formular-Status ────────────────────────────────────────────────────────
+
+.mlw-wishlist-message {
+    padding: $spacing-sm $spacing-md;
+    border-radius: 4px;
+    margin-bottom: $spacing-md;
+
+    &--success {
+        background: rgba($color-success, .1);
+        color: $color-success;
+    }
+
+    &--error {
+        background: rgba($color-error, .1);
+        color: $color-error;
+    }
+}
+
+.mlw-wishlist-submit {
+    @include btn-base;
+    @include btn-primary;
+    align-self: flex-start;
+
+    &:disabled {
+        opacity: .5;
+        cursor: not-allowed;
+    }
+}
+
+// ── Geteilte Wunschliste (Read-Only, siehe templates/wishlist/shared.php) ────
+
+.mlw-wishlist--shared {
+    .mlw-wishlist-item--shared {
+        grid-template-columns: 72px 1fr 140px;
+
+        &__shared-cta {
+            text-align: right;
+        }
+    }
+}
+
+.mlw-wishlist-item__qty-readonly {
+    font-size: var(--text-sm, 0.8rem);
+    opacity: .7;
+}
+
+.mlw-wishlist-item__shared-btn {
+    @include btn-base;
+    @include btn-outline;
+    @include btn-sm;
+}
