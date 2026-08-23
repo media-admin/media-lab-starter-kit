@@ -190,8 +190,12 @@ function medialab_social_share_render( array $args ): string {
                   ? $args['style'] : 'colored';
     $icon_only  = (bool) ( $args['icon_only'] ?? false );
 
-    $page_url   = rawurlencode( (string) get_permalink() );
-    $page_title = rawurlencode( (string) get_the_title() );
+    // Optionale Overrides - Standardfall (kein 'url'/'title' übergeben)
+    // verhält sich exakt wie bisher: aktuelle Seiten-URL/-Titel. Für Fälle
+    // wie das Wunschlisten-Sharing, wo NICHT die aktuelle Seiten-URL,
+    // sondern eine andere (z.B. eine Token-URL) geteilt werden soll.
+    $page_url   = rawurlencode( (string) ( $args['url']   ?? get_permalink() ) );
+    $page_title = rawurlencode( (string) ( $args['title'] ?? get_the_title() ) );
 
     // Wrapper-Klassen
     $wrapper_classes = implode( ' ', array_filter( [
