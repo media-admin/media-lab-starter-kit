@@ -1,120 +1,166 @@
 <?php
 /**
- * Wunschlisten-Seite. Wird über den Shortcode [mlw_wishlist_page] eingebunden
- * (siehe inc/wishlist/class-frontend.php).
+ * Wunschlisten-Seite: [mlw_wishlist_page]
  *
- * Serverseitig einmal mit den aktuellen Items vorgerendert (kein Flackern
- * beim ersten Laden), danach übernimmt wishlist.js alle Änderungen
- * (Menge, Entfernen, Absenden) per Ajax und rendert die Liste neu.
+ * Klassen/IDs/Feldnamen sind exakt gegen assets/js/wishlist.js und
+ * inc/wishlist/class-ajax.php abgeglichen (Stand 21.08.2026). Honeypot
+ * via medialab_honeypot_render() aus agency-core (inc/honeypot.php).
+ *
+ * Bewusst KEINE eigene <h1>/<h2>-Überschrift hier - die Seite, auf der
+ * dieser Shortcode liegt, hat i.d.R. schon einen eigenen WP-Seitentitel;
+ * eine zusätzliche Überschrift hier führte zu doppelt wirkenden Titeln.
+ * Falls der Shortcode mal ohne eigenen Seitentitel eingebettet wird
+ * (z.B. Widget), muss die aufrufende Stelle selbst eine Überschrift setzen.
  */
-
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-$mlw_items            = MediaLab_Wishlist_Storage::get_items_for_display();
-$mlw_wishlist_label    = MediaLab_Inquiry_Settings::wording( 'wishlist_label' );
-$mlw_submit_label      = MediaLab_Inquiry_Settings::wording( 'submit_button' );
-$mlw_extra_fields      = MediaLab_Inquiry_Settings::get_form_fields_localized();
-$mlw_privacy_required  = MediaLab_Inquiry_Settings::privacy_required();
-$mlw_privacy_text      = MediaLab_Inquiry_Settings::privacy_text();
-// Falls der Kunde die Kontaktdaten bereits im Konfigurator-Wizard eingegeben
-// hat (bevor er "Zur Wunschliste hinzufügen" klickte), Formular vorausfüllen.
-$mlw_last_contact      = MediaLab_Wishlist_Storage::get_last_contact();
+$items       = MediaLab_Wishlist_Storage::get_items_for_display();
+$grand_total = MediaLab_Wishlist_Storage::get_grand_total();
+$contact     = MediaLab_Wishlist_Storage::get_last_contact();
+$form_fields = class_exists( 'MediaLab_Inquiry_Settings' ) ? MediaLab_Inquiry_Settings::get_form_fields_localized() : [];
 ?>
-<div class="mlw-wishlist-page">
-    <h1 class="mlw-wishlist-page__title"><?php echo esc_html( $mlw_wishlist_label ); ?></h1>
+<div class="mlw-wishlist">
 
-    <div class="mlw-wishlist-page__layout">
-
-        <!-- Produktliste -->
-        <div class="mlw-wishlist-page__items-col">
-            <div class="mlw-wishlist-items">
-                <?php if ( empty( $mlw_items ) ) : ?>
-                    <p class="mlw-wishlist-empty"><?php esc_html_e( 'Ihre Wunschliste ist leer.', 'media-lab-woocommerce' ); ?></p>
-                <?php else : ?>
-                    <?php foreach ( $mlw_items as $item ) : ?>
-                        <?php include MEDIA_LAB_WC_PATH . 'templates/wishlist/item-row.php'; ?>
-                    <?php endforeach; ?>
-                <?php endif; ?>
+    <div class="mlw-wishlist__header">
+        <?php if ( ! empty( $items ) && class_exists( 'MediaLab_Wishlist_Share' ) ) : ?>
+            <div class="mlw-wishlist__share">
+                <?php echo MediaLab_Wishlist_Share::shortcode_share_button(); // phpcs:ignore WordPress.Security.EscapeOutput -- medialab_share() escaped intern ?>
             </div>
-            <div class="mlw-wishlist-grand-total" style="<?php echo empty( $mlw_items ) ? 'display:none;' : ''; ?>">
-                <span><?php esc_html_e( 'Gesamtsumme:', 'media-lab-woocommerce' ); ?></span>
-                <strong class="mlw-wishlist-grand-total__amount"><?php echo wp_kses_post( wc_price( MediaLab_Wishlist_Storage::get_grand_total() ) ); ?></strong>
-            </div>
-        </div>
-
-        <!-- Absende-Formular -->
-        <div class="mlw-wishlist-page__form-col">
-            <form id="mlw-wishlist-form" class="mlw-wishlist-form" novalidate>
-                <h2 class="mlw-wishlist-form__title"><?php esc_html_e( 'Ihre Kontaktdaten', 'media-lab-woocommerce' ); ?></h2>
-
-                <p class="mlw-form-row">
-                    <label for="mlw_wf_name"><?php esc_html_e( 'Name', 'media-lab-woocommerce' ); ?> <span class="required">*</span></label>
-                    <input type="text" name="name" id="mlw_wf_name" value="<?php echo esc_attr( $mlw_last_contact['name'] ?? '' ); ?>" required>
-                </p>
-
-                <p class="mlw-form-row">
-                    <label for="mlw_wf_email"><?php esc_html_e( 'E-Mail', 'media-lab-woocommerce' ); ?> <span class="required">*</span></label>
-                    <input type="email" name="email" id="mlw_wf_email" value="<?php echo esc_attr( $mlw_last_contact['email'] ?? '' ); ?>" required>
-                </p>
-
-                <p class="mlw-form-row">
-                    <label for="mlw_wf_phone"><?php esc_html_e( 'Telefonnummer', 'media-lab-woocommerce' ); ?></label>
-                    <input type="tel" name="phone" id="mlw_wf_phone" value="<?php echo esc_attr( $mlw_last_contact['phone'] ?? '' ); ?>">
-                </p>
-
-                <?php foreach ( $mlw_extra_fields as $field ) :
-                    $key         = esc_attr( $field['field_key'] ?? '' );
-                    $label       = esc_html( $field['label'] ?? $key );
-                    $required    = ! empty( $field['required'] );
-                    $placeholder = esc_attr( $field['placeholder'] ?? '' );
-                    if ( ! $key ) continue;
-                ?>
-                    <p class="mlw-form-row">
-                        <label for="mlw_wf_<?php echo $key; ?>"><?php echo $label; ?><?php if ( $required ) : ?> <span class="required">*</span><?php endif; ?></label>
-                        <?php if ( ( $field['field_type'] ?? 'text' ) === 'textarea' ) : ?>
-                            <textarea name="<?php echo $key; ?>" id="mlw_wf_<?php echo $key; ?>" rows="3" placeholder="<?php echo $placeholder; ?>" <?php echo $required ? 'required' : ''; ?>></textarea>
-                        <?php elseif ( ( $field['field_type'] ?? 'text' ) === 'select' ) : ?>
-                            <select name="<?php echo $key; ?>" id="mlw_wf_<?php echo $key; ?>" <?php echo $required ? 'required' : ''; ?>>
-                                <option value=""></option>
-                                <?php foreach ( array_filter( array_map( 'trim', explode( ',', (string) ( $field['options'] ?? '' ) ) ) ) as $option ) : ?>
-                                    <option value="<?php echo esc_attr( $option ); ?>"><?php echo esc_html( $option ); ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                        <?php elseif ( ( $field['field_type'] ?? 'text' ) === 'checkbox' ) : ?>
-                            <label class="mlw-checkbox-label"><input type="checkbox" name="<?php echo $key; ?>" id="mlw_wf_<?php echo $key; ?>" value="1"> <?php echo $label; ?></label>
-                        <?php else : ?>
-                            <input type="<?php echo esc_attr( $field['field_type'] ?? 'text' ); ?>" name="<?php echo $key; ?>" id="mlw_wf_<?php echo $key; ?>" placeholder="<?php echo $placeholder; ?>" value="<?php echo esc_attr( $key === 'company' ? ( $mlw_last_contact['company'] ?? '' ) : '' ); ?>" <?php echo $required ? 'required' : ''; ?>>
-                        <?php endif; ?>
-                    </p>
-                <?php endforeach; ?>
-
-                <p class="mlw-form-row">
-                    <label for="mlw_wf_message"><?php esc_html_e( 'Ihre Nachricht', 'media-lab-woocommerce' ); ?></label>
-                    <textarea name="message" id="mlw_wf_message" rows="4"><?php echo esc_textarea( $mlw_last_contact['message'] ?? '' ); ?></textarea>
-                </p>
-
-                <?php if ( $mlw_privacy_required ) : ?>
-                    <p class="mlw-form-row mlw-form-row--privacy">
-                        <label class="mlw-checkbox-label">
-                            <input type="checkbox" name="privacy_consent" id="mlw_wf_privacy" value="1" required>
-                            <span><?php echo wp_kses_post( $mlw_privacy_text ); ?></span>
-                        </label>
-                    </p>
-                <?php endif; ?>
-
-                <?php if ( function_exists( 'medialab_honeypot_render' ) ) : ?>
-                    <?php echo medialab_honeypot_render(); ?>
-                <?php endif; ?>
-
-                <p class="mlw-form-row">
-                    <button type="submit" class="mlw-wishlist-submit" <?php echo empty( $mlw_items ) ? 'disabled' : ''; ?>>
-                        <?php echo esc_html( $mlw_submit_label ); ?>
-                    </button>
-                </p>
-
-                <div class="mlw-wishlist-message" style="display:none;"></div>
-            </form>
-        </div>
-
+        <?php endif; ?>
     </div>
+
+    <div class="mlw-wishlist-notice mlw-wishlist-notice--empty" style="display:<?php echo empty( $items ) ? 'block' : 'none'; ?>;">
+        <p><?php echo esc_html( MediaLab_Inquiry_Settings::wording( 'wishlist_empty' ) ); ?></p>
+    </div>
+    <a
+        href="<?php echo esc_url( wc_get_page_permalink( 'shop' ) ); ?>"
+        class="mlw-wishlist-back-to-shop button"
+        style="display:<?php echo empty( $items ) ? 'inline-block' : 'none'; ?>;"
+    >
+        <?php esc_html_e( 'Zurück zum Shop', 'media-lab-woocommerce' ); ?>
+    </a>
+
+    <?php if ( ! empty( $items ) ) : ?>
+
+        <!--
+        Plain <div>, kein <ul> - wishlist.js ersetzt bei Ajax-Änderungen
+        '.mlw-wishlist-items' innerHTML direkt mit <div class="mlw-wishlist-item">-
+        Geschwistern (siehe renderItems()/renderItemRow() im JS). Ein <ul>-Wrapper
+        hier würde danach ungültig verschachteltes Markup ergeben.
+        -->
+        <div class="mlw-wishlist-items">
+            <?php foreach ( $items as $item ) : ?>
+                <?php include MEDIA_LAB_WC_PATH . 'templates/wishlist/item-row.php'; ?>
+            <?php endforeach; ?>
+        </div>
+
+        <div class="mlw-wishlist-grand-total">
+            <span class="mlw-wishlist-grand-total__label"><?php esc_html_e( 'Gesamt', 'media-lab-woocommerce' ); ?></span>
+            <span class="mlw-wishlist-grand-total__amount">
+                <?php echo wc_price( $grand_total ); // phpcs:ignore WordPress.Security.EscapeOutput -- wc_price() escaped ?>
+            </span>
+        </div>
+
+    <?php else : ?>
+
+        <!--
+        Leerer, aber vorhandener Container - wishlist.js sucht per
+        querySelector('.mlw-wishlist-items') und muss das Element auch dann
+        finden, wenn die Seite initial leer geladen wurde (z.B. falls doch
+        einmal Items per Ajax dazukommen, ohne Reload).
+        -->
+        <div class="mlw-wishlist-items"></div>
+        <div class="mlw-wishlist-grand-total" style="display:none;">
+            <span class="mlw-wishlist-grand-total__label"><?php esc_html_e( 'Gesamt', 'media-lab-woocommerce' ); ?></span>
+            <span class="mlw-wishlist-grand-total__amount"></span>
+        </div>
+
+    <?php endif; ?>
+
+    <?php if ( ! empty( $items ) ) : ?>
+    <form id="mlw-wishlist-form" novalidate>
+
+        <div class="mlw-wishlist-message" style="display:none;" role="status" aria-live="polite"></div>
+
+        <div class="mlw-wishlist__form-row">
+            <label for="mlw-wishlist-name"><?php esc_html_e( 'Name', 'media-lab-woocommerce' ); ?> *</label>
+            <input type="text" id="mlw-wishlist-name" name="name" required value="<?php echo esc_attr( $contact['name'] ); ?>">
+        </div>
+
+        <div class="mlw-wishlist__form-row">
+            <label for="mlw-wishlist-email"><?php esc_html_e( 'E-Mail', 'media-lab-woocommerce' ); ?> *</label>
+            <input type="email" id="mlw-wishlist-email" name="email" required value="<?php echo esc_attr( $contact['email'] ); ?>">
+        </div>
+
+        <div class="mlw-wishlist__form-row">
+            <label for="mlw-wishlist-phone"><?php esc_html_e( 'Telefon', 'media-lab-woocommerce' ); ?></label>
+            <input type="tel" id="mlw-wishlist-phone" name="phone" value="<?php echo esc_attr( $contact['phone'] ); ?>">
+        </div>
+
+        <?php foreach ( $form_fields as $field ) :
+            $field_key = esc_attr( $field['field_key'] ?? '' );
+            if ( ! $field_key ) continue;
+            $field_type  = $field['field_type']  ?? 'text';
+            $field_label = $field['label']       ?? '';
+            $required    = ! empty( $field['required'] );
+        ?>
+            <div class="mlw-wishlist__form-row">
+                <label for="mlw-wishlist-<?php echo $field_key; ?>">
+                    <?php echo esc_html( $field_label ); ?><?php if ( $required ) echo ' *'; ?>
+                </label>
+
+                <?php // WICHTIG: name FLACH (nicht fields[...]) - class-ajax.php::submit()
+                      // liest $_POST[$key] direkt pro konfiguriertem Zusatzfeld. ?>
+
+                <?php if ( $field_type === 'textarea' ) : ?>
+                    <textarea id="mlw-wishlist-<?php echo $field_key; ?>" name="<?php echo $field_key; ?>" <?php echo $required ? 'required' : ''; ?>></textarea>
+                <?php elseif ( $field_type === 'select' ) : ?>
+                    <select id="mlw-wishlist-<?php echo $field_key; ?>" name="<?php echo $field_key; ?>" <?php echo $required ? 'required' : ''; ?>>
+                        <?php foreach ( array_filter( array_map( 'trim', explode( ',', $field['options'] ?? '' ) ) ) as $option ) : ?>
+                            <option value="<?php echo esc_attr( $option ); ?>"><?php echo esc_html( $option ); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                <?php elseif ( $field_type === 'checkbox' ) : ?>
+                    <input type="checkbox" id="mlw-wishlist-<?php echo $field_key; ?>" name="<?php echo $field_key; ?>" value="1">
+                <?php else : ?>
+                    <input
+                        type="<?php echo esc_attr( $field_type ); ?>"
+                        id="mlw-wishlist-<?php echo $field_key; ?>"
+                        name="<?php echo $field_key; ?>"
+                        placeholder="<?php echo esc_attr( $field['placeholder'] ?? '' ); ?>"
+                        <?php echo $required ? 'required' : ''; ?>
+                    >
+                <?php endif; ?>
+            </div>
+        <?php endforeach; ?>
+
+        <div class="mlw-wishlist__form-row">
+            <label for="mlw-wishlist-message"><?php esc_html_e( 'Nachricht', 'media-lab-woocommerce' ); ?></label>
+            <textarea id="mlw-wishlist-message" name="message"><?php echo esc_textarea( $contact['message'] ); ?></textarea>
+        </div>
+
+        <?php if ( MediaLab_Inquiry_Settings::privacy_required() ) : ?>
+            <div class="mlw-wishlist__form-row mlw-wishlist__form-row--privacy">
+                <label>
+                    <input type="checkbox" name="privacy_consent" required>
+                    <?php echo wp_kses_post( MediaLab_Inquiry_Settings::privacy_text() ); ?>
+                </label>
+            </div>
+        <?php endif; ?>
+
+        <?php
+        // Honeypot (agency-core, siehe inc/honeypot.php) - function_exists()-Guard
+        // nach demselben defensiven Muster wie class-ajax.php::submit() selbst.
+        if ( function_exists( 'medialab_honeypot_render' ) ) {
+            echo medialab_honeypot_render(); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped intern (esc_attr auf allen dynamischen Teilen)
+        }
+        ?>
+
+        <button type="submit" class="mlw-wishlist-submit button" <?php disabled( empty( $items ) ); ?>>
+            <?php echo esc_html( MediaLab_Inquiry_Settings::wording( 'submit_button' ) ); ?>
+        </button>
+
+    </form>
+    <?php endif; ?>
+
 </div>

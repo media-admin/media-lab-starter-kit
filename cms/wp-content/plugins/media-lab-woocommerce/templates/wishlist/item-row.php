@@ -2,10 +2,18 @@
 /**
  * Eine Zeile in der Wunschlisten-Übersicht.
  *
- * Erwartet $item im Format von MediaLab_Wishlist_Storage::get_items_for_display().
- * WICHTIG: Die JS-Entsprechung (wishlist.js, renderItemRow()) muss bei
- * strukturellen Änderungen an diesem Template manuell synchron gehalten
- * werden, da Ajax-Updates die Liste clientseitig neu rendern.
+ * Struktur als Grid-Spalten (siehe assets/src/scss/components/_wishlist.scss):
+ * Bild | Details (Name/SKU/Konfiguration) | Einzelpreis | Menge | Positions-
+ * gesamtpreis | Entfernen. Die "Positionsgesamtpreis"-Spalte ist bewusst von
+ * "Details" getrennt, damit sie exakt über der Gesamtsumme-Zeile
+ * (.mlw-wishlist-grand-total) ausgerichtet werden kann - beide nutzen
+ * dasselbe Grid-Template.
+ *
+ * WICHTIG: Diese Struktur wird von assets/js/wishlist.js::renderItemRow()
+ * 1:1 gespiegelt. Bei Änderungen HIER immer auch dort anpassen.
+ *
+ * Erwartet: $item (ein einzelnes Element aus
+ * MediaLab_Wishlist_Storage::get_items_for_display()).
  */
 if ( ! defined( 'ABSPATH' ) ) exit;
 ?>
@@ -45,18 +53,27 @@ if ( ! defined( 'ABSPATH' ) ) exit;
                 <?php endforeach; ?>
             </div>
         <?php endif; ?>
-
-        <?php if ( $item['unit_price'] !== null && function_exists( 'wc_price' ) ) : ?>
-            <div class="mlw-wishlist-item__price">
-                <?php echo wp_kses_post( wc_price( $item['unit_price'] ) ); ?> <?php esc_html_e( 'pro Stück', 'media-lab-woocommerce' ); ?>
-                · <strong><?php echo wp_kses_post( wc_price( $item['line_total'] ) ); ?></strong> <?php esc_html_e( 'gesamt', 'media-lab-woocommerce' ); ?>
-            </div>
-        <?php endif; ?>
     </div>
+
+    <?php if ( $item['unit_price'] !== null && function_exists( 'wc_price' ) ) : ?>
+        <div class="mlw-wishlist-item__price">
+            <?php echo wp_kses_post( wc_price( $item['unit_price'] ) ); ?>
+        </div>
+    <?php else : ?>
+        <div class="mlw-wishlist-item__price"></div>
+    <?php endif; ?>
 
     <div class="mlw-wishlist-item__quantity">
         <input type="number" class="mlw-wishlist-item__qty-input" min="1" value="<?php echo esc_attr( $item['quantity'] ); ?>" data-item-id="<?php echo esc_attr( $item['item_id'] ); ?>">
     </div>
+
+    <?php if ( $item['line_total'] !== null && function_exists( 'wc_price' ) ) : ?>
+        <div class="mlw-wishlist-item__line-total">
+            <?php echo wp_kses_post( wc_price( $item['line_total'] ) ); ?>
+        </div>
+    <?php else : ?>
+        <div class="mlw-wishlist-item__line-total"></div>
+    <?php endif; ?>
 
     <div class="mlw-wishlist-item__remove">
         <button type="button" class="mlw-wishlist-item__remove-btn" data-item-id="<?php echo esc_attr( $item['item_id'] ); ?>" aria-label="<?php esc_attr_e( 'Entfernen', 'media-lab-woocommerce' ); ?>">✕</button>
