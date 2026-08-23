@@ -1,15 +1,15 @@
 <?php
 /**
  * Plugin Name: Media Lab WooCommerce
- * Plugin URI:  https://media-lab.de
+ * Plugin URI:  https://media-lab.at
  * Description: WooCommerce integration for Media Lab Agency sites
- * Version:     2.5.1
+ * Version:     2.6.0
  * Author:      Media Lab
  * Text Domain: media-lab-woocommerce
  */
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define( 'MEDIA_LAB_WC_VERSION', '2.5.1' );
+define( 'MEDIA_LAB_WC_VERSION', '2.6.0' );
 define( 'MEDIA_LAB_WC_PATH', plugin_dir_path( __FILE__ ) );
 define( 'MEDIA_LAB_WC_URL', plugin_dir_url( __FILE__ ) );
 
@@ -54,6 +54,7 @@ add_action( 'plugins_loaded', function () {
     require_once MEDIA_LAB_WC_PATH . 'inc/wishlist/class-storage.php';
     require_once MEDIA_LAB_WC_PATH . 'inc/wishlist/class-ajax.php';
     require_once MEDIA_LAB_WC_PATH . 'inc/wishlist/class-frontend.php';
+    require_once MEDIA_LAB_WC_PATH . 'inc/wishlist/class-share.php';
     require_once MEDIA_LAB_WC_PATH . 'inc/wishlist/class-enqueue.php';
 
     // ── Medialab WooCommerce Filters ─────────────────────────────────────────
@@ -63,4 +64,21 @@ add_action( 'plugins_loaded', function () {
     require_once MEDIA_LAB_WC_PATH . 'inc/filters/filter-bar.php';
     require_once MEDIA_LAB_WC_PATH . 'inc/filters/setup.php';
     require_once MEDIA_LAB_WC_PATH . 'inc/filters/admin-overview.php';
+} );
+
+// ─── Activation / Deactivation ───────────────────────────────────────────────
+// Direkter require_once statt Verlass auf 'plugins_loaded': Aktivierung kann
+// theoretisch ausgelöst werden, bevor WooCommerce selbst aktiv ist (dann läuft
+// zwar ohnehin nichts vom Plugin, aber die Tabelle soll trotzdem sauber
+// angelegt werden können, sobald WooCommerce da ist - kein Verlass auf
+// Hook-Reihenfolge zwischen Plugin-Aktivierung und 'plugins_loaded').
+register_activation_hook( __FILE__, function () {
+    require_once MEDIA_LAB_WC_PATH . 'inc/wishlist/class-share.php';
+    if ( class_exists( 'MediaLab_Wishlist_Share' ) ) {
+        MediaLab_Wishlist_Share::create_table();
+    }
+} );
+
+register_deactivation_hook( __FILE__, function () {
+    wp_clear_scheduled_hook( 'mlw_wishlist_share_cleanup' );
 } );

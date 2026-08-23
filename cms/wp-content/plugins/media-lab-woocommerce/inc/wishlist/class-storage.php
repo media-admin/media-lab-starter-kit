@@ -51,6 +51,17 @@ class MediaLab_Wishlist_Storage {
     }
 
     /**
+     * Wie get_user_items(), aber öffentlich nutzbar für einen beliebigen
+     * User statt nur den aktuell eingeloggten - gebraucht für die Token-
+     * Sharing-Ansicht (siehe MediaLab_Wishlist_Share::get_items_by_token()).
+     */
+    public static function get_items_for_user_id( int $user_id ): array {
+        $items = get_user_meta( $user_id, self::USER_META_KEY, true );
+        return is_array( $items ) ? $items : [];
+    }
+
+
+    /**
      * Anzahl der Positionen (Zeilen) in der Wunschliste, NICHT die Summe
      * aller Mengen - ein Eintrag mit Menge 90 zählt hier als "1", nicht "90".
      */
@@ -136,9 +147,15 @@ class MediaLab_Wishlist_Storage {
      * damit Template und JS-Nachrendern nach Ajax-Änderungen dieselbe Zahl anzeigen,
      * statt die Berechnung an zwei Stellen zu duplizieren.
      */
-    public static function get_items_for_display(): array {
+    /**
+     * @param array|null $items  Optional: explizite Item-Liste statt der
+     *                           des aktuellen Besuchers (z.B. für die
+     *                           öffentliche Token-Ansicht in
+     *                           MediaLab_Wishlist_Share::render_shared_view()).
+     */
+    public static function get_items_for_display( ?array $items = null ): array {
         $out = [];
-        foreach ( self::get_items() as $item ) {
+        foreach ( ( $items ?? self::get_items() ) as $item ) {
             $product = wc_get_product( $item['product_id'] );
 
             // Einzelpreis: bei konfigurierten Produkten aus 'unit_price' der
@@ -166,7 +183,15 @@ class MediaLab_Wishlist_Storage {
                 'image'         => $product ? wp_get_attachment_image_url( $product->get_image_id(), 'thumbnail' ) : '',
                 'exists'        => (bool) $product,
                 'unit_price'    => $unit_price,
+                // Fertig formatiertes HTML (wc_price()) zusätzlich zum rohen
+                // Float mitliefern - wishlist.js übernimmt das direkt statt
+                // selbst zu formatieren, damit die Darstellung nach Ajax-
+                // Updates (Menge ändern, entfernen) exakt der des initialen
+                // PHP-Renders entspricht (Währungssymbol-Position, Dezimal-
+                // trennzeichen etc. laut WooCommerce-Einstellungen).
+                'unit_price_html' => $unit_price !== null ? wc_price( $unit_price ) : '',
                 'line_total'    => $line_total,
+                'line_total_html' => $line_total !== null ? wc_price( $line_total ) : '',
                 'attachment_urls' => array_map( fn( $id ) => [ 'id' => $id, 'url' => wp_get_attachment_url( $id ), 'filename' => basename( (string) wp_get_attachment_url( $id ) ) ], $item['attachments'] ?? [] ),
             ] );
         }
