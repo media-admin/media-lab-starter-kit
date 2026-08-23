@@ -28,6 +28,12 @@ ACF fields auto-load from `acf-json/`
 
 Requires: Media Lab Agency Core plugin
 
+Keine Composer-Abhängigkeiten — kein `composer.json`/`composer.lock`
+vorhanden. Scaffold-Plugin, keine eigene Logik über CPT-/Taxonomie-/
+ACF-Registrierung hinaus. (Ausnahme im Starter Kit: `media-lab-backup`,
+das phpseclib3 für SSH-Key-Auth benötigt.)
+
 ## Version
 
 1.0.0
+
