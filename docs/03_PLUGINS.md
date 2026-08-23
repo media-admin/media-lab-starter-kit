@@ -10,7 +10,14 @@
 |---|---|---|---|
 | media-lab-agency-core | 1.7.0 | Framework + Features | ❌ Nie |
 | media-lab-seo | 1.9.1 | SEO-Toolkit + Dashboard + Reports | ✅ Konfigurierbar |
+| media-lab-project-starter | 1.0.0 (Scaffold) | Projekt-spezifische CPTs/Taxonomien/ACF – wird pro Projekt dupliziert, nicht identisch deployt | ✅ Wird individuell angepasst |
 | advanced-custom-fields-pro | aktuell | Custom Fields | ✅ Konfigurierbar |
+
+> Versionsnummern in dieser Tabelle sind eine Momentaufnahme und driften
+> erfahrungsgemäß schnell auseinander (siehe Root-README-Hinweis dazu).
+> Verbindlich ist immer der `Version:`-Header der jeweiligen Plugin-
+> Hauptdatei.
+
 
 ---
 
@@ -457,6 +464,33 @@ if (function_exists('medialab_seo_breadcrumbs')) {
 Ausführliche Einrichtung (GSC-OAuth, Bing, GA4, Matomo, Report-Empfänger)
 siehe [13_SEO.md](13_SEO.md) bzw. die Plugin-eigene README unter
 `cms/wp-content/plugins/media-lab-seo/README.md`.
+
+---
+
+## media-lab-project-starter `v1.0.0` (Scaffold)
+
+**Datei:** `cms/wp-content/plugins/media-lab-project-starter/media-lab-project-starter.php`
+
+Anders als die übrigen Plugins wird dieses Plugin **nicht** identisch über
+alle Kundenprojekte verteilt, sondern pro neuem Projekt **dupliziert und
+individuell angepasst** (eigener CPT-/Taxonomie-/ACF-Bedarf je Kunde). Für
+Details zum Duplizieren/Umbenennen siehe die ausführlichere Beschreibung
+im Root-README (Abschnitt „media-lab-project-starter — Projekt-Scaffold").
+
+Enthält bewusst nur ein minimales Grundgerüst:
+
+| Datei | Inhalt |
+|---|---|
+| `inc/custom-post-types.php` | Projekt-spezifische CPTs (leer/Beispiel im Scaffold) |
+| `inc/taxonomies.php` | Projekt-spezifische Taxonomien |
+| `inc/acf-config.php` | Projekt-spezifische ACF-Felder |
+
+Benötigt `media-lab-agency-core` als aktives Plugin (Dependency-Check über
+`medialab_core_version()`, siehe `inc/helpers.php` in Agency Core).
+
+Keine eigenen Composer-Abhängigkeiten, kein eigenes `uninstall.php`-
+relevantes Datenaufkommen über CPT-Content hinaus (siehe
+`docs/BACKLOG.md`, Struktur/Prozess-Punkte).
 
 ---
 

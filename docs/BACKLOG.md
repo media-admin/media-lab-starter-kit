@@ -262,7 +262,24 @@ ebenfalls divergieren. Unverändert offen.
 
 - `media-lab-agency-core`: eigenes CHANGELOG.md (aktuell inline in README)
 - `composer.json`/`composer.lock`/`uninstall.php` bei allen Plugins außer `media-lab-backup` nachziehen
-- `cms/wp-content/themes/custom-theme/README.md` (die **interne** Theme-README, nicht die Root-README) steht seit dem allerersten Release auf Version `1.0.0` und wurde nie wieder gepflegt — `style.css` steht inzwischen bei `1.15.2`. Beim Root-README-Cleanup (13.08.2026) mit entdeckt, aber bewusst nicht mit erledigt (eigener, nicht kleiner Umfang: Vite-Struktur, SCSS-Variablen, Component-Liste, Customizer-Doku — alles am echten Code zu verifizieren)
+- ~~`cms/wp-content/themes/custom-theme/README.md` (die **interne**
+  Theme-README) steht seit dem allerersten Release auf Version `1.0.0`
+  und wurde nie wieder gepflegt~~ → **erledigt (22.08.2026).**
+  Komplett überarbeitet, alle Angaben gegen echten Code verifiziert
+  (Requirements, Design-Tokens, Component-Liste, Projektstruktur).
+  Zwei Zusatzfunde dabei behoben:
+  - **`CUSTOM_THEME_VERSION`** in `functions.php` war seit Langem
+    eingefroren (`'1.4.0'`) während `style.css` bei `1.15.3` stand —
+    jetzt dynamisch über `wp_get_theme()->get('Version')` synchronisiert.
+  - Die alte README behauptete fälschlich "Configure in Customizer" —
+    das Theme hat keinen einzigen `customize_register()`-Hook.
+    Richtiggestellt: Anpassung läuft über SCSS-Tokens (Build-Zeit) bzw.
+    `media-lab-agency-core`s ACF-Options-Seiten (Laufzeit).
+
+  Neues eigenständiges `CHANGELOG.md` fürs Theme angelegt (vorher gab es
+  keins) — startet bei `1.15.3`, ältere Historie bewusst nicht
+  rekonstruiert (anders als bei `media-lab-agency-core` keine
+  Git-Log-Auswertung gemacht, siehe dortiger Eintrag zum Vergleich).
 - `media-lab-project-starter` fehlte bisher in **jeder** Doku (Root-README, `03_PLUGINS.md`, hier im Backlog) — beim Root-README-Cleanup entdeckt und dort in einem eigenen Abschnitt ergänzt (Scaffold-Charakter, wird pro Projekt dupliziert statt identisch deployt). `docs/03_PLUGINS.md` erwähnt es weiterhin nicht — sollte dort ergänzt werden
 
 ### Root-README (`README.md`) — erledigt (13.08.2026)
