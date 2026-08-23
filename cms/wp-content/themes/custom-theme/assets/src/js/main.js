@@ -157,6 +157,11 @@ const initApp = async () => {
     safeInit('AjaxFilters', () => new AjaxFilters());
   }
 
+  // WooCommerce Produktfilter: Klasse aus PHP → #wc-filter-sidebar
+  if (has('#wc-filter-sidebar')) {
+    await import('./components/mlwf-filters');
+  }
+
   // Google Maps: Klasse aus PHP → .google-maps
   if (has('.google-map, [data-map]')) {
     const { default: GoogleMapConsent } = await import('./components/google-maps');
