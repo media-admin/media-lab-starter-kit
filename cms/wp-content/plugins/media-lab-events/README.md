@@ -23,6 +23,14 @@ Entwickelt von [Media Lab Tritremmel GmbH](https://media-lab.at).
 - WordPress (Mindestversion nicht im Plugin-Header angegeben)
 - Advanced Custom Fields Pro (für die Event-Details-Feldgruppe)
 
+
+## Dependencies
+
+Keine Composer-Abhängigkeiten — kein `composer.json`/`composer.lock`
+vorhanden. Reines Hook-/ACF-basiertes PHP ohne externe Bibliotheken.
+(Ausnahme im Starter Kit: `media-lab-backup`, das phpseclib3 für
+SSH-Key-Auth benötigt.)
+
 ---
 
 ## Installation

@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Media Lab Events
- * Plugin URI:  https://media-lab.de
+ * Plugin URI:  https://media-lab.at
  * Description: Events CPT with ACF fields and shortcodes for Media Lab Agency sites.
  * Version:     1.0.1
  * Author:      Media Lab
