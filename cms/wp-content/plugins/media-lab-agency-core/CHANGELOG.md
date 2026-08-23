@@ -18,6 +18,18 @@ nur knappe Stichpunkte aus `@since`-Kommentaren im Code verfügbar. Für
 auch keine Git-Tags. **Bewusst nicht geraten** — siehe „Offene Punkte" am
 Ende.
 
+## [1.25.0] - 2026-08-22
+
+### Added
+- **`medialab_share()`/`[medialab_share]`: optionale `url`/`title`-Parameter**
+  (`inc/social-share.php`) – bisher wurde immer die aktuelle Seiten-URL/
+  der aktuelle Seitentitel geteilt. Für Fälle, in denen eine andere URL
+  geteilt werden soll (z.B. `media-lab-woocommerce`s neues
+  Wunschlisten-Sharing, das einen Token-Link statt der eigenen
+  Seiten-URL teilt), können beide jetzt explizit übergeben werden.
+  Vollständig abwärtskompatibel – kein Aufrufer ohne diese Parameter
+  ändert sein Verhalten.
+
 ---
 
 ## [1.24.0] - 2026-08-17

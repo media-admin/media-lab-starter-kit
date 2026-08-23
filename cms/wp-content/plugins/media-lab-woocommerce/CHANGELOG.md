@@ -4,6 +4,55 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [2.6.0] - 2026-08-22
+
+### Added
+- **Wunschlisten-Button-API für Custom-Card-Themes** (`inc/wishlist/class-frontend.php`)
+  – neue öffentliche Methode `render_button_html()` gibt das Button-HTML
+  zurück statt es auszugeben. Zwei neue Filter
+  `mlw_wishlist_auto_loop_button`/`mlw_wishlist_auto_single_button`
+  (Default `true`, kein Breaking Change) erlauben Themes mit komplett
+  selbst gebautem Produktkarten-Markup, die automatischen Hooks
+  abzuschalten und den Button an eigener Stelle zu platzieren. Erster
+  Baustein der TI-Wishlist-Migration bei `juwelier-janecka` (siehe
+  docs/BACKLOG.md).
+- **Wunschlisten-Sharing per Token-Link** (`inc/wishlist/class-share.php`,
+  neue Tabelle `wp_mlw_shared_wishlists`) – Kunden und Gäste können ihre
+  Wunschliste über einen dauerhaften Link mit Dritten teilen, nutzt
+  `medialab_share()` aus agency-core für die Button-UI. Bei eingeloggten
+  Kunden zeigt der Link immer den aktuellen Listenstand (Live-Load); bei
+  Gästen wird ein Snapshot gespeichert (Session-Storage ist nicht
+  dauerhaft genug für einen teilbaren Link), automatisches Cleanup nach
+  90 Tagen (`mlw_wishlist_share_guest_retention_days`-Filter). Neue
+  Read-Only-Ansicht (`templates/wishlist/shared.php`) für Empfänger,
+  inkl. "In den Warenkorb"/"Produkt ansehen" pro Artikel.
+- **Wunschlisten-Seiten-Templates** (`templates/wishlist/page.php`,
+  `templates/wishlist/item-row.php`) – existierten bisher nicht,
+  `[mlw_wishlist_page]` lief ins Leere. Item-Zeilen als Grid-Spalten
+  (Bild/Details/Einzelpreis/Menge/Positionsgesamtpreis/Entfernen), die
+  sich mit der Gesamtsumme-Zeile dasselbe Spalten-Raster teilen
+  (`assets/src/scss/components/_wishlist.scss`), sodass
+  Positionsgesamtpreise exakt über dem Gesamtbetrag ausgerichtet sind.
+- **Hinweistext "Wunschliste leer" backend-steuerbar + mehrsprachig**
+  (`inc/inquiry/class-settings.php`) – neuer Wording-Key `wishlist_empty`,
+  volle Fallback-Kette wie alle anderen Wording-Felder (Sprache →
+  einsprachiges Flat-Feld → Code-Default).
+
+### Fixed
+- **Preisformatierung driftete nach Ajax-Updates** (`inc/wishlist/class-storage.php`,
+  `inc/wishlist/class-ajax.php`, `assets/js/wishlist.js`) – JS formatierte
+  Preise nach Menge-Ändern/Entfernen selbst nach (hartcodiertes `€`,
+  keine Rücksicht auf WooCommerce-Währungseinstellungen), wodurch die
+  Darstellung vom initialen PHP-Render abweichen konnte. Server liefert
+  jetzt fertig formatiertes `wc_price()`-HTML (`unit_price_html`,
+  `line_total_html`, `grand_total_html`) mit, JS übernimmt es 1:1.
+
+### Changed
+- `inc/wishlist/class-storage.php::get_items_for_display()` akzeptiert
+  jetzt optional eine explizite Item-Liste statt immer nur die des
+  aktuellen Besuchers (nötig für die Token-Sharing-Ansicht). Neue
+  öffentliche `get_items_for_user_id()`.
+
 ---
 
 ## [2.5.1] - 2026-08-12
