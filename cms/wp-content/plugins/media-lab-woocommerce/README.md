@@ -30,7 +30,17 @@ Entwickelt von [Media Lab Tritremmel GmbH](https://media-lab.at).
 
 ---
 
+## Dependencies
+
+Keine Composer-Abhängigkeiten — kein `composer.json`/`composer.lock`
+vorhanden. Reines Hook-/ACF-basiertes PHP ohne externe Bibliotheken.
+(Ausnahme im Starter Kit: `media-lab-backup`, das phpseclib3 für
+SSH-Key-Auth benötigt.)
+
+---
+
 ## Installation
+
 
 1. Upload nach `/wp-content/plugins/media-lab-woocommerce/`
 2. Im WordPress-Backend aktivieren
