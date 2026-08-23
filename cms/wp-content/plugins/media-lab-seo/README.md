@@ -33,6 +33,15 @@ Entwickelt von [Media Lab Tritremmel GmbH](https://media-lab.at).
 - `media-lab-agency-core` muss aktiv sein — ohne Agency Core deaktiviert sich das Plugin beim Aktivierungsversuch automatisch und zeigt eine Admin-Notice
 - SMTP-Versand (für den Report-Mailer) wird ausschließlich über Agency Core konfiguriert: **Agency Core → E-Mail / SMTP**
 
+
+## Dependencies
+
+Keine Composer-Abhängigkeiten — kein `composer.json`/`composer.lock`
+vorhanden. Auch die GA4-Service-Account-JWT-Signierung (RS256) läuft
+komplett über PHP-native `openssl_sign()`/`openssl_pkey_get_private()`,
+keine externe JWT-Bibliothek nötig. (Ausnahme im Starter Kit:
+`media-lab-backup`, das phpseclib3 für SSH-Key-Auth benötigt.)
+
 ---
 
 ## Installation
@@ -127,7 +136,7 @@ wp cron event list | grep mlt         # Nächsten geplanten Versand anzeigen
 
 ## Hooks
 
-Nur tatsächlich im Code vorhandene Hooks (Stand 1.9.1, verifiziert gegen den Quellcode):
+Nur tatsächlich im Code vorhandene Hooks (Stand 1.9.2, verifiziert gegen den Quellcode):
 
 ### Actions
 | Hook | Beschreibung |
