@@ -153,6 +153,61 @@ class MediaLab_Configurator_ACF_Fields {
                             'instructions' => 'Hilfetext für den Kunden (optional)',
                             'rows' => 2,
                         ),
+
+                        // Als Filter verwenden
+                        array(
+                            'key' => 'field_step_use_as_filter',
+                            'label' => 'Als Filter verwenden',
+                            'name' => 'use_as_filter',
+                            'type' => 'true_false',
+                            'instructions' => 'Verknüpft die Options-Werte dieses Steps mit einem bestehenden WooCommerce-Attribut, damit das Produkt darüber in der Shop-Filter-Bar filterbar wird.',
+                            'default_value' => 0,
+                            'ui' => 1,
+                            'conditional_logic' => array(
+                                array(
+                                    array('field' => 'field_step_type', 'operator' => '==', 'value' => 'select'),
+                                ),
+                                array(
+                                    array('field' => 'field_step_type', 'operator' => '==', 'value' => 'radio'),
+                                ),
+                                array(
+                                    array('field' => 'field_step_type', 'operator' => '==', 'value' => 'checkbox'),
+                                ),
+                                array(
+                                    array('field' => 'field_step_type', 'operator' => '==', 'value' => 'color_picker'),
+                                ),
+                            ),
+                            'wrapper' => array('width' => '50'),
+                        ),
+                        
+                        // Verknüpftes Attribut
+                        array(
+                            'key' => 'field_step_filter_attribute',
+                            'label' => 'Verknüpftes Attribut',
+                            'name' => 'filter_attribute',
+                            'type' => 'select',
+                            'choices' => self::attribute_choices(),
+                            'instructions' => 'Bestehendes WooCommerce-Attribut, dessen Terms aus den Bezeichnungen der Options dieses Steps gepflegt werden (bei Bedarf automatisch neu angelegt).',
+                            'conditional_logic' => array(
+                                array(
+                                    array('field' => 'field_step_type', 'operator' => '==', 'value' => 'select'),
+                                    array('field' => 'field_step_use_as_filter', 'operator' => '==', 'value' => '1'),
+                                ),
+                                array(
+                                    array('field' => 'field_step_type', 'operator' => '==', 'value' => 'radio'),
+                                    array('field' => 'field_step_use_as_filter', 'operator' => '==', 'value' => '1'),
+                                ),
+                                array(
+                                    array('field' => 'field_step_type', 'operator' => '==', 'value' => 'checkbox'),
+                                    array('field' => 'field_step_use_as_filter', 'operator' => '==', 'value' => '1'),
+                                ),
+                                array(
+                                    array('field' => 'field_step_type', 'operator' => '==', 'value' => 'color_picker'),
+                                    array('field' => 'field_step_use_as_filter', 'operator' => '==', 'value' => '1'),
+                                ),
+                            ),
+                            'wrapper' => array('width' => '50'),
+                        ),
                         
                         // Options (Repeater)
                         array(
@@ -234,6 +289,17 @@ class MediaLab_Configurator_ACF_Fields {
                                     'type' => 'true_false',
                                     'default_value' => 1,
                                     'ui' => 1,
+                                ),
+                                
+                                // Verknüpfter Attribut-Term (automatisch von filter-sync.php gepflegt)
+                                array(
+                                    'key' => 'field_option_filter_term_id',
+                                    'label' => 'Verknüpfter Attribut-Term',
+                                    'name' => 'filter_term_id',
+                                    'type' => 'text',
+                                    'instructions' => 'Wird automatisch gesetzt, sobald "Als Filter verwenden" am Step aktiv ist - Brücke zwischen dieser Option und dem WooCommerce-Attribut-Term. Nicht manuell befüllen, "value" bleibt davon unberührt.',
+                                    'readonly' => 1,
+                                    'wrapper' => array('width' => '50'),
                                 ),
                             ),
                         ),
@@ -579,5 +645,21 @@ class MediaLab_Configurator_ACF_Fields {
             'position' => 'normal',
             'style' => 'default',
         ));
+    }
+
+    /**
+     * Bestehende WooCommerce-Attribute als Choices - für 'field_step_filter_attribute'.
+     * Bewusst eine eigene Kopie (nicht aus inc/filters/ importiert), damit der
+     * Konfigurator ohne Abhängigkeit zum Filter-System funktioniert.
+     */
+    public static function attribute_choices(): array {
+        $choices = array();
+        if ( function_exists( 'wc_get_attribute_taxonomies' ) ) {
+            foreach ( wc_get_attribute_taxonomies() as $attr ) {
+                $slug = wc_attribute_taxonomy_name( $attr->attribute_name );
+                $choices[ $slug ] = $attr->attribute_label . ' (' . $slug . ')';
+            }
+        }
+        return $choices;
     }
 }
