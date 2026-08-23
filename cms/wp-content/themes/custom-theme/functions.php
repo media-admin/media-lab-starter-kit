@@ -12,9 +12,9 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-// Theme version
-define('CUSTOM_THEME_VERSION', '1.4.0');
-
+// Theme version — direkt aus dem style.css-Header gezogen, damit sie nie
+// wieder von dort abweichen kann (siehe docs/BACKLOG.md, Versions-Divergenz-Funde).
+define('CUSTOM_THEME_VERSION', wp_get_theme()->get('Version'));
 /**
  * Check Required Plugins
  */
