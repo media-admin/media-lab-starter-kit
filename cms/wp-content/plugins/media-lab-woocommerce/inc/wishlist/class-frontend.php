@@ -1,7 +1,7 @@
 <?php
 /**
  * Wunschlisten-Frontend: Buttons + Seiten-Shortcode.
- * 
+ *
  * Theme-Override für Custom-Produktkarten-Markup (z.B. Themes, die alle
  * WooCommerce-Standard-Hooks entfernen und die Karte selbst zusammenbauen):
  *
@@ -11,6 +11,11 @@
  * Danach im eigenen Karten-Template manuell aufrufen:
  *
  *   echo MediaLab_Wishlist_Frontend::render_button_html( $product->get_id() );
+ *
+ * Button-Stil: Standard ist 'icon' (reines Herz-Icon). Umstellbar ohne
+ * Core-Code anzufassen:
+ *   add_filter( 'mlw_wishlist_button_style', fn() => 'text' );       // nur Text
+ *   add_filter( 'mlw_wishlist_button_style', fn() => 'icon_text' );  // Icon + Text
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
@@ -49,7 +54,9 @@ class MediaLab_Wishlist_Frontend {
         // stattdessen an eigener Stelle aufrufen (z.B. juwelier-janecka).
         if ( ! apply_filters( 'mlw_wishlist_auto_loop_button', true ) ) return;
 
-        echo self::render_button_html( $product->get_id() ); // phpcs:ignore WordPress.Security.EscapeOutput -- bereits in render_button_html() escaped
+        $style = apply_filters( 'mlw_wishlist_button_style', 'icon' );
+
+        echo self::render_button_html( $product->get_id(), false, $style ); // phpcs:ignore WordPress.Security.EscapeOutput -- bereits in render_button_html() escaped
     }
 
     public static function render_single_button(): void {
@@ -58,7 +65,9 @@ class MediaLab_Wishlist_Frontend {
 
         if ( ! apply_filters( 'mlw_wishlist_auto_single_button', true ) ) return;
 
-        echo self::render_button_html( $product->get_id(), true ); // phpcs:ignore WordPress.Security.EscapeOutput -- bereits in render_button_html() escaped
+        $style = apply_filters( 'mlw_wishlist_button_style', 'icon' );
+
+        echo self::render_button_html( $product->get_id(), true, $style ); // phpcs:ignore WordPress.Security.EscapeOutput -- bereits in render_button_html() escaped
     }
 
 
@@ -72,27 +81,58 @@ class MediaLab_Wishlist_Frontend {
      * Hooks (render_loop_button()/render_single_button()) deaktivieren
      * und den Button stattdessen an einer eigenen Stelle im Custom-
      * Produktkarten-Markup platzieren wollen (siehe mlw_wishlist_auto_*-
-     * Filter unten in init()).
+     * Filter oben in init()).
      *
      * Gibt einen leeren String zurück, wenn das Produkt konfigurierbar
      * ist (bekommt einen eigenen Wizard-Button, siehe is_configurable())
      * - der Aufrufer muss diesen Fall daher NICHT selbst prüfen.
      *
+     * @param string $style  'icon' (Standard) | 'text' | 'icon_text'
+     *
      * @example
      *   // Im eigenen Produktkarten-Template:
      *   echo MediaLab_Wishlist_Frontend::render_button_html( $product->get_id() );
+     *   echo MediaLab_Wishlist_Frontend::render_button_html( $product->get_id(), false, 'icon_text' );
      */
-    public static function render_button_html( int $product_id, bool $large = false ): string {
+    public static function render_button_html( int $product_id, bool $large = false, string $style = 'icon' ): string {
         if ( self::is_configurable( $product_id ) ) return '';
+        if ( ! in_array( $style, [ 'icon', 'text', 'icon_text' ], true ) ) $style = 'icon';
 
-        $label = MediaLab_Inquiry_Settings::wording( 'add_button' );
-        $class = 'mlw-add-to-wishlist' . ( $large ? ' mlw-add-to-wishlist--single' : ' mlw-add-to-wishlist--loop' );
+        $label     = MediaLab_Inquiry_Settings::wording( 'add_button' );
+        $is_active = class_exists( 'MediaLab_Wishlist_Storage' ) && MediaLab_Wishlist_Storage::has_product( $product_id );
+
+        $show_icon  = $style === 'icon' || $style === 'icon_text';
+        $show_label = $style === 'text' || $style === 'icon_text';
+
+        $class = 'mlw-add-to-wishlist'
+               . ( $large ? ' mlw-add-to-wishlist--single' : ' mlw-add-to-wishlist--loop' )
+               . ' mlw-add-to-wishlist--' . str_replace( '_', '-', $style ) // --icon | --text | --icon-text
+               . ( $is_active ? ' is-active' : '' );
+
+        $icon_html = '';
+        if ( $show_icon ) {
+            // Derselbe Herz-Pfad wie im Nav-Icon (add_nav_icon()) - bewusst
+            // identisch gehalten für visuelle Konsistenz.
+            $icon_html = '<svg class="mlw-add-to-wishlist__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>';
+        }
+
+        $label_html = $show_label
+            ? '<span class="mlw-add-to-wishlist__label">' . esc_html( $label ) . '</span>'
+            : '';
+
+        // Ohne sichtbares Label (reiner Icon-Stil) braucht der Button ein
+        // aria-label für Screenreader - bei sichtbarem Label ist der Text
+        // selbst schon der zugängliche Name, aria-label wäre dort redundant.
+        $aria_label = ! $show_label ? sprintf( ' aria-label="%s"', esc_attr( $label ) ) : '';
 
         return sprintf(
-            '<button type="button" class="%s" data-product-id="%d">%s</button>',
+            '<button type="button" class="%s" data-product-id="%d"%s aria-pressed="%s">%s%s</button>',
             esc_attr( $class ),
             $product_id,
-            esc_html( $label )
+            $aria_label,
+            $is_active ? 'true' : 'false',
+            $icon_html,
+            $label_html
         );
     }
 

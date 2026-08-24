@@ -60,6 +60,15 @@ class MediaLab_Wishlist_Storage {
         return is_array( $items ) ? $items : [];
     }
 
+    public static function has_product( int $product_id ): bool {
+    foreach ( self::get_items() as $item ) {
+        if ( (int) ( $item['product_id'] ?? 0 ) === $product_id && empty( $item['config'] ) ) {
+            return true;
+        }
+    }
+    return false;
+    }
+
 
     /**
      * Anzahl der Positionen (Zeilen) in der Wunschliste, NICHT die Summe

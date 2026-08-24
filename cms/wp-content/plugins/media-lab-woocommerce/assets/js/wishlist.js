@@ -48,24 +48,45 @@
         }
     }
 
-    // ── Add ──────────────────────────────────────────────────────────────────
+        // ── Add ──────────────────────────────────────────────────────────────────
 
     function handleAdd( btn ) {
         const productId = btn.dataset.productId;
         if ( ! productId ) return;
 
-        const originalText = btn.textContent;
+        // Nur beim reinen Icon-Stil gibt's kein Text-Label zum Zwischenspeichern/
+        // Zurücksetzen (btn.textContent wäre ohnehin leer/nur das SVG) - beim
+        // Text- und Icon+Text-Stil bleibt das bisherige "kurz ✓ anzeigen"-Verhalten.
+        const isIconOnly   = btn.classList.contains( 'mlw-add-to-wishlist--icon' );
+        const labelEl      = btn.querySelector( '.mlw-add-to-wishlist__label' );
+        const originalText = ( ! isIconOnly && labelEl ) ? labelEl.textContent : ( ! isIconOnly ? btn.textContent : null );
+
         btn.disabled = true;
 
         postAjax( 'mlw_wishlist_add', { product_id: productId, quantity: 1 } )
             .then( function ( res ) {
                 if ( res.success ) {
                     updateCountBadges( res.data.count );
-                    btn.textContent = '✓';
-                    setTimeout( function () {
-                        btn.textContent = originalText;
+
+                    if ( isIconOnly ) {
+                        btn.classList.add( 'is-active' );
+                        btn.setAttribute( 'aria-pressed', 'true' );
                         btn.disabled = false;
-                    }, 1500 );
+                    } else if ( labelEl ) {
+                        labelEl.textContent = '✓';
+                        btn.classList.add( 'is-active' );
+                        setTimeout( function () {
+                            labelEl.textContent = originalText;
+                            btn.disabled = false;
+                        }, 1500 );
+                    } else {
+                        btn.textContent = '✓';
+                        setTimeout( function () {
+                            btn.textContent = originalText;
+                            btn.disabled = false;
+                        }, 1500 );
+                    }
+
                     refreshItemsIfOnWishlistPage( res.data.items, res.data.grand_total_html );
                 } else {
                     alert( ( res.data && res.data.message ) || mlwWishlist.i18n.genericError );

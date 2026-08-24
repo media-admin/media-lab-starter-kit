@@ -1,19 +1,82 @@
 /* Wunschlisten-Styling - Basis-Layout, projektspezifisch im Theme überschreibbar */
 
 .mlw-add-to-wishlist {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
     padding: 0.6rem 1.25rem;
     font-size: 14px;
     font-weight: 600;
-    border: 2px solid currentColor;
-    border-radius: 8px;
+    border: 1px solid currentColor;
+    border-radius: 999px;
     background: transparent;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
 }
 .mlw-add-to-wishlist:hover { opacity: 0.8; }
-.mlw-add-to-wishlist--loop { margin-top: 0.5rem; width: 100%; }
 .mlw-add-to-wishlist--single { margin: 1rem 0; }
+.mlw-add-to-wishlist--loop { margin-top: 0.5rem; }
+
+/* --text: volle Breite im Grid, wie ursprünglich (nur für den reinen
+   Text-Stil - Icon-Varianten sollen NICHT über die volle Kartenbreite
+   gestreckt werden). */
+.mlw-add-to-wishlist--text.mlw-add-to-wishlist--loop { width: 100%; }
+
+/* --icon: rund, ohne Label - der neue Standard */
+.mlw-add-to-wishlist--icon {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+}
+
+/* --icon-text: Pille mit Icon + Text nebeneinander (keine
+   Sonderbehandlung nötig - Basis-Regel oben deckt das schon ab) */
+
+.mlw-add-to-wishlist__icon {
+    display: block;
+    width: 20px;
+    height: 20px;
+    max-width: none;
+    flex-shrink: 0;
+    transition: fill 0.2s ease, stroke 0.2s ease, transform 0.2s ease;
+}
+.mlw-add-to-wishlist:hover .mlw-add-to-wishlist__icon {
+    transform: scale(1.1);
+}
+.mlw-add-to-wishlist.is-active .mlw-add-to-wishlist__icon {
+    fill: #e11d48;
+    stroke: #e11d48;
+}
+.mlw-add-to-wishlist__label {
+    line-height: 1;
+}
+
+.mlw-add-to-wishlist--icon-only {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border-radius: 999px;
+    border-width: 1px;
+}
+.mlw-add-to-wishlist--icon-only .mlw-add-to-wishlist__icon {
+    display: block;
+    width: 20px;
+    height: 20px;
+    max-width: none;
+    flex-shrink: 0;
+    transition: fill 0.2s ease, stroke 0.2s ease, transform 0.2s ease;
+}
+.mlw-add-to-wishlist--icon-only:hover .mlw-add-to-wishlist__icon {
+    transform: scale(1.1);
+}
+.mlw-add-to-wishlist--icon-only.is-active .mlw-add-to-wishlist__icon {
+    fill: #e11d48;
+    stroke: #e11d48;
+}
 
 .mlw-wishlist-page { max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; }
 .mlw-wishlist-page__title { margin-bottom: 1.5rem; }
