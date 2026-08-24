@@ -4,6 +4,31 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [2.8.0] - 2026-08-24
+
+### Added
+- **Wunschlisten-Button: drei Stile statt nur Text** (`inc/wishlist/class-frontend.php`,
+  `inc/wishlist/class-storage.php`, `assets/js/wishlist.js`, `assets/css/wishlist.css`)
+  – `render_button_html()` bekommt einen neuen `$style`-Parameter (`'icon'`
+  | `'text'` | `'icon_text'`). Standard für die automatischen Hooks
+  (`render_loop_button()`/`render_single_button()`) ist jetzt `'icon'`
+  (reines Herz-Icon, vorher Text-Button "Zur Wunschliste hinzufügen").
+  Zeigt beim Rendern sofort den korrekten "schon auf der Liste"-Zustand
+  (`is-active`, neue `MediaLab_Wishlist_Storage::has_product()`), kein
+  Aufblitzen des falschen Zustands beim Seitenaufruf. Per neuem
+  `mlw_wishlist_button_style`-Filter projektweise umstellbar, ohne
+  Core-Code anzufassen:
+```php
+  add_filter( 'mlw_wishlist_button_style', fn() => 'text' );       // nur Text
+  add_filter( 'mlw_wishlist_button_style', fn() => 'icon_text' );  // Icon + Text
+```
+  **Sichtbarer Verhaltenswechsel** für Projekte, die das Plugin auf
+  diesen Stand aktualisieren (betrifft keine bereits deployten
+  Kunden-Sites, da Plugins pro Client-Repo committed werden, keine
+  Auto-Updates).
+
+---
+
 ## [2.7.0] – 2026-08-23
 
 ### Neu: Konfigurierbare & mehrsprachige Filter-Labels
@@ -51,7 +76,6 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   aus JS importiertes CSS im Production-Build nicht automatisch ein.
 
 ---
-
 
 ## [2.6.0] - 2026-08-22
 
