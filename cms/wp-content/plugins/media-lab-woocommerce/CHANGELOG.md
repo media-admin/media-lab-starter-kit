@@ -4,6 +4,41 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [2.8.2] - 2026-08-24
+
+### Fixed
+- **Globale Filter-Konfiguration ging beim `2.7.0`-Redesign verloren**
+  (`inc/filters/filter-config.php`, `mlwf_get_default_filter_config()`)
+  – las zuvor `mlwf_attributes`/`mlwf_show_price` aus einer ACF-Optionsseite,
+  wurde beim Umbau auf die neue `MediaLab_Filter_Settings`-Klasse
+  versehentlich durch ein leeres Array bzw. hartcodiertes `true` ersetzt.
+  Betraf aktiv genutzte Konfigurationen (bei `at.janecka-2026` z.B. vier
+  konfigurierte Attribute), die als Fallback dienen, wann immer eine
+  Kategorie keine eigene Filter-Konfiguration hat. Gefunden beim
+  Datei-Audit nach dem `2.7.0`-Merge.
+- **"Produkte pro Seite" wurde bei AJAX-gefilterten Shop-Ansichten
+  ignoriert** (`inc/filters/ajax-handlers.php`) – nutzte den alten
+  Options-Namen `posts_per_page_shop` statt `mlw_products_per_page`
+  (siehe `inc/shop-products-per-page.php`, seit `2.2.0` die maßgebliche
+  Option). Zwei Stellen betroffen: Query-Args und der `per_page`-Wert in
+  der JSON-Response.
+- **HPOS-Produkttyp-Cache-Priming bei AJAX-Filter-Requests entfernt**
+  (`inc/filters/ajax-handlers.php`) – `mlwf_ajax_filter_products()` nutzte
+  wieder rohes `new WP_Query()` statt `medialab_prime_and_query_products()`
+  (`inc/hpos-product-type-cache-fix.php`). Der reguläre
+  `pre_get_posts`-Fix deckt AJAX-Handler-Queries nicht ab
+  (`is_main_query()`-Guard schließt sie aus), das Priming war hier
+  weiterhin nötig.
+
+### Documentation
+- Docblock-Kommentar in `inc/configurator/class-configurator.php` stand
+  über der falschen Methode (Placeholder-Bild statt
+  `move_tabs_before_configurator()`) - kosmetisch, keine funktionale
+  Auswirkung.
+
+---
+
+
 ## [2.8.1] - 2026-08-24
 
 ### Fixed
