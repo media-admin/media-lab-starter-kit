@@ -612,9 +612,6 @@ class MediaLab_Product_Configurator {
     }
     
     /**
-     * Verschiebe Tabs (Beschreibung, Rezensionen) VOR den Konfigurator
-     */
-    /**
      * Verwende WooCommerce Standard Placeholder für Produkte ohne Bild
      */
     public function custom_placeholder_image($src) {
@@ -652,7 +649,10 @@ class MediaLab_Product_Configurator {
             echo '</div>';
         }
     }
-
+    
+    /**
+     * Verschiebe Tabs (Beschreibung, Rezensionen) VOR den Konfigurator
+     */
     public function move_tabs_before_configurator() {
         global $product;
         
