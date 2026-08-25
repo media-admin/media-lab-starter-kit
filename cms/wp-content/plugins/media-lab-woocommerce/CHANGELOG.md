@@ -4,6 +4,47 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [2.9.0] - 2026-08-25
+
+### Added
+- **Shop-Modus für die Wunschlisten-Seite** (`templates/wishlist/page.php`,
+  neu: `templates/wishlist/item-row-shop.php`) – Projekte ohne Catalog
+  Mode (echter WooCommerce-Checkout, z.B. `juwelier-janecka`) bekommen
+  jetzt eine Tabellen-Ansicht mit Checkboxen, Hinzufügedatum,
+  Lagerstatus und direktem "In den Warenkorb" statt des
+  Anfrage-Formulars – niemand will ein Kontaktformular ausfüllen, um bei
+  aktivem Checkout einzukaufen. Verzweigt automatisch über
+  `get_field('wc_catalog_mode_enabled', 'option')`; Catalog-Mode-Projekte
+  verhalten sich unverändert (Grid + Anfrage-Formular).
+- **Gesammeltes/einzelnes "In den Warenkorb" verschiebt statt kopiert**
+  (`inc/wishlist/class-ajax.php`, neuer Endpunkt `bulk_add_to_cart`) –
+  erfolgreich in den Warenkorb gelegte Artikel werden im selben Zug aus
+  der Wunschliste entfernt. Bei Teilerfolg (z.B. ein Artikel nicht mehr
+  vorrätig) bleibt man auf der Seite, erfolgreich verschobene Zeilen
+  verschwinden live, übersprungene bleiben mit Meldung stehen – bei
+  vollständigem Erfolg direkte Weiterleitung zum Warenkorb.
+  Übersprungen werden: konfigurierte Artikel, variable Produkte (Größen-/
+  Farbvarianten, die eine explizite Auswahl brauchen) und nicht (mehr)
+  ausreichend vorrätige Artikel (echte Mengen-Prüfung, nicht nur der
+  `is_in_stock()`-Status).
+- **Herz-Icon: Klick zum Entfernen (Toggle)** (`inc/wishlist/class-ajax.php`,
+  neuer Endpunkt `remove_by_product`) – erneuter Klick auf ein bereits
+  aktives Herz-Icon auf der Produktkarte/Einzelproduktseite entfernt den
+  Artikel wieder, statt ihn erneut hinzuzufügen.
+- **Live-Updates ohne Reload im Shop-Modus** (`assets/js/wishlist.js`) –
+  Entfernen und Warenkorb-Verschieben aktualisieren die Tabelle direkt im
+  DOM (Zeile raus, Empty-State bei Bedarf einblenden), kein
+  `window.location.reload()` mehr.
+
+### Fixed
+- `MediaLab_Wishlist_Storage::has_product()`-basierter Aktiv-Zustand des
+  Herz-Icons wurde beim ersten Hinzufügen nicht angezeigt, wenn die
+  Wunschliste beim Seitenaufruf leer war (Badge-`<span>` wurde nur bei
+  `count > 0` überhaupt gerendert) – wird jetzt immer gerendert, nur per
+  Inline-Style versteckt.
+
+---
+
 ## [2.8.2] - 2026-08-24
 
 ### Fixed
@@ -37,7 +78,6 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   Auswirkung.
 
 ---
-
 
 ## [2.8.1] - 2026-08-24
 
