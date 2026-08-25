@@ -28,6 +28,41 @@
                 handleRemove( removeBtn.dataset.itemId );
                 return;
             }
+
+            // Shop-Modus: Entfernen-Button in der Tabellenzeile - entfernt
+            // die Zeile live, kein Reload.
+            const shopRemoveBtn = e.target.closest( '.mlw-wishlist-row__remove-btn' );
+            if ( shopRemoveBtn ) {
+                e.preventDefault();
+                if ( ! window.confirm( mlwWishlist.i18n.confirmRemove ) ) return;
+                postAjax( 'mlw_wishlist_remove', { item_id: shopRemoveBtn.dataset.itemId } )
+                    .then( function ( res ) {
+                        if ( res.success ) {
+                            updateCountBadges( res.data.count );
+                            removeShopRows( [ shopRemoveBtn.dataset.itemId ] );
+                        } else {
+                            alert( ( res.data && res.data.message ) || mlwWishlist.i18n.genericError );
+                        }
+                    } )
+                    .catch( function () {
+                        alert( mlwWishlist.i18n.genericError );
+                    } );
+                return;
+            }
+
+            // Shop-Modus: einzelnes "In den Warenkorb" in der Tabellenzeile -
+            // läuft über denselben Bulk-Endpunkt, nur mit einem Artikel.
+            const rowAddBtn = e.target.closest( '.mlw-wishlist-row__action-btn[data-item-id]' );
+            if ( rowAddBtn ) {
+                e.preventDefault();
+                handleBulkAdd( [ rowAddBtn.dataset.itemId ] );
+                return;
+            }
+
+            // Shop-Modus: Bulk-Add-Button (Checkbox-Auswahl)
+            if ( e.target.id === 'mlw-wishlist-bulk-add' || e.target.closest( '#mlw-wishlist-bulk-add' ) ) {
+                handleBulkAdd();
+            }
         } );
 
         // Mengen-Änderung auf der Wunschlisten-Seite
@@ -35,6 +70,18 @@
             const qtyInput = e.target.closest( '.mlw-wishlist-item__qty-input' );
             if ( qtyInput ) {
                 handleQtyChange( qtyInput.dataset.itemId, qtyInput.value );
+            }
+
+            // Shop-Modus: Zeilen-Checkbox -> Bulk-Button-Status
+            if ( e.target.matches( '.mlw-wishlist-row__checkbox' ) ) {
+                updateBulkAddButtonState();
+            }
+            if ( e.target.id === 'mlw-wishlist-select-all' ) {
+                const checked = e.target.checked;
+                document.querySelectorAll( '.mlw-wishlist-row__checkbox' ).forEach( function ( cb ) {
+                    cb.checked = checked;
+                } );
+                updateBulkAddButtonState();
             }
         } );
 
@@ -48,11 +95,18 @@
         }
     }
 
-        // ── Add ──────────────────────────────────────────────────────────────────
+    // ── Add ──────────────────────────────────────────────────────────────────
 
     function handleAdd( btn ) {
         const productId = btn.dataset.productId;
         if ( ! productId ) return;
+
+        // Bereits aktiv (Herz gefüllt) -> erneuter Klick entfernt statt
+        // erneut hinzuzufügen (Toggle-Verhalten).
+        if ( btn.classList.contains( 'is-active' ) ) {
+            handleToggleRemove( btn, productId );
+            return;
+        }
 
         // Nur beim reinen Icon-Stil gibt's kein Text-Label zum Zwischenspeichern/
         // Zurücksetzen (btn.textContent wäre ohnehin leer/nur das SVG) - beim
@@ -99,7 +153,155 @@
             } );
     }
 
-    // ── Remove ───────────────────────────────────────────────────────────────
+    /**
+     * Toggle-Verhalten: erneuter Klick auf ein bereits aktives Herz-Icon
+     * entfernt den Artikel wieder, statt ihn erneut hinzuzufügen. Nutzt
+     * einen eigenen Endpunkt (statt mlw_wishlist_remove), da auf der
+     * Produktkarte nur die product_id bekannt ist, nicht die interne
+     * item_id.
+     */
+    function handleToggleRemove( btn, productId ) {
+        btn.disabled = true;
+
+        postAjax( 'mlw_wishlist_remove_by_product', { product_id: productId } )
+            .then( function ( res ) {
+                if ( res.success ) {
+                    updateCountBadges( res.data.count );
+                    btn.classList.remove( 'is-active' );
+                    btn.setAttribute( 'aria-pressed', 'false' );
+                    btn.disabled = false;
+                    refreshItemsIfOnWishlistPage( res.data.items, res.data.grand_total_html );
+                } else {
+                    alert( ( res.data && res.data.message ) || mlwWishlist.i18n.genericError );
+                    btn.disabled = false;
+                }
+            } )
+            .catch( function () {
+                alert( mlwWishlist.i18n.genericError );
+                btn.disabled = false;
+            } );
+    }
+
+    // ── Bulk-Aktionen (Shop-Modus) ──────────────────────────────────────────
+
+    function updateBulkAddButtonState() {
+        const bulkBtn = document.getElementById( 'mlw-wishlist-bulk-add' );
+        if ( ! bulkBtn ) return;
+        const anyChecked = document.querySelectorAll( '.mlw-wishlist-row__checkbox:checked' ).length > 0;
+        bulkBtn.disabled = ! anyChecked;
+    }
+
+    /**
+     * @param {string[]} [explicitItemIds] Feste Artikel-Liste (z.B. Klick
+     *   auf ein einzelnes Zeilen-"In den Warenkorb"). Ohne Angabe werden
+     *   die angehakten Checkboxen gelesen (Sammel-Button).
+     */
+    function handleBulkAdd( explicitItemIds ) {
+        const bulkBtn = document.getElementById( 'mlw-wishlist-bulk-add' );
+        const msg     = document.querySelector( '.mlw-wishlist-message' );
+        const itemIds = explicitItemIds || Array.from( document.querySelectorAll( '.mlw-wishlist-row__checkbox:checked' ) ).map( function ( cb ) {
+            return cb.value;
+        } );
+        if ( ! itemIds.length ) return;
+
+        if ( bulkBtn ) bulkBtn.disabled = true;
+        if ( msg ) { msg.style.display = 'none'; msg.className = 'mlw-wishlist-message'; msg.innerHTML = ''; }
+
+        const body = new URLSearchParams();
+        body.append( 'action', 'mlw_wishlist_bulk_add_to_cart' );
+        body.append( 'nonce', mlwWishlist.nonce );
+        itemIds.forEach( function ( id ) { body.append( 'item_ids[]', id ); } );
+
+        fetch( mlwWishlist.ajaxUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: body,
+        } )
+            .then( function ( r ) { return r.json(); } )
+            .then( function ( res ) {
+                if ( ! res.success ) {
+                    alert( ( res.data && res.data.message ) || mlwWishlist.i18n.genericError );
+                    if ( bulkBtn ) bulkBtn.disabled = false;
+                    return;
+                }
+
+                updateCountBadges( res.data.count );
+
+                if ( res.data.skipped === 0 ) {
+                    window.location.href = res.data.cart_url;
+                    return;
+                }
+
+                // Teilerfolg: erfolgreich verschobene Zeilen live entfernen,
+                // übersprungene bleiben stehen - kein Redirect, Kunde soll
+                // die Meldung erst sehen.
+                removeShopRows( res.data.added_ids || [] );
+
+                if ( msg ) {
+                    const addedCount   = res.data.added;
+                    const skippedCount = res.data.skipped;
+
+                    const addedText = addedCount > 0
+                        ? addedCount + ( addedCount === 1 ? ' Artikel wurde' : ' Artikel wurden' ) + ' in den Warenkorb gelegt. '
+                        : '';
+                    const skippedText = skippedCount + ( skippedCount === 1 ? ' Artikel konnte' : ' Artikel konnten' )
+                        + ' nicht hinzugefügt werden (nicht mehr verfügbar oder erfordert individuelle Konfiguration).';
+
+                    msg.innerHTML = escapeHtml( addedText + skippedText )
+                        + ' <a href="' + escapeAttr( res.data.cart_url ) + '">Zum Warenkorb</a>';
+                    msg.className = 'mlw-wishlist-message mlw-wishlist-message--warning';
+                    msg.style.display = 'block';
+                }
+
+                if ( bulkBtn ) bulkBtn.disabled = false;
+            } )
+            .catch( function () {
+                alert( mlwWishlist.i18n.genericError );
+                if ( bulkBtn ) bulkBtn.disabled = false;
+            } );
+    }
+
+    /**
+     * Entfernt die Tabellenzeilen zu den übergebenen item_ids aus dem DOM
+     * (Shop-Modus-Tabelle) und blendet bei Bedarf auf den Empty-State um.
+     * Wird sowohl vom einzelnen Entfernen-Button als auch von
+     * handleBulkAdd() (erfolgreich verschobene Artikel) genutzt.
+     */
+    function removeShopRows( itemIds ) {
+        if ( ! itemIds || ! itemIds.length ) return;
+
+        itemIds.forEach( function ( id ) {
+            const row = document.querySelector( '.mlw-wishlist-row[data-item-id="' + id + '"]' );
+            if ( row ) row.remove();
+        } );
+
+        updateBulkAddButtonState();
+
+        if ( document.querySelectorAll( '.mlw-wishlist-row' ).length === 0 ) {
+            showShopEmptyState();
+        }
+    }
+
+    /**
+     * Blendet Tabelle/Bulk-Button/Teilen-Bereich aus und zeigt stattdessen
+     * die (serverseitig bereits im DOM vorhandene, nur versteckte)
+     * Empty-State-Box - kein Reload nötig.
+     */
+    function showShopEmptyState() {
+        const table       = document.querySelector( '.mlw-wishlist-table' );
+        const bulkActions = document.querySelector( '.mlw-wishlist__bulk-actions' );
+        const shareFooter = document.querySelector( '.mlw-wishlist__share--footer' );
+        const noticeEl     = document.querySelector( '.mlw-wishlist-notice--empty' );
+        const backToShopEl = document.querySelector( '.mlw-wishlist-back-to-shop' );
+
+        if ( table )       table.style.display = 'none';
+        if ( bulkActions ) bulkActions.style.display = 'none';
+        if ( shareFooter ) shareFooter.style.display = 'none';
+        if ( noticeEl )     noticeEl.style.display = 'block';
+        if ( backToShopEl ) backToShopEl.style.display = 'inline-block';
+    }
+
+    // ── Remove (Catalog-Modus) ───────────────────────────────────────────────
 
     function handleRemove( itemId ) {
         if ( ! itemId ) return;
@@ -119,7 +321,7 @@
             } );
     }
 
-    // ── Menge ändern ─────────────────────────────────────────────────────────
+    // ── Menge ändern (Catalog-Modus) ─────────────────────────────────────────
 
     let qtyDebounce = null;
     function handleQtyChange( itemId, quantity ) {
@@ -141,7 +343,7 @@
         }, 400 );
     }
 
-    // ── Absenden ─────────────────────────────────────────────────────────────
+    // ── Absenden (Catalog-Modus) ─────────────────────────────────────────────
 
     function handleSubmit( form ) {
         const btn = form.querySelector( '.mlw-wishlist-submit' );
@@ -213,7 +415,7 @@
             } );
     }
 
-    // ── Rendering ────────────────────────────────────────────────────────────
+    // ── Rendering (Catalog-Modus) ────────────────────────────────────────────
 
     function refreshItemsIfOnWishlistPage( items, grandTotalHtml ) {
         if ( document.querySelector( '.mlw-wishlist-items' ) ) {
@@ -307,7 +509,6 @@
                 '<div class="mlw-wishlist-item__remove"><button type="button" class="mlw-wishlist-item__remove-btn" data-item-id="' + escapeAttr( item.item_id ) + '" aria-label="Entfernen">✕</button></div>' +
             '</div>'
         );
-
     }
 
     // ── Helper ───────────────────────────────────────────────────────────────
