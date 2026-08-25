@@ -158,13 +158,22 @@ function mlwf_ajax_filter_products(): void {
 	$args = array_merge( [
 		'post_type'      => 'product',
 		'post_status'    => 'publish',
-		'posts_per_page' => (int) get_option( 'posts_per_page_shop', 12 ),
+		// Vereinheitlicht mit shop-products-per-page.php: eine Option statt
+        // zweier getrennter, damit "Produkte pro Seite" auf normaler
+        // Shopseite UND bei AJAX-Filterung konsistent bleibt.
+        'posts_per_page' => (int) get_option( 'mlw_products_per_page', 12 ),
 		'paged'          => $paged,
 		'tax_query'      => $tax_query,
 		'meta_query'     => $meta_query,
 	], $order_args );
 
-	$query = new WP_Query( $args );
+	// HPOS-Fix: Produkttyp-Term-Cache primen, BEVOR WooCommerce während der
+	// eigentlichen Query volle Produktobjekte lädt. NICHT weglassbar —
+	// medialab_prime_archive_product_type_cache() (pre_get_posts) deckt
+	// AJAX-Handler-Queries NICHT ab (is_main_query()-Guard schließt sie
+	// explizit aus), daher bleibt eigenes Priming hier weiterhin nötig
+	// (siehe Doku-Kommentar in hpos-product-type-cache-fix.php).
+	$query = medialab_prime_and_query_products( $args );
 
 	ob_start();
 
@@ -233,7 +242,7 @@ function mlwf_ajax_filter_products(): void {
 		'found_posts' => $query->found_posts,
 		'max_pages'   => $query->max_num_pages,
 		'current'     => $paged,
-		'per_page'    => (int) get_option( 'posts_per_page_shop', 12 ),
+		'per_page'    => (int) get_option( 'mlw_products_per_page', 12 ),
 	] );
 }
 
