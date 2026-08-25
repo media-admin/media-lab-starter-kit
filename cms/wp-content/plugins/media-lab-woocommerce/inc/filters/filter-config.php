@@ -155,14 +155,17 @@ function mlwf_resolve_filter_config( int $term_id, string $taxonomy, array $visi
  * Standard-Konfiguration (Fallback).
  */
 function mlwf_get_default_filter_config(): array {
-	return [
-		'attributes'         => [],
-		'show_price'         => true,
-		'show_brands'        => false,
-		'show_subcategories' => false,
-		'taxonomy'           => 'product_cat',
-		'source'             => 'default',
-	];
+    $global_attributes = get_field( 'mlwf_attributes', 'option' ) ?: [];
+    $global_price      = get_field( 'mlwf_show_price', 'option' );
+
+    return [
+        'attributes'         => $global_attributes,
+        'show_price'         => $global_price !== false ? (bool) $global_price : true,
+        'show_brands'        => false,
+        'show_subcategories' => false,
+        'taxonomy'           => 'product_cat',
+        'source'             => 'default',
+    ];
 }
 
 /**
