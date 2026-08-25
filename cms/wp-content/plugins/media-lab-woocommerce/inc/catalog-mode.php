@@ -175,7 +175,7 @@ class MediaLab_WC_Catalog_Mode {
         $cart_url = wc_get_page_permalink('cart');
         $checkout_url = wc_get_page_permalink('checkout');
         
-        // PrÃ¼fe ob aktuelle URL Warenkorb oder Kasse ist (auch deutsche URLs)
+        // Prüfe ob aktuelle URL Warenkorb oder Kasse ist (auch deutsche URLs)
         if (is_cart() || is_checkout() || 
             strpos($current_url, '/warenkorb') !== false || 
             strpos($current_url, '/kasse') !== false ||
@@ -199,11 +199,11 @@ class MediaLab_WC_Catalog_Mode {
     /**
      * Verarbeitet die Cart-Anfrage (Catalog Mode).
      *
-     * DÃ¼nner Wrapper: normalisiert WC()->cart-Items und Ã¼bergibt an die
+     * Dünner Wrapper: normalisiert WC()->cart-Items und übergibt an die
      * zentrale Inquiry-Engine (siehe inc/inquiry/class-inquiry-engine.php).
-     * Die Engine Ã¼bernimmt Validierung (inkl. konfigurierbarer Pflichtfelder
+     * Die Engine übernimmt Validierung (inkl. konfigurierbarer Pflichtfelder
      * & Datenschutz-Zustimmung), CPT-Speicherung und Multi-Channel-Versand -
-     * ersetzt die frÃ¼here, hier fest verdrahtete Klartext-wp_mail()-Logik.
+     * ersetzt die frühere, hier fest verdrahtete Klartext-wp_mail()-Logik.
      */
     public function handle_inquiry_submission() {
         check_ajax_referer('wc_catalog_inquiry', 'nonce');
@@ -224,7 +224,7 @@ class MediaLab_WC_Catalog_Mode {
                 'name'       => $product ? $product->get_name() : null,
             ];
 
-            // Konfigurator-Cart-Items reichern wir Ã¼ber die dort bereitgestellten
+            // Konfigurator-Cart-Items reichern wir über die dort bereitgestellten
             // wiederverwendbaren Helper an (dieselbe Formatierung wie in der
             // Cart-Anzeige und bei der Konfigurator-Direktanfrage).
             if ( $config && class_exists( 'MediaLab_Product_Configurator' ) ) {
@@ -241,8 +241,8 @@ class MediaLab_WC_Catalog_Mode {
         // Kontaktdaten: Basisfelder + alle konfigurierten Zusatzfelder generisch durchreichen
         // (siehe templates/inquiry-checkout.php, das diese Felder dynamisch rendert - dieser
         // Handler bedient den wc_catalog_inquiry-Request aus dem Checkout-Override, siehe
-        // override_checkout_template() oben; NICHT templates/inquiry-form.php, das Ã¼ber den
-        // separaten Shortcode [mlw_inquiry_form] lÃ¤uft und einen eigenen Ajax-Request nutzt).
+        // override_checkout_template() oben; NICHT templates/inquiry-form.php, das über den
+        // separaten Shortcode [mlw_inquiry_form] läuft und einen eigenen Ajax-Request nutzt).
         $contact = [
             'name'            => sanitize_text_field( $_POST['name']    ?? '' ),
             'email'           => sanitize_email( $_POST['email']        ?? '' ),
@@ -275,7 +275,7 @@ class MediaLab_WC_Catalog_Mode {
         $quantity = absint($_POST['quantity']);
         
         if ($quantity < 1) {
-            wp_send_json_error('UngÃ¼ltige Menge');
+            wp_send_json_error('Ungültige Menge');
         }
         
         WC()->cart->set_quantity($cart_item_key, $quantity);
