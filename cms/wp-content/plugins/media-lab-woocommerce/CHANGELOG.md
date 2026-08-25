@@ -4,6 +4,19 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [2.8.1] - 2026-08-24
+
+### Fixed
+- **UTF-8/Latin-1-Mojibake in `inc/catalog-mode.php`** – acht Stellen mit
+  doppelt-kodierten Umlauten (`Ã¼`/`Ã¤`/`Ã¶` statt `ü`/`ä`/`ö`), eine
+  davon in einem nutzersichtbaren String-Literal
+  (`wp_send_json_error('UngÃ¼ltige Menge')`), der Rest in Kommentaren.
+  Gefunden beim Datei-Audit bei `at.janecka-2026` (`cp -r` hatte die
+  Korruption von hier aus mitgebracht) — Ursache lag im Starter Kit
+  selbst, nicht im Client-Projekt.
+
+---
+
 ## [2.8.0] - 2026-08-24
 
 ### Added
