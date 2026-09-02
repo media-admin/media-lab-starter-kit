@@ -18,6 +18,37 @@ nur knappe Stichpunkte aus `@since`-Kommentaren im Code verfügbar. Für
 auch keine Git-Tags. **Bewusst nicht geraten** — siehe „Offene Punkte" am
 Ende.
 
+## [1.25.2] - 2026-09-02
+
+### Fixed
+- Security Scanner: `check_core_integrity()` verglich Core-Dateien ausschließlich gegen die
+  Checksums der über `get_locale()` ermittelten Sprache (z. B. `de_DE`). Installationen, deren
+  Core-Dateien trotz gesetztem `WPLANG` unübersetzt (englisch) geblieben sind – Standardfall,
+  da Übersetzung normalerweise nur über `.mo`-Sprachpakete läuft – lösten dadurch False-Positive-
+  Mismatches aus (z. B. `wp-config-sample.php`). Der Check holt jetzt zusätzlich die `en_US`-
+  Checksums als Fallback und wertet eine Datei nur noch als echten Fund, wenn sie gegen **beide**
+  Checksum-Sätze abweicht.
+- `liesmich.html` (deutsche Core-Readme, wird im Media Lab Deploy-Workflow bewusst nicht
+  mitgeliefert) als bekannte, harmlose Ausnahme ergänzt – analog zur bestehenden
+  `wp-includes/version.php`-Behandlung.
+
+---
+
+## [1.25.1] - 2026-09-02
+
+### Fixed
+- Security Scanner: `is_nginx()`-Erkennung über `$_SERVER['SERVER_SOFTWARE']` liefert bei
+  nginx+PHP-FPM ohne explizites `fastcgi_param SERVER_SOFTWARE $server_software;` im vHost
+  oft keinen zuverlässigen Wert. Dadurch wurden `.htaccess`-basierte Hardening-Checks
+  ("PHP-Ausführung in uploads/ blockiert", "Subdirectory-Fix für wp-content/wp-includes")
+  auf nginx-Servern fälschlich als `fail` statt `warn` gemeldet und lösten unnötige
+  Alarm-Mails aus.
+- Neue Konstante `MLA_FORCE_NGINX` (in `wp-config.php` setzbar) erzwingt die
+  nginx-Erkennung als Fallback für Server, bei denen `SERVER_SOFTWARE` nicht verlässlich
+  gesetzt ist.
+
+---
+
 ## [1.25.0] - 2026-08-22
 
 ### Added

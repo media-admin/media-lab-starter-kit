@@ -205,14 +205,76 @@ class MLA_Security_Scanner {
 	}
 
 	/**
-	 * Vergleicht WP-Core-Dateien gegen die offiziellen Checksummen von
-	 * api.wordpress.org. Funktioniert komplett ohne SSH.
-	 */
+	* Vergleicht WP-Core-Dateien gegen die offiziellen Checksummen von
+	* api.wordpress.org. Funktioniert komplett ohne SSH.
+	*/
 	public function check_core_integrity() {
 		global $wp_version;
 
 		$locale = get_locale();
-		$url    = sprintf(
+
+		$locale_checksums = $this->fetch_core_checksums( $wp_version, $locale );
+		// en_US zusätzlich holen (nur relevant, wenn locale != en_US),
+		// da viele Installationen Core-Dateien englisch belassen und nur
+		// Sprachpakete (.mo) für die Übersetzung nutzen - siehe wp-config-sample.php.
+		$en_checksums = ( 'en_US' !== $locale )
+			? $this->fetch_core_checksums( $wp_version, 'en_US' )
+			: null;
+
+		if ( is_wp_error( $locale_checksums ) ) {
+			return array( 'error' => $locale_checksums->get_error_message() );
+		}
+
+		$mismatches = array();
+
+		foreach ( $locale_checksums['checksums'] as $rel_path => $expected_md5 ) {
+			if ( 0 === strpos( $rel_path, 'wp-content/' ) ) {
+				continue;
+			}
+			if ( 'wp-includes/version.php' === $rel_path ) {
+				continue;
+			}
+
+			// liesmich.html: deutsche Core-Readme, wird im Media Lab Deploy-
+			// Workflow bewusst nicht mitgeliefert - kein Sicherheitsproblem.
+			if ( 'liesmich.html' === $rel_path ) {
+				continue;
+			}
+
+			$full_path = ABSPATH . $rel_path;
+
+			if ( ! file_exists( $full_path ) ) {
+				$mismatches[] = array( 'file' => $rel_path, 'status' => 'fehlt' );
+				continue;
+			}
+
+			$actual_md5 = md5_file( $full_path );
+
+			if ( $actual_md5 === $expected_md5 ) {
+				continue; // passt gegen Locale-Checksum
+			}
+
+			// Gegen en_US-Fallback prüfen, bevor als echter Mismatch gewertet wird.
+			if ( $en_checksums && isset( $en_checksums['checksums'][ $rel_path ] )
+				&& $actual_md5 === $en_checksums['checksums'][ $rel_path ] ) {
+				continue; // unveränderte englische Core-Datei, kein Fund
+			}
+
+			$mismatches[] = array( 'file' => $rel_path, 'status' => 'verändert' );
+		}
+
+		return array(
+			'wp_version' => $wp_version,
+			'checked'    => count( $locale_checksums['checksums'] ),
+			'mismatches' => $mismatches,
+		);
+	}
+
+	/**
+	 * Holt die WP-Core-Checksums für Version + Locale von api.wordpress.org.
+	 */
+	private function fetch_core_checksums( $wp_version, $locale ) {
+		$url = sprintf(
 			'https://api.wordpress.org/core/checksums/1.0/?version=%s&locale=%s',
 			rawurlencode( $wp_version ),
 			rawurlencode( $locale )
@@ -221,58 +283,16 @@ class MLA_Security_Scanner {
 		$response = wp_remote_get( $url, array( 'timeout' => 15 ) );
 
 		if ( is_wp_error( $response ) ) {
-			return array( 'error' => 'Checksummen-API nicht erreichbar: ' . $response->get_error_message() );
+			return new WP_Error( 'checksum_api', 'Checksummen-API nicht erreichbar: ' . $response->get_error_message() );
 		}
 
 		$body = json_decode( wp_remote_retrieve_body( $response ), true );
 
 		if ( empty( $body['checksums'] ) ) {
-			return array( 'error' => 'Keine Checksummen für Version ' . $wp_version . ' gefunden.' );
+			return new WP_Error( 'checksum_empty', 'Keine Checksummen für Version ' . $wp_version . ' (' . $locale . ') gefunden.' );
 		}
 
-		$mismatches = array();
-
-		foreach ( $body['checksums'] as $rel_path => $expected_md5 ) {
-			// wp-content wird bewusst übersprungen - gehört nicht zum Core-Check.
-			if ( 0 === strpos( $rel_path, 'wp-content/' ) ) {
-				continue;
-			}
-
-			// version.php wird bei lokalisierten Core-Paketen (z.B. de_AT,
-			// de_DE) offiziell um $wp_local_package ergänzt - siehe
-			// get_locale() im WP-Core selbst. Das ist ein bekannter,
-			// harmloser Unterschied zur (englischen) Checksumme und kein
-			// Sicherheitsproblem. Bei rein englischen Installationen greift
-			// die Prüfung trotzdem, da dort kein Unterschied besteht.
-			if ( 'wp-includes/version.php' === $rel_path ) {
-				continue;
-			}
-
-			$full_path = ABSPATH . $rel_path;
-
-			if ( ! file_exists( $full_path ) ) {
-				$mismatches[] = array(
-					'file'   => $rel_path,
-					'status' => 'fehlt',
-				);
-				continue;
-			}
-
-			$actual_md5 = md5_file( $full_path );
-
-			if ( $actual_md5 !== $expected_md5 ) {
-				$mismatches[] = array(
-					'file'   => $rel_path,
-					'status' => 'verändert',
-				);
-			}
-		}
-
-		return array(
-			'wp_version' => $wp_version,
-			'checked'    => count( $body['checksums'] ),
-			'mismatches' => $mismatches,
-		);
+		return $body;
 	}
 
 	/**
@@ -552,8 +572,18 @@ class MLA_Security_Scanner {
 	 * keine Alarm-Mail für etwas, das der Kunde serverseitig im
 	 * nginx-Vhost lösen muss und das automatisiert nicht verifizierbar
 	 * ist).
+	 *
+	 * SERVER_SOFTWARE wird bei nginx+PHP-FPM oft nicht zuverlässig
+	 * durchgereicht (nur gesetzt, wenn im vHost explizit
+	 * "fastcgi_param SERVER_SOFTWARE $server_software;" konfiguriert
+	 * ist). Als Fallback kann daher MLA_FORCE_NGINX in wp-config.php
+	 * gesetzt werden, um die Erkennung zu erzwingen.
 	 */
 	private function is_nginx() {
+		if ( defined( 'MLA_FORCE_NGINX' ) && true === MLA_FORCE_NGINX ) {
+			return true;
+		}
+
 		$server_software = isset( $_SERVER['SERVER_SOFTWARE'] ) ? strtolower( sanitize_text_field( wp_unslash( $_SERVER['SERVER_SOFTWARE'] ) ) ) : '';
 		return false !== strpos( $server_software, 'nginx' );
 	}
