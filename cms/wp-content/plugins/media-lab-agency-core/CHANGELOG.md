@@ -18,6 +18,23 @@ nur knappe Stichpunkte aus `@since`-Kommentaren im Code verfügbar. Für
 auch keine Git-Tags. **Bewusst nicht geraten** — siehe „Offene Punkte" am
 Ende.
 
+## [1.26.0] - 2026-09-08
+
+### media-lab-agency-core 1.26.0
+
+#### Added
+- **E-Mail-Log** (`inc/mail-log.php`, neu) – protokolliert alle über
+  `wp_mail()` versendeten E-Mails inkl. Volltext (Betreff, Empfänger,
+  Inhalt, Headers, Anhänge, Status, Fehlermeldung, Versand-Modus).
+  Admin-Unterseite mit Zeitraum-Filter, Status-/Suchfilter, Detail-
+  ansicht, CSV-Export. Automatische tägliche Bereinigung nach
+  konfigurierbarer Aufbewahrungsdauer (Standard 365 Tage).
+- **E-Mail-Report** (`inc/mail-log-report.php`, neu) – konfigurierbarer
+  periodischer Report (täglich/wöchentlich/monatlich) über den Mail-
+  Log-Bestand, dynamische Empfängerliste, Test-Versand.
+  
+---
+
 ## [1.25.2] - 2026-09-02
 
 ### Fixed
