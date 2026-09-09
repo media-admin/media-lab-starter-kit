@@ -615,7 +615,7 @@ class MLA_Security_Scanner {
 			$content = @file_get_contents( $htaccess );
 			if ( false !== $content ) {
 				// Verschiedene gängige Schreibweisen abdecken.
-				$has_rule = (bool) preg_match( '/(php_flag\s+engine\s+off|deny\s+from\s+all.*\.php|<FilesMatch[^>]*\.php[^>]*>.*Require\s+all\s+denied|SetHandler\s+none|RemoveHandler\s+\.php)/is', $content );
+								$has_rule = (bool) preg_match( '/(php_flag\s+engine\s+off|deny\s+from\s+all.*\.php|<Files(?:Match)?[^>]*\.php[^>]*>.*Require\s+all\s+denied|SetHandler\s+none|RemoveHandler\s+\.php)/is', $content );
 			}
 		}
 
