@@ -72,10 +72,30 @@ assets/
 
 ### Erweiterungspunkte
 
-- `mlt_ai_register_providers` — weitere Chat-Provider registrieren (z.B. Azure OpenAI, EU-Anbieter)
+- `mlt_ai_register_providers` — weitere Chat-Provider registrieren (z.B. Azure OpenAI, EU-Anbieter, kundeneigene Modelle)
 - `mlt_ai_rag_indexable_text_parts` — zusätzliche Felder in den RAG-Index aufnehmen
 - `mlt_ai_consent_cookie_name` / `mlt_ai_consent_cookie_value` — Consent-Cookie an bestehendes Tool ankoppeln
 - `mlt_ai_get_cost_summary` — Kosten-Daten für externes Reporting (z.B. SEO Toolkit) abgreifen
+
+#### Kundeneigenes/selbst gehostetes Modell anbinden
+
+**Fall 1 — OpenAI-kompatible API** (vLLM, Ollama, LM Studio, Azure OpenAI, LocalAI u.ä. bilden meist absichtlich das OpenAI-Format nach): kleinste Variante ist eine Kopie von `MLT_AI_Provider_OpenAI` mit konfigurierbarer Base-URL statt der fest codierten `api.openai.com`-Adresse, dann per Hook registrieren:
+
+```php
+class Kunde_XY_Provider extends MLT_AI_Provider_OpenAI {
+    public function get_id(): string { return 'kunde-xy'; }
+    public function get_label(): string { return 'Kunde XY (self-hosted)'; }
+    // API_URL in send_message() auf die Base-URL des Kunden umstellen
+}
+
+add_action('mlt_ai_register_providers', function () {
+    MLT_AI_Provider_Registry::register(new Kunde_XY_Provider());
+});
+```
+
+**Fall 2 — proprietäres/eigenes API-Format:** neue Klasse, die `MLT_AI_Provider_Interface` direkt implementiert (`send_message()`, `get_id()`, `get_label()`, `get_available_models()`, `get_cost_per_1k_tokens()`), analog zu `class-provider-anthropic.php`. Registrierung genauso über `mlt_ai_register_providers`.
+
+In beiden Fällen: Code gehört ins Client-Theme oder ein kleines Client-spezifisches Snippet-Plugin, **nicht** in den Plugin-Core — der neue Provider erscheint dann automatisch im "Anbieter"-Dropdown. Bei selbst gehosteten Modellen ohne Token-Abrechnung kann `get_cost_per_1k_tokens()` einfach `0` zurückgeben; das Kosten-Dashboard zeigt dann 0€ für diesen Provider (reale Serverkosten beim Kunden liegen außerhalb des Tracking-Scopes).
 
 ## Bekannte Einschränkungen
 
