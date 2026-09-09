@@ -18,6 +18,21 @@ nur knappe Stichpunkte aus `@since`-Kommentaren im Code verfügbar. Für
 auch keine Git-Tags. **Bewusst nicht geraten** — siehe „Offene Punkte" am
 Ende.
 
+## [1.26.1] - 2026-09-09
+
+### media-lab-agency-core 1.24.1
+
+#### Fixed
+- **`check_uploads_php_blocked()` erkannte `<Files *.php>` nicht** – die
+  Regex akzeptierte bisher nur `<FilesMatch ...php...>`, obwohl die im
+  selben Check ausgegebene `fix`-Anleitung explizit `<Files *.php>`
+  vorschlägt. Projekte, die exakt dieser Anleitung folgten, bekamen
+  trotz korrekt wirksamer PHP-Sperre weiterhin ein ❌ im Security Scan
+  (inkl. wöchentlicher Alarm-Mail). Regex erkennt jetzt beide
+  Schreibweisen (`<Files(?:Match)?[^>]*\.php[^>]*>`).
+
+---
+
 ## [1.26.0] - 2026-09-08
 
 ### media-lab-agency-core 1.26.0
