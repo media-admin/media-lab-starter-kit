@@ -96,6 +96,10 @@ if ( function_exists('get_field') && get_field('btt_enabled', 'option') ) : ?>
 </button>
 <?php endif; ?>
 
+<?php 
+// ── Media-Lab AI Agent Widget (falls aktiviert) ─────────────────────────────
+if (function_exists('mlt_ai_render_widget')) { mlt_ai_render_widget(); } ?>
+
 <?php wp_footer(); ?>
 </body>
 </html>

@@ -1,0 +1,219 @@
+{
+    "key": "group_mlt_ai_agent_settings",
+    "title": "AI Agent Einstellungen",
+    "fields": [
+        {
+            "key": "field_mlt_ai_enabled",
+            "label": "AI Agent aktiv",
+            "name": "mlt_ai_enabled",
+            "type": "true_false",
+            "default_value": 0,
+            "ui": 1,
+            "instructions": "Schaltet den Chat-Widget-REST-Endpoint global frei/gesperrt."
+        },
+        {
+            "key": "field_mlt_ai_provider",
+            "label": "Anbieter",
+            "name": "mlt_ai_provider",
+            "type": "select",
+            "choices": {
+                "anthropic": "Anthropic (Claude)",
+                "openai": "OpenAI"
+            },
+            "default_value": "anthropic",
+            "instructions": "Weitere Anbieter werden automatisch ergänzt, sobald sie über den mlt_ai_register_providers Hook registriert sind.",
+            "conditional_logic": 0
+        },
+        {
+            "key": "field_mlt_ai_key_anthropic",
+            "label": "Anthropic API Key",
+            "name": "mlt_ai_key_anthropic",
+            "type": "password",
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_mlt_ai_provider",
+                        "operator": "==",
+                        "value": "anthropic"
+                    }
+                ]
+            ],
+            "instructions": "Wird verschlüsselt gespeichert. Key erstellen: <a href=\"https://console.anthropic.com/settings/keys\" target=\"_blank\" rel=\"noopener\">console.anthropic.com/settings/keys</a> (eigene Anmeldung nötig, separat vom claude.ai-Zugang; Guthaben/Zahlungsmethode hinterlegen, dann \"Create Key\")."
+        },
+        {
+            "key": "field_mlt_ai_key_openai",
+            "label": "OpenAI API Key",
+            "name": "mlt_ai_key_openai",
+            "type": "password",
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_mlt_ai_provider",
+                        "operator": "==",
+                        "value": "openai"
+                    }
+                ],
+                [
+                    {
+                        "field": "field_mlt_ai_rag_enabled",
+                        "operator": "==",
+                        "value": "1"
+                    }
+                ]
+            ],
+            "instructions": "Wird verschlüsselt gespeichert. Nötig, wenn Anbieter = OpenAI ODER Website-Wissen (RAG) aktiv ist (Embeddings laufen immer über OpenAI, unabhängig vom Chat-Anbieter). Key erstellen: <a href=\"https://platform.openai.com/api-keys\" target=\"_blank\" rel=\"noopener\">platform.openai.com/api-keys</a> (eigene Anmeldung, separat vom ChatGPT-Abo; Guthaben hinterlegen, dann \"Create new secret key\")."
+        },
+        {
+            "key": "field_mlt_ai_model",
+            "label": "Modell",
+            "name": "mlt_ai_model",
+            "type": "select",
+            "choices": {
+                "claude-haiku-4-5-20251001": "Claude Haiku 4.5 (günstig, empfohlen)",
+                "claude-sonnet-5": "Claude Sonnet 5 (leistungsstärker)"
+            },
+            "instructions": "Optionen werden je nach gewähltem Provider per JS nachgeladen (siehe assets/js/ai-agent-admin.js)."
+        },
+        {
+            "key": "field_mlt_ai_daily_budget",
+            "label": "Tagesbudget (EUR)",
+            "name": "mlt_ai_daily_budget",
+            "type": "number",
+            "step": "0.10",
+            "min": 0,
+            "default_value": 5,
+            "instructions": "Kill-Switch: 0 oder leer = kein Limit. Provider-übergreifend gültig."
+        },
+        {
+            "key": "field_mlt_ai_retention_days",
+            "label": "Aufbewahrungsdauer Chatverläufe (Tage)",
+            "name": "mlt_ai_retention_days",
+            "type": "number",
+            "min": 1,
+            "default_value": 30,
+            "instructions": "Datenminimierung: löscht wp_mlt_ai_conversations älter als N Tage per täglichem Cron."
+        },
+        {
+            "key": "field_mlt_ai_max_messages_per_session",
+            "label": "Max. Nachrichten pro Session",
+            "name": "mlt_ai_max_messages_per_session",
+            "type": "number",
+            "default_value": 15,
+            "instructions": "Rate-Limit gegen Missbrauch / Prompt-Injection-Spam."
+        },
+        {
+            "key": "field_mlt_ai_rag_enabled",
+            "label": "Website-Wissen (RAG) aktiv",
+            "name": "mlt_ai_rag_enabled",
+            "type": "true_false",
+            "default_value": 0,
+            "ui": 1,
+            "instructions": "Wenn aktiv, kennt der Assistent Inhalte der unten gewählten Post-Types (Titel, Inhalt, Taxonomien, WooCommerce-Preis/Verfügbarkeit). Erfordert einen OpenAI API Key (für Embeddings), unabhängig vom gewählten Chat-Anbieter."
+        },
+        {
+            "key": "field_mlt_ai_rag_openai_note",
+            "label": "",
+            "name": "mlt_ai_rag_openai_note",
+            "type": "message",
+            "message": "OpenAI API Key nötig — trage ihn im Feld \"OpenAI API Key\" weiter oben ein (auch wenn der Chat-Anbieter Anthropic ist; Embeddings laufen ausschließlich über OpenAI).",
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_mlt_ai_rag_enabled",
+                        "operator": "==",
+                        "value": "1"
+                    },
+                    {
+                        "field": "field_mlt_ai_provider",
+                        "operator": "!=",
+                        "value": "openai"
+                    }
+                ]
+            ]
+        },
+        {
+            "key": "field_mlt_ai_rag_post_types",
+            "label": "Zu indexierende Inhaltstypen",
+            "name": "mlt_ai_rag_post_types",
+            "type": "checkbox",
+            "choices": {
+                "post": "Beiträge",
+                "page": "Seiten",
+                "product": "Produkte (WooCommerce)"
+            },
+            "default_value": [
+                "page"
+            ],
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_mlt_ai_rag_enabled",
+                        "operator": "==",
+                        "value": "1"
+                    }
+                ]
+            ]
+        },
+        {
+            "key": "field_mlt_ai_rag_reindex",
+            "label": "Vollständige Neuindexierung",
+            "name": "mlt_ai_rag_reindex_trigger",
+            "type": "message",
+            "message": "Neuindexierung läuft im Hintergrund per WP-Cron (Batches à 20 Beiträge). Auslösen über: Werkzeuge → AI Agent Reindex, oder programmatisch via do_action('mlt_ai_rag_bulk_reindex').",
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_mlt_ai_rag_enabled",
+                        "operator": "==",
+                        "value": "1"
+                    }
+                ]
+            ]
+        },
+        {
+            "key": "field_mlt_ai_system_prompts",
+            "label": "System-Prompts (pro Sprache)",
+            "name": "mlt_ai_system_prompts",
+            "type": "repeater",
+            "layout": "table",
+            "button_label": "Sprache hinzufügen",
+            "sub_fields": [
+                {
+                    "key": "field_mlt_ai_prompt_lang",
+                    "label": "Sprachcode",
+                    "name": "lang",
+                    "type": "text",
+                    "instructions": "Polylang-Sprachcode, z.B. de, en, it",
+                    "wrapper": {
+                        "width": "20"
+                    }
+                },
+                {
+                    "key": "field_mlt_ai_prompt_text",
+                    "label": "System-Prompt",
+                    "name": "prompt",
+                    "type": "textarea",
+                    "rows": 4,
+                    "wrapper": {
+                        "width": "80"
+                    }
+                }
+            ]
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "options_page",
+                "operator": "==",
+                "value": "acf-options-ai-agent"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "active": true,
+    "description": "Einstellungen für media-lab-ai-agent",
+    "modified": 1788945765
+}
