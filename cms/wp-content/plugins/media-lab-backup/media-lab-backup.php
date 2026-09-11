@@ -3,7 +3,7 @@
  * Plugin Name: Media Lab Backup
  * Plugin URI:  https://media-lab.at
  * Description: Automatische WordPress-Backups (Datenbank + Dateien) zur Hetzner Storage Box via SFTP. Unterstützt manuelle und geplante Backups mit konfigurierbarer Aufbewahrungszeit.
- * Version:     2.0.12
+ * Version:     2.2.0
  * Requires at least: 6.0
  * Requires PHP: 8.0
  * Author:      Media Lab Tritremmel GmbH
@@ -21,7 +21,7 @@ if ( defined( 'MLBKP_VERSION' ) ) {
 }
 
 // ─── Plugin-Konstanten ───────────────────────────────────────────────────────
-define( 'MLBKP_VERSION',       '2.0.12' );
+define( 'MLBKP_VERSION',       '2.2.0' );
 define( 'MLBKP_PLUGIN_FILE',   __FILE__ );
 define( 'MLBKP_PLUGIN_DIR',    plugin_dir_path( __FILE__ ) );
 define( 'MLBKP_PLUGIN_URL',    plugin_dir_url( __FILE__ ) );
@@ -34,6 +34,7 @@ if ( file_exists( MLBKP_PLUGIN_DIR . 'vendor/autoload.php' ) ) {
 
 // ─── Klassen laden ───────────────────────────────────────────────────────────
 if ( ! class_exists( 'MLBKP_Logger' ) )          require_once MLBKP_PLUGIN_DIR . 'includes/class-mlb-logger.php';
+if ( ! trait_exists( 'MLBKP_SFTP_Restore' ) )    require_once MLBKP_PLUGIN_DIR . 'includes/trait-mlbkp-sftp-restore.php';
 if ( ! class_exists( 'MLBKP_SFTP' ) )            require_once MLBKP_PLUGIN_DIR . 'includes/class-mlb-sftp.php';
 if ( ! class_exists( 'MLBKP_Database_Backup' ) ) require_once MLBKP_PLUGIN_DIR . 'includes/class-mlb-database-backup.php';
 if ( ! class_exists( 'MLBKP_File_Backup' ) )     require_once MLBKP_PLUGIN_DIR . 'includes/class-mlb-file-backup.php';
@@ -42,6 +43,11 @@ if ( ! class_exists( 'MLBKP_Session' ) )         require_once MLBKP_PLUGIN_DIR .
 if ( ! class_exists( 'MLBKP_Chunk_Runner' ) )    require_once MLBKP_PLUGIN_DIR . 'includes/class-mlbkp-chunk-runner.php';
 if ( ! class_exists( 'MLBKP_Scheduler' ) )       require_once MLBKP_PLUGIN_DIR . 'includes/class-mlb-scheduler.php';
 if ( ! class_exists( 'MLBKP_Admin' ) )           require_once MLBKP_PLUGIN_DIR . 'includes/class-mlb-admin.php';
+if ( ! class_exists( 'MLBKP_Manifest' ) )        require_once MLBKP_PLUGIN_DIR . 'includes/class-mlbkp-manifest.php';
+if ( ! class_exists( 'MLBKP_SQL_Parser' ) )      require_once MLBKP_PLUGIN_DIR . 'includes/class-mlbkp-sql-parser.php';
+if ( ! class_exists( 'MLBKP_Restore_Session' ) ) require_once MLBKP_PLUGIN_DIR . 'includes/class-mlbkp-restore-session.php';
+if ( ! class_exists( 'MLBKP_Restore_Runner' ) )  require_once MLBKP_PLUGIN_DIR . 'includes/class-mlbkp-restore-runner.php';
+if ( ! class_exists( 'MLBKP_Restore_Admin' ) )   require_once MLBKP_PLUGIN_DIR . 'includes/class-mlbkp-restore-admin.php';
 
 // ─── WP-CLI ──────────────────────────────────────────────────────────────────
 if ( defined( 'WP_CLI' ) && WP_CLI ) {
@@ -65,6 +71,7 @@ add_action( 'before_woocommerce_init', static function () {
 add_action( 'plugins_loaded', static function () {
     MLBKP_Admin::init();
     MLBKP_Scheduler::init();
+    MLBKP_Restore_Admin::init();
 } );
 
 // ─── Activation / Deactivation ───────────────────────────────────────────────

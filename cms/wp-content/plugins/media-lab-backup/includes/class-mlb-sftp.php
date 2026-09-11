@@ -12,6 +12,8 @@ use phpseclib3\Crypt\PublicKeyLoader;
  */
 class MLBKP_SFTP {
 
+    use MLBKP_SFTP_Restore;
+
     private SFTP $sftp;
     private string $remote_base;
     private string $site_slug;

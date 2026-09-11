@@ -4,6 +4,40 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format: [Keep a Changelog](https://keepachangelog.com/de/1.0.0/)
 Versionierung: [Semantic Versioning](https://semver.org/)
 
+## [2.2.0] — 2026-09-11
+
+### Added
+- **Wiederherstellung (Restore)** — neuer Tab „Wiederherstellen" im Admin-Bereich
+  - Neue `manifest.json` pro Backup-Session macht Chunks maschinenlesbar
+    (Label, Original-Pfad, Dateiname) statt aus sanitized ZIP-Dateinamen
+    zurückgerechnet zu werden. Ältere Sessions ohne Manifest funktionieren
+    über einen Fallback weiter (Labels dann unzuverlässig rekonstruiert,
+    Zielpfad muss im UI bestätigt werden)
+  - Drei Stufen: (1) ganze Chunks zurückspielen, (2) einzelne Dateien/Ordner
+    innerhalb eines Chunks auswählen, (3) einzelne DB-Tabellen selektiv
+    importieren statt komplettem Dump
+  - Chunk-weiser Ablauf über WP-Cron (analog zum Backup selbst), damit große
+    Wiederherstellungen nicht an PHP-Timeouts auf Shared Hosting scheitern
+  - **Automatische Sicherheitskopie** jeder überschriebenen Datei vor dem
+    Restore nach `wp-content/mlbkp-restore-safety/<restore_id>/` (wird nicht
+    automatisch gelöscht)
+  - Quote-bewusster, streamender SQL-Statement-Parser (`MLBKP_SQL_Parser`)
+    für selektiven Tabellen-Import aus dem SQL-Dump, batch-weise fortsetzbar
+  - Neue Klassen: `MLBKP_Manifest`, `MLBKP_SQL_Parser`, `MLBKP_Restore_Session`,
+    `MLBKP_Restore_Runner`, `MLBKP_Restore_Admin`; neuer Trait
+    `MLBKP_SFTP_Restore` (erweitert `MLBKP_SFTP` um Lese-/Download-Operationen,
+    ohne die bestehende Klasse zu verändern)
+
+### Fixed
+_(während der Restore-Entwicklung gefunden, betrifft ausschließlich den neuen Code)_
+- Datei-Auswahl im Restore-Wizard zählte nicht als Element-Auswahl, wenn nur
+  einzelne Dateien über „Nur bestimmte Dateien …" markiert wurden, ohne die
+  übergeordnete Checkbox manuell zu setzen — wird jetzt automatisch mit angehakt
+- Pfad der Sicherheitskopie enthielt bei ZIP-Chunks eine irreführende doppelte
+  Ordner-Verschachtelung (Plugin-/Ordnername erschien zweimal im Pfad)
+
+---
+
 ## [2.1.0] - 2026-08-21
 
 ### Fixed

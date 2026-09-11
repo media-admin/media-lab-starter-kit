@@ -1,0 +1,25 @@
+.mlbkp-restore-card {
+    background: #fff;
+    border: 1px solid #dcdcde;
+    border-radius: 4px;
+    padding: 20px;
+    margin-top: 16px;
+    max-width: 900px;
+}
+.mlbkp-restore-card h2 {
+    margin-top: 0;
+}
+.mlbkp-restore-items td {
+    vertical-align: top;
+    padding: 10px 8px;
+}
+.mlbkp-sub-list {
+    max-height: 220px;
+    overflow-y: auto;
+    border: 1px solid #dcdcde;
+    padding: 8px;
+    background: #f6f7f7;
+}
+.mlb-error {
+    color: #d63638;
+}

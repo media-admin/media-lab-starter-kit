@@ -20,6 +20,7 @@ Entwickelt von [Media Lab Tritremmel GmbH](https://media-lab.at).
 - ✅ **E-Mail-Benachrichtigung** — bei Fehler, immer oder nie
 - ✅ **WP-CLI-Integration** — 4 Befehle für Automatisierung & Monitoring
 - ✅ **Backup-Protokoll** — alle Runs mit Status, Größe, Dauer und Fehlermeldung
+- ✅ **Wiederherstellung (Restore)** — vollständig oder selektiv (Dateien, Ordner, DB-Tabellen), mit automatischer Sicherheitskopie vor jedem Überschreiben
 
 ---
 
@@ -141,6 +142,42 @@ themes/old-theme
     ├── files-wpcontent-2026-05-13_02-00-00.zip
     └── files-wpcontent-2026-05-14_02-00-00.zip
 ```
+
+---
+
+## Wiederherstellung (Restore)
+
+**WP-Admin → ML Backup → ⏪ Wiederherstellen**
+
+Dreistufiger Assistent:
+
+1. **Sicherung wählen** — Liste aller Session-Ordner auf der Storage Box, neueste zuerst
+2. **Was wiederherstellen?** — pro Chunk (Datenbank, Plugin-/Theme-Ordner, Uploads-Monat, …)
+   wahlweise:
+   - **Vollständig** — der ganze Chunk wird zurückgespielt
+   - **Nur bestimmte Dateien …** — Datei-/Ordner-Baum innerhalb des Chunks, einzelne
+     Einträge gezielt auswählbar
+   - Bei der Datenbank zusätzlich **Nur bestimmte Tabellen …** — einzelne Tabellen
+     statt des kompletten Dumps
+3. **Bestätigen** — Übersicht der Auswahl, danach läuft die Wiederherstellung
+   chunk-/tabellenweise über WP-Cron mit Live-Fortschritt
+
+**Sicherheit:** Vor jedem Überschreiben einer bestehenden Datei wird automatisch
+eine Kopie nach `wp-content/mlbkp-restore-safety/<restore_id>/` angelegt. Diese
+Kopien werden **nicht automatisch gelöscht** — nach erfolgreicher Prüfung des
+Ergebnisses manuell aufräumen.
+
+**Manifest:** Jede ab Version 2.2.0 erstellte Backup-Session enthält eine
+`manifest.json`, die Chunks maschinenlesbar macht (Label, Original-Pfad,
+Dateiname). Ältere Sessions ohne Manifest funktionieren weiterhin über einen
+Fallback — Zielpfade sind dann geschätzt und müssen im UI bestätigt werden.
+
+**Grenzen:**
+- Ein laufender Restore lässt sich nur zwischen Items/Cron-Ticks abbrechen,
+  nicht mitten in einem laufenden DB-Batch-Import oder einer ZIP-Extraktion
+- Der Datei-Browser eines ZIP-Chunks lädt den Chunk temporär vollständig
+  herunter, um den Inhalt aufzulisten
+- Selektiver DB-Import überspringt `LOCK`/`UNLOCK TABLES`-Statements
 
 ---
 

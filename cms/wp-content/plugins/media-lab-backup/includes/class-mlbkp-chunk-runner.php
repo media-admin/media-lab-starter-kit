@@ -281,6 +281,13 @@ class MLBKP_Chunk_Runner {
             ? '🎉 Backup-Session abgeschlossen.'
             : '⚠ Backup abgeschlossen mit Fehlern.' );
 
+        // Manifest für das Restore-Feature schreiben (macht Chunks später
+        // maschinenlesbar statt aus sanitized Dateinamen zurückrechnen zu müssen)
+        try {
+            $sftp = new MLBKP_SFTP( $this->settings );
+            MLBKP_Manifest::write_for_session( $this->session, $sftp );
+        } catch ( \Throwable ) {}
+
         // Retention: alte Sessions auf Storage Box bereinigen
         try {
             $sftp      = new MLBKP_SFTP( $this->settings );
