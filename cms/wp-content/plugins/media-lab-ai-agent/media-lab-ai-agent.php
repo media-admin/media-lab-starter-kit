@@ -3,7 +3,7 @@
  * Plugin Name:       Media Lab AI Agent
  * Plugin URI:        https://media-lab.at
  * Description:       Datenschutzkonformer AI-Chat-Assistent für mehrsprachige WordPress-Sites, mit austauschbarem Anbieter (Anthropic, OpenAI, ...).
- * Version:           1.2.4
+ * Version:           1.6.1
  * Requires PHP:      8.1
  * Author:            Media Lab Tritremmel GmbH
  * Text Domain:        media-lab-ai-agent
@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('MLT_AI_AGENT_VERSION', '1.2.4');
+define('MLT_AI_AGENT_VERSION', '1.6.1');
 define('MLT_AI_AGENT_PATH', plugin_dir_path(__FILE__));
 define('MLT_AI_AGENT_URL', plugin_dir_url(__FILE__));
 
@@ -37,8 +37,21 @@ require_once MLT_AI_AGENT_PATH . 'inc/class-ai-agent-dashboard.php';
 // mlt_ai_rag_enabled) — so lässt es sich zur Laufzeit ohne Deploy zu-/abschalten.
 require_once MLT_AI_AGENT_PATH . 'inc/rag/class-ai-agent-rag-install.php';
 require_once MLT_AI_AGENT_PATH . 'inc/rag/class-ai-agent-embeddings.php';
+require_once MLT_AI_AGENT_PATH . 'inc/rag/class-ai-agent-file-extractor.php';
+
+// Vendor-Autoloader (FPDI/FPDF, für PDF-Seiten-Splitting) — lokal gebaut und
+// committed statt per Server-Composer installiert (siehe vendor/autoload.php).
+// Guarded: falls der Ordner mal fehlt, bricht das Plugin nicht komplett ab,
+// PDF-Splitting fällt dann einfach auf "keine Aufteilung" zurück (siehe
+// MLT_AI_Pdf_Splitter::library_available()).
+if (file_exists(MLT_AI_AGENT_PATH . 'vendor/autoload.php')) {
+    require_once MLT_AI_AGENT_PATH . 'vendor/autoload.php';
+}
+require_once MLT_AI_AGENT_PATH . 'inc/rag/class-ai-agent-pdf-splitter.php';
+
 require_once MLT_AI_AGENT_PATH . 'inc/rag/class-ai-agent-retriever.php';
 require_once MLT_AI_AGENT_PATH . 'inc/rag/class-ai-agent-indexer.php';
+require_once MLT_AI_AGENT_PATH . 'inc/rag/class-ai-agent-product-documents.php';
 
 register_activation_hook(__FILE__, [MLT_AI_Agent_Install::class, 'activate']);
 register_activation_hook(__FILE__, [MLT_AI_Rag_Install::class, 'activate']);
@@ -167,7 +180,10 @@ add_shortcode('mlt_ai_widget', function () {
 
 /**
  * Manueller Reindex-Trigger im Werkzeuge-Menü — startet den Batch-Reindex
- * aus class-ai-agent-indexer.php (20 Posts pro Cron-Durchlauf).
+ * aus class-ai-agent-indexer.php (20 Posts pro Cron-Durchlauf). Zweiter,
+ * unabhängiger Button für Dateien (PDF/PPTX/DOCX), da diese über einen
+ * eigenen Batch-Prozess mit kleinerer Batch-Größe laufen (Textextraktion
+ * braucht mehr Rechenzeit als reine Content-Posts).
  */
 add_action('admin_menu', function () {
     add_management_page(
@@ -180,12 +196,28 @@ add_action('admin_menu', function () {
                 do_action('mlt_ai_rag_bulk_reindex', 0);
                 echo '<div class="notice notice-success"><p>Reindexierung gestartet, läuft im Hintergrund per WP-Cron.</p></div>';
             }
+            if (isset($_POST['mlt_ai_start_file_reindex']) && check_admin_referer('mlt_ai_file_reindex')) {
+                do_action('mlt_ai_rag_bulk_reindex_files', 0);
+                echo '<div class="notice notice-success"><p>Datei-Reindexierung gestartet, läuft im Hintergrund per WP-Cron.</p></div>';
+            }
+
             $status = get_option('mlt_ai_rag_reindex_status', 'noch nicht gestartet');
+            $file_status = get_option('mlt_ai_rag_file_reindex_status', 'noch nicht gestartet');
+
             echo '<div class="wrap"><h1>AI Agent — Website-Inhalte neu indexieren</h1>';
+
+            echo '<h2>Beiträge, Seiten, Produkte</h2>';
             echo '<p>Status: ' . esc_html($status) . '</p>';
             echo '<form method="post">';
             wp_nonce_field('mlt_ai_reindex');
             submit_button('Neuindexierung starten', 'primary', 'mlt_ai_start_reindex');
+            echo '</form>';
+
+            echo '<h2 style="margin-top:2em;">Dateien (PDF, PowerPoint, Word)</h2>';
+            echo '<p>Status: ' . esc_html($file_status) . '</p>';
+            echo '<form method="post">';
+            wp_nonce_field('mlt_ai_file_reindex');
+            submit_button('Dateien neu indexieren', 'secondary', 'mlt_ai_start_file_reindex');
             echo '</form></div>';
         }
     );

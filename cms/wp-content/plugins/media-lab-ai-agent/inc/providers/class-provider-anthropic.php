@@ -40,13 +40,14 @@ class MLT_AI_Provider_Anthropic implements MLT_AI_Provider_Interface {
         return $prices[$model] ?? ['input' => 0.0, 'output' => 0.0];
     }
 
-    public function send_message(string $message, string $system_prompt, string $lang): array {
+    public function send_message(string $message, string $system_prompt, string $lang, array $attachments = []): array {
         $api_key = mlt_ai_get_decrypted_key('anthropic');
         if ($api_key === '') {
             throw new MLT_AI_Provider_Exception('Kein Anthropic API Key hinterlegt.');
         }
 
         $model = get_field('mlt_ai_model', 'option') ?: 'claude-haiku-4-5-20251001';
+        $content = $this->build_content_blocks($message, $attachments);
 
         $response = wp_remote_post(self::API_URL, [
             'headers' => [
@@ -59,10 +60,12 @@ class MLT_AI_Provider_Anthropic implements MLT_AI_Provider_Interface {
                 'max_tokens' => self::MAX_RESPONSE_TOKENS,
                 'system'     => $system_prompt,
                 'messages'   => [
-                    ['role' => 'user', 'content' => $message],
+                    ['role' => 'user', 'content' => $content],
                 ],
             ]),
-            'timeout' => 20,
+            // Höheres Timeout als bei reinem Text: PDF-Anhänge (base64-kodiert,
+            // visuelle Analyse pro Seite) brauchen spürbar mehr Verarbeitungszeit.
+            'timeout' => empty($attachments) ? 20 : 40,
         ]);
 
         if (is_wp_error($response)) {
@@ -92,6 +95,47 @@ class MLT_AI_Provider_Anthropic implements MLT_AI_Provider_Interface {
             'output_tokens'  => $output_tokens,
             'cost_estimate'  => $this->calculate_cost($input_tokens, $output_tokens, $model),
         ];
+    }
+
+    /**
+     * Baut die Content-Blocks für die Anthropic Messages API: optionale
+     * PDF-Anhänge als native "document"-Blocks (Claude liest Seiten visuell,
+     * inkl. Formeln/Diagrammen/Tabellen — kein reiner Text-Fallback), gefolgt
+     * vom eigentlichen Text-Block. Nicht lesbare/fehlende Dateien werden
+     * übersprungen statt den ganzen Request abzubrechen.
+     *
+     * @param array $attachments ['path' => string, 'media_type' => string][]
+     * @return array<int, array<string, mixed>>
+     */
+    private function build_content_blocks(string $message, array $attachments): array {
+        $content = [];
+
+        foreach ($attachments as $attachment) {
+            $path = $attachment['path'] ?? '';
+            $media_type = $attachment['media_type'] ?? '';
+
+            if ($path === '' || !file_exists($path) || !is_readable($path)) {
+                continue;
+            }
+
+            $data = file_get_contents($path);
+            if ($data === false) {
+                continue;
+            }
+
+            $content[] = [
+                'type'   => 'document',
+                'source' => [
+                    'type'       => 'base64',
+                    'media_type' => $media_type,
+                    'data'       => base64_encode($data),
+                ],
+            ];
+        }
+
+        $content[] = ['type' => 'text', 'text' => $message];
+
+        return $content;
     }
 
     private function calculate_cost(int $input_tokens, int $output_tokens, string $model): float {

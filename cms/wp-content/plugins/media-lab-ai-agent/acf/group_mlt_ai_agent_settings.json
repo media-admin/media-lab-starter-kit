@@ -171,6 +171,73 @@
             ]
         },
         {
+            "key": "field_mlt_ai_rag_index_files",
+            "label": "Dateien (PDF, PowerPoint, Word) indexieren",
+            "name": "mlt_ai_rag_index_files",
+            "type": "true_false",
+            "default_value": 0,
+            "ui": 1,
+            "instructions": "Extrahiert Text aus PDFs, PowerPoint- und Word-Dateien in der Mediathek (z.B. Manuals, Datenblätter, Spezifikationen) und macht ihn für den Assistenten durchsuchbar. Funktioniert bei regulären, textbasierten Dateien — gescannte PDFs ohne echten Text-Layer werden nicht unterstützt (kein OCR).",
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_mlt_ai_rag_enabled",
+                        "operator": "==",
+                        "value": "1"
+                    }
+                ]
+            ]
+        },
+        {
+            "key": "field_mlt_ai_rag_file_types",
+            "label": "Zu indexierende Dateitypen",
+            "name": "mlt_ai_rag_file_types",
+            "type": "checkbox",
+            "choices": {
+                "pdf": "PDF",
+                "pptx": "PowerPoint (.pptx)",
+                "docx": "Word (.docx)"
+            },
+            "default_value": [
+                "pdf"
+            ],
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_mlt_ai_rag_enabled",
+                        "operator": "==",
+                        "value": "1"
+                    },
+                    {
+                        "field": "field_mlt_ai_rag_index_files",
+                        "operator": "==",
+                        "value": "1"
+                    }
+                ]
+            ]
+        },
+        {
+            "key": "field_mlt_ai_rag_file_reindex",
+            "label": "Bestandsdateien neu indexieren",
+            "name": "mlt_ai_rag_file_reindex_trigger",
+            "type": "message",
+            "message": "Neue Uploads werden automatisch indexiert. Für bereits vorhandene Dateien in der Mediathek: Werkzeuge → AI Agent Reindex → \"Dateien neu indexieren\" (läuft ebenfalls im Hintergrund per WP-Cron, in kleineren Batches à 10 Dateien).",
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_mlt_ai_rag_enabled",
+                        "operator": "==",
+                        "value": "1"
+                    },
+                    {
+                        "field": "field_mlt_ai_rag_index_files",
+                        "operator": "==",
+                        "value": "1"
+                    }
+                ]
+            ]
+        },
+        {
             "key": "field_mlt_ai_system_prompts",
             "label": "System-Prompts (pro Sprache)",
             "name": "mlt_ai_system_prompts",
@@ -215,5 +282,5 @@
     "style": "default",
     "active": true,
     "description": "Einstellungen für media-lab-ai-agent",
-    "modified": 1788945765
+    "modified": 1789453146
 }

@@ -59,13 +59,32 @@ class MLT_AI_Agent_Rest {
         }
 
         $system_prompt = self::get_system_prompt($lang);
-        $system_prompt = self::augment_with_rag_context($system_prompt, $message, $lang);
+        $rag_result = self::get_rag_context($message, $lang);
+        $system_prompt = self::augment_with_rag_context($system_prompt, $rag_result['text']);
 
         try {
-            $result = $provider->send_message($message, $system_prompt, $lang);
+            $result = $provider->send_message($message, $system_prompt, $lang, $rag_result['attachments']);
         } catch (MLT_AI_Provider_Exception $e) {
-            mlt_ai_log_error($e->getMessage(), ['provider' => $provider->get_id(), 'lang' => $lang]);
-            return new WP_Error('provider_error', 'AI-Dienst aktuell nicht erreichbar.', ['status' => 502]);
+            // Falls der Fehler mit einem PDF-Anhang zusammenhängt (z.B. Anthropics
+            // 100-Seiten-Limit bei einem sehr langen Manual/Datenblatt), einmal
+            // ohne Anhänge erneut versuchen statt den ganzen Chat-Turn scheitern
+            // zu lassen — Nutzer bekommt dann Antwort auf Text-Kontext-Basis
+            // statt eine Fehlermeldung.
+            if (!empty($rag_result['attachments'])) {
+                mlt_ai_log_error(
+                    'RAG: Anfrage mit PDF-Anhang fehlgeschlagen, Fallback auf reinen Text-Kontext: ' . $e->getMessage(),
+                    ['provider' => $provider->get_id(), 'lang' => $lang]
+                );
+                try {
+                    $result = $provider->send_message($message, $system_prompt, $lang, []);
+                } catch (MLT_AI_Provider_Exception $e2) {
+                    mlt_ai_log_error($e2->getMessage(), ['provider' => $provider->get_id(), 'lang' => $lang]);
+                    return new WP_Error('provider_error', 'AI-Dienst aktuell nicht erreichbar.', ['status' => 502]);
+                }
+            } else {
+                mlt_ai_log_error($e->getMessage(), ['provider' => $provider->get_id(), 'lang' => $lang]);
+                return new WP_Error('provider_error', 'AI-Dienst aktuell nicht erreichbar.', ['status' => 502]);
+            }
         }
 
         self::log_conversation($session_id, $provider->get_id(), $lang, $message, $result);
@@ -125,16 +144,27 @@ class MLT_AI_Agent_Rest {
     }
 
     /**
-     * Ergänzt den System-Prompt um relevante Website-Inhalte (RAG). Bricht
-     * nie hart ab — falls RAG deaktiviert ist oder kein Treffer gefunden
-     * wird, läuft der Chat unverändert mit dem reinen System-Prompt weiter.
+     * Holt den RAG-Kontext (Text-Chunks + ggf. native PDF-Anhänge) vom
+     * Retriever. Bricht nie hart ab — falls RAG deaktiviert ist oder kein
+     * Treffer gefunden wird, kommt ein leeres Ergebnis zurück und der Chat
+     * läuft unverändert mit dem reinen System-Prompt weiter.
+     *
+     * @return array{text: string[], attachments: array}
      */
-    private static function augment_with_rag_context(string $system_prompt, string $message, string $lang): string {
+    private static function get_rag_context(string $message, string $lang): array {
         if (!class_exists('MLT_AI_Rag_Retriever')) {
-            return $system_prompt;
+            return ['text' => [], 'attachments' => []];
         }
 
-        $context_chunks = MLT_AI_Rag_Retriever::get_context($message, $lang);
+        return MLT_AI_Rag_Retriever::get_context($message, $lang);
+    }
+
+    /**
+     * Ergänzt den System-Prompt um die gefundenen Text-Chunks. Läuft auch,
+     * wenn zusätzlich native PDF-Anhänge mitgeschickt werden — die Text-Chunks
+     * dienen dann als zusätzlicher Kontext/Fallback und für Quellenangaben.
+     */
+    private static function augment_with_rag_context(string $system_prompt, array $context_chunks): string {
         if (empty($context_chunks)) {
             return $system_prompt;
         }
@@ -144,8 +174,14 @@ class MLT_AI_Agent_Rest {
         return $system_prompt
             . "\n\nRelevante Informationen von der Website (nutze diese für deine Antwort, "
             . "erfinde keine Details, die hier nicht stehen). Jeder Abschnitt beginnt mit "
-            . "\"Quelle: <URL>\" — wenn du dich auf einen bestimmten Abschnitt beziehst, "
-            . "nenne am Ende deiner Antwort die passende(n) URL(s) als einfachen Klartext-Link:\n"
+            . "\"Quelle: <URL>\" — wenn einer der Abschnitte zu einem Produkt oder Dokument "
+            . "gehört, das zur Frage passt, nenne dessen URL am Ende deiner Antwort als "
+            . "einfachen Klartext-Link, AUCH WENN du unsicher bist oder Rückfragen stellst — "
+            . "der Link gibt dem Nutzer einen direkten nächsten Schritt, selbst wenn du die "
+            . "Frage nicht abschließend beantworten kannst. "
+            . "Falls zusätzlich ein PDF-Dokument im Anhang mitgeschickt wurde: nutze für Formeln, "
+            . "Tabellen und Diagramme primär das Original-PDF, nicht den unten stehenden Text "
+            . "(der ist eine vereinfachte Textversion, die Formeln nicht zuverlässig wiedergibt):\n"
             . $context_block;
     }
 

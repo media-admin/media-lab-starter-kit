@@ -39,7 +39,14 @@ class MLT_AI_Provider_OpenAI implements MLT_AI_Provider_Interface {
         return $prices[$model] ?? ['input' => 0.0, 'output' => 0.0];
     }
 
-    public function send_message(string $message, string $system_prompt, string $lang): array {
+    /**
+     * Hinweis: $attachments (native PDF-Anhänge) wird hier bewusst ignoriert —
+     * unsere Implementierung nutzt aktuell nur das reine Chat-Completions-
+     * Textformat. Fällt automatisch auf den Text-Kontext im System-Prompt
+     * zurück (siehe REST-Handler), Formel-Treue leidet dadurch bei OpenAI als
+     * Chat-Anbieter entsprechend gegenüber Anthropic.
+     */
+    public function send_message(string $message, string $system_prompt, string $lang, array $attachments = []): array {
         $api_key = mlt_ai_get_decrypted_key('openai');
         if ($api_key === '') {
             throw new MLT_AI_Provider_Exception('Kein OpenAI API Key hinterlegt.');

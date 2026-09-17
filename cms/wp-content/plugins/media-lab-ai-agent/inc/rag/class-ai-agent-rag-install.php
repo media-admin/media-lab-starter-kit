@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
 
 class MLT_AI_Rag_Install {
 
-    const DB_VERSION = '1.0.1';
+    const DB_VERSION = '1.1.0';
     const DB_VERSION_OPTION = 'mlt_ai_rag_db_version';
 
     public static function activate(): void {
@@ -50,6 +50,7 @@ class MLT_AI_Rag_Install {
             chunk_text TEXT NOT NULL,
             embedding LONGTEXT NOT NULL,
             embedding_model VARCHAR(64) NOT NULL,
+            source_path VARCHAR(500) NULL,
             updated_at DATETIME NOT NULL,
             PRIMARY KEY  (id),
             KEY object_lookup (object_type, object_id),

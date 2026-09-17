@@ -3,7 +3,90 @@
 Alle nennenswerten Änderungen an diesem Plugin werden hier dokumentiert.
 Format angelehnt an [Keep a Changelog](https://keepachangelog.com/), Versionierung nach [Semantic Versioning](https://semver.org/).
 
-## [1.2.6] – unreleased
+## [1.6.1] – 2026-09-16
+
+### fix(ai-agent)
+- Ghostscript-Normalisierung (1.6.0) blieb wirkungslos: Ab Ghostscript 10.03 schreibt `pdfwrite` standardmäßig **selbst wieder** XRef-Streams/Object-Streams (offiziell dokumentiertes Verhalten seit diesem Release) — die "normalisierte" Datei hatte exakt dasselbe Problem wie das Original. Fix: `-dCompatibilityLevel=1.4` erzwingt klassisches PDF-1.4-Format, das XRef-Streams technisch gar nicht kennt (erst ab PDF 1.5 spezifiziert) — laut Ghostscript-Doku wird die Einstellung dadurch automatisch deaktiviert. Verifiziert gegen echte Testdatei (Ghostscript 10.08.0, lokal + Hetzner-Shared-Hosting).
+
+## [1.6.0] – 2026-09-16
+
+### feat(ai-agent)
+- **PDF-Seiten-Splitting für Dokumente über Anthropics 100-Seiten-Limit:** Neue Abhängigkeit `setasign/fpdi` + `setasign/fpdf` (beide MIT, lokal gebaut, `vendor/`-Ordner committed — kein Server-Composer nötig, siehe `vendor/README.md`). PDFs mit mehr als 95 Seiten werden beim Indexieren automatisch in ≤90-seitige "Fenster"-Dateien aufgeteilt (`class-ai-agent-pdf-splitter.php`), jedes Fenster wird einzeln indexiert. Bei einer Anfrage wird das für die konkrete Frage am besten passende Fenster ermittelt (nicht blind das erste) und nativ mitgeschickt — bleibt garantiert unter dem Seitenlimit, unabhängig von der Gesamtlänge des Originaldokuments.
+- **Ghostscript-Normalisierung als Fallback, wenn der kostenlose FPDI-Parser scheitert:** PDFs mit komprimierten Cross-Reference-Tabellen/Object-Streams (PDF 1.5+, betrifft z.B. Ausgaben von "Tracker's PDF-Tools") kann die kostenlose FPDI-Version strukturell nicht lesen — die kommerzielle FPDI-PDF-Parser-Lizenz (ab 100€) war beim Kunden ohne Budget keine Option. Stattdessen: Falls `exec()`/`shell_exec()` erlaubt sind und `gs` (Ghostscript) auf dem Server installiert ist, wird die PDF einmalig über Ghostscripts `pdfwrite`-Device neu geschrieben (Standard-Konvertierung, kein Custom-PostScript, Ghostscripts eigenes Sandboxing bleibt aktiv) — das Ergebnis nutzt praktisch immer klassische Cross-Reference-Tabellen, die FPDI danach lesen kann. **Verifiziert auf Hetzner-Shared-Hosting** (Ghostscript 10.0.0 vorinstalliert, `exec()` uneingeschränkt) — dem Hosting der wichtigsten Kundenprojekte. Ohne Ghostscript: sauberer Fallback auf die Originaldatei (kein Absturz).
+- Neue Spalte `source_path` in `wp_mlt_ai_embeddings` (DB_VERSION 1.1.0) — verweist bei gesplitteten Dokumenten auf das jeweilige Fenster; bei nicht gesplitteten Dokumenten `NULL` (Regelfall bleibt unverändert, nutzt weiterhin die Originaldatei).
+- Für über Produkte verknüpfte Dokumente (`mlt_ai_product_documents`) wird das beste Fenster über eine gezielte Ähnlichkeitssuche unter allen Chunks des verlinkten Dokuments ermittelt (`get_best_source_path()`), nicht mehr das erste/einzige Fenster blind angenommen.
+- **Wichtig für Bestandsdateien:** Bereits vor diesem Update indexierte lange PDFs (>95 Seiten) profitieren erst nach erneuter Indexierung vom Splitting (Werkzeuge → AI Agent Reindex → „Dateien neu indexieren").
+
+## [1.5.3] – 2026-09-16
+
+### debug(ai-agent)
+- Temporäres `RAG-DEBUG`-Logging (siehe unreleased-Eintrag) nach erfolgreicher Diagnose wieder entfernt. **Ergebnis der Diagnose:** Die komplette Produkt→Dokument→Anhang-Kette funktioniert korrekt (Produkt gefunden → Dokument-Feld korrekt ausgelesen → PDF korrekt eingelesen → an Anthropic-API gesendet). Der eigentliche Grund, warum kein natives PDF-Verständnis ankam: Anthropics Limit von **100 PDF-Seiten pro Anfrage** — das konkrete Test-Dokument hat 120 Seiten. Der in 1.4.2 gebaute Fallback-Mechanismus griff wie vorgesehen (Rückfall auf Text-Kontext statt Fehlermeldung), aber die Text-Chunks des betroffenen Dokuments erreichen bei sprachübergreifenden Anfragen oft nicht die Top-5-Auswahl (siehe 1.4.5), wodurch bei sehr langen PDFs weder der native Anhang noch aussagekräftiger Text-Kontext zur Verfügung steht. Für Dokumente über 100 Seiten bräuchte es echtes Seiten-Splitting (nur relevante Seiten statt der ganzen Datei senden) — das ist ein neues Feature, kein Bugfix, und noch nicht umgesetzt.
+
+## [1.5.2] – 2026-09-15
+
+### fix(ai-agent)
+- Produkt→Dokument-Verknüpfung robuster gegen nicht-synchronisierte ACF-Feldgruppen: `extract_file_id()` im Retriever und die Dateinamen-Auflösung im Index-Anreicherungs-Filter akzeptieren jetzt sowohl das erwartete ACF-Array-Format als auch eine rohe Attachment-ID (Fallback über `get_attached_file()`), statt bei fehlendem Sync still `null`/leer zu liefern.
+
+## [1.5.1] – 2026-09-15
+
+### fix(ai-agent)
+- System-Prompt-Anweisung zur Quellenangabe verschärft: Link zu einem gefundenen Produkt/Dokument soll jetzt auch dann genannt werden, wenn das Modell unsicher ist oder Rückfragen stellt — bisher blieb die Antwort bei Unsicherheit komplett linkfrei, obwohl ein passendes Produkt klar gefunden wurde.
+
+## [1.5.0] – 2026-09-15
+
+### feat(ai-agent)
+- **Produkt→Dokument-Verknüpfung wird jetzt tatsächlich genutzt:** Landet ein Produkt in den Top-Treffern, werden dessen verknüpfte Dokumente (ACF-Feld `mlt_ai_product_documents`) automatisch als native PDF-Anhänge mitgeschickt — unabhängig davon, ob die PDF-eigenen Text-Chunks selbst hoch genug scoren. Grund: kurze, strukturell ähnliche Produkt-Chunks (Titel/Preis/Verfügbarkeit) scoren in der Praxis oft höher als lange technische Fachtexte, wodurch PDF-Chunks nie in die Top-K kamen, obwohl das zugehörige Produkt eindeutig gefunden wurde (beobachtet: Produkt-Score 0,37 vs. PDF-Chunk-Score 0,30 bei identischem Sachverhalt — reines Schwellwert-Tuning hätte das nicht gelöst, da generische Test-Produkte durch strukturelle Ähnlichkeit teils sogar höher scoren als der eigentlich relevante Inhalt).
+- Anhang-Eignungsprüfung (Typ, Größe) in `maybe_attach_pdf()` zentralisiert — gilt jetzt einheitlich für direkte PDF-Treffer und über Produkte verknüpfte Dokumente.
+
+## [1.4.5] – 2026-09-15
+
+### fix(ai-agent)
+- RAG-Schwellwert (`MIN_SIMILARITY`) von 0.5 auf 0.25 gesenkt — an einer echten technischen PDF (deutsche Frage, englischer Fachtext) lag der höchste gemessene Ähnlichkeitswert unter allen 90 Chunks bei nur 0,30, obwohl der Inhalt eindeutig relevant war. Sprachübergreifende + fachbegriffliche Embedding-Ähnlichkeit ist strukturell schwächer als gleichsprachige Treffer. Diagnose per einmaligem `wp eval-file`-Script direkt gegen echte gespeicherte Embeddings verifiziert, nicht geraten.
+
+## [1.4.4] – 2026-09-15
+
+### fix(ai-agent)
+- **Hauptursache für unvollständige PDF-Indexierung gefunden:** PDF-Text nutzt meist WinAnsiEncoding (≈ Windows-1252) — Zeichen wie ©, typografische Anführungszeichen, ° kamen als rohe Einzelbyte-Werte durch unseren Extraktor, was als UTF-8 interpretiert ungültige Byte-Sequenzen ergibt. `$wpdb->insert()` lehnt solche Werte in einer UTF-8-Spalte klaglos ab (kein Fehler, kein Log, die Zeile fehlt einfach) — an einer echten technischen PDF betraf das 72 von 89 Chunks. Fix: Extrahierter Text wird jetzt von Windows-1252 nach UTF-8 konvertiert (`convert_from_winansi()`), verbleibende Einzelfälle (z.B. Symbol-Font-Zeichen) fängt ein Sicherheitsnetz ab (`ensure_valid_utf8()`, entfernt statt den ganzen Chunk zu verlieren).
+- `store_chunk()` prüft jetzt den Rückgabewert von `$wpdb->insert()` und loggt fehlgeschlagene Inserts explizit (`RAG: Chunk-Insert fehlgeschlagen`) — verhindert, dass zukünftige ähnliche Probleme wieder unbemerkt bleiben.
+
+## [1.4.3] – 2026-09-15
+
+### fix(ai-agent)
+- Der 1.4.2-Fix (CR/LF/CRLF-Erkennung) war zwar korrekt, aber der zugrundeliegende `preg_match_all` mit `.*?` über die **gesamte** Roh-Datei konnte bei großen PDFs (getestet: 14,8MB, 120 Seiten) PHPs PCRE-Backtracking-Limit reißen und dadurch komplett `false` zurückgeben — Symptom war weiterhin "kein Text extrahiert", obwohl das Pattern selbst korrekt war. Umgestellt auf lineares `strpos()`-basiertes Scannen der Stream-Grenzen (kein Backtracking, keine Limits).
+- Zusätzlich: Streams über 200KB (komprimiert) werden jetzt übersprungen, bevor das Text-Operator-Regex darauf losgelassen wird — große Streams sind praktisch immer eingebettete Bilder/Schriftarten (auch FlateDecode-komprimiert, aber ohne Tj/TJ-Text), nie echte Seiteninhalte. Reduziert die Verarbeitungszeit bei bebilderten technischen Manuals drastisch (getestet: 57s → 1,3s bei identischem Textergebnis) — wichtig, da PHPs Ausführungszeit-Limit sonst mitten in der Indexierung greifen und die Datei unvollständig/gar nicht indexiert lassen kann.
+
+## [1.4.2] – 2026-09-15
+
+### fix(ai-agent)
+- **Kritischer Bug in der PDF-Textextraktion:** Stream-Erkennung verlangte zwingend `\r?\n` (CRLF oder LF) vor `endstream`. PDF-Spezifikation definiert Zeilenende aber als CR, LF **oder** CRLF — PDFs von Generatoren, die konsequent bloßes CR nutzen (beobachtet bei „Tracker's PDF-Tools"), lieferten dadurch **0 erkannte Streams**, also komplett leeren indexierten Text, ohne jede Fehlermeldung. Betroffene Dokumente waren im RAG-System faktisch unsichtbar, unabhängig von der Suchanfrage. Pattern auf `(?:\r\n|\r|\n)` erweitert (beide Stream-Grenzen).
+- REST-Handler fängt jetzt Anthropic-API-Fehler bei PDF-Anhängen ab (z.B. Anthropics 100-Seiten-Limit bei sehr langen Manuals) und versucht die Anfrage automatisch einmal ohne Anhänge erneut (Fallback auf reinen Text-Kontext) statt den kompletten Chat-Turn mit einer Fehlermeldung scheitern zu lassen.
+
+## [1.4.1] – 2026-09-15
+
+### feat(ai-agent)
+- Neue ACF-Feldgruppe „Produktdokumente (AI Agent)" direkt am WooCommerce-Produkt: Datei-Repeater für Datenblätter, Manuals, Spec Sheets (Upload auf PDF/PPTX/DOCX beschränkt). Eigene, plugin-gehörige Feldgruppe statt Erweiterung der Starter-Kit-eigenen „Additional Product Information" — bleibt damit portabel für fremde WordPress-Projekte ohne dieses Starter Kit.
+- Hochgeladene Dokumente werden automatisch indexiert (regulärer `add_attachment`-Hook, unabhängig vom Produktbezug).
+- Zusätzlich: Produktseite selbst nennt ihre zugehörigen Dokumente im RAG-Index-Text (`class-ai-agent-product-documents.php`, nutzt den bestehenden Filter `mlt_ai_rag_indexable_text_parts` — keine Core-Indexer-Änderung nötig) — verbessert die Auffindbarkeit, auch wenn die PDF-Textextraktion selbst bei formellastigen Inhalten schwächer trifft.
+
+## [1.4.0] – 2026-09-15
+
+### feat(ai-agent)
+- **Zweistufiges RAG für formel-/diagrammlastige PDFs** (z.B. Manuals, Datenblätter mit chemischen/mathematischen Formeln): Text-Embeddings finden weiterhin das passende Dokument, aber statt nur extrahiertem (bei Formeln unzuverlässigem) Text wird die Original-PDF-Datei jetzt zusätzlich **nativ** an Claude mitgeschickt (Anthropic Messages API `document`-Content-Block, base64-kodiert) — Formeln, Diagramme und Tabellen bleiben visuell korrekt erhalten, da das Modell die Seite tatsächlich "sieht" statt nur linearisierten Text zu bekommen.
+- `MLT_AI_Provider_Interface::send_message()` um optionalen `$attachments`-Parameter erweitert (Breaking Change für eigene Custom-Provider aus dem `mlt_ai_register_providers`-Hook — Signatur anpassen, Standardwert `[]` macht es aber abwärtskompatibel für Provider, die Anhänge ignorieren).
+- Anthropic-Provider nutzt Anhänge nativ; OpenAI-Provider ignoriert sie bewusst (fällt auf Text-Kontext zurück) — kein natives PDF-Input in unserer aktuellen OpenAI-Implementierung.
+- Retriever liefert max. 2 PDF-Anhänge pro Anfrage (Kosten-/Request-Size-Limit), Größenlimit 25MB/Datei (Anthropic-Request-Limit: 32MB gesamt). Zu große Treffer fallen automatisch auf reinen Text-Kontext zurück statt den Request abzubrechen.
+- **Bekannte Einschränkung:** natives PDF-Verständnis ist auf Anthropic als Chat-Provider beschränkt; bei OpenAI als Anbieter sinkt die Formel-Treue auf das Niveau der Text-Extraktion. Anthropics eigene PDF-Grenzen (32MB, 100 Seiten bei Standard-Kontextfenster) gelten unverändert.
+
+## [1.3.0] – 2026-09-09
+
+### feat(ai-agent)
+- RAG-Modul kann jetzt zusätzlich Dateien aus der Mediathek indexieren: PDF, PowerPoint (.pptx), Word (.docx) — z.B. Manuals, Datenblätter, Spezifikationen, die sonst nirgends als WordPress-Content vorliegen.
+- Textextraktion komplett dependency-frei (`class-ai-agent-file-extractor.php`): PDF über zlib-Streamdekomprimierung + Textoperator-Parsing, PPTX/DOCX über `ZipArchive` + DOM/XPath. Kein Composer-Vendor-Ordner nötig, bleibt SFTP-Deploy-kompatibel.
+- Neue Uploads werden automatisch indexiert (`add_attachment`/`edit_attachment`); Bestandsdateien über einen zweiten, unabhängigen Reindex-Button (Werkzeuge → AI Agent Reindex → "Dateien neu indexieren", eigener Cron-Batch à 10 Dateien).
+- Retriever verlinkt bei Datei-Treffern direkt auf die Datei-URL (`wp_get_attachment_url()`) statt auf eine Attachment-Seite.
+- **Bekannte Einschränkung:** funktioniert nur bei textbasierten ("born-digital") Dateien. Gescannte PDFs ohne echten Text-Layer benötigen OCR und werden nicht unterstützt.
+
+## [1.2.6] – 2026-09-09
 
 ### feat(ai-agent)
 - RAG-Kontext enthält jetzt die Quell-URL (Permalink) jedes gefundenen Abschnitts — Modell kann in Antworten auf konkrete Seiten/Produkte verlinken statt nur aufzuzählen.

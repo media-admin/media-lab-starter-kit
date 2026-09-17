@@ -1,0 +1,49 @@
+{
+    "key": "group_mlt_ai_product_documents",
+    "title": "Produktdokumente (AI Agent)",
+    "fields": [
+        {
+            "key": "field_mlt_ai_product_documents",
+            "label": "Datenblätter, Manuals, Spec Sheets",
+            "name": "mlt_ai_product_documents",
+            "type": "repeater",
+            "layout": "table",
+            "button_label": "Dokument hinzufügen",
+            "instructions": "Hochgeladene Dateien werden automatisch in den AI-Agent-Wissensbestand aufgenommen (sofern Website-Wissen (RAG) und Datei-Indexierung unter AI Agent aktiv sind).",
+            "sub_fields": [
+                {
+                    "key": "field_mlt_ai_product_document_file",
+                    "label": "Datei",
+                    "name": "file",
+                    "type": "file",
+                    "return_format": "array",
+                    "mime_types": "pdf,pptx,docx",
+                    "wrapper": { "width": "70" }
+                },
+                {
+                    "key": "field_mlt_ai_product_document_label",
+                    "label": "Bezeichnung (optional)",
+                    "name": "label",
+                    "type": "text",
+                    "instructions": "Falls leer, wird der Dateiname verwendet.",
+                    "wrapper": { "width": "30" }
+                }
+            ]
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "post_type",
+                "operator": "==",
+                "value": "product"
+            }
+        ]
+    ],
+    "menu_order": 10,
+    "position": "normal",
+    "style": "default",
+    "active": true,
+    "description": "AI-Agent-Dokumente (Datenblätter, Manuals) für dieses Produkt",
+    "modified": 1789480051
+}
