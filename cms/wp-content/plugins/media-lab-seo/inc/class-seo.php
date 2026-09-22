@@ -126,10 +126,10 @@ class MLT_SEO {
         if ( is_singular() ) {
             $post = get_queried_object();
             if ( $post && has_excerpt( $post->ID ) ) {
-                return wp_trim_words( get_the_excerpt( $post->ID ), 30, '…' );
+                return wp_trim_words( strip_shortcodes( get_the_excerpt( $post->ID ) ), 30, '…' );
             }
             if ( $post ) {
-                return wp_trim_words( wp_strip_all_tags( $post->post_content ), 30, '…' );
+                return wp_trim_words( wp_strip_all_tags( strip_shortcodes( $post->post_content ) ), 30, '…' );
             }
         }
         if ( is_home() || is_front_page() ) return get_bloginfo( 'description' );
