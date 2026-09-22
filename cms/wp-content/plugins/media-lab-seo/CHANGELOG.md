@@ -15,6 +15,118 @@ ist hierbei **kein Feature verloren gegangen**, nur die Zählung war falsch.
 
 ---
 
+## [1.10.1] - 2026-09-22
+
+### media-lab-seo 1.10.1
+
+#### Added
+- **Schema.org als verknüpfter `@graph`** (`inc/class-schema.php`, komplett überarbeitet) –
+  ein JSON-LD-Block statt mehrerer Einzelblöcke; Organization/LocalBusiness, WebSite,
+  WebPage und BreadcrumbList sind per `@id` verknüpft.
+- **Automatische Schema-Typen je Inhalt:** `post` → `BlogPosting` (+ Autor als `Person`,
+  nur bei echtem Namen – sonst Organisation), `service` → `Service`, `team` → `Person`,
+  `job` → `JobPosting`, `project` → `CreativeWork`; Seiten/Archive → `WebPage` /
+  `CollectionPage` / `SearchResultsPage`, Autoren-Archiv → `ProfilePage`.
+- **FAQPage-Erkennung:** Seiten mit `[faq_accordion]` oder `<details><summary>`
+  (inkl. Core-Details-Block) werden automatisch zur `FAQPage`; Fragen werden über den
+  Fragetext dedupliziert.
+- **Neue Quellen** (`inc/class-schema-sources.php`, neu): `[pricing_table]` →
+  `OfferCatalog`, `[google_map]` → `Place`, `[mlb_booking_form]` → `LocalBusiness`
+  je Standort inkl. `OpeningHoursSpecification` und Leistungen, `[team_member]` →
+  `Person` (auch verschachtelt in `[team_cards]`), CPT `event` → `Event`.
+- **Neues Admin-Modul** (`inc/class-schema-admin.php`, neu): Untermenü
+  „SEO Toolkit → Schema" (Organisationstyp, Telefon, E-Mail, Adresse, Öffnungszeiten,
+  Einzugsgebiet, sameAs), Metabox „Schema (SEO / AEO)" pro Beitrag/Seite
+  (deaktivieren, Seitentyp überschreiben, eigenes JSON-LD nur für Administratoren),
+  Profilfelder am WP-Benutzer (LinkedIn, Xing, Instagram, X, Facebook, YouTube)
+  für das Autoren-Schema.
+- **13 neue Filter** für Erweiterung ohne Plugin-Code anzufassen: `mlt_schema_enabled`,
+  `mlt_schema_graph`, `mlt_schema_organization`, `mlt_schema_org_types`,
+  `mlt_schema_post_type_builders`, `mlt_schema_faq_items`, `mlt_schema_article_type`,
+  `mlt_schema_description`, `mlt_schema_person_contact`, `mlt_schema_default_country`,
+  `mlt_schema_author_is_person`, `mlt_schema_author_url`, `mlt_schema_location_email`.
+
+#### Changed
+- Beiträge: `Article` → `BlogPosting` (per Filter `mlt_schema_article_type` änderbar).
+- Organization-Logo: `logo_desktop` (Agency Core → Logo / Globale Einstellungen) hat
+  Vorrang vor dem Social-Default-Bild.
+- Bei aktivem Yoast SEO, Rank Math oder SEOPress gibt das Plugin kein Schema mehr aus
+  (Vermeidung von Doppel-Markup; per `mlt_schema_enabled` überschreibbar).
+- Standort-E-Mail (`mlb_location_email`, interne Kopie-Adresse) wird bewusst **nicht**
+  ausgegeben, außer per Filter `mlt_schema_location_email`.
+
+#### Fixed
+- **Organization-Kontaktdaten und Logo wurden nie ausgegeben.** Der bisherige Code las
+  ACF-Optionen (`logo`, `phone`, `email`, `address`), die im Agency Core nicht existieren.
+  Liest jetzt die tatsächlichen Felder (`logo_desktop`, `top_header_phone`,
+  `top_header_email`, `top_header_address`, `top_header_social`) – nur, wenn der Top
+  Header aktiv ist und der jeweilige Eintrag nicht abgeschaltet wurde; die
+  Schema-Einstellungen haben Vorrang.
+- **FAQ-Erkennung griff nie:** gesucht wurde nach einem nie existierenden Shortcode
+  `[faq]`; der reale Name ist `[faq_accordion]`.
+- **Team-Mitglieder aus `[team_member]`-Shortcodes wurden nicht erkannt** (nur der
+  CPT-Fall über `[team_query]` war abgedeckt); jetzt erzeugt jeder `[team_member]`
+  einen eigenen `Person`-Node, inkl. Verweis von der Organisation über `employee`.
+- **`og:description`/`twitter:description` enthielten rohen Shortcode-Text**
+  (`inc/class-seo.php`): `get_description()` entfernte per `wp_strip_all_tags()` nur
+  HTML-Tags, keine Shortcode-Syntax (`[projects_query …]`, `[posts_load_more]`, …).
+  `strip_shortcodes()` jetzt vor `wp_strip_all_tags()` ergänzt, für Excerpt- und
+  Content-Zweig.
+- JSON-LD-Ausgabe: Inhalte mit `</script>` konnten den Script-Block verlassen
+  (`JSON_HEX_TAG`/`JSON_HEX_AMP` ergänzt).
+
+---  
+
+## [1.10.0] - 2026-09-20
+
+### media-lab-seo 1.10.0
+
+#### Added
+- **Schema.org als verknüpfter `@graph`** (`inc/class-schema.php`, komplett überarbeitet) –
+  ein JSON-LD-Block statt mehrerer Einzelblöcke; Organization, WebSite, WebPage und
+  BreadcrumbList sind per `@id` verknüpft.
+- **Automatische Schema-Typen je Inhalt:** `post` → `BlogPosting` (+ Autor als `Person`),
+  `service` → `Service`, `team` → `Person`, `job` → `JobPosting`, `project` → `CreativeWork`;
+  Seiten/Archive → `WebPage` / `CollectionPage` / `SearchResultsPage`, Autoren-Archiv → `ProfilePage`.
+- **FAQPage-Erkennung:** Seiten mit `[faq]`, `[accordion_item]` oder `<details>/<summary>`
+  (inkl. Core-Details-Block) werden automatisch zur `FAQPage`.
+- **Zusätzliche Quellen** (`inc/class-schema-sources.php`, neu): `[pricing_table]` → `OfferCatalog`,
+  `[google_map]` → `Place`, `[mlb_booking_form]` → `LocalBusiness` je Standort inkl.
+  `OpeningHoursSpecification` und Leistungen, CPT `event` → `Event`.
+- **Admin** (`inc/class-schema-admin.php`, neu): Untermenü „SEO Toolkit → Schema"
+  (Organisationstyp, Telefon, E-Mail, Adresse, Öffnungszeiten, Einzugsgebiet, sameAs),
+  Metabox „Schema (SEO / AEO)" pro Beitrag/Seite (Schema deaktivieren, Seitentyp überschreiben,
+  eigenes JSON-LD nur für Administratoren), Profilfelder am WP-Benutzer
+  (LinkedIn, Xing, Instagram, X, Facebook, YouTube) für das Autoren-Schema.
+- **Neue Filter:** `mlt_schema_enabled`, `mlt_schema_graph`, `mlt_schema_organization`,
+  `mlt_schema_org_types`, `mlt_schema_post_type_builders`, `mlt_schema_faq_items`,
+  `mlt_schema_article_type`, `mlt_schema_description`, `mlt_schema_person_contact`,
+  `mlt_schema_default_country`, `mlt_schema_author_is_person`, `mlt_schema_author_url`,
+  `mlt_schema_location_email`.
+
+#### Changed
+- Beiträge: `Article` → `BlogPosting` (per Filter `mlt_schema_article_type` rückgängig zu machen).
+- Autor wird nur bei echtem Namen als `Person` ausgegeben; bei Login-Namen wie „admin"
+  (oder Anzeigename = Login) ist die Organisation der Autor.
+- Organization-Logo: echtes ACF-Logo (`logo_desktop`) hat Vorrang vor dem Social-Default-Bild
+  (`mlt_og_default_image`).
+- Bei aktivem Yoast SEO, Rank Math oder SEOPress gibt das Plugin kein Schema mehr aus
+  (Vermeidung von Doppel-Markup; per `mlt_schema_enabled` überschreibbar).
+- Standort-E-Mail (`mlb_location_email`, interne Kopie-Adresse) wird bewusst **nicht**
+  ausgegeben, außer per Filter `mlt_schema_location_email`.
+- `MLT_Schema::get_breadcrumb_list()` bleibt öffentlich (Rückwärtskompatibilität).
+
+#### Fixed
+- **Organization-Kontaktdaten und Logo wurden nie ausgegeben.** Der Code las die ACF-Optionen
+  `logo`, `phone`, `email` und `address`, die im Agency Core nicht existieren. Jetzt werden die
+  tatsächlichen Felder gelesen (`logo_desktop`, `top_header_phone`, `top_header_email`,
+  `top_header_address`, `top_header_social`) – nur, wenn der Top Header aktiv ist und der
+  jeweilige Eintrag nicht abgeschaltet wurde. Die Schema-Einstellungen haben Vorrang.
+- JSON-LD-Ausgabe: Inhalte mit `</script>` konnten den Script-Block verlassen
+  (`JSON_HEX_TAG`/`JSON_HEX_AMP` ergänzt).
+
+---
+
 ## [1.9.2] - 2026-08-19
 
 ### media-lab-seo 1.9.2

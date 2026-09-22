@@ -12,7 +12,7 @@ Entwickelt von [Media Lab Tritremmel GmbH](https://media-lab.at).
 ## Features
 
 - **SEO-Grundlagen**: Open Graph Tags, Twitter Cards, Canonical URLs (WordPress-eigene Canonical-Ausgabe wird deaktiviert, um Dopplung zu vermeiden)
-- **Schema.org JSON-LD**: WebSite (inkl. SearchAction), Organization, Article (bei Posts), BreadcrumbList — fest im Code hinterlegt, aktuell nicht per Filter erweiterbar
+- **Schema.org JSON-LD** als verknüpfter `@graph`: Organization/LocalBusiness, WebSite, WebPage, BreadcrumbList, BlogPosting (+ Autor), Service, Person (Team), JobPosting, CreativeWork, FAQPage (automatisch erkannt), OfferCatalog (`[pricing_table]`), Place (`[google_map]`), LocalBusiness je Standort (`[mlb_booking_form]`), Event. Stammdaten unter **SEO Toolkit → Schema**, Ausnahmen per Metabox pro Seite, Erweiterung über `mlt_schema_*`-Filter
 - **Breadcrumbs**: PHP-Funktion für Templates + Schema.org-Markup
 - **Redirect-Manager**: 301/302, Wildcard-Pfade, Import/Export als CSV
 - **Google Search Console** — vollständige OAuth2-Anbindung: automatischer Datenabruf, Token-Erneuerung, Cache

@@ -18,6 +18,21 @@ nur knappe Stichpunkte aus `@since`-Kommentaren im Code verfügbar. Für
 auch keine Git-Tags. **Bewusst nicht geraten** — siehe „Offene Punkte" am
 Ende.
 
+---
+
+## [1.26.2] - 2026-09-22
+
+### media-lab-agency-core 1.26.2
+
+#### Fixed
+- **Team-Rolle blieb leer, wenn ein Teammitglied nur über die Standard-CPT-Felder
+  angelegt wurde.** `team_query_shortcode()` und `posts_load_more_template_team()`
+  (`inc/shortcodes.php`) lasen `get_field('role')`, die ACF-Feldgruppe des CPT `team`
+  (`group_team_member.json`) definiert das Feld jedoch als `position`. Beide Stellen
+  lesen jetzt `get_field('role') ?: get_field('position')`.
+
+---
+
 ## [1.26.1] - 2026-09-09
 
 ### media-lab-agency-core 1.24.1
