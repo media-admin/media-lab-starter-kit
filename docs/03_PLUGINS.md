@@ -1,6 +1,6 @@
 # Plugin-Dokumentation
 
-**Version:** 1.14.0 | **Letzte Aktualisierung:** 2026-08-13
+**Version:** 1.15.1 | **Letzte Aktualisierung:** 2026-09-22
 
 ---
 
@@ -9,7 +9,7 @@
 | Plugin | Version | Zweck | Modifizierbar? |
 |---|---|---|---|
 | media-lab-agency-core | 1.7.0 | Framework + Features | ❌ Nie |
-| media-lab-seo | 1.9.1 | SEO-Toolkit + Dashboard + Reports | ✅ Konfigurierbar |
+| media-lab-seo | 1.10.1 | SEO-Toolkit + Dashboard + Reports | ✅ Konfigurierbar |
 | media-lab-project-starter | 1.0.0 (Scaffold) | Projekt-spezifische CPTs/Taxonomien/ACF – wird pro Projekt dupliziert, nicht identisch deployt | ✅ Wird individuell angepasst |
 | advanced-custom-fields-pro | aktuell | Custom Fields | ✅ Konfigurierbar |
 
@@ -389,7 +389,7 @@ Startet bereits geöffnet.
 ---
 
 
-## media-lab-seo `v1.9.1`
+## media-lab-seo `v1.10.1`
 
 **Datei:** `cms/wp-content/plugins/media-lab-seo/media-lab-seo.php`
 
@@ -397,7 +397,7 @@ Pro Projekt aktivieren und konfigurieren unter **SEO Toolkit**. Benötigt
 zwingend `media-lab-agency-core` als aktives Plugin (Dependency-Check,
 sonst automatische Selbst-Deaktivierung mit Admin-Notice).
 
-**Module (Stand 1.9.1):**
+**Module (Stand 1.10.1):**
 
 | Modul | Datei | Beschreibung |
 |---|---|---|
@@ -406,7 +406,9 @@ sonst automatische Selbst-Deaktivierung mit Admin-Notice).
 | Analytics-Adapter | `inc/class-analytics-adapter.php` | Pluggbare Schnittstelle: GA4 / Matomo / eigene Implementierung |
 | Settings | `inc/class-settings.php` | Einstellungsseite: Grid aus Cards (SEO inkl. Bing, Google Search Console, GA4, Matomo, Wöchentlicher Report) |
 | SEO | `inc/class-seo.php` | Open Graph, Twitter Cards, Canonical, GSC- + Bing-Verifizierungs-Tags |
-| Schema | `inc/class-schema.php` | Schema.org JSON-LD |
+| Schema | `inc/class-schema.php` | Schema.org JSON-LD als verknüpfter `@graph` (Organization/LocalBusiness, WebSite, WebPage, BreadcrumbList, BlogPosting, Service, Person, JobPosting, CreativeWork, FAQPage) |
+| Schema-Quellen | `inc/class-schema-sources.php` | Zusatzquellen: `[pricing_table]` → OfferCatalog, `[google_map]` → Place, `[mlb_booking_form]` → LocalBusiness je Standort, `[team_member]` → Person, CPT `event` → Event |
+| Schema-Admin | `inc/class-schema-admin.php` | Untermenü „Schema" (Stammdaten der Organisation), Metabox „Schema (SEO / AEO)" pro Seite, Autoren-Profilfelder |
 | Breadcrumbs | `inc/class-breadcrumbs.php` | Breadcrumbs + Schema.org BreadcrumbList |
 | Redirects | `inc/class-redirects.php` | 301/302-Manager |
 | Consent-Stats | `inc/class-consent-stats.php` | DSGVO Consent-Rate-Tracking (seit 1.9.0), liest read-only aus Agency-Core-Tabelle `wp_mlt_consent_log` |
@@ -420,17 +422,19 @@ sonst automatische Selbst-Deaktivierung mit Admin-Notice).
 ```
 SEO Toolkit (Top-Level, eigenes Icon)
 ├── Einstellungen   (slug: media-lab-seo)   → Cards: SEO (inkl. Bing-Tag), Google Search Console (OAuth), GA4, Matomo, Wöchentlicher Report
+├── Schema          (slug: mlt-schema)      → Organisationstyp, Telefon, E-Mail, Adresse, Öffnungszeiten, Einzugsgebiet, sameAs
 └── Dashboard       (slug: mlt-dashboard)   → KPI-Kacheln, Top-Keywords/-Seiten, Datumsbereich-Picker, Consent-Rate-Card, „Mit Google verbinden"
 ```
-Einstellungen und Dashboard sind zwei **gleichrangige** Untermenüpunkte
-(getrennte `add_submenu_page()`-Aufrufe in `class-settings.php` bzw.
+Einstellungen, Schema und Dashboard sind drei **gleichrangige**
+Untermenüpunkte (getrennte `add_submenu_page()`-Aufrufe in
+`class-settings.php`, `class-schema-admin.php` bzw.
 `class-seo-dashboard.php`), keine Verschachtelung.
 
 ### Features
 
 | Feature | Beschreibung |
 |---|---|
-| Schema.org JSON-LD | Organization, WebSite, Article, Product, BreadcrumbList |
+| Schema.org JSON-LD | Verknüpfter Graph: Organization/LocalBusiness, WebSite, WebPage, BreadcrumbList, BlogPosting, Service, Person, JobPosting, CreativeWork, FAQPage, OfferCatalog, Place, Event |
 | Open Graph | Facebook und LinkedIn sharing |
 | Twitter Cards | Erweiterte Twitter-Vorschauen |
 | Canonical URLs | Duplicate Content verhindern |
@@ -441,11 +445,8 @@ Einstellungen und Dashboard sind zwei **gleichrangige** Untermenüpunkte
 
 ### Schema-Typen
 
-- **Organization** (Homepage): Firmeninfos
-- **WebSite** (Global): Site-weite Daten inkl. SearchAction
-- **Article** (Blogposts): Autor, Datum, Bild
-- **Product** (WooCommerce): Preis, Verfügbarkeit
-- **BreadcrumbList** (alle Seiten): Navigation
+Vollständige Liste der ausgegebenen Typen, ihrer Quellen und aller
+Erweiterungs-Filter: siehe [13_SEO.md → Schema.org Markup](13_SEO.md#schemaorg-markup).
 
 ### Breadcrumbs im Template
 
@@ -461,9 +462,9 @@ if (function_exists('medialab_seo_breadcrumbs')) {
 
 ### Konfiguration
 
-Ausführliche Einrichtung (GSC-OAuth, Bing, GA4, Matomo, Report-Empfänger)
-siehe [13_SEO.md](13_SEO.md) bzw. die Plugin-eigene README unter
-`cms/wp-content/plugins/media-lab-seo/README.md`.
+Ausführliche Einrichtung (GSC-OAuth, Bing, GA4, Matomo, Schema, Report-
+Empfänger) siehe [13_SEO.md](13_SEO.md) bzw. die Plugin-eigene README
+unter `cms/wp-content/plugins/media-lab-seo/README.md`.
 
 ---
 

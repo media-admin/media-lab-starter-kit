@@ -1,7 +1,7 @@
 # SEO Dokumentation
 
-**Version:** 1.9.1 | **Letzte Aktualisierung:** 2026-08-13
-**Plugin:** `media-lab-seo` v1.9.1
+**Version:** 1.10.1 | **Letzte Aktualisierung:** 2026-09-22
+**Plugin:** `media-lab-seo` v1.10.1
 
 > Diese Doku wurde am 13.08.2026 komplett überarbeitet. Der vorherige
 > Stand (Version 1.13.0 / 2026-03-10, Plugin v1.3.0) enthielt mehrere
@@ -13,6 +13,23 @@
 > `inc/class-ga4-api.php`, `inc/class-analytics-adapter.php`,
 > `inc/class-schema.php`, `inc/class-settings.php`,
 > `inc/class-seo-dashboard.php`, `inc/class-report-mailer.php`).
+
+> **Update 2026-09-22 (v1.10.0):** Der Abschnitt „Schema.org Markup" wurde
+> komplett neu geschrieben. Vorher gab es kein verknüpftes Markup und
+> keinen Erweiterungs-Filter; jetzt ist die Ausgabe ein verknüpfter
+> `@graph` mit 13 Filtern, die praktisch jeden Baustein erweiterbar
+> machen. Verifiziert gegen `inc/class-schema.php`,
+> `inc/class-schema-sources.php`, `inc/class-schema-admin.php`.
+>
+> **Nachtrag 2026-09-22 (v1.10.1):** Beim Praxistest auf
+> `media-lab-starter-kit.localdev` fiel auf, dass FAQ und Team auf der
+> Beispiel-Seite trotz sichtbarem Inhalt nicht als Schema erschienen.
+> Ursache: Die FAQ-Erkennung suchte nach einem nie existierenden
+> Shortcode `[faq]` statt dem echten `[faq_accordion]`
+> (`inc/shortcodes.php`), und der Team-Shortcode `[team_member]`
+> (Daten als Attribute direkt im Content, kein CPT-Post) wurde
+> überhaupt nicht ausgewertet. Beides korrigiert, mit dem realen
+> Seitenquelltext gegengetestet.
 
 ---
 
@@ -42,7 +59,9 @@ Kits. Benötigt zwingend `media-lab-agency-core` als aktives Plugin.
 
 | Modul | Beschreibung | Seit |
 |---|---|---|
-| Schema.org | WebSite, Organization, Article, BreadcrumbList (fest im Code, kein Erweiterungs-Hook) | v1.0.0 |
+| Schema.org | Verknüpfter `@graph`: Organization/LocalBusiness, WebSite, WebPage, Breadcrumbs, Inhaltstypen, FAQPage – erweiterbar per Filter | v1.0.0 (Graph ab v1.10.0) |
+| Schema-Quellen | Preistabellen, Karten, Booking-Standorte, Events, Team-Mitglieder | v1.10.0 (Team seit v1.10.1) |
+| Schema-Admin | Einstellungen, Metabox pro Seite, Autoren-Profilfelder | v1.10.0 |
 | Open Graph | Social Sharing (Facebook, LinkedIn) | v1.0.0 |
 | Twitter Cards | Rich Previews auf Twitter/X | v1.0.0 |
 | Breadcrumbs | Navigation + Schema.org BreadcrumbList | v1.0.0 |
@@ -81,12 +100,14 @@ wp plugin activate media-lab-seo
 ```
 SEO Toolkit (Top-Level-Menüpunkt)
 ├── Einstellungen   (Slug: media-lab-seo)
+├── Schema          (Slug: mlt-schema)
 └── Dashboard       (Slug: mlt-dashboard)
 ```
 
-**Einstellungen und Dashboard sind zwei gleichrangige Untermenüpunkte**,
-keine Verschachtelung - beide werden über eigene `add_submenu_page()`-
-Aufrufe registriert (`class-settings.php` bzw. `class-seo-dashboard.php`).
+**Einstellungen, Schema und Dashboard sind drei gleichrangige
+Untermenüpunkte**, keine Verschachtelung - jeweils über eigene
+`add_submenu_page()`-Aufrufe registriert (`class-settings.php`,
+`class-schema-admin.php` bzw. `class-seo-dashboard.php`).
 
 Die Einstellungen-Seite ist als Grid aus mehreren Karten aufgebaut, u.a.:
 „SEO" (Meta-Description, Bing-Tag), „Google Search Console" (OAuth),
@@ -289,20 +310,161 @@ wp cron event list | grep mlt         # Nächsten geplanten Versand anzeigen
 
 ## Schema.org Markup
 
-Fest im Code hinterlegt (`class-schema.php`), **kein Erweiterungs-Filter** vorhanden:
+Ausgabe im `<head>` (Priorität 5) als **ein** JSON-LD-Block mit `@graph`. Alle Knoten sind per
+`@id` verknüpft (Organization ← WebSite ← WebPage ← Hauptentität). Standard: **alles automatisch** –
+manuelles Eingreifen ist nur die Ausnahme.
 
-| Typ | Wann |
+### Was wird ausgegeben
+
+| Knoten | Wann | Hinweise |
+|---|---|---|
+| `Organization` (bzw. `LocalBusiness`-Untertyp) | immer | Typ, Adresse, Öffnungszeiten, sameAs unter **SEO Toolkit → Schema** |
+| `WebSite` | immer | inkl. `SearchAction` |
+| `WebPage` / `CollectionPage` / `SearchResultsPage` / `ProfilePage` | jede Ansicht außer 404 | Autoren-Archiv = `ProfilePage`; Archive und Beitragsseite = `CollectionPage`; Seitentyp per Metabox überschreibbar |
+| `BreadcrumbList` | ab 2 Ebenen (nicht bei Suche/404) | aus `MLT_Breadcrumbs::get_items()` |
+| `BlogPosting` + `Person` | Einzelbeitrag (`post`) | Autor nur bei echtem Namen, sonst Organisation |
+| `Service` | CPT `service` | `serviceType` aus Taxonomie `service_category`; **kein** `Offer` (Feld `price` ist Freitext) |
+| `Person` | CPT `team` (`[team_query]`) **oder** `[team_member]`-Shortcode (auch verschachtelt in `[team_cards]`) | CPT: Titel aus `position` bzw. `role`, Profile aus `social_links`/`social_media`. Shortcode: Attribute `name`, `role`, `image`, `linkedin`/`twitter`/`facebook`/`instagram`, Bio aus dem Shortcode-Inhalt. Beide: E-Mail/Telefon nur per Filter |
+| `JobPosting` | CPT `job` | `employment_type`, `application_deadline` (→ `validThrough`), `location`, `remote` |
+| `CreativeWork` | CPT `project` | `project_date` → `dateCreated` |
+| `FAQPage` | Seiten mit FAQ-Inhalt | siehe unten |
+| `OfferCatalog` | Seiten mit `[pricing_table]` | nur Tabellen mit eindeutiger Zahl als Preis |
+| `Place` | Seiten mit `[google_map id="…"]` | benötigt das Feld `address`; `geo` nur, wenn `latitude`/`longitude` vorhanden |
+| `LocalBusiness` je Standort | Seiten mit `[mlb_booking_form]` | Adresse, Telefon, Öffnungszeiten, Leistungen (`mlb_services`), `ReserveAction` |
+| `Event` | CPT `event` | nur mit gültigem `event_date_start` |
+
+Nicht enthalten (bewusst): `Product` (macht WooCommerce selbst), Testimonials/Bewertungen
+(Firmen-Selbstbewertungen sind für Google-Rich-Results nicht zulässig), projektspezifische Typen
+außerhalb des Starter Kits (Erweiterung über `mlt_schema_post_type_builders` bzw. `mlt_schema_graph`
+im jeweiligen Projekt).
+
+### FAQ-Erkennung
+
+Eine Seite wird automatisch zur `FAQPage`, wenn ihr Inhalt enthält:
+
+- `[faq_accordion category="…" limit="…"]` – Fragen/Antworten aus dem CPT `faq` (Frage = Titel,
+  Antwort = `post_content`; das ACF-Feld `answer` ist laut Code-Kommentar in `inc/shortcodes.php`
+  veraltet und wird **nicht** mehr gelesen)
+- `<details><summary>Frage</summary>Antwort</details>` (inkl. Core-Details-Block)
+
+Der native Block `medialab/accordion` wird **nicht** erkannt (seine Items liegen nicht im Block-Inhalt) –
+dafür den Filter `mlt_schema_faq_items` nutzen. Fragen werden dedupliziert (über den Fragetext), maximal
+50 pro Seite; bei doppelten Fragen zählt die erste gefundene Antwort.
+
+> **Korrektur (v1.10.1):** Vorherige Stände dieser Doku und `08_CUSTOM-POST-TYPES.md` nannten
+> `[faq]` bzw. `[faq style="accordion"]` als Shortcode-Namen – dieser Tag existiert im Code nicht
+> und wurde nie erkannt. Der tatsächliche Name ist `[faq_accordion]`.
+
+> Google zeigt FAQ-Rich-Results seit 2023 nur noch für ausgewählte Seiten (v. a. Behörden und
+> Gesundheit). Das Markup ist für KI-/Antwortsysteme (AEO) trotzdem sinnvoll, ein Rich Snippet ist
+> aber nicht garantiert.
+
+### Stammdaten (Organisation)
+
+Quellen in dieser Reihenfolge:
+
+1. **SEO Toolkit → Schema** (Telefon, E-Mail, Straße, PLZ, Ort, Land, Öffnungszeiten, Einzugsgebiet, sameAs)
+2. **Agency Core → Top Header / Kontaktdaten** – nur wenn der Top Header aktiv ist und der jeweilige
+   Eintrag nicht abgeschaltet wurde: `top_header_phone`, `top_header_email`, `top_header_address`
+   (Feld „PLZ & Stadt" wird als `2620 Neunkirchen` in PLZ + Ort zerlegt), `top_header_social` → `sameAs`
+3. Logo: `logo_desktop` (Agency Core → Logo / Globale Einstellungen), sonst das Social-Default-Bild
+
+Öffnungszeiten werden nur bei einem `LocalBusiness`-Untertyp ausgegeben. Zeilenformat z. B.
+`Mo-Fr 08:00-17:00`. Land: Standard `AT`.
+
+### Autoren
+
+- Autor wird als `Person` (mit Bio und `sameAs`) ausgegeben, wenn der Anzeigename ein echter Name ist.
+  Bei „admin", Anzeigename = Login oder leer ist die **Organisation** der Autor.
+- `sameAs` = Website aus dem Profil + die Felder **LinkedIn / Xing / Instagram / X / Facebook /
+  YouTube (URL)** im WP-Benutzerprofil.
+- Sind Autoren-Archive gesperrt oder umgeleitet, die Person-`url` per Filter `mlt_schema_author_url`
+  auf eine sinnvolle Seite (Team/Über uns) setzen.
+
+### Manuelle Steuerung (Ausnahmefall)
+
+Metabox **„Schema (SEO / AEO)"** in der Seitenleiste jedes öffentlichen Inhaltstyps:
+
+| Feld | Wirkung |
 |---|---|
-| `WebSite` | Immer (inkl. `SearchAction` für die Sitesuche) |
-| `Organization` | Immer (Logo aus ACF-Feld `logo` bzw. `mlt_og_default_image`, optional Telefon/E-Mail/Adresse aus ACF) |
-| `Article` | Bei Einzelposts (`post_type === 'post'`) |
-| `BreadcrumbList` | Wenn Breadcrumbs für die Seite vorhanden sind |
+| Schema für diese Seite deaktivieren | keinerlei Schema-Ausgabe auf dieser Seite |
+| Seitentyp | überschreibt `WebPage` (AboutPage, ContactPage, CollectionPage, ProfilePage, FAQPage, ItemPage) |
+| Eigenes JSON-LD | nur Administratoren; ein Node oder eine Liste von Nodes, ohne `<script>` und ohne `@context`; wird in den Graph aufgenommen; ungültiges JSON wird nicht gespeichert |
 
-> **Korrektur:** Frühere Doku-Stände nannten zusätzlich `Product`
-> (WooCommerce) und einen Erweiterungs-Filter
-> (`medialab_seo_schema_types`) - beides existiert im aktuellen Code
-> nicht. Wer zusätzliche Schema-Typen braucht, muss `class-schema.php`
-> direkt erweitern.
+Meta-Keys: `_mlt_schema_disable`, `_mlt_schema_webpage_type`, `_mlt_schema_custom`.
+
+### Erweiterung per Filter
+
+| Filter | Parameter | Zweck |
+|---|---|---|
+| `mlt_schema_enabled` | `$enabled` | Schema komplett an/aus (Standard: aus bei Yoast/Rank Math/SEOPress) |
+| `mlt_schema_graph` | `$graph`, `MLT_Schema $schema` | fertigen Graph nachbearbeiten (Array nach `@id` indiziert) |
+| `mlt_schema_organization` | `$node` | Organization-Node anpassen |
+| `mlt_schema_org_types` | `$types` | erlaubte Organisationstypen |
+| `mlt_schema_post_type_builders` | `$map` | Post Type → Callback `( WP_Post, string $page_id, MLT_Schema )`, liefert Node, Node-Liste oder `null` |
+| `mlt_schema_faq_items` | `$items`, `WP_Post` | FAQ-Quellen ergänzen (`[ 'question' => …, 'answer' => … ]`) |
+| `mlt_schema_article_type` | `$type`, `WP_Post` | z. B. `NewsArticle` statt `BlogPosting` |
+| `mlt_schema_description` | `$text`, `WP_Post` | Beschreibung anpassen |
+| `mlt_schema_person_contact` | `false`, `WP_Post` | E-Mail/Telefon bei Team-Personen ausgeben (Standard: aus, DSGVO) |
+| `mlt_schema_default_country` | `'AT'` | Standard-Ländercode |
+| `mlt_schema_author_is_person` | `$bool`, `WP_User` | Person-Erkennung übersteuern |
+| `mlt_schema_author_url` | `$url`, `WP_User` | URL der Autor-Person |
+| `mlt_schema_location_email` | `false`, `$location_id` | Standort-E-Mail ausgeben (Standard: aus, interne Kopie-Adresse) |
+
+```php
+// FAQ aus eigenem ACF-Repeater ergänzen (z. B. für den Block medialab/accordion)
+add_filter( 'mlt_schema_faq_items', function ( $items, $post ) {
+    foreach ( (array) get_field( 'faq_items', $post->ID ) as $row ) {
+        $items[] = [ 'question' => $row['frage'], 'answer' => $row['antwort'] ];
+    }
+    return $items;
+}, 10, 2 );
+
+// Projektspezifischen Typ ergänzen (z. B. für einen Post Type außerhalb des Starter Kits)
+add_filter( 'mlt_schema_post_type_builders', function ( $map ) {
+    $map['mein_typ'] = function ( WP_Post $post, string $page_id, MLT_Schema $schema ) {
+        return [
+            '@type'            => 'CreativeWork',
+            '@id'              => $schema->get_url() . '#custom',
+            'name'             => get_the_title( $post ),
+            'mainEntityOfPage' => [ '@id' => $page_id ],
+        ];
+    };
+    return $map;
+} );
+```
+
+> **Korrektur:** Frühere Doku-Stände nannten `Product` (WooCommerce) als
+> ausgegebenen Typ und behaupteten, es gebe keinen Erweiterungs-Filter
+> (`medialab_seo_schema_types` existierte nie). Beides war zutreffend für
+> den Stand bis v1.9.x. Seit v1.10.0 gibt es die 13 Filter oben; `Product`
+> bleibt bewusst ausgespart, weil WooCommerce es selbst ausgibt.
+
+### Einführung pro Projekt
+
+1. Plugin-Dateien hochladen, **SEO Toolkit → Schema** ausfüllen (Organisationstyp, Adresse, Öffnungszeiten, sameAs).
+2. Autoren prüfen: sinnvoller Anzeigename, Profil-Links im Benutzerprofil.
+3. Testen mit dem Google [Rich Results Test](https://search.google.com/test/rich-results) und
+   [validator.schema.org](https://validator.schema.org/): Startseite, Beitrag, Seite mit FAQ, Preisseite, Booking-Seite.
+4. Auf **Doppel-Markup** prüfen: Das Theme (`medialab_breadcrumbs()`, Option `schema`, Standard `true`) und
+   `MLT_Breadcrumbs::render()` (Microdata) können zusätzlich zum JSON-LD eine BreadcrumbList ausgeben –
+   bei Bedarf `'schema' => false` setzen bzw. nur eine Variante verwenden.
+
+### Bekannte Grenzen
+
+- Booking-Standorte, Preise und Team-Mitglieder (`[team_member]`) werden nur auf Seiten ausgegeben,
+  die den jeweiligen Shortcode enthalten.
+- `event_location` und `event_price` sind Freitext: Ort wird als Text ausgegeben, ein Preis nur bei
+  eindeutiger Zahl oder „frei". Google verlangt für Event-Rich-Results eine strukturierte Adresse.
+- `gmap` liefert nach wie vor kein Telefon oder Öffnungszeiten (Felder existieren in der aktuellen
+  Feldgruppe nicht). `geo`-Koordinaten erscheinen **nur** dann, wenn ein Post die Legacy-Felder
+  `latitude`/`longitude` befüllt hat – die Feldgruppe kennt sie zwar noch, sie sind laut Feld-
+  beschreibung aber „nicht mehr für die Kartenanzeige benötigt" und werden im Adminformular nicht
+  mehr aktiv beworben. Neue `gmap`-Einträge haben sie also meist nicht gesetzt.
+
+> **Korrektur (2026-09-22):** Frühere Stände dieser Notiz behaupteten pauschal, `gmap` liefere „keine
+> Koordinaten". Das war zu undifferenziert – die Felder existieren, sind aber optional und in der
+> Praxis meist leer. Siehe `08_CUSTOM-POST-TYPES.md` → „Google Maps" für die vollständige Feldliste.
 
 ---
 
@@ -412,6 +574,14 @@ registriert wird.
 ```bash
 wp plugin deactivate media-lab-seo && wp plugin activate media-lab-seo
 ```
+
+### Schema wird nicht ausgegeben
+
+- Ist Yoast SEO, Rank Math oder SEOPress gleichzeitig aktiv? Dann schaltet sich die Ausgabe automatisch
+  ab (Vermeidung von Doppel-Markup) - per Filter `mlt_schema_enabled` überschreibbar.
+- Wurde „Schema für diese Seite deaktivieren" in der Metabox aktiviert?
+- Im Quelltext nach `<!-- Media Lab SEO Toolkit: Schema.org -->` suchen und den Block im Google
+  [Rich Results Test](https://search.google.com/test/rich-results) validieren.
 
 ---
 

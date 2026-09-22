@@ -1,7 +1,7 @@
 # Custom Post Types Reference
 
-**Version:** 1.4.0  
-**Letzte Aktualisierung:** 2026-03-04  
+**Version:** 1.4.2  
+**Letzte Aktualisierung:** 2026-09-22  
 **Plugin:** Media Lab Project Starter v1.0.0 (optional)
 
 Complete reference for all 9 Custom Post Types provided by the Project Starter plugin.
@@ -135,6 +135,18 @@ if ($team->have_posts()) :
 endif;
 wp_reset_postdata();
 ```
+
+> **Bekannter Mismatch (2026-09-22):** Das ACF-Feld für die Rolle heißt in
+> dieser Feldgruppe (`group_team_member.json`) `position`. Der Shortcode
+> `[team_query]` in `media-lab-agency-core/inc/shortcodes.php` liest
+> stattdessen `get_field('role')` – ein Feld, das hier nicht existiert.
+> Wird ein Teammitglied ausschließlich über die Standard-CPT-Felder
+> angelegt, bleibt die Rolle im `[team_query]`-Shortcode leer. Bis das
+> vereinheitlicht ist: entweder zusätzlich ein Feld `role` mit demselben
+> Wert pflegen, oder den Shortcode-Code auf `position` ändern. Betrifft
+> nur `[team_query]` (CPT-Abfrage) – der separate Shortcode
+> `[team_member]` (Daten als Attribute, kein CPT) ist davon nicht
+> betroffen.
 
 **Template File:** `single-team.php` or `singular.php`
 
@@ -433,6 +445,13 @@ Frequently asked questions.
 - `answer` - FAQ answer (Wysiwyg)
 - `order` - Display order (Number)
 
+> **Hinweis (2026-09-22):** Der Shortcode `[faq_accordion]` (siehe unten)
+> liest laut Code-Kommentar in `media-lab-agency-core/inc/shortcodes.php`
+> die Antwort mittlerweile aus `post_content` (dem Editor-Feld), **nicht**
+> mehr aus diesem ACF-Feld `answer`. Das Feld existiert weiterhin in der
+> Feldgruppe und kann gepflegt werden, wirkt sich aber nicht mehr auf die
+> Anzeige aus.
+
 ### Usage
 
 **Create FAQ:**
@@ -468,8 +487,14 @@ $faqs = new WP_Query([
 
 **Display with Shortcode:**
 ```
-[faq style="accordion"]
+[faq_accordion category="general" limit="10"]
 ```
+
+> **Korrektur (2026-09-22):** `[faq style="accordion"]` war nie ein
+> existierender Shortcode-Tag und wurde nie erkannt. Der tatsächliche
+> Name in `media-lab-agency-core/inc/shortcodes.php` ist `faq_accordion`,
+> mit den Attributen `category` (Taxonomie-Slug `faq_category`, Standard
+> leer = alle Kategorien) und `limit` (Anzahl, Standard `-1` = alle).
 
 ---
 
@@ -477,21 +502,37 @@ $faqs = new WP_Query([
 
 ### Overview
 
-Map locations for display.
+Map locations, eingebunden per Google-Maps-Embed-iframe. Registriert in
+`media-lab-project-starter/inc/custom-post-types.php`
+(`agency_core_register_maps_cpt()`); die ACF-Feldgruppe liegt jedoch in
+`media-lab-agency-core/inc/acf-fields-gmap.php` (`group_gmap`).
 
 **Post Type:** `gmap`  
 **Slug:** N/A  
 **Archive:** No  
-**Supports:** Title, Editor  
+**Supports:** Title  
 **Hierarchical:** No
 
 ### ACF Fields
 
-- `location` - Map location (Google Map)
-- `address` - Full address (Text)
-- `phone` - Location phone (Text)
-- `email` - Location email (Email)
-- `hours` - Opening hours (Textarea)
+Aktiv für die Kartenanzeige:
+
+- `embed_src` - Google Maps Embed-URL (URL, **Pflichtfeld**) – der `src="…"`-Wert
+  aus dem von Google generierten iframe-Einbettungscode
+- `address` - Adresse (Text, optional, nur zur internen Orientierung, wirkt sich
+  nicht auf die Kartenanzeige aus)
+- `marker_title` - Marker-Titel (Text, optional) – wird als `title`-Attribut des
+  iframes verwendet (Barrierefreiheit); Fallback ist der Post-Titel
+- `map_height` - Höhe in px (Number, optional, Standard 450, 200–1200)
+
+Weiterhin in der Feldgruppe vorhanden, aber laut Feldbeschreibung **nicht mehr
+für die Kartenanzeige genutzt** (Altlasten aus der Zeit vor der Umstellung auf
+`embed_src`; Daten auf bestehenden Posts bleiben erhalten und lassen sich
+weiterhin auslesen, z. B. für andere Zwecke als die reine Karten-Einbettung):
+
+- `latitude` / `longitude` - Koordinaten (Text)
+- `zoom` - Zoom-Stufe (Number, Standard 15)
+- `marker_description` - Marker-Beschreibung (Textarea)
 
 ### Usage
 
@@ -503,28 +544,67 @@ $location = wp_insert_post([
     'post_status' => 'publish'
 ]);
 
-// ACF Google Map field format
-update_field('location', [
-    'address' => 'Vienna, Austria',
-    'lat' => 48.2082,
-    'lng' => 16.3738
-], $location);
+update_field('embed_src', 'https://www.google.com/maps/embed?pb=...', $location);
+update_field('address', 'Musterstraße 123, 1010 Wien', $location);   // optional, nur Orientierung
+update_field('marker_title', 'Unser Büro', $location);               // optional
 ```
 
-**Display Map:**
-```php
-$location = get_field('location');
-if ($location) : ?>
-    <div class="acf-map">
-        <div class="marker" 
-             data-lat="<?php echo esc_attr($location['lat']); ?>"
-             data-lng="<?php echo esc_attr($location['lng']); ?>">
-            <h4><?php the_title(); ?></h4>
-            <p><?php echo esc_html($location['address']); ?></p>
-        </div>
-    </div>
-<?php endif; ?>
+**Display with Shortcode:**
 ```
+[google_map id="42"]
+[google_map id="42" fullwidth="true"]
+```
+
+Alternativ ganz ohne CPT, direkt mit der Embed-URL:
+```
+[google_map src="https://www.google.com/maps/embed?pb=..." height="500" title="Unser Büro"]
+```
+
+| Parameter | Pflicht | Beschreibung |
+|---|---|---|
+| `id` | nein* | Post-ID des `gmap`-CPT; liest `embed_src` daraus |
+| `src` | nein* | Embed-URL direkt, ohne CPT |
+| `height` | nein | Höhe in px, Standard 450 (überschreibt `map_height` nicht, wenn beide gesetzt sind) |
+| `title` | nein | `title`-Attribut des iframes, Standard „Google Maps" bzw. `marker_title`/Post-Titel |
+| `fullwidth` | nein | `"true"` → 100vw-breites Layout |
+| `class` | nein | zusätzliche CSS-Klassen |
+
+*Eines von beidem (`id` oder `src`) muss zu einer gültigen Embed-URL führen,
+sonst gibt der Shortcode für Redakteure eine sichtbare Fehlermeldung aus
+(„Kein src oder embed_src gefunden").
+
+**Im Template einbinden:**
+
+Am einfachsten über den Shortcode selbst, statt die Felder manuell auszulesen:
+```php
+<?php echo do_shortcode('[google_map id="' . get_the_ID() . '"]'); ?>
+```
+
+Das ist der empfohlene Weg. Der Shortcode (`medialab_shortcode_google_map()` in
+`media-lab-agency-core/inc/shortcodes.php`) rendert **kein einfaches `<iframe>`**,
+sondern eine DSGVO-konforme Cookie-Consent-Komponente:
+
+- Sichtbar ist zunächst ein Placeholder mit Erklärtext und einem Button
+  „Karte anzeigen & Cookies akzeptieren".
+- Das eigentliche `<iframe>` liegt mit `hidden`-Attribut und `data-src`
+  (statt `src`) im Markup und wird erst per JS eingeblendet, sobald der/die
+  Besucher:in Komfort-Cookies akzeptiert (oder das bereits vorher getan hat).
+- Ein direkt gerendertes `<iframe src="…">` – wie es ein manuelles Auslesen der
+  Felder nahelegen würde – **umgeht diesen Consent-Mechanismus** und lädt die
+  Google-Maps-Ressource sofort, unabhängig von der Cookie-Einwilligung. Das ist
+  in Projekten mit Cookie-Consent-Pflicht zu vermeiden.
+
+Nur wenn eigenes Markup wirklich nötig ist (z. B. abweichendes Layout), die
+Platzhalter-/Consent-Struktur aus `medialab_shortcode_google_map()` 1:1
+übernehmen, statt sie zu vereinfachen.
+
+> **Korrektur (2026-09-22):** Die vorherigen ACF-Felder in dieser Doku
+> (`location` als ACF-Google-Map-Feld mit `lat`/`lng`, dazu `phone`,
+> `email`, `hours`) haben nie den aktuellen Feldern entsprochen. Es gibt
+> kein Feld namens `location`, und `phone`/`email`/`hours` existieren in
+> der Feldgruppe nicht. Die Karte läuft seit der Umstellung auf
+> `embed_src` komplett über den iframe-Embed-Code, nicht über eine
+> ACF-Google-Map-Komponente mit eigener Geocoding-Logik.
 
 ---
 
