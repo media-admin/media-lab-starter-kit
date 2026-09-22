@@ -1405,7 +1405,7 @@ function team_query_shortcode($atts) {
          style="<?php echo $inline_style; ?>">
         <?php while ($team_query->have_posts()) : $team_query->the_post(); ?>
             <?php
-            $role = get_field('role');
+            $role = get_field('role') ?: get_field('position');
             $email = get_field('email');
             $phone = get_field('phone');
             $social = get_field('social_media');
@@ -2319,7 +2319,7 @@ function posts_load_more_template_card() {
  * Team Template
  */
 function posts_load_more_template_team() {
-    $role = get_field('role');
+    $role = get_field('role') ?: get_field('position');
     $email = get_field('email');
     ?>
     <div class="team-card" data-post-id="<?php echo esc_attr( get_the_ID() ); ?>">
