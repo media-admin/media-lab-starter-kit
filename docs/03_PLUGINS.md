@@ -1,6 +1,6 @@
 # Plugin-Dokumentation
 
-**Version:** 1.15.1 | **Letzte Aktualisierung:** 2026-09-22
+**Version:** 1.15.2 | **Letzte Aktualisierung:** 2026-09-23
 
 ---
 
@@ -9,7 +9,7 @@
 | Plugin | Version | Zweck | Modifizierbar? |
 |---|---|---|---|
 | media-lab-agency-core | 1.7.0 | Framework + Features | ❌ Nie |
-| media-lab-seo | 1.10.1 | SEO-Toolkit + Dashboard + Reports | ✅ Konfigurierbar |
+| media-lab-seo | 1.10.2 | SEO-Toolkit + Dashboard + Reports | ✅ Konfigurierbar |
 | media-lab-project-starter | 1.0.0 (Scaffold) | Projekt-spezifische CPTs/Taxonomien/ACF – wird pro Projekt dupliziert, nicht identisch deployt | ✅ Wird individuell angepasst |
 | advanced-custom-fields-pro | aktuell | Custom Fields | ✅ Konfigurierbar |
 
@@ -389,7 +389,7 @@ Startet bereits geöffnet.
 ---
 
 
-## media-lab-seo `v1.10.1`
+## media-lab-seo `v1.10.2`
 
 **Datei:** `cms/wp-content/plugins/media-lab-seo/media-lab-seo.php`
 
@@ -397,7 +397,7 @@ Pro Projekt aktivieren und konfigurieren unter **SEO Toolkit**. Benötigt
 zwingend `media-lab-agency-core` als aktives Plugin (Dependency-Check,
 sonst automatische Selbst-Deaktivierung mit Admin-Notice).
 
-**Module (Stand 1.10.1):**
+**Module (Stand 1.10.2):**
 
 | Modul | Datei | Beschreibung |
 |---|---|---|
@@ -408,7 +408,8 @@ sonst automatische Selbst-Deaktivierung mit Admin-Notice).
 | SEO | `inc/class-seo.php` | Open Graph, Twitter Cards, Canonical, GSC- + Bing-Verifizierungs-Tags |
 | Schema | `inc/class-schema.php` | Schema.org JSON-LD als verknüpfter `@graph` (Organization/LocalBusiness, WebSite, WebPage, BreadcrumbList, BlogPosting, Service, Person, JobPosting, CreativeWork, FAQPage) |
 | Schema-Quellen | `inc/class-schema-sources.php` | Zusatzquellen: `[pricing_table]` → OfferCatalog, `[google_map]` → Place, `[mlb_booking_form]` → LocalBusiness je Standort, `[team_member]` → Person, CPT `event` → Event |
-| Schema-Admin | `inc/class-schema-admin.php` | Untermenü „Schema" (Stammdaten der Organisation), Metabox „Schema (SEO / AEO)" pro Seite, Autoren-Profilfelder |
+| Schema-Admin | `inc/class-schema-admin.php` | Untermenü „Schema" (Stammdaten der Organisation, llms.txt-Einstellungen), Metabox „Schema (SEO / AEO)" pro Seite, Autoren-Profilfelder |
+| llms.txt | `inc/class-llms-txt.php` | Automatisch generierte `/llms.txt`-Ausgabe (Seiten, Leistungen, Blog) |
 | Breadcrumbs | `inc/class-breadcrumbs.php` | Breadcrumbs + Schema.org BreadcrumbList |
 | Redirects | `inc/class-redirects.php` | 301/302-Manager |
 | Consent-Stats | `inc/class-consent-stats.php` | DSGVO Consent-Rate-Tracking (seit 1.9.0), liest read-only aus Agency-Core-Tabelle `wp_mlt_consent_log` |
@@ -442,6 +443,7 @@ Untermenüpunkte (getrennte `add_submenu_page()`-Aufrufe in
 | Google Search Console | Vollständige OAuth2-Anbindung (nicht nur ein Verifizierungs-Tag) |
 | Bing Webmaster Tools | Verifizierungs-Meta-Tag (`msvalidate.01`) |
 | Consent-Rate-Tracking | DSGVO-Auswertung, wie viele Besucher Analytics-Consent geben |
+| llms.txt | Kuratierte `/llms.txt`-Ausgabe für KI-Systeme (Community-Format, kein offizieller Standard) |
 
 ### Schema-Typen
 

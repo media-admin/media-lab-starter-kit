@@ -1,7 +1,7 @@
 # SEO Dokumentation
 
-**Version:** 1.10.1 | **Letzte Aktualisierung:** 2026-09-22
-**Plugin:** `media-lab-seo` v1.10.1
+**Version:** 1.10.2 | **Letzte Aktualisierung:** 2026-09-23
+**Plugin:** `media-lab-seo` v1.10.2
 
 > Diese Doku wurde am 13.08.2026 komplett überarbeitet. Der vorherige
 > Stand (Version 1.13.0 / 2026-03-10, Plugin v1.3.0) enthielt mehrere
@@ -30,6 +30,10 @@
 > (Daten als Attribute direkt im Content, kein CPT-Post) wurde
 > überhaupt nicht ausgewertet. Beides korrigiert, mit dem realen
 > Seitenquelltext gegengetestet.
+>
+> **Nachtrag 2026-09-23 (v1.10.2):** `/llms.txt`-Ausgabe ergänzt
+> (`inc/class-llms-txt.php`, neu), siehe [llms.txt](#llmstxt) weiter
+> unten.
 
 ---
 
@@ -48,7 +52,8 @@
 11. [Breadcrumbs](#breadcrumbs)
 12. [Weiterleitungen](#weiterleitungen)
 13. [Consent-Rate-Tracking](#consent-rate-tracking)
-14. [Troubleshooting](#troubleshooting)
+14. [llms.txt](#llmstxt)
+15. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -75,6 +80,7 @@ Kits. Benötigt zwingend `media-lab-agency-core` als aktives Plugin.
 | Bing Webmaster Tools | Verifizierungs-Meta-Tag | v1.7.0 |
 | Konfigurierbarer Dashboard-Datumsbereich | Shortcuts (7/28/90/365 Tage) + freier Picker | v1.8.0 |
 | Consent-Rate-Tracking | DSGVO Consent-Auswertung | v1.9.0 |
+| llms.txt | Kuratierte `/llms.txt`-Ausgabe für KI-Systeme (Seiten, Leistungen, Blog) | v1.10.2 |
 | GA4-OAuth-Adapter | Primärer GA4-Datenweg, teilt Zugangsdaten mit GSC | siehe Hinweis unten |
 
 > **GA4-Historie unklar:** Aus welcher Version genau der OAuth-Umbau für
@@ -527,6 +533,82 @@ Agency-Core-Tabelle `wp_mlt_consent_log`, kein eigener Schreibzugriff
 und kein eigener Tracking-Code in diesem Modul. Erscheint als eigene
 Card im SEO-Dashboard mit Umschalter „Letzte 30 Tage" / „Woche vs.
 Vorwoche".
+
+---
+
+## llms.txt
+
+Gibt unter `<Startseite>/llms.txt` eine automatisch generierte, kuratierte
+Markdown-Übersicht der Website aus (`inc/class-llms-txt.php`). Format nach dem
+Community-Vorschlag von [llmstxt.org](https://llmstxt.org) (Jeremy Howard,
+Answer.AI, 2024) – **kein offizieller Web-Standard**. Läuft über den normalen
+WordPress-Frontcontroller, keine eigene Rewrite-Rule nötig, funktioniert auch
+im `/cms`-Subdirectory-Setup.
+
+> **Einordnung (Stand September 2026):** Google und OpenAI haben offizielle
+> Unterstützung nicht bestätigt (Google: Gary Illyes, Juli 2025, „unterstützen
+> wir nicht"; John Mueller verglich es mit dem längst wirkungslosen
+> „keywords"-Meta-Tag). Eine Ahrefs-Auswertung über 137.000 Domains (Juni 2026)
+> fand, dass 97 % aller `llms.txt`-Dateien null Anfragen erhalten; ClaudeBot
+> machte nur 0,8 % der wenigen tatsächlichen Zugriffe aus. Der Aufwand für die
+> automatisierte Ausgabe ist gering, ein belegter Nutzen aktuell aber auch.
+
+### Was wird ausgegeben
+
+Aus veröffentlichten Inhalten, automatisch, ohne redaktionelle Kuratierung:
+
+| Abschnitt | Quelle |
+|---|---|
+| H1 + Blockquote | Website-Titel + -Untertitel (**Einstellungen → Allgemein**) |
+| `## Seiten` | alle veröffentlichten Seiten |
+| `## Leistungen` | CPT `service`, nur wenn das Post-Type existiert |
+| `## Blog` | die neuesten Beiträge (Standard 20, einstellbar) |
+
+Je Eintrag: `- [Titel](URL): Beschreibung` – Beschreibung aus dem Excerpt oder
+den ersten 20 Wörtern des Inhalts, Shortcodes und HTML entfernt. WooCommerce-
+Systemseiten (Warenkorb, Kasse, Mein Konto, Shop, AGB) werden automatisch
+ausgeblendet.
+
+Schaltet sich automatisch ab, wenn **Einstellungen → Lesen → „Sichtbarkeit für
+Suchmaschinen blockieren"** aktiv ist – wie `robots.txt`.
+
+### Einstellungen
+
+**SEO Toolkit → Schema** (eigener Abschnitt unterhalb der Organisations-Felder):
+
+| Feld | Standard | Beschreibung |
+|---|---|---|
+| Aktiviert | an | `/llms.txt`-Ausgabe komplett an/aus |
+| Blogbeiträge | 20 | Anzahl im Abschnitt „Blog"; `0` blendet den Abschnitt aus |
+
+### Erweiterung per Filter
+
+| Filter | Parameter | Zweck |
+|---|---|---|
+| `mlt_llms_txt_enabled` | `$enabled` | Ausgabe an/aus überschreiben (z. B. projektspezifisch immer aus) |
+| `mlt_llms_txt_description` | `$text` | Ein-Satz-Beschreibung unter dem H1 anpassen |
+| `mlt_llms_txt_post_limit` | `$limit` | Anzahl Blogbeiträge überschreiben |
+| `mlt_llms_txt_sections` | `$sections` | Abschnitte ergänzen/überschreiben (Titel => Zeilen-Array) |
+| `mlt_llms_txt_content` | `$content` | fertigen Markdown-Text vor der Ausgabe nachbearbeiten |
+
+```php
+// Eigenen Abschnitt ergänzen
+add_filter( 'mlt_llms_txt_sections', function ( $sections ) {
+    $sections['Über uns'] = [
+        '- [Team](https://example.at/team/): Wer bei uns arbeitet.',
+    ];
+    return $sections;
+} );
+```
+
+### Bekannte Grenzen
+
+- Keine redaktionelle Kuratierungs-UI: keine Möglichkeit, einzelne Seiten im
+  Backend gezielt ein-/auszuschließen oder abweichende Beschreibungen zu
+  pflegen, außer über die Filter oben.
+- Produkte (WooCommerce) werden nicht aufgenommen – bei größeren Katalogen
+  würde das den Umfang sprengen; bei Bedarf über `mlt_llms_txt_sections`
+  ergänzbar.
 
 ---
 
