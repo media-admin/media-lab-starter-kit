@@ -75,6 +75,17 @@ class MLT_Schema_Admin {
             'sanitize_callback' => static fn( $v ) => implode( "\n", array_filter( array_map( 'sanitize_text_field', preg_split( '/\R/', trim( (string) $v ) ) ) ) ),
         ] );
         register_setting( 'mlt_schema', 'mlt_schema_area_served', $text );
+
+        // llms.txt (inc/class-llms-txt.php) – eigener, kleiner Abschnitt auf derselben Seite,
+        // kein eigenes Untermenü nötig für zwei Felder.
+        register_setting( 'mlt_schema', 'mlt_llms_txt_enabled', [
+            'type' => 'boolean', 'sanitize_callback' => 'rest_sanitize_boolean', 'default' => true,
+        ] );
+        register_setting( 'mlt_schema', 'mlt_llms_txt_post_limit', [
+            'type' => 'integer',
+            'sanitize_callback' => static fn( $v ) => max( 0, absint( $v ) ),
+            'default' => 20,
+        ] );
     }
 
     public function sanitize_org_type( $value ) {
@@ -170,6 +181,33 @@ class MLT_Schema_Admin {
                         </td>
                     </tr>
                 </table>
+                <h2 style="margin-top:2em;">llms.txt</h2>
+                <p class="description">
+                    Kuratierte, an KI-Systeme gerichtete Seitenübersicht unter
+                    <code><?php echo esc_html( home_url( '/llms.txt' ) ); ?></code> – Community-Format,
+                    kein offizieller Standard, Unterstützung durch große KI-Anbieter nicht garantiert.
+                </p>
+                <table class="form-table" role="presentation">
+                    <tr>
+                        <th scope="row">Aktiviert</th>
+                        <td>
+                            <label>
+                                <input type="checkbox" name="mlt_llms_txt_enabled" value="1" <?php checked( get_option( 'mlt_llms_txt_enabled', 1 ) ); ?>>
+                                /llms.txt ausgeben (Seiten, Leistungen, Blog automatisch aus veröffentlichten Inhalten)
+                            </label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><label for="mlt_llms_txt_post_limit">Blogbeiträge</label></th>
+                        <td>
+                            <input type="number" min="0" step="1" class="small-text"
+                                   name="mlt_llms_txt_post_limit" id="mlt_llms_txt_post_limit"
+                                   value="<?php echo esc_attr( get_option( 'mlt_llms_txt_post_limit', 20 ) ); ?>">
+                            <p class="description">Anzahl der neuesten Beiträge im Abschnitt „Blog". <code>0</code> blendet den Abschnitt aus.</p>
+                        </td>
+                    </tr>
+                </table>
+
                 <?php submit_button(); ?>
             </form>
         </div>
