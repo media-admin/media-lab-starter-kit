@@ -3,6 +3,28 @@
 Alle nennenswerten Änderungen an diesem Plugin werden hier dokumentiert.
 Format angelehnt an [Keep a Changelog](https://keepachangelog.com/), Versionierung nach [Semantic Versioning](https://semver.org/).
 
+## [1.8.1] – unreleased
+
+### fix(ai-agent)
+- `is_post_indexable()` prüft zusätzlich `is_post_publicly_viewable()` (WP-Core-Funktion) — fängt Custom-Post-Types ab, die absichtlich nicht öffentlich abrufbar sind, obwohl sie `post_status = publish` haben. Klarstellung in den Kommentaren: WordPress-Rollen schränken die Sichtbarkeit veröffentlichter Inhalte im Frontend nicht ein (dafür sind Rollen nicht gedacht) — echte rollenbasierte Einschränkung ist immer Sache eines Mitglieder-Plugins, wofür der bestehende `mlt_ai_rag_is_post_indexable`-Filter der vorgesehene Anknüpfungspunkt bleibt.
+
+## [1.8.0] – 2026-09-23
+
+### feat(ai-agent)
+- **Inkrementelle Reindexierung ("nur geänderte Inhalte"):** Neuer zweiter Button neben der bestehenden vollständigen Neuindexierung — sowohl für Beiträge/Seiten/Produkte als auch für Dateien. Vergleicht `post_modified` gegen den zuletzt gespeicherten `updated_at`-Zeitstempel der Embeddings und überspringt unverändertes Material, statt bei jedem Klick alles neu zu embedden. Spart API-Kosten und Zeit bei großen Content-Mengen (100+ Dokumente).
+- **Bewusst als Ergänzung, nicht als Ersatz:** Die inkrementelle Prüfung erkennt nur Änderungen am WordPress-Inhalt selbst — nicht, wenn sich die Indexierungs-Logik des Plugins durch ein Update geändert hat (z.B. die Encoding-/Splitting-Fixes in 1.4.x–1.6.x). Nach einem Plugin-Update bleibt die vollständige Neuindexierung der richtige Weg.
+- **Bekannte Einschränkung:** Erkennt nur Änderungen, die über WordPress selbst laufen (`post_modified` wird nur bei Bearbeitung über WP aktualisiert) — eine Datei, die z.B. per FTP direkt ausgetauscht wird, ohne den WordPress-Datensatz neu zu speichern, wird von der inkrementellen Prüfung nicht erkannt.
+
+## [1.7.0] – 2026-09-16
+
+### feat(ai-agent)
+- **Login-/Passwort-geschützter Content wird nie mehr indexiert:** WordPress' eingebauter Passwortschutz (`post_password`) wurde bisher nicht geprüft — ein passwortgeschützter Beitrag hatte trotzdem `post_status = publish` und landete unbemerkt im durchsuchbaren Index, auch für Besucher ohne Passwort. Neue zentrale Prüfung `MLT_AI_Rag_Indexer::is_post_indexable()` (Beiträge/Seiten/Produkte) und `is_attachment_indexable()` (Dateien, prüft den übergeordneten Beitrag) greift jetzt beim Einzel- **und** Massen-Indexieren.
+- Erweiterungspunkt `mlt_ai_rag_is_post_indexable`-Filter für client-spezifische Mitglieder-/Zugriffs-Plugins (z.B. Restrict Content Pro, MemberPress) — WordPress-Core kennt außerhalb von Passwortschutz und privatem Status kein rollenbasiertes Sichtbarkeits-System, das ist immer Plugin-Sache.
+- Die Produkt→Dokument-Verknüpfung (liest Dateien direkt aus dem ACF-Feld, unabhängig vom Such-Index) umging diese Prüfung bisher — jetzt zentral in `maybe_attach_pdf()` mit abgedeckt, greift für beide Anhang-Pfade (direkter Such-Treffer und Produkt-Verknüpfung).
+- `bulk_reindex()` nutzt zusätzlich `WP_Query`s eingebauten `has_password`-Parameter für effizienten Ausschluss auf DB-Ebene, plus denselben Filter-Check pro Beitrag für nicht-eingebaute Einschränkungen.
+- **Bewusste Design-Entscheidung:** Die Prüfung läuft beim Indexieren, nicht pro Chat-Anfrage abhängig von der fragenden Person — der Chat verhält sich für alle Besucher identisch (kein rollenabhängiges Mehr-oder-weniger-sehen). Geschützter Content landet dadurch strukturell gar nicht erst in der durchsuchbaren Datenbank, unabhängig davon, wer fragt.
+- **Bekannte Einschränkung:** Falls ein Beitrag *nach* der Indexierung nachträglich passwortgeschützt wird, aber eine bereits daran hängende Datei nicht separat neu gespeichert wird, bleibt die Datei bis zum nächsten manuellen Reindex im Index (kein automatischer Kaskaden-Trigger vom übergeordneten Beitrag zu dessen Anhängen).
+
 ## [1.6.1] – 2026-09-16
 
 ### fix(ai-agent)

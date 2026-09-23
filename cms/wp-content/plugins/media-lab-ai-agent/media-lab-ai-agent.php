@@ -3,7 +3,7 @@
  * Plugin Name:       Media Lab AI Agent
  * Plugin URI:        https://media-lab.at
  * Description:       Datenschutzkonformer AI-Chat-Assistent für mehrsprachige WordPress-Sites, mit austauschbarem Anbieter (Anthropic, OpenAI, ...).
- * Version:           1.6.1
+ * Version:           1.8.1
  * Requires PHP:      8.1
  * Author:            Media Lab Tritremmel GmbH
  * Text Domain:        media-lab-ai-agent
@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('MLT_AI_AGENT_VERSION', '1.6.1');
+define('MLT_AI_AGENT_VERSION', '1.8.1');
 define('MLT_AI_AGENT_PATH', plugin_dir_path(__FILE__));
 define('MLT_AI_AGENT_URL', plugin_dir_url(__FILE__));
 
@@ -193,12 +193,20 @@ add_action('admin_menu', function () {
         'mlt-ai-reindex',
         function () {
             if (isset($_POST['mlt_ai_start_reindex']) && check_admin_referer('mlt_ai_reindex')) {
-                do_action('mlt_ai_rag_bulk_reindex', 0);
-                echo '<div class="notice notice-success"><p>Reindexierung gestartet, läuft im Hintergrund per WP-Cron.</p></div>';
+                do_action('mlt_ai_rag_bulk_reindex', 0, false);
+                echo '<div class="notice notice-success"><p>Vollständige Neuindexierung gestartet, läuft im Hintergrund per WP-Cron.</p></div>';
+            }
+            if (isset($_POST['mlt_ai_start_reindex_incremental']) && check_admin_referer('mlt_ai_reindex_incremental')) {
+                do_action('mlt_ai_rag_bulk_reindex', 0, true);
+                echo '<div class="notice notice-success"><p>Inkrementelle Neuindexierung gestartet (nur geänderte Inhalte), läuft im Hintergrund per WP-Cron.</p></div>';
             }
             if (isset($_POST['mlt_ai_start_file_reindex']) && check_admin_referer('mlt_ai_file_reindex')) {
-                do_action('mlt_ai_rag_bulk_reindex_files', 0);
-                echo '<div class="notice notice-success"><p>Datei-Reindexierung gestartet, läuft im Hintergrund per WP-Cron.</p></div>';
+                do_action('mlt_ai_rag_bulk_reindex_files', 0, false);
+                echo '<div class="notice notice-success"><p>Vollständige Datei-Reindexierung gestartet, läuft im Hintergrund per WP-Cron.</p></div>';
+            }
+            if (isset($_POST['mlt_ai_start_file_reindex_incremental']) && check_admin_referer('mlt_ai_file_reindex_incremental')) {
+                do_action('mlt_ai_rag_bulk_reindex_files', 0, true);
+                echo '<div class="notice notice-success"><p>Inkrementelle Datei-Reindexierung gestartet (nur geänderte Dateien), läuft im Hintergrund per WP-Cron.</p></div>';
             }
 
             $status = get_option('mlt_ai_rag_reindex_status', 'noch nicht gestartet');
@@ -208,17 +216,28 @@ add_action('admin_menu', function () {
 
             echo '<h2>Beiträge, Seiten, Produkte</h2>';
             echo '<p>Status: ' . esc_html($status) . '</p>';
-            echo '<form method="post">';
+            echo '<form method="post" style="display:inline-block;margin-right:1em;">';
             wp_nonce_field('mlt_ai_reindex');
-            submit_button('Neuindexierung starten', 'primary', 'mlt_ai_start_reindex');
+            submit_button('Vollständige Neuindexierung', 'primary', 'mlt_ai_start_reindex');
             echo '</form>';
+            echo '<form method="post" style="display:inline-block;">';
+            wp_nonce_field('mlt_ai_reindex_incremental');
+            submit_button('Nur geänderte Inhalte', 'secondary', 'mlt_ai_start_reindex_incremental');
+            echo '</form>';
+            echo '<p class="description">Vollständig: alle Inhalte neu (nötig nach einem Plugin-Update). Nur geändert: überspringt Inhalte, die sich seit der letzten Indexierung nicht geändert haben — spart Zeit und API-Kosten im Alltag.</p>';
 
             echo '<h2 style="margin-top:2em;">Dateien (PDF, PowerPoint, Word)</h2>';
             echo '<p>Status: ' . esc_html($file_status) . '</p>';
-            echo '<form method="post">';
+            echo '<form method="post" style="display:inline-block;margin-right:1em;">';
             wp_nonce_field('mlt_ai_file_reindex');
-            submit_button('Dateien neu indexieren', 'secondary', 'mlt_ai_start_file_reindex');
-            echo '</form></div>';
+            submit_button('Vollständige Neuindexierung', 'primary', 'mlt_ai_start_file_reindex');
+            echo '</form>';
+            echo '<form method="post" style="display:inline-block;">';
+            wp_nonce_field('mlt_ai_file_reindex_incremental');
+            submit_button('Nur geänderte Dateien', 'secondary', 'mlt_ai_start_file_reindex_incremental');
+            echo '</form>';
+            echo '<p class="description">Vollständig: alle Dateien neu (nötig nach einem Plugin-Update). Nur geändert: überspringt Dateien, die sich seit der letzten Indexierung nicht geändert haben.</p>';
+            echo '</div>';
         }
     );
 });

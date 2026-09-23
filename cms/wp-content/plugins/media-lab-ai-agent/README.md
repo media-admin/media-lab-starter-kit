@@ -30,7 +30,7 @@ Optional (Plugin erkennt Verfügbarkeit automatisch, kein Hard-Fail):
 ### RAG-Modul (optional)
 
 1. `Website-Wissen (RAG) aktiv` einschalten, Post-Types wählen.
-2. **Werkzeuge → AI Agent Reindex** → Neuindexierung starten (läuft per WP-Cron in 20er-Batches).
+2. **Werkzeuge → AI Agent Reindex** → Neuindexierung starten (läuft per WP-Cron in 20er-Batches). Zwei Modi verfügbar: **Vollständig** (alles neu) oder **Nur geänderte Inhalte** (überspringt seit der letzten Indexierung unveränderte Beiträge/Dateien — spart API-Kosten im Alltag; nach einem Plugin-Update trotzdem vollständig neu indexieren, da Logik-Änderungen nicht erkannt werden).
 3. Erweiterbar über den Filter `mlt_ai_rag_indexable_text_parts`, um client-spezifische ACF-Felder in den indexierten Kontext aufzunehmen.
 
 #### Dateien indexieren (PDF, PowerPoint, Word)
@@ -59,6 +59,23 @@ Gilt nur für PDFs (nicht PPTX/DOCX) und nur bei Anthropic als aktivem Provider 
 Eigene ACF-Feldgruppe direkt am Produkt-Edit-Screen (`acf/group_mlt_ai_product_documents.json`) — nicht über WooCommerce-Downloads (das ist für Produkte gedacht, die selbst digitale Downloads *sind*, nicht für Referenzdokumentation). Dokumente werden automatisch indexiert (regulärer Attachment-Upload), zusätzlich nennt die Produktseite selbst ihre zugehörigen Dokumente im RAG-Index-Text (`class-ai-agent-product-documents.php`, via `mlt_ai_rag_indexable_text_parts`-Filter).
 
 Wichtig: Landet das *Produkt* in den Top-Treffern, hängt der Retriever dessen verknüpfte PDFs automatisch nativ an — unabhängig davon, ob die PDF-eigenen Text-Chunks selbst hoch genug scoren (siehe `maybe_attach_pdf()` in `class-ai-agent-retriever.php`). Das ist der verlässlichere Pfad: bei technischen Fachdokumenten (v.a. mehrsprachig, z.B. deutsche Anfragen gegen englische Datenblätter) scoren die PDF-Chunks selbst oft niedriger als kurze, strukturell generische Produkt-Chunks — die Produkt-Verknüpfung umgeht dieses Problem, statt sich rein auf Chunk-Ähnlichkeit zu verlassen.
+
+### Zugriffsschutz (Login-/Passwort-geschützter Content)
+
+Passwortgeschützte Beiträge/Seiten/Produkte (WordPress' eingebauter `post_password`-Schutz) und daran angehängte Dateien werden **nie** indexiert — unabhängig davon, wer den Chat gerade nutzt. Die Prüfung läuft beim Indexieren, nicht pro Anfrage: geschützter Content landet strukturell gar nicht erst in der durchsuchbaren Datenbank. Zusätzlich prüft `is_post_publicly_viewable()` (WP-Core), ob der Post-Type selbst öffentlich abrufbar ist.
+
+**Wichtig zu WordPress-Rollen:** Rollen (Administrator, Editor, ...) schränken die Sichtbarkeit veröffentlichter Inhalte im Frontend nicht ein — dafür sind Rollen nicht gedacht. Echte "nur Rolle/Mitgliedschaft X darf das sehen"-Einschränkung kommt immer von einem Mitglieder-Plugin (Restrict Content Pro, MemberPress, etc.):
+
+```php
+add_filter('mlt_ai_rag_is_post_indexable', function ($indexable, $post) {
+    if (function_exists('rcp_is_restricted_content') && rcp_is_restricted_content($post->ID)) {
+        return false;
+    }
+    return $indexable;
+}, 10, 2);
+```
+
+Nach nachträglichem Schützen eines bereits indexierten Beitrags: Speichern reicht (löst `save_post` erneut aus). Bereits daran hängende Dateien, die selbst nicht neu gespeichert werden, brauchen einen manuellen Reindex (Werkzeuge → AI Agent Reindex).
 
 ### Consent (DSGVO)
 

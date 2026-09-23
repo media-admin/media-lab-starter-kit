@@ -16,7 +16,7 @@ class MLT_AI_Rag_Indexer {
     public static function init(): void {
         add_action('save_post', [self::class, 'maybe_index_post'], 20, 3);
         add_action('before_delete_post', [self::class, 'delete_post_embeddings']);
-        add_action('mlt_ai_rag_bulk_reindex', [self::class, 'bulk_reindex']);
+        add_action('mlt_ai_rag_bulk_reindex', [self::class, 'bulk_reindex'], 10, 2);
 
         // Datei-Indexierung (PDF/PPTX/DOCX) — eigener, unabhängiger Pfad, da
         // Anhänge (post_type 'attachment') ein anderes Status-Modell haben
@@ -24,7 +24,7 @@ class MLT_AI_Rag_Indexer {
         // erst in Text umgewandelt werden müssen.
         add_action('add_attachment', [self::class, 'maybe_index_attachment']);
         add_action('edit_attachment', [self::class, 'maybe_index_attachment']);
-        add_action('mlt_ai_rag_bulk_reindex_files', [self::class, 'bulk_reindex_files']);
+        add_action('mlt_ai_rag_bulk_reindex_files', [self::class, 'bulk_reindex_files'], 10, 2);
     }
 
     public static function maybe_index_post(int $post_id, WP_Post $post, bool $update): void {
@@ -34,8 +34,11 @@ class MLT_AI_Rag_Indexer {
         if (wp_is_post_autosave($post_id) || wp_is_post_revision($post_id)) {
             return;
         }
-        if ($post->post_status !== 'publish') {
-            // Bei Statuswechsel weg von "publish" (z.B. auf Entwurf) alte Chunks entfernen.
+        if ($post->post_status !== 'publish' || !self::is_post_indexable($post)) {
+            // Bei Statuswechsel weg von "publish", oder sobald ein Passwort
+            // gesetzt wird (z.B. nachträglich auf einem bisher öffentlichen
+            // Beitrag), alte Chunks entfernen — sonst bliebe ein Beitrag im
+            // Index sichtbar, der gerade erst geschützt wurde.
             self::delete_post_embeddings($post_id);
             return;
         }
@@ -46,6 +49,61 @@ class MLT_AI_Rag_Indexer {
         }
 
         self::index_post($post_id);
+    }
+
+    /**
+     * Prüft, ob ein Beitrag ohne Login/Passwort öffentlich zugänglich ist —
+     * und damit für den AI-Agent-Index geeignet. Zwei eingebaute Checks:
+     * kein Passwortschutz (`post_password`), und der Post-Type selbst ist
+     * öffentlich abrufbar (`is_post_publicly_viewable()` — fängt z.B. Custom-
+     * Post-Types ab, die absichtlich intern/nicht-öffentlich sind, obwohl
+     * `post_status = publish`). Private Beiträge (post_status != 'publish')
+     * sind bereits über die post_status-Filter an den jeweiligen Aufrufstellen
+     * ausgeschlossen.
+     *
+     * WordPress-Rollen (Administrator, Editor, ...) schränken die Sichtbarkeit
+     * veröffentlichter Inhalte im Frontend nicht ein — das ist immer Sache
+     * eines Mitglieder-/Zugriffs-Plugins. Erweiterungspunkt dafür:
+     *
+     * add_filter('mlt_ai_rag_is_post_indexable', function ($indexable, $post) {
+     *     if (function_exists('rcp_is_restricted_content') && rcp_is_restricted_content($post->ID)) {
+     *         return false;
+     *     }
+     *     return $indexable;
+     * }, 10, 2);
+     */
+    public static function is_post_indexable(WP_Post $post): bool {
+        $indexable = $post->post_password === '' && is_post_publicly_viewable($post);
+        return apply_filters('mlt_ai_rag_is_post_indexable', $indexable, $post);
+    }
+
+    /**
+     * Prüft, ob ein Beitrag/eine Datei seit der letzten erfolgreichen
+     * Indexierung inhaltlich geändert wurde — Basis für die inkrementelle
+     * Reindexierung ("nur geänderte Inhalte"), die unnötige (kostenpflichtige)
+     * Embedding-API-Calls für unverändertes Material vermeidet.
+     *
+     * Wichtig: erkennt nur Änderungen am WordPress-Inhalt selbst
+     * (post_modified). Erkennt NICHT, wenn sich die Indexierungs-Logik des
+     * Plugins selbst geändert hat (z.B. nach einem Plugin-Update mit einem
+     * Extraktions-Fix) — dafür bleibt die vollständige Neuindexierung nötig.
+     */
+    private static function needs_reindex(int $object_id, string $post_modified): bool {
+        global $wpdb;
+        $table = $wpdb->prefix . 'mlt_ai_embeddings';
+
+        $last_indexed = $wpdb->get_var(
+            $wpdb->prepare(
+                "SELECT MAX(updated_at) FROM {$table} WHERE object_id = %d",
+                $object_id
+            )
+        );
+
+        if ($last_indexed === null) {
+            return true; // Noch nie indexiert.
+        }
+
+        return strtotime($post_modified) > strtotime($last_indexed);
     }
 
     /**
@@ -260,7 +318,43 @@ class MLT_AI_Rag_Indexer {
             return;
         }
 
+        if (!self::is_attachment_indexable($attachment_id)) {
+            self::delete_post_embeddings($attachment_id);
+            return;
+        }
+
         self::index_attachment($attachment_id);
+    }
+
+    /**
+     * Prüft, ob die Datei öffentlich zugänglich ist — genauer: ob der
+     * Beitrag, an den sie angehängt ist (falls vorhanden), nicht passwort-
+     * geschützt ist. Verhindert, dass ein an einen geschützten Beitrag
+     * angehängtes Dokument trotzdem über den Chat ausgeplaudert wird.
+     *
+     * Bekannte Einschränkung: greift nur, wenn WordPress die Datei-Anhang-
+     * Beziehung (post_parent) kennt — bei Dateien, die z.B. über ein
+     * ACF-Dateifeld unabhängig vom Bearbeitungs-Kontext hochgeladen wurden,
+     * ist post_parent nicht immer gesetzt. Für diesen Fall gibt es aktuell
+     * keine eingebaute Prüfung; freistehende Dateien in der Mediathek gelten
+     * als öffentlich, sofern nicht anders per Filter eingeschränkt.
+     */
+    public static function is_attachment_indexable(int $attachment_id): bool {
+        $parent_id = wp_get_post_parent_id($attachment_id);
+        if (!$parent_id) {
+            return true;
+        }
+
+        $parent = get_post($parent_id);
+        if (!$parent) {
+            return true;
+        }
+
+        if ($parent->post_status !== 'publish') {
+            return false;
+        }
+
+        return self::is_post_indexable($parent);
     }
 
     public static function index_attachment(int $attachment_id): void {
@@ -368,7 +462,7 @@ class MLT_AI_Rag_Indexer {
      * der Mediathek lagen). Kleinere Batch-Größe als bei Content-Posts, da
      * PDF-Textextraktion mehr Rechenzeit braucht als reine Datenbank-Reads.
      */
-    public static function bulk_reindex_files(int $offset = 0): void {
+    public static function bulk_reindex_files(int $offset = 0, bool $incremental = false): void {
         if (!get_field('mlt_ai_rag_index_files', 'option')) {
             update_option('mlt_ai_rag_file_reindex_status', 'Datei-Indexierung ist deaktiviert.');
             return;
@@ -398,12 +492,21 @@ class MLT_AI_Rag_Indexer {
             return;
         }
 
+        $skipped = 0;
         foreach ($query->posts as $attachment_id) {
+            if ($incremental) {
+                $attachment = get_post((int) $attachment_id);
+                if ($attachment && !self::needs_reindex((int) $attachment_id, $attachment->post_modified)) {
+                    $skipped++;
+                    continue;
+                }
+            }
             self::index_attachment((int) $attachment_id);
         }
 
-        update_option('mlt_ai_rag_file_reindex_status', sprintf('läuft (ab Position %d)', $offset + $batch_size));
-        wp_schedule_single_event(time() + 30, 'mlt_ai_rag_bulk_reindex_files', [$offset + $batch_size]);
+        $mode_suffix = $incremental ? sprintf(' (%d unverändert übersprungen)', $skipped) : '';
+        update_option('mlt_ai_rag_file_reindex_status', sprintf('läuft (ab Position %d)%s', $offset + $batch_size, $mode_suffix));
+        wp_schedule_single_event(time() + 30, 'mlt_ai_rag_bulk_reindex_files', [$offset + $batch_size, $incremental]);
     }
 
     /**
@@ -412,13 +515,14 @@ class MLT_AI_Rag_Indexer {
      * Chunk-Ansatz in media-lab-backup) — verarbeitet pro Aufruf max. 20 Posts
      * und plant sich bei Bedarf selbst erneut.
      */
-    public static function bulk_reindex(int $offset = 0): void {
+    public static function bulk_reindex(int $offset = 0, bool $incremental = false): void {
         $batch_size = 20;
         $post_types = self::get_indexed_post_types();
 
         $query = new WP_Query([
             'post_type'      => $post_types,
             'post_status'    => 'publish',
+            'has_password'   => false, // eingebauter WP_Query-Filter, schließt passwortgeschützte Beiträge direkt aus
             'posts_per_page' => $batch_size,
             'offset'         => $offset,
             'fields'         => 'ids',
@@ -431,14 +535,27 @@ class MLT_AI_Rag_Indexer {
             return;
         }
 
+        $skipped = 0;
         foreach ($query->posts as $post_id) {
+            $post = get_post((int) $post_id);
+            // Zusätzlich zur has_password-Abfrage: deckt auch den
+            // mlt_ai_rag_is_post_indexable-Filter ab (z.B. Mitglieder-Plugins),
+            // nicht nur den eingebauten Passwortschutz.
+            if (!$post || !self::is_post_indexable($post)) {
+                continue;
+            }
+            if ($incremental && !self::needs_reindex((int) $post_id, $post->post_modified)) {
+                $skipped++;
+                continue;
+            }
             self::index_post((int) $post_id);
         }
 
-        update_option('mlt_ai_rag_reindex_status', sprintf('läuft (ab Position %d)', $offset + $batch_size));
+        $mode_suffix = $incremental ? sprintf(' (%d unverändert übersprungen)', $skipped) : '';
+        update_option('mlt_ai_rag_reindex_status', sprintf('läuft (ab Position %d)%s', $offset + $batch_size, $mode_suffix));
 
         // Nächsten Batch in 30 Sekunden einplanen statt alles in einem Request.
-        wp_schedule_single_event(time() + 30, 'mlt_ai_rag_bulk_reindex', [$offset + $batch_size]);
+        wp_schedule_single_event(time() + 30, 'mlt_ai_rag_bulk_reindex', [$offset + $batch_size, $incremental]);
     }
 }
 
