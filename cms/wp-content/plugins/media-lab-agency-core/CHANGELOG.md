@@ -20,6 +20,29 @@ Ende.
 
 ---
 
+## [1.27.0] - 2026-09-24
+
+### media-lab-agency-core 1.27.0
+
+#### Added
+- **Suche: Fuzzy-Toleranz für Produktcodes** (`inc/search/class-fuzzy-code-search.php`, neu)
+  – Tippfehler-Toleranz auf `_sku` als Fallback bei leerer Trefferliste (Titel/Content/
+  Attribute). Levenshtein-Vergleich läuft erst auf einer per SQL längen-vorgefilterten
+  Kandidatenmenge (`meta_key`-Index, `LIMIT`), um bei großen Katalogen (getestete
+  Projektgrößen 1.500–150.000 Produkte) performant zu bleiben.
+- **Suche: Mehrsprachiges Synonym-Wörterbuch** (`inc/search/class-synonym-dictionary.php`,
+  neu) – neue Einstellungsseite **Agency Core → Suche / Synonyme**: pro Sprache
+  konfigurierbare Begriffs-Äquivalenzgruppen (z. B. „sample bomb" ↔ „bottle sampler"),
+  erweitert die Titel-/Content-Suche automatisch um alle Begriffe der passenden Gruppe.
+  Spracherkennung über `MediaLab_Multi_Language::get_current_language()`.
+- **`inc/ajax-search.php`**: zwei neue Filter-Hooks für die beiden obigen Komponenten –
+  `media_lab_ajax_search_query_expansion` (Titel-/Content-Suche läuft jetzt über eine
+  Schleife expandierter Suchbegriffe statt eines einzelnen `WP_Query`-Aufrufs) und
+  `media_lab_ajax_search_extra_matches` (Fuzzy-Fallback, nur bei leerer Trefferliste).
+  Ohne aktive Filter (Standardzustand) identisches Verhalten wie zuvor.
+
+---
+
 ## [1.26.2] - 2026-09-22
 
 ### media-lab-agency-core 1.26.2

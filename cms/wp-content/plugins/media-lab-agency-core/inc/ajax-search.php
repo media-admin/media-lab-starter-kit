@@ -312,17 +312,24 @@ function agency_core_ajax_search() {
     $limit = isset($_POST['limit']) ? absint($_POST['limit']) : 5;
     
     // ── 1. Regulärer Titel/Content/Excerpt-Match (WP_Query 's') ──────────────
-    $args = array(
-        'post_type' => $post_types,
-        'post_status' => 'publish',
-        'posts_per_page' => $limit,
-        's' => $search_query,
-        'orderby' => 'relevance',
-        'order' => 'DESC',
-    );
-    
-    $content_query = new WP_Query($args);
-    $content_ids   = wp_list_pluck( $content_query->posts, 'ID' );
+    $search_terms = apply_filters( 'media_lab_ajax_search_query_expansion', array( $search_query ), $search_query );
+
+    $content_ids = array();
+    foreach ( $search_terms as $term ) {
+        $args = array(
+            'post_type' => $post_types,
+            'post_status' => 'publish',
+            'posts_per_page' => $limit,
+            's' => $term,
+            'orderby' => 'relevance',
+            'order' => 'DESC',
+        );
+        $term_query = new WP_Query( $args );
+        foreach ( wp_list_pluck( $term_query->posts, 'ID' ) as $id ) {
+            if ( ! in_array( $id, $content_ids, true ) ) $content_ids[] = $id;
+        }
+    }
+    $content_ids = array_slice( $content_ids, 0, $limit );
 
     // ── 2. Zusätzlich: WooCommerce-Produktattribute (global + lokal +
     //    Konfigurator-Optionen) ──────────────────────────────────────────────
@@ -340,6 +347,10 @@ function agency_core_ajax_search() {
         // zusätzlicher, unnötiger Fehlerpunkt (falsches Verhalten, falls die
         // Klasse im AJAX-Kontext aus irgendeinem Grund nicht/später geladen wird).
         $attribute_matches += agency_core_search_configurator_options( $search_query );
+
+        if ( empty( $content_ids ) && empty( $attribute_matches ) ) {
+            $attribute_matches += apply_filters( 'media_lab_ajax_search_extra_matches', array(), $search_query, $limit );
+        }
     }
 
     // ── IDs zusammenführen: Content-Treffer zuerst (Relevanz-sortiert von
