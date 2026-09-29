@@ -20,6 +20,30 @@ Ende.
 
 ---
 
+## [1.27.1] - 2026-09-29
+
+### media-lab-agency-core 1.27.1
+
+#### Fixed
+- **Spam-Filter: kurze Namen wurden fälschlich als Spam verworfen**
+  (`inc/spam-content-filter.php`) – Die Gibberish-Heuristik wertete Felder als
+  Spam, sobald ein einzelnes Zeichen mehr als 40 % ausmachte. Bei kurzen Wörtern
+  ist das normal (z. B. „Saad", „Scacco", „Anna", „Emma", „Otto" = 50 %), sodass
+  Formulare mit solchen Namen komplett verworfen wurden (im Formular als
+  generische Fehlermeldung, ohne Eintrag im CF7-Spam-Log). Es werden jetzt nur
+  noch Buchstaben gezählt (Ziffern/Satzzeichen in Telefonnummern, Datums- und
+  Adressfeldern zählen nicht mehr mit), und Werte mit weniger als 8 Buchstaben
+  werden nicht mehr bewertet.
+
+#### Added
+- **Konstante `MEDIALAB_SPAM_GIBBERISH_MIN_LETTERS`** (Standard `8`) – Mindestanzahl
+  Buchstaben, ab der die Gibberish-Heuristik ein Feld bewertet; pro Projekt in der
+  `wp-config.php` überschreibbar.
+- **Gibberish-Heuristik: Erkennung von Zeichenketten** mit fünf oder mehr gleichen
+  Buchstaben in Folge („aaaaaa"), unabhängig vom Gesamtanteil.
+
+---
+
 ## [1.27.0] - 2026-09-24
 
 ### media-lab-agency-core 1.27.0
