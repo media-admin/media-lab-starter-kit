@@ -47,6 +47,15 @@ if ( ! defined( 'MEDIALAB_SPAM_BLOCKED_DOMAINS' ) ) {
 	define( 'MEDIALAB_SPAM_BLOCKED_DOMAINS', 'qq.com,163.com,126.com,mail.ru,yandex.ru' );
 }
 
+/**
+ * Mindestanzahl Buchstaben, ab der ein Feldwert von der Gibberish-Heuristik
+ * überhaupt bewertet wird. Kurze Werte (Namen wie "Saad", "Anna", "Scacco")
+ * haben zwangsläufig hohe Zeichenanteile und dürfen nie als Spam gelten.
+ */
+if ( ! defined( 'MEDIALAB_SPAM_GIBBERISH_MIN_LETTERS' ) ) {
+	define( 'MEDIALAB_SPAM_GIBBERISH_MIN_LETTERS', 8 );
+}
+
 // ── Hilfsfunktion: Client-IP ermitteln ────────────────────────────────────────
 
 /**
@@ -138,9 +147,10 @@ function medialab_spam_content_heuristic_check() {
 	// Textfelder auf Zeichenwiederholungs-Muster prüfen (z.B. "segddd",
 	// "asdasdasd", "aaaaaaa"). Erkennt, wenn ein einzelnes Zeichen oder
 	// eine kurze Zeichenfolge einen unnatürlich hohen Anteil des Textes
-	// ausmacht.
+	// ausmacht. Kurze Werte (Namen wie "Saad", "Anna") werden bewusst
+	// nicht bewertet.
 	foreach ( $data as $field_name => $field_value ) {
-		if ( ! is_string( $field_value ) || mb_strlen( $field_value ) < 4 ) {
+		if ( ! is_string( $field_value ) || mb_strlen( $field_value ) < MEDIALAB_SPAM_GIBBERISH_MIN_LETTERS ) {
 			continue;
 		}
 		// E-Mail- und URL-Felder überspringen - andere Zeichenverteilung.
@@ -157,18 +167,29 @@ function medialab_spam_content_heuristic_check() {
 }
 
 /**
- * Einfache Heuristik: Wenn das häufigste Zeichen (ohne Leerzeichen)
- * mehr als 40% der Zeichenkette ausmacht, gilt der Text als
- * wahrscheinlich zufällig/generiert statt echter Text.
- * Schwelle bewusst hoch gewählt (echte Wörter wie "aaaaaaber" wären
- * hier durch die 40%-Grenze nicht betroffen).
+ * Einfache Heuristik für zufällig getippten/generierten Text.
+ *
+ * - Es werden nur Buchstaben betrachtet. Ziffern, Satzzeichen und Leerraum
+ *   (Telefonnummern, Datumsangaben, Adressen) zählen nicht mit.
+ * - Texte mit weniger als MEDIALAB_SPAM_GIBBERISH_MIN_LETTERS Buchstaben
+ *   werden nie bewertet, damit kurze Namen wie "Saad", "Anna" oder
+ *   "Scacco" nicht fälschlich als Spam gelten (Anteil des häufigsten
+ *   Buchstabens liegt bei kurzen Wörtern natürlicherweise bei 50 %).
+ * - Fünf oder mehr gleiche Buchstaben in Folge ("aaaaaa") gelten als Spam.
+ * - Macht das häufigste Zeichen mehr als 40 % aus, gilt der Text als
+ *   wahrscheinlich zufällig/generiert statt echter Text.
  */
 function medialab_spam_looks_like_gibberish( string $text ): bool {
-	$clean = preg_replace( '/\s+/', '', $text );
+	$clean = preg_replace( '/[^\p{L}]+/u', '', $text );
 	$len   = mb_strlen( $clean );
 
-	if ( $len < 4 ) {
+	if ( $len < MEDIALAB_SPAM_GIBBERISH_MIN_LETTERS ) {
 		return false;
+	}
+
+	// Fünf oder mehr gleiche Buchstaben direkt hintereinander.
+	if ( preg_match( '/(\p{L})\1{4,}/iu', $clean ) ) {
+		return true;
 	}
 
 	$counts = array();
