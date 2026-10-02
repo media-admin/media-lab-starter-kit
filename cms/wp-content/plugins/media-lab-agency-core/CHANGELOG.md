@@ -20,6 +20,25 @@ Ende.
 
 ---
 
+## [1.28.1] - 2026-10-02
+
+### media-lab-agency-core 1.28.1
+
+#### Fixed
+- **Security Scanner: Alarm-Mail bei Plugin-Abweichungen**
+  (`inc/class-mla-security-scanner.php`) – `run_scan_and_notify()` wertete
+  Abweichungen der Plugin-Integrität (veränderte oder fehlende Dateien bei
+  .org-Plugins) bisher nicht aus. Sie standen nur auf der Admin-Seite, die
+  wöchentliche Alarm-Mail blieb aus. Die Mail wird jetzt auch bei
+  Plugin-Abweichungen verschickt und nennt die betroffenen Plugins samt Anzahl
+  der Dateien. Übersprungene Plugins (Premium/eigene, keine Checksummen)
+  zählen nicht.
+- **Security Scanner: veralteter Snippet-Pfad im Hinweistext** – Der Hinweis beim
+  Check „Subdirectory-Fix“ verwies auf `stubs/htaccess-subdirectory-staging.snippet`.
+  Die Datei liegt unter `docs/snippets/htaccess-subdirectory-staging.snippet`.
+
+---
+
 ## [1.28.0] - 2026-10-02
 
 ### media-lab-agency-core 1.28.0
