@@ -67,3 +67,12 @@ wp eval 'add_filter("mla_security_scan_pattern_excludes","__return_empty_array")
   (Original danach wiederherstellen).
 - Eigene Plugins mit `vendor/dompdf` erscheinen hier erwartungsgemäß, weil es
   dafür keine öffentlichen Checksummen gibt.
+
+  
+## Alarm-Mail
+
+Der wöchentliche Cron schickt eine Mail an die Adresse aus der Option
+`mla_security_notify_email` (sonst `admin_email`), wenn mindestens eines davon
+gefunden wird: Code-Muster, WP-Core-Abweichungen, Plugin-Abweichungen bei
+.org-Plugins (ab 1.28.1), verdächtige Verzeichnisse oder fehlgeschlagene
+Hardening-Checks. Warnungen (⚠️) lösen keine Mail aus.
