@@ -76,3 +76,32 @@ Der wöchentliche Cron schickt eine Mail an die Adresse aus der Option
 gefunden wird: Code-Muster, WP-Core-Abweichungen, Plugin-Abweichungen bei
 .org-Plugins (ab 1.28.1), verdächtige Verzeichnisse oder fehlgeschlagene
 Hardening-Checks. Warnungen (⚠️) lösen keine Mail aus.
+
+## Kürzlich veränderte PHP-Dateien (ab 1.29.0)
+
+Die Liste zeigt PHP-Dateien der letzten 7 Tage, maximal die neuesten 200.
+Dateien von .org-Plugins, die exakt dem offiziellen Hash der installierten
+Version entsprechen (z. B. nach einem Plugin-Update), werden nicht aufgelistet.
+Die Anzahl steht als Hinweis über der Liste und im Scan-Ergebnis als
+`recent_files_hidden`.
+
+Sichtbar bleiben eigene Plugins, Themes, `uploads/`, Core-Dateien, veränderte
+Plugin-Dateien und die Übersetzungscaches `*.l10n.php` in `wp-content/languages/`.
+Die `.l10n.php`-Dateien werden bewusst nicht ausgeblendet, weil WordPress sie als
+PHP lädt. Nach einem WordPress-Core-Update füllen Core-Dateien die Liste weiterhin,
+denn der Hash-Abgleich gilt für .org-Plugins, nicht für den Core.
+
+## Check „Subdirectory-Fix“ (ab 1.29.0)
+
+Relevant nur, wenn `site_url` und `home_url` abweichen (z. B. WordPress in `/cms/`).
+Der Check ist grün, wenn im Root-`.htaccess` entweder der Marker
+`Media Lab Subdirectory-Fix` steht oder beide aktiven Rewrite-Regeln für
+`wp-content` und `wp-includes` vorhanden sind, in der Form
+`RewriteRule ^wp-content/(.*)$ /cms/wp-content/$1`. Auskommentierte Regeln zählen
+nicht. Wer die Regeln anders formuliert, setzt zusätzlich den Marker-Kommentar.
+
+Rot heißt: Die Regeln fehlen wirklich. Dann das Snippet
+`docs/snippets/htaccess-subdirectory-staging.snippet` aus dem Starter Kit vor den
+Block `# BEGIN WordPress` im Root-`.htaccess` einfügen und `/cms/` bei abweichendem
+Ordnernamen anpassen. Unter nginx zeigt der Check nur einen Hinweis (⚠️), weil
+`.htaccess` dort nicht ausgewertet wird.
