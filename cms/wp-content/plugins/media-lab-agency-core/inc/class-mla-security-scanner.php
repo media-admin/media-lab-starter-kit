@@ -974,8 +974,15 @@ class MLA_Security_Scanner {
 			return 'fail' === $c['status'];
 		} );
 
+		// Abweichungen bei .org-Plugins (veränderte/fehlende Dateien laut
+		// offiziellen Checksummen). Übersprungene Plugins zählen nicht.
+		$plugin_issues = array_filter( $results['plugin_integrity'] ?? array(), function ( $p ) {
+			return isset( $p['status'] ) && 'ABWEICHUNGEN GEFUNDEN' === $p['status'];
+		} );
+
 		$has_findings = ! empty( $results['pattern_findings'] )
 			|| ! empty( $results['core_integrity']['mismatches'] )
+			|| ! empty( $plugin_issues )
 			|| ! empty( $results['suspicious_dirs'] )
 			|| ! empty( $failed_health_checks );
 
@@ -990,6 +997,10 @@ class MLA_Security_Scanner {
 		$body  = "Der automatische Security-Scan hat mögliche Auffälligkeiten gefunden:\n\n";
 		$body .= sprintf( "- Verdächtige Code-Muster: %d\n", count( $results['pattern_findings'] ) );
 		$body .= sprintf( "- WP-Core-Abweichungen: %d\n", count( $results['core_integrity']['mismatches'] ?? array() ) );
+		$body .= sprintf( "- Plugin-Abweichungen (.org-Plugins): %d\n", count( $plugin_issues ) );
+		foreach ( $plugin_issues as $p ) {
+			$body .= sprintf( "    - %s (%d Dateien)\n", $p['name'], count( $p['mismatches'] ) );
+		}
 		$body .= sprintf( "- Verdächtige Verzeichnisse: %d\n", count( $results['suspicious_dirs'] ) );
 		$body .= sprintf( "- Fehlgeschlagene Hardening-Checks: %d\n", count( $failed_health_checks ) );
 		if ( ! empty( $failed_health_checks ) ) {
