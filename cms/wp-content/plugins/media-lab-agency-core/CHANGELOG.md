@@ -20,6 +20,34 @@ Ende.
 
 ---
 
+## [1.28.0] - 2026-10-02
+
+### media-lab-agency-core 1.28.0
+
+#### Added
+- **Security Scanner: Abgleich mit offiziellen Plugin-Checksummen gegen False
+  Positives** (`inc/class-mla-security-scanner.php`) – Treffer der Code-Muster
+  in Dateien von .org-Plugins werden unterdrückt, wenn der MD5 der Datei exakt
+  dem offiziellen Hash der installierten Plugin-Version (downloads.wordpress.org)
+  entspricht. Veränderte Dateien werden weiterhin gemeldet. Die Checksummen
+  werden nur bei einem Treffer abgefragt und pro Scan je Plugin und Version nur
+  einmal geladen. Vorher löste z. B. `tcpdf_barcodes_1d.php` (GiveWP) nach jedem
+  Plugin-Update erneut `chr_concat_chain` aus.
+- **Security Scanner: Pfad-Ausnahmen pro Muster** – neue Property
+  `$pattern_path_excludes` und Filter `mla_security_scan_pattern_excludes` für
+  bekannte Libraries ohne öffentliche Checksummen. Standardmäßig ist
+  `chr_concat_chain` für dompdf (inkl. php-svg-lib) und TCPDF ausgenommen. Alle
+  anderen Muster (z. B. `eval_base64`) prüfen diese Ordner weiterhin.
+
+#### Changed
+- **Security Scanner: `check_plugin_integrity()`** nutzt den gemeinsamen Helper
+  `get_plugin_checksums()` (Request-Cache, keine doppelten HTTP-Abfragen mehr
+  zwischen Muster-Scan und Plugin-Integrität). Plugins mit leerer
+  Checksummen-Datei erscheinen jetzt als „übersprungen“, statt stillschweigend
+  ausgelassen zu werden.
+
+---
+
 ## [1.27.1] - 2026-09-29
 
 ### media-lab-agency-core 1.27.1
