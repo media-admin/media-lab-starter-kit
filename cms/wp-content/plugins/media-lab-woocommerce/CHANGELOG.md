@@ -4,6 +4,22 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [2.9.1] - 2026-10-01
+
+### Fixed
+- **Lagerstatus-Text verschwand bei aktiviertem "Kaufbuttons verstecken"**
+  (`inc/catalog-mode.php`) – `wc_get_stock_html()` wurde bisher
+  ausschließlich innerhalb des Add-to-Cart-Templates
+  (`single-product/add-to-cart/simple.php`) aufgerufen. Da Catalog Mode
+  bei aktiver "Kaufbuttons verstecken"-Einstellung den kompletten
+  `woocommerce_template_single_add_to_cart`-Hook entfernt, fiel der
+  Lagerstatus-Text ("Vorrätig"/"Nicht vorrätig"/projektspezifische
+  Overrides via `woocommerce_get_availability`) versehentlich mit weg.
+  Betraf jedes Projekt mit dieser Kombination. Neue Methode
+  `display_stock_status()`, an derselben Priorität neu eingehängt, wo
+  vorher der Button saß. Gefunden und zuerst lokal kompensiert in
+  `at.media-lab` (01.10.2026).
+
 ## [2.9.0] - 2026-08-25
 
 ### Added
