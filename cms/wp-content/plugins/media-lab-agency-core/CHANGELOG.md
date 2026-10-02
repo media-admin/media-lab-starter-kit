@@ -20,6 +20,32 @@ Ende.
 
 ---
 
+## [1.29.0] - 2026-10-02
+
+### media-lab-agency-core 1.29.0
+
+#### Changed
+- **Security Scanner: „Kürzlich veränderte PHP-Dateien“ ohne verifizierte
+  .org-Plugin-Dateien** (`inc/class-mla-security-scanner.php`) – Dateien von
+  .org-Plugins, die exakt dem offiziellen Hash der installierten Version
+  entsprechen, werden nicht mehr aufgelistet. Die Anzahl der ausgeblendeten
+  Dateien steht als Hinweis über der Liste (Scan-Ergebnis `recent_files_hidden`).
+  Vorher füllte ein einzelnes Plugin-Update die auf 200 Einträge begrenzte Liste
+  und verdeckte alle anderen Änderungen. Übrig bleiben eigene Plugins, Themes,
+  `uploads/`, Core-Dateien und veränderte Plugin-Dateien.
+- **Security Scanner: Check „Subdirectory-Fix“ erkennt auch die Regeln selbst**
+  – Der Check ist grün, wenn im Root-`.htaccess` entweder der Marker
+  `Media Lab Subdirectory-Fix` oder aktive Rewrite-Regeln für `wp-content` und
+  `wp-includes` stehen. Auskommentierte Regeln zählen nicht.
+
+#### Fixed
+- **Security Scanner: Kurz-Snippet der Subdirectory-Anleitung enthält jetzt die
+  Marker-Kommentare** (`# BEGIN` / `# ENDE Media Lab Subdirectory-Fix`) – Wer nur
+  den Kurz-Snippet aus der Scan-Anleitung einfügte, behielt bisher ein rotes
+  Kreuz und die wöchentliche Alarm-Mail, obwohl die Regeln korrekt waren.
+
+---
+
 ## [1.28.1] - 2026-10-02
 
 ### media-lab-agency-core 1.28.1
