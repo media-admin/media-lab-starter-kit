@@ -927,7 +927,7 @@ class MLA_Security_Scanner {
 			);
 		}
 
-		$fix_snippet = "<IfModule mod_rewrite.c>\nRewriteEngine On\nRewriteCond %{REQUEST_FILENAME} !-f\nRewriteCond %{REQUEST_FILENAME} !-d\nRewriteRule ^wp-content/(.*)\$ /cms/wp-content/\$1 [L]\nRewriteCond %{REQUEST_FILENAME} !-f\nRewriteCond %{REQUEST_FILENAME} !-d\nRewriteRule ^wp-includes/(.*)\$ /cms/wp-includes/\$1 [L]\n</IfModule>\n\n(Muss VOR dem \"# BEGIN WordPress\"-Block stehen. Vollständiges Snippet: stubs/htaccess-subdirectory-staging.snippet im Starter Kit.)";
+		$fix_snippet = "<IfModule mod_rewrite.c>\nRewriteEngine On\nRewriteCond %{REQUEST_FILENAME} !-f\nRewriteCond %{REQUEST_FILENAME} !-d\nRewriteRule ^wp-content/(.*)\$ /cms/wp-content/\$1 [L]\nRewriteCond %{REQUEST_FILENAME} !-f\nRewriteCond %{REQUEST_FILENAME} !-d\nRewriteRule ^wp-includes/(.*)\$ /cms/wp-includes/\$1 [L]\n</IfModule>\n\n(Muss VOR dem \"# BEGIN WordPress\"-Block stehen. Vollständiges Snippet: docs/snippets/htaccess-subdirectory-staging.snippet im Starter Kit.)";
 
 		if ( ! file_exists( $root_htaccess ) ) {
 			return array(
