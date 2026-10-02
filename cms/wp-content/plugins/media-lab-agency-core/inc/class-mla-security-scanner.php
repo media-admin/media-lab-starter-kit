@@ -13,6 +13,15 @@
  *  - Setup-Härtung: DISALLOW_FILE_EDIT, PHP-Sperre in uploads/,
  *    WP_DEBUG-Sichtbarkeit, XML-RPC, Directory-Listing, edit_files-Capability
  *
+ * False-Positive-Reduktion bei Code-Mustern:
+ *  1. Pfad-Ausnahmen pro Muster ($pattern_path_excludes, erweiterbar über den
+ *     Filter mla_security_scan_pattern_excludes) für bekannte Libraries ohne
+ *     öffentliche Checksummen (z.B. dompdf in eigenen Plugins).
+ *  2. Dateien von .org-Plugins, deren MD5 exakt dem offiziellen Hash der
+ *     installierten Version entspricht, gelten als unverändert und werden
+ *     nicht gemeldet. Geänderte Dateien werden weiterhin gemeldet.
+ *  3. Manuelle Whitelist per Datei-Hash (Button "Als False Positive markieren").
+ *
  * Einbindung in Media Lab Agency Core:
  *   require_once __DIR__ . '/inc/class-mla-security-scanner.php';
  *   MLA_Security_Scanner::instance();
@@ -55,6 +64,21 @@ class MLA_Security_Scanner {
 	);
 
 	/**
+	 * Pfad-Ausnahmen pro Muster (Regex, gegen den Dateipfad mit "/").
+	 * Nur für bekannte Libraries, die legitim viele chr()-Ketten enthalten
+	 * (PDF-Libraries bauen damit Binär-/Steuerzeichen-Strings).
+	 * Andere Muster werden in diesen Ordnern weiterhin geprüft.
+	 *
+	 * Erweiterbar über den Filter mla_security_scan_pattern_excludes.
+	 */
+	private $pattern_path_excludes = array(
+		'chr_concat_chain' => array(
+			'#/plugins/[^/]+/vendor/dompdf/#',           // dompdf + php-svg-lib
+			'#/plugins/[^/]+/vendor/tecnickcom/tcpdf/#', // TCPDF (z.B. GiveWP)
+		),
+	);
+
+	/**
 	 * Verzeichnisnamen-Muster, die typischerweise auf vergessene/verwaiste
 	 * Alt-Installationen oder Backups im Webroot hindeuten (genau das
 	 * Muster, das den OLD/-Vorfall verursacht hat).
@@ -73,6 +97,12 @@ class MLA_Security_Scanner {
 
 	/** Dateiendungen, die überhaupt gescannt werden (Performance). */
 	private $scan_extensions = array( 'php', 'phtml', 'php5', 'php7', 'phar' );
+
+	/** Request-Cache: "slug|version" => array( rel_path => array(md5, ...) ) oder null. */
+	private $checksum_memo = array();
+
+	/** Request-Cache: Verzeichnis-Slug => installierte Plugin-Version. */
+	private $plugin_versions = null;
 
 	public static function instance() {
 		if ( null === self::$instance ) {
@@ -140,12 +170,18 @@ class MLA_Security_Scanner {
 
 	/**
 	 * Durchsucht rekursiv ein Verzeichnis nach verdächtigen Code-Mustern.
-	 * Whitelistete Dateien (per Hash) werden übersprungen.
+	 *
+	 * Übersprungen werden:
+	 *  - manuell whitelistete Dateien (per Hash),
+	 *  - Muster, die für den Pfad in $pattern_path_excludes ausgenommen sind,
+	 *  - Dateien, die exakt dem Original eines .org-Plugins entsprechen
+	 *    (Hash == offizieller Hash der installierten Version).
 	 */
 	public function scan_suspicious_patterns( $base_dir ) {
-		$findings   = array();
-		$whitelist  = get_option( self::OPTION_WHITELIST, array() );
-		$base_dir   = untrailingslashit( $base_dir );
+		$findings  = array();
+		$whitelist = get_option( self::OPTION_WHITELIST, array() );
+		$base_dir  = untrailingslashit( $base_dir );
+		$excludes  = apply_filters( 'mla_security_scan_pattern_excludes', $this->pattern_path_excludes );
 
 		if ( ! is_dir( $base_dir ) ) {
 			return $findings;
@@ -187,8 +223,23 @@ class MLA_Security_Scanner {
 				continue;
 			}
 
+			$norm_path = str_replace( '\\', '/', $path );
+
 			foreach ( $this->suspicious_patterns as $label => $pattern ) {
+				// Pfad-Ausnahmen pro Muster (z.B. dompdf/TCPDF für chr_concat_chain).
+				foreach ( $excludes[ $label ] ?? array() as $exclude ) {
+					if ( preg_match( $exclude, $norm_path ) ) {
+						continue 2; // dieses Muster für diese Datei überspringen
+					}
+				}
+
 				if ( preg_match( $pattern, $content ) ) {
+					// Unveränderte Datei eines .org-Plugins? Dann kein Fund.
+					// Die Checksummen werden nur bei einem Treffer abgefragt.
+					if ( $this->is_verified_plugin_file( $path, $hash ) ) {
+						break;
+					}
+
 					$findings[] = array(
 						'file'    => str_replace( ABSPATH, '', $path ),
 						'pattern' => $label,
@@ -310,18 +361,10 @@ class MLA_Security_Scanner {
 		$results     = array();
 
 		foreach ( $all_plugins as $plugin_file => $plugin_data ) {
-			$slug = strtok( $plugin_file, '/' );
+			$slug      = strtok( $plugin_file, '/' );
+			$checksums = $this->get_plugin_checksums( $slug, $plugin_data['Version'] );
 
-			// Prüfen ob Plugin überhaupt im .org-Repo existiert / Version holen.
-			$url = sprintf(
-				'https://downloads.wordpress.org/plugin-checksums/%s/%s.json',
-				rawurlencode( $slug ),
-				rawurlencode( $plugin_data['Version'] )
-			);
-
-			$response = wp_remote_get( $url, array( 'timeout' => 10 ) );
-
-			if ( is_wp_error( $response ) || 200 !== wp_remote_retrieve_response_code( $response ) ) {
+			if ( null === $checksums ) {
 				// Kein .org-Plugin oder keine Checksummen verfügbar - z.B.
 				// media-lab-agency-core selbst. Nicht als Fehler werten.
 				$results[ $slug ] = array(
@@ -331,20 +374,10 @@ class MLA_Security_Scanner {
 				continue;
 			}
 
-			$body = json_decode( wp_remote_retrieve_body( $response ), true );
-
-			if ( empty( $body['files'] ) ) {
-				continue;
-			}
-
 			$plugin_dir = WP_PLUGIN_DIR . '/' . $slug . '/';
 			$mismatches = array();
 
-			foreach ( $body['files'] as $rel_path => $meta ) {
-				if ( empty( $meta['md5'] ) ) {
-					continue;
-				}
-
+			foreach ( $checksums as $rel_path => $expected_hashes ) {
 				$full_path = $plugin_dir . $rel_path;
 
 				if ( ! file_exists( $full_path ) ) {
@@ -352,7 +385,7 @@ class MLA_Security_Scanner {
 					continue;
 				}
 
-				if ( md5_file( $full_path ) !== $meta['md5'] ) {
+				if ( ! in_array( md5_file( $full_path ), $expected_hashes, true ) ) {
 					$mismatches[] = array( 'file' => $slug . '/' . $rel_path, 'status' => 'verändert' );
 				}
 			}
@@ -367,6 +400,104 @@ class MLA_Security_Scanner {
 		}
 
 		return $results;
+	}
+
+	/**
+	 * Offizielle Checksummen eines .org-Plugins von downloads.wordpress.org.
+	 * Pro Request nur einmal je Slug+Version abgefragt (Pattern-Scan und
+	 * Plugin-Integrität teilen sich das Ergebnis).
+	 *
+	 * @return array|null rel_path => array( md5, ... ), oder null wenn keine
+	 *                    Checksummen verfügbar sind (kein .org-Plugin,
+	 *                    Version unbekannt, API nicht erreichbar).
+	 */
+	private function get_plugin_checksums( $slug, $version ) {
+		$key = $slug . '|' . $version;
+
+		if ( array_key_exists( $key, $this->checksum_memo ) ) {
+			return $this->checksum_memo[ $key ];
+		}
+
+		$url = sprintf(
+			'https://downloads.wordpress.org/plugin-checksums/%s/%s.json',
+			rawurlencode( $slug ),
+			rawurlencode( $version )
+		);
+
+		$response = wp_remote_get( $url, array( 'timeout' => 10 ) );
+
+		if ( is_wp_error( $response ) || 200 !== wp_remote_retrieve_response_code( $response ) ) {
+			return $this->checksum_memo[ $key ] = null;
+		}
+
+		$body = json_decode( wp_remote_retrieve_body( $response ), true );
+
+		if ( empty( $body['files'] ) || ! is_array( $body['files'] ) ) {
+			return $this->checksum_memo[ $key ] = null;
+		}
+
+		$files = array();
+		foreach ( $body['files'] as $rel_path => $meta ) {
+			if ( empty( $meta['md5'] ) ) {
+				continue;
+			}
+			// md5 kann ein String oder eine Liste sein - einheitlich als Liste speichern.
+			$files[ $rel_path ] = array_map( 'strtolower', (array) $meta['md5'] );
+		}
+
+		return $this->checksum_memo[ $key ] = $files;
+	}
+
+	/**
+	 * Installierte Plugin-Versionen, indiziert nach Verzeichnis-Slug.
+	 */
+	private function get_installed_plugin_versions() {
+		if ( null !== $this->plugin_versions ) {
+			return $this->plugin_versions;
+		}
+
+		if ( ! function_exists( 'get_plugins' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+
+		$this->plugin_versions = array();
+		foreach ( get_plugins() as $plugin_file => $plugin_data ) {
+			$this->plugin_versions[ strtok( $plugin_file, '/' ) ] = $plugin_data['Version'];
+		}
+
+		return $this->plugin_versions;
+	}
+
+	/**
+	 * Ist die Datei Teil eines installierten .org-Plugins und stimmt ihr
+	 * Hash exakt mit dem offiziellen Hash dieser Version überein?
+	 */
+	private function is_verified_plugin_file( $path, $hash ) {
+		$plugin_root = trailingslashit( wp_normalize_path( WP_PLUGIN_DIR ) );
+		$norm_path   = wp_normalize_path( $path );
+
+		if ( 0 !== strpos( $norm_path, $plugin_root ) ) {
+			return false;
+		}
+
+		$parts = explode( '/', substr( $norm_path, strlen( $plugin_root ) ), 2 );
+		if ( 2 !== count( $parts ) ) {
+			return false;
+		}
+
+		list( $slug, $rel_path ) = $parts;
+
+		$versions = $this->get_installed_plugin_versions();
+		if ( ! isset( $versions[ $slug ] ) ) {
+			return false;
+		}
+
+		$checksums = $this->get_plugin_checksums( $slug, $versions[ $slug ] );
+		if ( null === $checksums || ! isset( $checksums[ $rel_path ] ) ) {
+			return false;
+		}
+
+		return in_array( strtolower( $hash ), $checksums[ $rel_path ], true );
 	}
 
 	/**
@@ -615,7 +746,7 @@ class MLA_Security_Scanner {
 			$content = @file_get_contents( $htaccess );
 			if ( false !== $content ) {
 				// Verschiedene gängige Schreibweisen abdecken.
-								$has_rule = (bool) preg_match( '/(php_flag\s+engine\s+off|deny\s+from\s+all.*\.php|<Files(?:Match)?[^>]*\.php[^>]*>.*Require\s+all\s+denied|SetHandler\s+none|RemoveHandler\s+\.php)/is', $content );
+				$has_rule = (bool) preg_match( '/(php_flag\s+engine\s+off|deny\s+from\s+all.*\.php|<Files(?:Match)?[^>]*\.php[^>]*>.*Require\s+all\s+denied|SetHandler\s+none|RemoveHandler\s+\.php)/is', $content );
 			}
 		}
 
