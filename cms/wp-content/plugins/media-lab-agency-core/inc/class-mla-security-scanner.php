@@ -104,6 +104,9 @@ class MLA_Security_Scanner {
 	/** Request-Cache: Verzeichnis-Slug => installierte Plugin-Version. */
 	private $plugin_versions = null;
 
+	/** Anzahl der Dateien, die in "Kürzlich veränderte Dateien" als verifiziertes .org-Original ausgeblendet wurden. */
+	private $recent_hidden_count = 0;
+
 	public static function instance() {
 		if ( null === self::$instance ) {
 			self::$instance = new self();
@@ -161,7 +164,8 @@ class MLA_Security_Scanner {
 			'duration_seconds'   => 0, // wird unten gesetzt
 		);
 
-		$results['duration_seconds'] = round( microtime( true ) - $start, 2 );
+		$results['recent_files_hidden'] = $this->recent_hidden_count;
+		$results['duration_seconds']    = round( microtime( true ) - $start, 2 );
 
 		update_option( self::OPTION_RESULTS, $results, false );
 
@@ -471,8 +475,12 @@ class MLA_Security_Scanner {
 	/**
 	 * Ist die Datei Teil eines installierten .org-Plugins und stimmt ihr
 	 * Hash exakt mit dem offiziellen Hash dieser Version überein?
+	 *
+	 * @param string      $path Absoluter Dateipfad.
+	 * @param string|null $hash MD5 der Datei, falls schon berechnet. Sonst wird
+	 *                          er erst berechnet, wenn Checksummen vorliegen.
 	 */
-	private function is_verified_plugin_file( $path, $hash ) {
+	private function is_verified_plugin_file( $path, $hash = null ) {
 		$plugin_root = trailingslashit( wp_normalize_path( WP_PLUGIN_DIR ) );
 		$norm_path   = wp_normalize_path( $path );
 
@@ -494,6 +502,13 @@ class MLA_Security_Scanner {
 
 		$checksums = $this->get_plugin_checksums( $slug, $versions[ $slug ] );
 		if ( null === $checksums || ! isset( $checksums[ $rel_path ] ) ) {
+			return false;
+		}
+
+		if ( null === $hash ) {
+			$hash = @md5_file( $path );
+		}
+		if ( false === $hash ) {
 			return false;
 		}
 
@@ -587,11 +602,19 @@ class MLA_Security_Scanner {
 	 * Nützlich um Funde des Scans mit einer breiteren Zeitfenster-Suche
 	 * abzugleichen (der Hoster-Scan ist laut eigener Aussage nicht
 	 * vollständig).
+	 *
+	 * Dateien von .org-Plugins, die exakt dem offiziellen Hash der installierten
+	 * Version entsprechen (z.B. nach einem Plugin-Update), werden ausgeblendet.
+	 * Sonst füllt ein einziges Update die Liste (max. 200 Einträge) und verdeckt
+	 * alle anderen Änderungen. Die Anzahl der ausgeblendeten Dateien steht in
+	 * $recent_hidden_count.
 	 */
 	public function list_recently_modified_files( $base_dir, $days = 7 ) {
 		$base_dir  = untrailingslashit( $base_dir );
 		$threshold = time() - ( $days * DAY_IN_SECONDS );
 		$results   = array();
+
+		$this->recent_hidden_count = 0;
 
 		if ( ! is_dir( $base_dir ) ) {
 			return $results;
@@ -614,6 +637,12 @@ class MLA_Security_Scanner {
 				continue;
 			}
 			if ( $file->getMTime() >= $threshold ) {
+				// Unverändertes Original eines .org-Plugins: nicht auflisten.
+				if ( $this->is_verified_plugin_file( $file->getPathname() ) ) {
+					$this->recent_hidden_count++;
+					continue;
+				}
+
 				$results[] = array(
 					'file'  => str_replace( $base_dir, '', $file->getPathname() ),
 					'mtime' => date( 'Y-m-d H:i:s', $file->getMTime() ),
@@ -927,7 +956,7 @@ class MLA_Security_Scanner {
 			);
 		}
 
-		$fix_snippet = "<IfModule mod_rewrite.c>\nRewriteEngine On\nRewriteCond %{REQUEST_FILENAME} !-f\nRewriteCond %{REQUEST_FILENAME} !-d\nRewriteRule ^wp-content/(.*)\$ /cms/wp-content/\$1 [L]\nRewriteCond %{REQUEST_FILENAME} !-f\nRewriteCond %{REQUEST_FILENAME} !-d\nRewriteRule ^wp-includes/(.*)\$ /cms/wp-includes/\$1 [L]\n</IfModule>\n\n(Muss VOR dem \"# BEGIN WordPress\"-Block stehen. Vollständiges Snippet: docs/snippets/htaccess-subdirectory-staging.snippet im Starter Kit.)";
+		$fix_snippet = "# BEGIN Media Lab Subdirectory-Fix\n<IfModule mod_rewrite.c>\nRewriteEngine On\nRewriteCond %{REQUEST_FILENAME} !-f\nRewriteCond %{REQUEST_FILENAME} !-d\nRewriteRule ^wp-content/(.*)\$ /cms/wp-content/\$1 [L]\nRewriteCond %{REQUEST_FILENAME} !-f\nRewriteCond %{REQUEST_FILENAME} !-d\nRewriteRule ^wp-includes/(.*)\$ /cms/wp-includes/\$1 [L]\n</IfModule>\n# ENDE Media Lab Subdirectory-Fix\n\n(Muss VOR dem \"# BEGIN WordPress\"-Block stehen. Vollständiges Snippet: docs/snippets/htaccess-subdirectory-staging.snippet im Starter Kit.)";
 
 		if ( ! file_exists( $root_htaccess ) ) {
 			return array(
@@ -945,7 +974,19 @@ class MLA_Security_Scanner {
 		}
 
 		$content = @file_get_contents( $root_htaccess );
-		$has_fix = false !== $content && false !== strpos( $content, 'Media Lab Subdirectory-Fix' );
+		$has_fix = false;
+
+		if ( false !== $content ) {
+			// Variante 1: Marker-Kommentar aus dem Starter-Kit-Snippet.
+			$has_marker = false !== strpos( $content, 'Media Lab Subdirectory-Fix' );
+
+			// Variante 2: die Regeln selbst (aktive Zeilen, keine Kommentare), z.B. wenn
+			// nur der Kurz-Snippet ohne Marker eingefügt wurde.
+			$has_rules = (bool) preg_match( '#^\s*RewriteRule\s+\^wp-content/\(\.\*\)\$\s+\S*wp-content/\$1#im', $content )
+				&& (bool) preg_match( '#^\s*RewriteRule\s+\^wp-includes/\(\.\*\)\$\s+\S*wp-includes/\$1#im', $content );
+
+			$has_fix = $has_marker || $has_rules;
+		}
 
 		return array(
 			'id'          => 'subdirectory_htaccess_fix',
@@ -1217,6 +1258,12 @@ class MLA_Security_Scanner {
 			<p><em>Prüfen: sind das ausschließlich bekannte, aktive Admins? Unbekannte Accounts sofort löschen.</em></p>
 
 			<h2 style="margin-top:30px;">Kürzlich veränderte PHP-Dateien (7 Tage)</h2>
+			<?php if ( ! empty( $results['recent_files_hidden'] ) ) : ?>
+				<p style="color:#666;">
+					<?php echo esc_html( $results['recent_files_hidden'] ); ?> Dateien von .org-Plugins nicht aufgelistet,
+					weil sie exakt dem offiziellen Original der installierten Version entsprechen (z.B. nach einem Plugin-Update).
+				</p>
+			<?php endif; ?>
 			<details>
 				<summary>Anzeigen (<?php echo esc_html( count( $results['recent_files'] ?? array() ) ); ?> Dateien)</summary>
 				<ul style="max-height:300px;overflow:auto;">
