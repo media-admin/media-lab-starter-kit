@@ -82,6 +82,7 @@
 // WooCommerce
 @use 'pages/page-404';
 @use 'woocommerce/woocommerce';
+@use 'woocommerce/single-product';
 @use 'pages/welcome-page';
 
 // Swiper Overrides – muss zuletzt stehen
