@@ -37,7 +37,8 @@ remove_action('woocommerce_after_single_product_summary', 'woocommerce_output_pr
 
 // Zeige Beschreibung direkt (ohne Tab)
 global $product, $post;
-if ($product && $post->post_content) {
+// Mit aktivem Layout (mlw_single_product_layout) steht die Beschreibung bereits unter dem Titel
+if ($product && $post->post_content && !apply_filters('mlw_single_product_layout', false)) {
     echo '<div class="product-description-block" style="margin: 2rem 0;">';
     echo '<h2>Beschreibung</h2>';
     echo apply_filters('the_content', $post->post_content);

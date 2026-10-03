@@ -65,9 +65,18 @@ class MediaLab_Wishlist_Frontend {
 
         if ( ! apply_filters( 'mlw_wishlist_auto_single_button', true ) ) return;
 
-        $style = apply_filters( 'mlw_wishlist_button_style', 'icon' );
+        $style = apply_filters( 'mlw_wishlist_single_button_style', apply_filters( 'mlw_wishlist_button_style', 'icon' ) );
+        $html  = self::render_button_html( $product->get_id(), true, $style );
 
-        echo self::render_button_html( $product->get_id(), true, $style ); // phpcs:ignore WordPress.Security.EscapeOutput -- bereits in render_button_html() escaped
+        // Optionales Mengenfeld vor dem Button (Anfrage-Shops), Opt-in. wishlist.js liest es beim Hinzufuegen.
+        if ( $html !== '' && apply_filters( 'mlw_wishlist_single_quantity', false ) ) {
+            $html = '<div class="mlw-wishlist-action">'
+                  . '<div class="mlw-wishlist-qty"><input type="number" class="mlw-wishlist-qty__input" value="1" min="1" step="1" inputmode="numeric" aria-label="' . esc_attr__( 'Menge', 'media-lab-woocommerce' ) . '"></div>'
+                  . $html
+                  . '</div>';
+        }
+
+        echo $html; // phpcs:ignore WordPress.Security.EscapeOutput -- Button-HTML bereits in render_button_html() escaped
     }
 
 

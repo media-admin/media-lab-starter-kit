@@ -117,7 +117,16 @@
 
         btn.disabled = true;
 
-        postAjax( 'mlw_wishlist_add', { product_id: productId, quantity: 1 } )
+        postAjax( 'mlw_wishlist_add', {
+            product_id: productId,
+            // Optionales Mengenfeld im selben .mlw-wishlist-action-Wrapper; ohne Feld bleibt es bei Menge 1
+            quantity: ( function () {
+                var wrap  = btn.closest( '.mlw-wishlist-action' );
+                var input = wrap ? wrap.querySelector( '.mlw-wishlist-qty__input' ) : null;
+                var qty   = input ? parseInt( input.value, 10 ) : 1;
+                return qty > 0 ? qty : 1;
+            } )()
+        } )
             .then( function ( res ) {
                 if ( res.success ) {
                     updateCountBadges( res.data.count );
@@ -129,12 +138,15 @@
                     } else if ( labelEl ) {
                         labelEl.textContent = '✓';
                         btn.classList.add( 'is-active' );
+                        btn.setAttribute( 'aria-pressed', 'true' );
                         setTimeout( function () {
                             labelEl.textContent = originalText;
                             btn.disabled = false;
                         }, 1500 );
                     } else {
                         btn.textContent = '✓';
+                        btn.classList.add( 'is-active' );
+                        btn.setAttribute( 'aria-pressed', 'true' );
                         setTimeout( function () {
                             btn.textContent = originalText;
                             btn.disabled = false;

@@ -4,6 +4,18 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [2.10.0] - 2026-10-03
+
+### Added
+- Modul `inc/single-product-layout.php` (Opt-in per Filter, Standard aus): `mlw_single_product_layout` (Summary-Reihenfolge, Beschreibung im Summary, Preis hinter dem Anfrage-Button), `mlw_loop_product_info` (Marke und Verfuegbarkeit auf Produktkarten, ueberschreibbar ueber `mlw_loop_availability`), `mlw_reviews_always_open`
+- Wunschliste: optionales Mengenfeld auf der Einzelproduktseite (`mlw_wishlist_single_quantity`), eigener Button-Stil dort (`mlw_wishlist_single_button_style`); `wishlist.js` sendet die Menge mit
+
+### Changed
+- `configurator.css`: Regel fuer `flex-basis: 50%` mit `:where()` entschaerft, damit Theme-Layouts sie ueberstimmen koennen
+- `templates/configurator/wizard.php`: Beschreibungsblock des Wizards entfaellt bei aktivem `mlw_single_product_layout` (Beschreibung und Lagerstatus stehen dann unter dem Titel)
+- `wishlist.js`: Text-/Icon+Text-Button setzt nach dem Hinzufuegen `aria-pressed` (Zustand wechselt ohne Neuladen)
+- `Storage::add()`: Bei einfachen Produkten ersetzt eine erneute Anfrage die Menge statt sie zu addieren (Filter `mlw_wishlist_replace_quantity`)
+
 ## [2.9.1] - 2026-10-01
 
 ### Fixed

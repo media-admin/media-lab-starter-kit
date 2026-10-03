@@ -79,7 +79,7 @@ class MediaLab_Wishlist_Storage {
     }
 
     /**
-     * Fügt ein Produkt hinzu (oder erhöht die Menge, falls identisch bereits vorhanden).
+     * Fügt ein Produkt hinzu. Ist es bereits vorhanden: einfache Produkte bekommen die neue Menge (ersetzt), identische Konfigurationen werden addiert.
      *
      * @param array $data [ 'product_id' => int, 'quantity' => int, 'config' => array|null, 'config_display' => array|null, 'price_breakdown' => array|null, 'attachments' => int[] ]
      * @return array|WP_Error Aktualisierte Item-Liste oder Fehler.
@@ -102,7 +102,10 @@ class MediaLab_Wishlist_Storage {
 
         foreach ( $items as &$existing ) {
             if ( $existing['item_id'] === $item_id ) {
-                $existing['quantity'] = max( 1, (int) $existing['quantity'] + $quantity );
+                // Einfache Produkte (ohne Konfiguration): Menge ERSETZEN statt addieren (Mengenfeld auf der Produktseite).
+                // Identische Konfigurationen werden weiterhin addiert. Altes Verhalten: add_filter( 'mlw_wishlist_replace_quantity', '__return_false' );
+                $replace              = ! $config && apply_filters( 'mlw_wishlist_replace_quantity', true, $existing );
+                $existing['quantity'] = $replace ? $quantity : max( 1, (int) $existing['quantity'] + $quantity );
                 self::persist( $items );
                 return $items;
             }

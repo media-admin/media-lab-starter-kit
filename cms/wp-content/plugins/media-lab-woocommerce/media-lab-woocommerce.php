@@ -3,13 +3,13 @@
  * Plugin Name: Media Lab WooCommerce
  * Plugin URI:  https://media-lab.at
  * Description: WooCommerce integration for Media Lab Agency sites
- * Version:     2.9.1
+ * Version:     2.10.0
  * Author:      Media Lab
  * Text Domain: media-lab-woocommerce
  */
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define( 'MEDIA_LAB_WC_VERSION', '2.9.1' );
+define( 'MEDIA_LAB_WC_VERSION', '2.10.0' );
 define( 'MEDIA_LAB_WC_PATH', plugin_dir_path( __FILE__ ) );
 define( 'MEDIA_LAB_WC_URL', plugin_dir_url( __FILE__ ) );
 
@@ -48,6 +48,7 @@ add_action( 'plugins_loaded', function () {
     require_once MEDIA_LAB_WC_PATH . 'inc/inquiry/class-shortcode.php';
 
     require_once MEDIA_LAB_WC_PATH . 'inc/catalog-mode.php';
+    require_once MEDIA_LAB_WC_PATH . 'inc/single-product-layout.php';
     require_once MEDIA_LAB_WC_PATH . 'inc/configurator/class-configurator.php';
     require_once MEDIA_LAB_WC_PATH . 'inc/configurator/filter-sync.php';
 
