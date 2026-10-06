@@ -8,6 +8,7 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ### Added
 - Catalog Mode: neue Option "Variantenauswahl anzeigen" (ACF-Feld `wc_catalog_mode_show_variations`, Standard aus). Zeigt bei variablen Produkten mit "Kaufbuttons verstecken" die Auswahlfelder (Farbe, Größe) wieder an, ohne Kaufbutton und Mengenfeld. Preis, Verfügbarkeit und weitere Variantendaten (z. B. eine Staffel über `woocommerce_available_variation`) reagieren auf die Auswahl. Konfigurierbare Produkte bleiben unverändert
+- Catalog Mode: Mit aktiver Variantenauswahl entfällt der Lagerstatus des Elternprodukts, die Verfügbarkeit der gewählten Variante erscheint nach der Auswahl im Formular
 
 ## [2.10.0] - 2026-10-03
 

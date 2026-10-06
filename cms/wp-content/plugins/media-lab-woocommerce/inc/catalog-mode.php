@@ -183,6 +183,13 @@ class MediaLab_WC_Catalog_Mode {
         if (!$product instanceof WC_Product) {
             return;
         }
+        // Variable Produkte mit Variantenauswahl: Der Lagerstatus gehoert zur gewaehlten Variante und erscheint erst
+        // nach der Auswahl (Verfuegbarkeit im Variationsformular), nicht vorab fuer das Elternprodukt.
+        if ($product instanceof WC_Product_Variable
+            && get_field('wc_catalog_mode_show_variations', 'option')
+            && !(function_exists('get_field') && get_field('is_configurable', $product->get_id()))) {
+            return;
+        }
         echo wc_get_stock_html($product);
     }
 

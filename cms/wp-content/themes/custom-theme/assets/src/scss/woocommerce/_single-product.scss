@@ -65,8 +65,10 @@ $ml-star-size:  16px;
     .woocommerce-product-gallery {
         position: relative;
 
-        // Galerie kann ein Grid sein (data-columns): Hauptbild und Thumbs über alle Spalten
+        // Galerie kann ein Grid sein (data-columns): Hauptbild und Thumbs über alle Spalten.
+        // Bei mehreren Bildern umhüllt FlexSlider den Wrapper mit .flex-viewport, dieser ist dann das Grid-Kind.
         .woocommerce-product-gallery__wrapper,
+        .flex-viewport,
         .flex-control-thumbs { grid-column: 1 / -1; }
 
         .woocommerce-product-gallery__wrapper,
@@ -176,14 +178,17 @@ $ml-star-size:  16px;
 $ml-chevron-svg: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23999' d='M6 8L0 0h12z'/%3E%3C/svg%3E";
 
 .single-product form.variations_form {
-    margin: 0 0 $spacing-4;
+    // Das Theme macht jedes .cart-Formular zum Flex-Container mit Gap (Warenkorb-Zeile), hier soll es normal fließen
+    display: block;
+    margin:  0 0 $spacing-3;
 
     table.variations {
         width:           100%;
-        margin:          0 0 $spacing-3;
+        margin:          0;
         border-collapse: collapse;
 
-        tr { display: block; margin-bottom: $spacing-4; }
+        tr { display: block; margin-bottom: $spacing-3; }
+        tr:last-child { margin-bottom: 0; }
 
         th.label,
         td.value { display: block; padding: 0; text-align: left; }
@@ -219,11 +224,46 @@ $ml-chevron-svg: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' w
     }
 
     .single_variation_wrap .woocommerce-variation {
-        margin: 0 0 $spacing-4;
+        margin: $spacing-3 0;
 
         .woocommerce-variation-price .price { display: block; margin: 0 0 $spacing-2; }
         .woocommerce-variation-availability p,
         .stock { margin: 0; }
+    }
+
+    // Leere Container nehmen keinen Platz ein, solange keine Variante gewählt ist
+    .single_variation_wrap .single_variation:empty { display: none; }
+    .reset_variations[style*="hidden"] { display: none; }
+}
+
+// ── Tab "Zusätzliche Informationen" (Merkmale als Tabelle) ───────────────────
+.single-product .woocommerce-tabs table.woocommerce-product-attributes {
+    width:           100%;
+    margin:          0;
+    border-collapse: collapse;
+
+    th,
+    td {
+        padding:        $spacing-3 0;
+        vertical-align: top;
+        text-align:     left;
+        border-bottom:  1px solid var(--color-border);
+    }
+
+    tr:last-child th,
+    tr:last-child td { border-bottom: 0; }
+
+    th {
+        width:         180px;
+        padding-right: $spacing-4;
+        font-weight:   $font-weight-semibold;
+        color:         var(--color-text);
+    }
+
+    td {
+        color: var(--color-text-muted);
+
+        p { margin: 0; }
     }
 }
 
