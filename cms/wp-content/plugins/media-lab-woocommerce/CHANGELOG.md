@@ -4,6 +4,11 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [2.11.1] - 2026-10-06
+
+### Fixed
+- Konfigurator: Basispreis bei variablen Produkten. Am Parent ist `get_regular_price()` leer, Wizard (`wizard.php`) und Preisrechner (`class-price-calculator.php`) rechneten deshalb mit 0 (Anzeige 0,00 €, auch im Warenkorb). Jetzt gilt `get_price()` (günstigste Variante), wenn der reguläre Preis leer ist
+
 ## [2.11.0] - 2026-10-06
 
 ### Added
