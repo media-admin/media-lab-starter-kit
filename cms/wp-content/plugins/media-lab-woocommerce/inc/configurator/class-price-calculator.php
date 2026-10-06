@@ -14,7 +14,10 @@ class MediaLab_Price_Calculator {
     public function __construct($product_id) {
         $this->product_id = $product_id;
         $product = wc_get_product($product_id);
-        $this->base_price = floatval($product->get_regular_price());
+        // Variable Produkte haben am Parent keinen regulaeren Preis (get_regular_price() ist leer), dann gilt der Preis
+        // (guenstigste Variante), wie im Wizard (wizard.php)
+        $regular          = $product->get_regular_price();
+        $this->base_price = floatval($regular !== '' ? $regular : $product->get_price());
         $this->steps = get_field('config_steps', $product_id);
     }
     

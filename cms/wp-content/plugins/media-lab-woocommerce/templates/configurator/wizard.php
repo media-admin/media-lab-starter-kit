@@ -62,7 +62,7 @@ if (!empty($remaining_tabs)) {
 <div class="product-configurator" 
      x-data='productConfigurator(<?php echo json_encode([
          "productId" => $product_id,
-         "basePrice" => floatval($product->get_regular_price()),
+         "basePrice" => floatval( $product->get_regular_price() !== "" ? $product->get_regular_price() : $product->get_price() ), // variable Produkte: kein regulaerer Preis am Parent, dann gilt der Preis (guenstigste Variante)
          "steps" => $steps,
          "minQty" => $min_qty,
          "maxQty" => $max_qty,
