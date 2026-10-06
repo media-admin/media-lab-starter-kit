@@ -114,6 +114,20 @@ class MediaLab_WC_Catalog_Mode {
                         'value'    => '1',
                     ))),
                 ),
+                array(
+                    'key'           => 'field_wc_catalog_mode_show_variations',
+                    'label'         => 'Variantenauswahl anzeigen',
+                    'name'          => 'wc_catalog_mode_show_variations',
+                    'type'          => 'true_false',
+                    'instructions'  => 'Zeigt bei variablen Produkten die Auswahlfelder (Farbe, Größe) auch ohne Kaufbutton. Preis, Verfügbarkeit und Staffel reagieren auf die Auswahl. Wirkt nur zusammen mit „Kaufbuttons verstecken“.',
+                    'default_value' => 0,
+                    'ui'            => 1,
+                    'conditional_logic' => array(array(array(
+                        'field'    => 'field_wc_catalog_mode_enabled',
+                        'operator' => '==',
+                        'value'    => '1',
+                    ))),
+                ),
             ),
             'location' => array(array(array(
                 'param'    => 'options_page',
@@ -147,6 +161,12 @@ class MediaLab_WC_Catalog_Mode {
             // separat neu ausgeben, an derselben Prioritaet, an der vorher
             // der Button sass.
             add_action('woocommerce_single_product_summary', array($this, 'display_stock_status'), 30);
+
+            // Variable Produkte: Auswahlfelder (Farbe, Größe) wieder anzeigen, ohne Kaufbutton und Mengenfeld.
+            // Opt-in über die Option "Variantenauswahl anzeigen". Preis, Verfügbarkeit und Staffel reagieren auf die Auswahl.
+            if (get_field('wc_catalog_mode_show_variations', 'option')) {
+                add_action('woocommerce_single_product_summary', array($this, 'display_variation_selector'), 30);
+            }
         }
         
         add_action('woocommerce_after_shop_loop_item_title', array($this, 'display_catalog_message'), 10);
@@ -164,6 +184,34 @@ class MediaLab_WC_Catalog_Mode {
             return;
         }
         echo wc_get_stock_html($product);
+    }
+
+    /**
+     * Variationsformular ohne Kaufbutton (Catalog Mode mit versteckten Kaufbuttons).
+     * Mit dem Add-to-Cart-Template fiel auch die Variantenauswahl weg, dadurch gab es kein found_variation-Event
+     * und keine Variantendaten (Preis, Verfügbarkeit, Staffel). Das Standard-Formular wird hier wieder ausgegeben,
+     * Kaufbutton und Mengenfeld ersetzt ein Paar versteckter Felder. Konfigurierbare Produkte haben ihren Wizard.
+     */
+    public function display_variation_selector() {
+        global $product;
+        if (!$product instanceof WC_Product_Variable) {
+            return;
+        }
+        if (function_exists('get_field') && get_field('is_configurable', $product->get_id())) {
+            return;
+        }
+        remove_action('woocommerce_single_variation', 'woocommerce_single_variation_add_to_cart_button', 20);
+        add_action('woocommerce_single_variation', array($this, 'render_variation_inputs'), 20);
+        woocommerce_variable_add_to_cart();
+    }
+
+    public function render_variation_inputs() {
+        global $product;
+        if (!$product instanceof WC_Product) {
+            return;
+        }
+        echo '<input type="hidden" name="product_id" value="' . esc_attr($product->get_id()) . '" />';
+        echo '<input type="hidden" name="variation_id" class="variation_id" value="0" />';
     }
 
     public function display_catalog_message() {

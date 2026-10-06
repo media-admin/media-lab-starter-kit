@@ -4,6 +4,11 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [2.11.0] - 2026-10-06
+
+### Added
+- Catalog Mode: neue Option "Variantenauswahl anzeigen" (ACF-Feld `wc_catalog_mode_show_variations`, Standard aus). Zeigt bei variablen Produkten mit "Kaufbuttons verstecken" die Auswahlfelder (Farbe, Größe) wieder an, ohne Kaufbutton und Mengenfeld. Preis, Verfügbarkeit und weitere Variantendaten (z. B. eine Staffel über `woocommerce_available_variation`) reagieren auf die Auswahl. Konfigurierbare Produkte bleiben unverändert
+
 ## [2.10.0] - 2026-10-03
 
 ### Added
