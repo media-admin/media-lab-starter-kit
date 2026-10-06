@@ -19,6 +19,7 @@ möglich.
 ### Added
 - `woocommerce/_single-product.scss`: Einzelprodukt-Layout (Galerie und Summary nebeneinander), Linien-Lupe, Rezensionen mit SVG-Sternen und Theme-Formularfeldern, Produktkarten (Marke, Verfuegbarkeit, Herz ueber dem Bild), Anfrage-Mengenfeld und Textbutton
 - `functions.php`: Standard-Filter fuer `media-lab-woocommerce` ab 2.10.0
+- `_single-product.scss`: Variationsformular im Theme-Stil (Catalog-Mode-Variantenauswahl), Meta-Zeile ordnet Marke, Kategorie und Artikelnummer per `order`
 
 ## [1.15.4] - 2026-08-22
 

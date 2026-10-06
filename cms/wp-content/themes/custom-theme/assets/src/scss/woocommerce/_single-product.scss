@@ -111,9 +111,13 @@ $ml-star-size:  16px;
         border-bottom:   1px solid var(--color-border);
         padding:         0 0 $spacing-3;
         margin-bottom:   $spacing-3;
-        flex-flow:       row-reverse wrap;   // Marke, Kategorie, Artikelnummer
-        justify-content: flex-end;
+        flex-flow:       row wrap;
         gap:             $spacing-1 $spacing-5;
+
+        // Reihenfolge Marke, Kategorie, Artikelnummer (im DOM steht die Artikelnummer zuerst, die Marke zuletzt).
+        // Per order statt row-reverse: bei einem Zeilenumbruch bleibt die Marke in der ersten Zeile.
+        > :first-child { order: 2; }
+        > :last-child  { order: -2; }
     }
 
     // Lagerstatus im Summary: etwas Luft nach unten (Konfigurator-Karte, Mengenfeld folgen)
@@ -165,6 +169,61 @@ $ml-star-size:  16px;
 
         // Bereits gemerkt: Menge steht in der Wunschliste, Feld ausblenden
         &:has(.mlw-add-to-wishlist[aria-pressed="true"]) .mlw-wishlist-qty { display: none; }
+    }
+}
+
+// ── Variationsformular (Catalog Mode: Auswahl ohne Kaufbutton) ───────────────
+$ml-chevron-svg: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23999' d='M6 8L0 0h12z'/%3E%3C/svg%3E";
+
+.single-product form.variations_form {
+    margin: 0 0 $spacing-4;
+
+    table.variations {
+        width:           100%;
+        margin:          0 0 $spacing-3;
+        border-collapse: collapse;
+
+        tr { display: block; margin-bottom: $spacing-4; }
+
+        th.label,
+        td.value { display: block; padding: 0; text-align: left; }
+
+        th.label {
+            margin-bottom: $spacing-1;
+
+            label {
+                font-size:   var(--text-sm);
+                font-weight: $font-weight-semibold;
+                color:       var(--color-text);
+            }
+        }
+
+        select {
+            @include ml-form-field;
+            height:              48px;
+            padding-right:       $spacing-8;
+            background-image:    url($ml-chevron-svg);
+            background-repeat:   no-repeat;
+            background-position: right $spacing-4 center;
+            background-size:     12px 8px;
+            cursor:              pointer;
+        }
+    }
+
+    .reset_variations {
+        display:         inline-block;
+        margin-top:      $spacing-2;
+        font-size:       var(--text-sm);
+        color:           var(--color-text-muted);
+        text-decoration: underline;
+    }
+
+    .single_variation_wrap .woocommerce-variation {
+        margin: 0 0 $spacing-4;
+
+        .woocommerce-variation-price .price { display: block; margin: 0 0 $spacing-2; }
+        .woocommerce-variation-availability p,
+        .stock { margin: 0; }
     }
 }
 
