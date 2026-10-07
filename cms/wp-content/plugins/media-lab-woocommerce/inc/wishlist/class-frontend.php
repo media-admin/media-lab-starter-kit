@@ -107,8 +107,11 @@ class MediaLab_Wishlist_Frontend {
         if ( self::is_configurable( $product_id ) ) return '';
         if ( ! in_array( $style, [ 'icon', 'text', 'icon_text' ], true ) ) $style = 'icon';
 
-        $label     = MediaLab_Inquiry_Settings::wording( 'add_button' );
+        $label_add    = MediaLab_Inquiry_Settings::wording( 'add_button' );
+        $label_remove = MediaLab_Inquiry_Settings::wording( 'remove_button' );
         $is_active = class_exists( 'MediaLab_Wishlist_Storage' ) && MediaLab_Wishlist_Storage::has_product( $product_id );
+        // Aktiver Zustand (Produkt steht auf der Liste, Klick entfernt es): eigener Text
+        $label = ( $is_active && $label_remove !== '' ) ? $label_remove : $label_add;
 
         $show_icon  = $style === 'icon' || $style === 'icon_text';
         $show_label = $style === 'text' || $style === 'icon_text';
@@ -133,6 +136,8 @@ class MediaLab_Wishlist_Frontend {
         // aria-label für Screenreader - bei sichtbarem Label ist der Text
         // selbst schon der zugängliche Name, aria-label wäre dort redundant.
         $aria_label = ! $show_label ? sprintf( ' aria-label="%s"', esc_attr( $label ) ) : '';
+        // Beide Texte fuer wishlist.js, damit der Button ohne Neuladen umschalten kann
+        $aria_label .= sprintf( ' data-label-add="%s" data-label-remove="%s"', esc_attr( $label_add ), esc_attr( $label_remove ) );
 
         return sprintf(
             '<button type="button" class="%s" data-product-id="%d"%s aria-pressed="%s">%s%s</button>',

@@ -134,13 +134,14 @@
                     if ( isIconOnly ) {
                         btn.classList.add( 'is-active' );
                         btn.setAttribute( 'aria-pressed', 'true' );
+                        if ( btn.dataset.labelRemove ) { btn.setAttribute( 'aria-label', btn.dataset.labelRemove ); }
                         btn.disabled = false;
                     } else if ( labelEl ) {
                         labelEl.textContent = '✓';
                         btn.classList.add( 'is-active' );
                         btn.setAttribute( 'aria-pressed', 'true' );
                         setTimeout( function () {
-                            labelEl.textContent = originalText;
+                            labelEl.textContent = btn.dataset.labelRemove || originalText;
                             btn.disabled = false;
                         }, 1500 );
                     } else {
@@ -181,6 +182,11 @@
                     updateCountBadges( res.data.count );
                     btn.classList.remove( 'is-active' );
                     btn.setAttribute( 'aria-pressed', 'false' );
+                    if ( btn.dataset.labelAdd ) {
+                        const lbl = btn.querySelector( '.mlw-add-to-wishlist__label' );
+                        if ( lbl ) { lbl.textContent = btn.dataset.labelAdd; }
+                        else { btn.setAttribute( 'aria-label', btn.dataset.labelAdd ); }
+                    }
                     btn.disabled = false;
                     refreshItemsIfOnWishlistPage( res.data.items, res.data.grand_total_html );
                 } else {

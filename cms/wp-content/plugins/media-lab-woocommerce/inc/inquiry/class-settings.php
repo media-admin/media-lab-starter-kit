@@ -87,6 +87,16 @@ class MediaLab_Inquiry_Settings {
                 'conditional_logic' => $hide_if_multilang,
             ],
             [
+                'key'          => 'field_mlw_remove_button_label',
+                'label'        => '„Entfernen"-Button',
+                'name'         => 'mlw_remove_button_label',
+                'type'         => 'text',
+                'placeholder'  => 'Von der Wunschliste entfernen',
+                'instructions' => 'Text des Buttons, solange das Produkt auf der Liste steht (ein Klick entfernt es).',
+                'wrapper'      => [ 'width' => '33' ],
+                'conditional_logic' => $hide_if_multilang,
+            ],
+            [
                 'key'         => 'field_mlw_submit_label',
                 'label'       => 'Absenden-Button',
                 'name'        => 'mlw_submit_label',
@@ -176,6 +186,7 @@ class MediaLab_Inquiry_Settings {
                     $sep( 'Wording' ),
                     [ 'key' => 'field_mlw_lang_wishlist_label', 'label' => 'Bezeichnung Wunschliste', 'name' => 'wishlist_label', 'type' => 'text', 'wrapper' => [ 'width' => '14' ] ],
                     [ 'key' => 'field_mlw_lang_add_button',     'label' => '„Hinzufügen"-Button',       'name' => 'add_button',      'type' => 'text', 'wrapper' => [ 'width' => '14' ] ],
+                    [ 'key' => 'field_mlw_lang_remove_button',  'label' => '„Entfernen"-Button',        'name' => 'remove_button',   'type' => 'text', 'wrapper' => [ 'width' => '14' ] ],
                     [ 'key' => 'field_mlw_lang_submit_button',  'label' => 'Absenden-Button',            'name' => 'submit_button',   'type' => 'text', 'wrapper' => [ 'width' => '14' ] ],
                     [ 'key' => 'field_mlw_lang_success',        'label' => 'Erfolgsmeldung',             'name' => 'success',         'type' => 'text', 'wrapper' => [ 'width' => '14' ] ],
                     [ 'key' => 'field_mlw_lang_wishlist_success','label' => 'Erfolgsmeldung Wunschliste','name' => 'wishlist_success','type' => 'text', 'wrapper' => [ 'width' => '14' ] ],
@@ -691,6 +702,7 @@ class MediaLab_Inquiry_Settings {
         $defaults = [
             'wishlist_label'   => 'Wunschliste',
             'add_button'       => 'Zur Wunschliste hinzufügen',
+            'remove_button'    => 'Von der Wunschliste entfernen',
             'submit_button'    => 'Anfrage senden',
             'success'          => 'Vielen Dank! Ihre Anfrage wurde erfolgreich übermittelt. Wir melden uns in Kürze bei Ihnen.',
             'wishlist_success' => 'Vielen Dank für Ihre Wunschliste! Wir melden uns in Kürze bei Ihnen.',
@@ -700,6 +712,7 @@ class MediaLab_Inquiry_Settings {
         $field_map = [
             'wishlist_label'   => 'mlw_wishlist_label',
             'add_button'       => 'mlw_add_button_label',
+            'remove_button'    => 'mlw_remove_button_label',
             'submit_button'    => 'mlw_submit_label',
             'success'          => 'mlw_success_message',
             'wishlist_success' => 'mlw_wishlist_success_message',
