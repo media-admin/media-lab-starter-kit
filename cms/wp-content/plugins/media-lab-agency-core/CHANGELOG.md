@@ -20,6 +20,67 @@ Ende.
 
 ---
 
+## [1.30.0] - 2026-10-07
+
+### media-lab-agency-core 1.30.0
+
+#### Added
+- **Suche: eigene Einstellungsseite** (`inc/search-settings.php`, neu) –
+  **Agency Core → Suche / Live-Suche** (`agency-core-search`), vier Tabs
+  (Allgemein, Verhalten, Anzeige, Texte). Zentrale Quelle für alle
+  `.ajax-search`-Instanzen (Shortcode `[ajax_search]` und Nav-Overlay);
+  Shortcode-Attribute (`placeholder`, `limit`, `post_types`) überschreiben
+  weiterhin pro Suchfeld. Alle Standardwerte entsprechen dem bisherigen
+  Verhalten.
+  - **Texte, mehrsprachig:** Platzhalter, **Startertext** (erscheint beim
+    Fokus auf das leere Suchfeld), Hinweis „zu wenige Zeichen“ (`{min}`),
+    „Keine Ergebnisse“, Fehlertext, Link-Text „Alle Ergebnisse“,
+    Screenreader-Labels, Bezeichnungen der Inhaltstypen. Mehrsprachigkeit
+    nach dem Muster von `cookie-consent.php` (Repeater `search_languages`,
+    erste Zeile = Fallback; Polylang → WPML → WP-Locale).
+  - **Verhalten:** durchsuchte Inhaltstypen, Anzahl Ergebnisse (max. 20),
+    Mindestzeichen, Verzögerung, Länge des Textausschnitts,
+    WooCommerce-Attribut-/Konfigurator-Suche an/aus, Highlighting an/aus.
+  - **Anzeige:** Vorschaubild, Inhaltstyp-Label, Datum, Ausschnitt, Preis
+    und neuer Link „Alle Ergebnisse anzeigen“ jeweils an/aus.
+  - Konfiguration erreicht das Frontend als `data-config` (JSON) am
+    `.ajax-search`-Container.
+
+#### Changed
+- **Toggle „Suche in Navigation“ umgezogen** von Logo / Globale
+  Einstellungen → UI-Features nach Suche / Live-Suche → Allgemein
+  (`inc/acf-settings.php`: Feld entfernt; gleicher Key/Name
+  `search_enabled`, gespeicherte Werte bleiben erhalten).
+- **Nav-Overlay nutzt die globalen Such-Einstellungen**
+  (`inc/nav-search-icon.php`). Bisher fest verdrahtet: Platzhalter
+  „Wonach suchst du?“, 6 Treffer, Typen Beiträge/Seiten/Produkte – jetzt
+  gelten Standard 5 Treffer, Beiträge/Seiten und Platzhalter „Suchen...“,
+  sofern nicht in den Einstellungen angepasst.
+- **Shortcode `[ajax_search]`** (`inc/shortcodes.php`): Platzhalter und
+  Button-Label kommen aus den Einstellungen; Suchfeld mit `aria-label`.
+
+#### Fixed
+- **Live-Suche lieferte bei Mehrsprachigkeit Treffer aller Sprachen**
+  (`inc/ajax-search.php`) – `admin-ajax.php` gilt für Polylang/WPML als
+  Admin-Kontext. Das Frontend sendet jetzt die Seitensprache mit; Polylang
+  filtert per `lang` (inkl. Attribut-/Extra-Treffer), WPML per
+  `wpml_switch_language`.
+- **Absicherung des AJAX-Handlers:** Die vom Browser gesendeten
+  Inhaltstypen werden gegen öffentlich durchsuchbare Post-Types geprüft
+  (Whitelist), das Limit ist serverseitig auf 20 gedeckelt. Ein CPT mit
+  `exclude_from_search => true` ist per Live-Suche nicht mehr findbar.
+- **Filter `media_lab_ajax_search_extra_matches`** läuft unabhängig vom
+  Toggle „WooCommerce-Attribute durchsuchen“.
+
+*(Theme-seitig, gehört ins Theme-Changelog: `ajax-search.js` liest
+Konfiguration und Texte aus `data-config`, zeigt Startertext/Hinweis an,
+verwirft veraltete Antworten bei schnellem Tippen, zeigt bei Fehlern
+(z. B. Rate-Limit) den Fehlertext statt „Keine Ergebnisse“ und escaped das
+`alt`-Attribut der Thumbnails; `_ajax-search.scss` 1.3.0 mit Styles für
+Startertext, Hinweis und „Alle Ergebnisse“-Link.)*
+
+---
+
 ## [1.29.0] - 2026-10-02
 
 ### media-lab-agency-core 1.29.0
