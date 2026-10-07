@@ -20,6 +20,37 @@ möglich.
 - `woocommerce/_single-product.scss`: Einzelprodukt-Layout (Galerie und Summary nebeneinander), Linien-Lupe, Rezensionen mit SVG-Sternen und Theme-Formularfeldern, Produktkarten (Marke, Verfuegbarkeit, Herz ueber dem Bild), Anfrage-Mengenfeld und Textbutton
 - `functions.php`: Standard-Filter fuer `media-lab-woocommerce` ab 2.10.0
 - `_single-product.scss`: Variationsformular im Theme-Stil (Catalog-Mode-Variantenauswahl), Meta-Zeile ordnet Marke, Kategorie und Artikelnummer per `order`
+- **Ajax-Suche: Startertext, Mindestzeichen-Hinweis und „Alle Ergebnisse"-Link**
+  (`assets/src/js/components/ajax-search.js`, `assets/src/scss/components/_ajax-search.scss` 1.3.0)
+  – Startertext erscheint beim Fokus auf das leere Suchfeld, der Hinweis solange
+  weniger Zeichen als das Minimum eingegeben sind; optionaler Link zur
+  vollständigen Suchergebnisseite. Neue Klassen `.ajax-search__intro`,
+  `.ajax-search__hint`, `.ajax-search__all`. Texte und Optionen werden in
+  `media-lab-agency-core` unter Agency Core → Suche / Live-Suche gepflegt
+  (ab Plugin 1.30.0).
+
+### Changed
+- **`ajax-search.js` liest seine Konfiguration aus `data-config`** (JSON am
+  `.ajax-search`-Container, gerendert von `MediaLab_Search_Settings` im Plugin)
+  statt Texte, Limit, Post-Types, Mindestzeichen (2) und Debounce (300 ms) fest
+  einzubauen: Texte inkl. Post-Type-Labels, Anzeige-Optionen (Vorschaubild,
+  Typ, Datum, Ausschnitt, Preis) und Seitensprache. Ohne `data-config`
+  (Altmarkup) gelten dieselben Defaults wie bisher – Verhalten unverändert.
+- Der AJAX-Request sendet zusätzlich `lang` (Seitensprache), damit das Plugin
+  bei Polylang/WPML nur Treffer der aktuellen Sprache liefert.
+- Fehlerantworten des Servers (z. B. Rate-Limit 429, ungültiger Nonce) zeigen
+  den Fehlertext statt „Keine Ergebnisse gefunden."
+
+### Fixed
+- **Veraltete Antworten bei schnellem Tippen** (`ajax-search.js`) – eine spät
+  eintreffende Antwort einer älteren Anfrage konnte die aktuelle Trefferliste
+  überschreiben bzw. nach dem Leeren des Feldes wieder einblenden. Antworten
+  werden jetzt per Request-Zähler verworfen, wenn sie nicht mehr zur letzten
+  Anfrage gehören.
+- **`alt`-Attribut der Treffer-Thumbnails enthielt HTML** (`ajax-search.js`) –
+  der Titel kommt mit `<mark>`-Highlighting vom Server und wurde unverändert in
+  das `alt`-Attribut übernommen (zerbrach das Markup, sobald ein Treffer
+  hervorgehoben war). `alt` bekommt jetzt den reinen, escapten Text.
 
 ## [1.15.4] - 2026-08-22
 

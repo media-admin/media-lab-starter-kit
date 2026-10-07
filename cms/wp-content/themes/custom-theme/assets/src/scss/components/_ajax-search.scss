@@ -2,7 +2,12 @@
 
 // =============================================================================
 // AJAX Search
-// Version: 1.2.1 – Highlight-Styling für Excerpt ergänzt
+// Version: 1.3.0 – Startertext, Mindestzeichen-Hinweis, "Alle Ergebnisse"-Link
+//
+// Änderungen v1.3.0:
+//   - &__intro / &__hint: Startertext bzw. Hinweis "zu wenige Zeichen"
+//     (Agency Core → Logo / Globale Einstellungen → Suche → Texte)
+//   - &__all: Link "Alle Ergebnisse anzeigen" unter der Trefferliste
 //
 // Änderungen v1.2.1:
 //   - mark-Styling auch für __excerpt/__result-excerpt (bisher nur __title) -
@@ -243,6 +248,37 @@
   }
 
   &__error { border-color: $color-error; p { color: $color-error; } }
+
+  // ── Startertext / Hinweis (NEU v1.3.0) ──────────────────────────────────────
+  // Wird im .ajax-search__results-Container gerendert, der Rahmen, Schatten
+  // und Hintergrund bereits mitbringt - hier nur Innenabstand und Textstil.
+  // Bewusst NICHT absolut positioniert (anders als __no-results/__error).
+  &__intro,
+  &__hint {
+    padding:     var(--space-md, 1rem) var(--space-lg, 1.25rem);
+    font-size:   var(--text-sm);
+    line-height: 1.5;
+    color:       $color-text-muted;
+  }
+
+  // ── "Alle Ergebnisse anzeigen" (NEU v1.3.0) ─────────────────────────────────
+  &__all {
+    display:         block;
+    padding:         0.875rem 1rem;
+    border-top:      1px solid $color-border;
+    font-size:       var(--text-sm);
+    font-weight:     $font-weight-semibold;
+    text-align:      center;
+    text-decoration: none;
+    color:           $color-primary;
+    transition:      $transition-base;
+
+    &:hover,
+    &:focus-visible {
+      background:      $color-gray-50;
+      text-decoration: underline;
+    }
+  }
 }
 
 // ── Compact Variant ───────────────────────────────────────────────────────────
