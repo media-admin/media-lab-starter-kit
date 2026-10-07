@@ -1,8 +1,8 @@
 # AJAX Features Documentation
 
-**Version:** 1.4.0  
-**Letzte Aktualisierung:** 2026-03-04  
-**Plugin:** Media Lab Agency Core v1.5.1
+**Version:** 1.5.0  
+**Letzte Aktualisierung:** 2026-10-07  
+**Plugin:** Media Lab Agency Core v1.30.0
 
 Professional AJAX filtering and loading system for dynamic content.
 
@@ -67,102 +67,133 @@ if (!medialab_check_rate_limit('meine_action', 20, 60)) {
 
 ### Feature Overview
 
-Live search with instant results as user types.
+Live-Suche mit Ergebnis-Dropdown unter dem Suchfeld, Treffer-Highlighting und Kontext-Ausschnitt.
+Zentral konfigurierbar unter **Agency Core → Suche / Live-Suche** (`wp-admin/admin.php?page=agency-core-search`),
+Texte mehrsprachig. Ausführliche Einstellungs-Referenz: Plugin-README, Abschnitt „Suche (Ajax Search)",
+und [09_ACF-FIELDS.md](09_ACF-FIELDS.md#16-such-einstellungen).
 
-**Benefits:**
-- No page reload
-- Instant feedback
-- Search across multiple post types
-- Customizable results template
+| Baustein | Datei |
+|---|---|
+| Einstellungen, Sprach-Auflösung, Whitelist/Limit, `data-config` | `media-lab-agency-core/inc/search-settings.php` |
+| AJAX-Handler `agency_search` | `media-lab-agency-core/inc/ajax-search.php` |
+| Nav-Icon + Such-Overlay | `media-lab-agency-core/inc/nav-search-icon.php` |
+| Shortcode `[ajax_search]` | `media-lab-agency-core/inc/shortcodes.php` |
+| Frontend-Komponente | Theme: `assets/src/js/components/ajax-search.js`, `assets/src/scss/components/_ajax-search.scss` |
 
-### Implementation
+### Einbinden
 
-**1. Add Search Form:**
-```html
-<form id="ajax-search-form" class="ajax-search">
-    <input 
-        type="text" 
-        name="s" 
-        id="search-input"
-        placeholder="Search..."
-        autocomplete="off"
-    >
-    <button type="submit">Search</button>
-</form>
+**Shortcode** (alle Attribute optional, überschreiben die globalen Einstellungen pro Suchfeld):
 
-<div id="search-results" class="search-results"></div>
+```
+[ajax_search]
+[ajax_search limit="10" post_types="post,page,product" placeholder="Produkt suchen" search_page="/suche/"]
 ```
 
-**2. Initialize JavaScript:**
-```javascript
-// Already included in theme
-// JavaScript automatically binds to #ajax-search-form
-```
+**Nav-Overlay:** Toggle „Suche in Navigation" (Agency Core → Suche / Live-Suche → Allgemein). Das Overlay nutzt
+dieselbe `.ajax-search`-Komponente und dieselben globalen Einstellungen.
 
-**3. Customize Results Template:**
+**Eigenes Markup im Theme:** `MediaLab_Search_Settings::container_attrs()` liefert die data-Attribute
+(bereits escaped); `MediaLab_Search_Settings::get()` die aufgelösten Texte und Optionen:
 
-Results are returned as HTML. Default template:
 ```php
-// In ajax-search.php
-foreach ($posts as $post) {
-    echo '<div class="search-result">';
-    echo '<h3>' . get_the_title($post) . '</h3>';
-    echo '<p>' . get_the_excerpt($post) . '</p>';
-    echo '<a href="' . get_permalink($post) . '">Read More</a>';
-    echo '</div>';
+<?php $cfg = MediaLab_Search_Settings::get(); ?>
+<div class="ajax-search"<?php echo MediaLab_Search_Settings::container_attrs(); // phpcs:ignore ?>>
+    <form class="ajax-search__form" role="search" method="get" action="<?php echo esc_url( home_url( '/' ) ); ?>">
+        <div class="ajax-search__input-wrapper">
+            <input type="search" class="ajax-search__input" name="s"
+                   placeholder="<?php echo esc_attr( $cfg['text']['placeholder'] ); ?>" autocomplete="off">
+            <span class="ajax-search__loading" style="display:none;"></span>
+            <button type="submit" class="ajax-search__submit"
+                    aria-label="<?php echo esc_attr( $cfg['text']['aria_submit'] ); ?>"></button>
+        </div>
+    </form>
+    <div class="ajax-search__results" style="display:none;"></div>
+</div>
+```
+
+Pflicht für `ajax-search.js`: `.ajax-search__form`, `.ajax-search__input`, `.ajax-search__results`.
+Optional: `.ajax-search__loading`, `.ajax-search__submit`.
+
+### Konfiguration → Frontend
+
+`container_attrs()` rendert u. a. `data-config` (JSON):
+
+```json
+{
+  "limit": 5,
+  "postTypes": ["post", "page"],
+  "minChars": 2,
+  "debounce": 300,
+  "lang": "de",
+  "show": { "thumbnail": true, "date": true, "type": true, "excerpt": true, "price": true, "allLink": false },
+  "i18n": {
+    "intro": "", "minHint": "", "noResults": "Keine Ergebnisse gefunden.",
+    "error": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
+    "showAll": "Alle Ergebnisse anzeigen", "typeLabels": { "post": "Beitrag", "page": "Seite" }
+  }
 }
 ```
 
-### Configuration
+Ohne `data-config` (Altmarkup) nutzt `ajax-search.js` dieselben Defaults; `data-limit` und `data-post-types`
+werden dann weiterhin gelesen.
 
-**Search Parameters:**
-```javascript
-// Configure in theme's main.js
-const searchConfig = {
-    minChars: 3,           // Minimum characters
-    delay: 300,            // Debounce delay (ms)
-    postsPerPage: 5,       // Results per page
-    postTypes: ['post', 'page', 'service']  // Post types
-};
+### Request / Response
+
+`POST admin-ajax.php`, Action `agency_search`:
+
+| Parameter | Beschreibung |
+|---|---|
+| `nonce` | `agency_search_nonce` (`window.customTheme.searchNonce`) |
+| `query` | Suchbegriff (mind. 2 Zeichen) |
+| `post_types` | JSON-Array, wird serverseitig gegen durchsuchbare Post-Types geprüft |
+| `limit` | wird auf max. 20 gedeckelt |
+| `lang` | Seitensprache (Polylang-Slug bzw. WPML-Code) |
+
+Antwort:
+
+```json
+{ "success": true, "data": {
+    "results": [ { "id": 12, "title": "…<mark>Begriff</mark>…", "permalink": "…", "excerpt": "…",
+                   "date": "07.10.2026", "post_type": "page", "thumbnail": "…" } ],
+    "count": 1, "query": "Begriff" } }
 ```
 
-**Modify Query:**
+`title` und `excerpt` kommen bereits escaped und mit `<mark>`-Highlighting (abschaltbar) – `ajax-search.js` setzt sie
+bewusst unverändert ein. Produkt-Treffer enthalten zusätzlich `price` (Filter von `media-lab-woocommerce`).
+
+**Serverseitige Regeln:** Whitelist der Post-Types (ein CPT mit `exclude_from_search => true` ist nicht per
+Live-Suche findbar), Limit-Deckel 20, Rate-Limit 20 Anfragen / 60 s pro IP, Sprachfilter (Polylang: `lang`-Parameter
+der `WP_Query`, WPML: `wpml_switch_language`; Attribut-Treffer werden bei Polylang nachgefiltert).
+
+### Erweitern (Hooks)
+
+| Filter | Zweck |
+|---|---|
+| `media_lab_ajax_search_query_expansion` | Zusätzliche Suchbegriffe (Synonyme, Varianten); Argumente: `array $terms`, `string $query` |
+| `media_lab_ajax_search_extra_matches` | Zusätzliche Produkt-Treffer, nur wenn Content- und Attribut-Suche nichts finden; Rückgabe `post_id => Anzeigetext` |
+| `media_lab_ajax_search_result` | Ergebnis-Daten pro Treffer erweitern; Argumente: `array $result`, `int $post_id`, `string $post_type` |
+
 ```php
-// In functions.php
-add_filter('agency_search_query_args', function($args) {
-    $args['posts_per_page'] = 10;
-    $args['orderby'] = 'relevance';
-    return $args;
-});
+// Beispiel: Untertitel (ACF) im Ergebnis mitliefern
+add_filter( 'media_lab_ajax_search_result', function ( array $result, int $post_id, string $post_type ): array {
+    if ( $post_type === 'service' ) {
+        $result['excerpt'] = esc_html( (string) get_field( 'subtitle', $post_id ) );
+    }
+    return $result;
+}, 10, 3 );
 ```
 
 ### Styling
-```css
-.ajax-search {
-    position: relative;
-}
 
-.search-results {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: white;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    max-height: 400px;
-    overflow-y: auto;
-    z-index: 1000;
-}
+BEM-Klassen unter `.ajax-search` (`_ajax-search.scss`): `__input`, `__submit`, `__loading`, `__results`, `__list`,
+`__item` (mit `--post`, `--page`, `--product` …), `__thumbnail`, `__title`, `__excerpt`, `__meta`, `__type`, `__date`,
+`__price`, `__no-results`, `__error`, sowie neu `__intro` (Startertext), `__hint` (Mindestzeichen-Hinweis) und
+`__all` (Link „Alle Ergebnisse anzeigen"). Kompakte Variante: `.ajax-search--compact`.
 
-.search-result {
-    padding: 1rem;
-    border-bottom: 1px solid #eee;
-}
+### Testen
 
-.search-result:hover {
-    background: #f8f9fa;
-}
-```
+Im Browser (DevTools → Network → Filter „XHR") nach `admin-ajax.php` mit `action=agency_search` schauen.
+Ein reiner `curl`-Aufruf braucht `nonce`, `query` und `post_types` – ohne Nonce antwortet WordPress mit `-1`.
 
 ---
 
@@ -450,44 +481,24 @@ foreach ($actions as $action) {
 ```
 
 **3. Verify JavaScript Loaded:**
-```html
-<!-- In browser console -->
-<script>
-console.log(typeof ajaxSearch);  // Should not be 'undefined'
-</script>
-```
+
+Im Browser prüfen, ob das Suchfeld die Komponente gefunden hat: `document.querySelectorAll('.ajax-search')`
+sollte die Container liefern, und beim Tippen muss ein Request an `admin-ajax.php` gehen.
 
 **4. Test AJAX Endpoint:**
-```bash
-# Test search endpoint
-curl -X POST \
-  "http://yoursite.com/wp-admin/admin-ajax.php" \
-  -d "action=agency_search&s=test"
-```
+
+Ein reiner `curl`-Aufruf ohne Nonce wird von WordPress mit `-1` abgelehnt. Am einfachsten im Browser testen:
+DevTools → Network → Filter „XHR" → Suchfeld benutzen → Request `admin-ajax.php` mit `action=agency_search` prüfen.
 
 ---
 
 ## Customization
 
-### Custom Result Templates
+### Custom Result Data (Live-Suche)
 
-**Override in Theme:**
-```php
-// In theme's functions.php
-add_filter('agency_search_result_template', function($html, $post) {
-    
-    $html = '<div class="custom-result">';
-    $html .= '<div class="result-image">' . get_the_post_thumbnail($post, 'thumbnail') . '</div>';
-    $html .= '<div class="result-content">';
-    $html .= '<h4>' . get_the_title($post) . '</h4>';
-    $html .= '<p>' . get_the_excerpt($post) . '</p>';
-    $html .= '<a href="' . get_permalink($post) . '" class="btn">View</a>';
-    $html .= '</div>';
-    $html .= '</div>';
-    
-    return $html;
-}, 10, 2);
-```
+Die Live-Suche liefert ihre Treffer als JSON; `ajax-search.js` baut daraus das Markup. Zusätzliche Daten
+pro Treffer ergänzt der Filter `media_lab_ajax_search_result` (siehe [AJAX Search](#ajax-search), Abschnitt
+„Erweitern (Hooks)"). Anderes Markup: `displayResults()` in `ajax-search.js` anpassen.
 
 ### Custom Loading Indicator
 ```javascript

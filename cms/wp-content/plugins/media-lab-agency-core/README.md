@@ -5,7 +5,7 @@ Core functionality plugin for Media Lab agency websites.
 ## Features
 
 - **Shortcodes**: Hero Slider, Accordion, Stats, Testimonials, etc.
-- **Suche**: Ajax-Live-Suche mit Treffer-Highlighting, Kontext-Ausschnitt und WooCommerce-Attribut-/Konfigurator-Suche, optionales Such-Icon in der Hauptnavigation (siehe unten)
+- **Suche**: Ajax-Live-Suche mit Treffer-Highlighting, Kontext-Ausschnitt und WooCommerce-Attribut-/Konfigurator-Suche, optionales Such-Icon in der Hauptnavigation, zentral konfigurierbar (Texte mehrsprachig, Limit, Inhaltstypen, Anzeige) unter Agency Core → Suche / Live-Suche (siehe unten)
 - **Heartbeat Monitoring**: Push-basierte Uptime-Überwachung (Better Stack / Healthchecks.io)
 - **Admin**: Dashboard customizations
 - **Helpers**: Utility functions for theme development
@@ -31,21 +31,81 @@ Starter Kit: `media-lab-backup`, das phpseclib3 für SSH-Key-Auth benötigt.)
 
 ## Suche (Ajax Search)
 
-Live-Suche mit Ajax-Ergebnissen (`inc/ajax-search.php`), Frontend-Komponente im Theme (`.ajax-search`, siehe `assets/src/scss/components/_ajax-search.scss`).
+Live-Suche mit Ajax-Ergebnissen. Aufbau:
 
-**Such-Icon in der Navigation** (optional, Standard: an):
-Agency Core → Logo / Globale Einstellungen → UI-Features → "Suche in Navigation". Zeigt ein Icon im Hauptmenü (Desktop + Mobile), das ein Such-Overlay mit derselben `.ajax-search`-Komponente öffnet (`inc/nav-search-icon.php`).
+| Datei | Aufgabe |
+|---|---|
+| `inc/search-settings.php` | Zentrale Einstellungen (ACF-Seite `agency-core-search`), Sprach-Auflösung, Whitelist/Limit-Deckel, `data-config` für das Frontend |
+| `inc/ajax-search.php` | AJAX-Handler `agency_search` (Rate-Limit, Nonce, WP_Query, Attribut-Suche) |
+| `inc/nav-search-icon.php` | Such-Icon in der Hauptnavigation + Such-Overlay |
+| `inc/shortcodes.php` | Shortcode `[ajax_search]` |
+| Theme: `assets/src/js/components/ajax-search.js`, `assets/src/scss/components/_ajax-search.scss` | Frontend-Komponente `.ajax-search` |
 
-**Was die Suche findet:**
+### Einstellungen
+
+**Agency Core → Suche / Live-Suche** (`wp-admin/admin.php?page=agency-core-search`). Die Einstellungen gelten für **jedes** Suchfeld (Shortcode und Nav-Overlay). Die Seite hat vier Tabs:
+
+**Allgemein**
+- **Suche in Navigation** (`search_enabled`, Standard: an) – zeigt ein Icon im Hauptmenü (Desktop + Mobile), das ein Such-Overlay öffnet. Betrifft nur das Nav-Icon, der Shortcode funktioniert unabhängig davon.
+
+**Verhalten**
+
+| Einstellung | Standard | Hinweis |
+|---|---|---|
+| Durchsuchte Inhaltstypen | Beiträge, Seiten | Nur öffentlich durchsuchbare Typen (`public` + nicht `exclude_from_search`), keine Mediathek |
+| Anzahl Ergebnisse | 5 | 1–20, serverseitig erzwungen |
+| Mindestzeichen | 2 | 2–5 |
+| Verzögerung | 300 ms | 100–1000 ms nach dem letzten Tastenanschlag |
+| Textausschnitt | 10 Wörter | Wörter vor/nach der Fundstelle |
+| WooCommerce-Attribute durchsuchen | an | Globale + lokale Attribute und Konfigurator-Optionen |
+| Treffer hervorheben | an | `<mark>` in Titel und Ausschnitt |
+
+**Anzeige** (je an/aus): Vorschaubild, Inhaltstyp-Label, Datum, Textausschnitt, Preis (WooCommerce) – Standard jeweils an; „Link zu allen Ergebnissen“ – Standard aus.
+
+**Texte**
+- Platzhalter, **Startertext**, Hinweis „zu wenige Zeichen“ (`{min}` = Mindestzeichen), „Keine Ergebnisse“, Fehlertext, Link-Text „Alle Ergebnisse“, Screenreader-Labels (Suche öffnen / Suchen-Button) und Bezeichnungen der Inhaltstypen (eine Zeile pro Typ: `slug=Bezeichnung`).
+- **Startertext:** erscheint unter dem Suchfeld, sobald es fokussiert wird und leer ist (z. B. „Wonach suchen Sie?“). Leer = kein Startertext. Reiner Text, kein HTML.
+- **Mehrsprachigkeit:** Toggle „Mehrsprachigkeit aktivieren“ + Repeater `search_languages` (Sprachcode + alle Texte). Spracherkennung: Polylang → WPML → WP-Locale. Die **erste Zeile** ist der Fallback, wenn keine Sprache passt. Bei deaktivierter Mehrsprachigkeit gelten die Standardtexte. Leere Pflichttexte (Platzhalter, „Keine Ergebnisse“, Fehlertext, Link-Text, Labels) werden durch die eingebauten deutschen Standardtexte ersetzt; Startertext und Hinweis bleiben leer = werden nicht angezeigt.
+
+> **Standardwerte entsprechen dem bisherigen Verhalten.** Ausnahme Nav-Overlay: Dort waren früher Platzhalter „Wonach suchst du?“, 6 Treffer und die Typen Beiträge/Seiten/Produkte fest verdrahtet – jetzt gelten auch hier die globalen Einstellungen.
+
+### Shortcode
+
+```
+[ajax_search]
+[ajax_search limit="10" post_types="post,page,product" placeholder="Produkt suchen" search_page="/suche/"]
+```
+
+Alle Attribute sind optional und überschreiben die globalen Einstellungen pro Suchfeld. Das Frontend bekommt die Konfiguration (Texte, Limit, Typen, Mindestzeichen, Verzögerung, Anzeige-Optionen, Sprache) als `data-config` (JSON) am `.ajax-search`-Container; ohne `data-config` (Altmarkup) greifen die Defaults in `ajax-search.js`.
+
+### Was die Suche findet
+
 - Titel, Excerpt und Content (WordPress-Standard-Suche, `WP_Query` mit `s`)
 - WooCommerce-Produktattribute: sowohl globale (`pa_*`-Taxonomien) als auch lokale/benutzerdefinierte Attribute
 - Konfigurator-Optionen konfigurierbarer Produkte (`config_steps` → `options`, aus media-lab-woocommerce)
 
 Attribut-/Konfigurator-Treffer, bei denen der Suchbegriff nicht im Beschreibungstext steht, zeigen "Attribut: Wert" statt eines Text-Ausschnitts (z. B. "Farbe: Rot").
 
-**Ergebnis-Darstellung:**
-- Treffer werden per `<mark>` in Titel und Excerpt hervorgehoben
+### Ergebnis-Darstellung
+
+- Treffer werden per `<mark>` in Titel und Excerpt hervorgehoben (abschaltbar)
 - Excerpt zeigt einen Ausschnitt um die tatsächliche Fundstelle im Content, nicht immer nur den Textanfang
+- Veraltete Antworten bei schnellem Tippen werden verworfen; Fehler (z. B. Rate-Limit) zeigen den Fehlertext statt „Keine Ergebnisse“
+
+### Sicherheit & Mehrsprachigkeit (serverseitig)
+
+- **Whitelist:** Die vom Browser gesendeten Inhaltstypen werden gegen die durchsuchbaren Post-Types geprüft; ein CPT mit `exclude_from_search => true` ist per Live-Suche nicht findbar.
+- **Limit-Deckel:** maximal 20 Treffer pro Anfrage, unabhängig vom gesendeten Wert.
+- **Sprachfilter:** `admin-ajax.php` gilt für Polylang/WPML als Admin-Kontext, ohne Sprache kämen Treffer aller Sprachen zurück. Das Frontend sendet deshalb die Seitensprache mit; bei Polylang wird `WP_Query` per `lang` gefiltert (inkl. der Attribut-Treffer), bei WPML wird die Sprache per `wpml_switch_language` gesetzt.
+- Bestehende Schutzmaßnahmen (Nonce, Rate-Limit 20 Anfragen/60 s pro IP) bleiben unverändert.
+
+### Erweiterungs-Hooks
+
+| Filter | Zweck |
+|---|---|
+| `media_lab_ajax_search_query_expansion` | Zusätzliche Suchbegriffe (z. B. Synonyme, Fuzzy-Varianten) |
+| `media_lab_ajax_search_extra_matches` | Zusätzliche Produkt-Treffer, wenn Content- und Attribut-Suche nichts finden |
+| `media_lab_ajax_search_result` | Ergebnis-Daten pro Treffer erweitern (z. B. Preis durch WooCommerce) |
 
 ## Heartbeat Monitoring
 

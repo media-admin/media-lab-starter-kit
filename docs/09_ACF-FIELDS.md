@@ -1,7 +1,7 @@
 # ACF Fields Reference
 
-**Version:** 1.18.0  
-**Letzte Aktualisierung:** 2026-03-26  
+**Version:** 1.19.0  
+**Letzte Aktualisierung:** 2026-10-07  
 **Plugin:** Media Lab Project Starter v1.0.0 (optional)
 
 Complete reference for all ACF Field Groups: 11 CPT Field Groups (JSON, 65 custom fields) + 10 Options Sub-Pages (PHP, 92 custom fields).
@@ -627,7 +627,7 @@ Paste code → Import
 
 ## Options Sub-Pages – Übersicht
 
-Das Agency Core Plugin registriert 10 separate Unterseiten unter **Agency Core** im WP-Admin:
+Das Agency Core Plugin registriert mehrere separate Unterseiten unter **Agency Core** im WP-Admin (Auszug):
 
 | # | Menübezeichnung | Slug | Field Group |
 |---|---|---|---|
@@ -641,6 +641,7 @@ Das Agency Core Plugin registriert 10 separate Unterseiten unter **Agency Core**
 | 8 | Top Header / Kontaktdaten | `agency-core-top-header` | `group_top_header` |
 | 9 | Multi Language / Mehrsprachigkeit | `agency-core-multilang` | `group_multi_language` |
 | 10 | White Label / Agentur-Branding | `agency-core-white-label` | `group_white_label` |
+| 11 | Suche / Live-Suche | `agency-core-search` | `group_search_settings` |
 
 > **Hinweis:** Gespeicherte Feldwerte bleiben bei einer Slug-Änderung erhalten, da ACF Options-Werte nach dem Feld-`name` (nicht nach dem Page-Slug) in der Datenbank gespeichert werden.
 
@@ -651,6 +652,81 @@ Das Agency Core Plugin registriert 10 separate Unterseiten unter **Agency Core**
 | Back-to-Top Button | `btt_enabled` | true_false | 1 | Button zum Seitenanfang |
 | Scroll Progress Bar | `scroll_progress_enabled` | true_false | 0 | Fortschrittslinie auf single.php |
 
+> Der Toggle „Suche in Navigation" (`search_enabled`) liegt seit Plugin 1.30.0 nicht mehr hier, sondern auf der Seite Suche / Live-Suche (siehe Abschnitt 16).
+
+
+## 16. Such-Einstellungen
+
+**Field Group:** `group_search_settings`  
+**Options Page:** Agency Core → Suche / Live-Suche (`agency-core-search`)  
+**Plugin:** media-lab-agency-core (v1.30.0+, `inc/search-settings.php`)
+
+Gilt für jedes `.ajax-search`-Suchfeld (Shortcode `[ajax_search]` und Nav-Overlay). Vier Tabs.
+Der Toggle `search_enabled` lag früher unter Logo / Globale Einstellungen → UI-Features, Key und Name sind
+unverändert, gespeicherte Werte bleiben erhalten.
+
+### Allgemein
+
+| Field | Name | Typ | Standard | Beschreibung |
+|---|---|---|---|---|
+| Suche in Navigation | `search_enabled` | true_false | 1 | Such-Icon im Hauptmenü + Overlay (betrifft nur das Nav-Icon) |
+
+### Verhalten
+
+| Field | Name | Typ | Standard | Beschreibung |
+|---|---|---|---|---|
+| Durchsuchte Inhaltstypen | `search_post_types` | checkbox | post, page | Nur öffentlich durchsuchbare Typen; Choices werden dynamisch geladen |
+| Anzahl Ergebnisse | `search_limit` | number | 5 | 1–20 (serverseitig erzwungen) |
+| Mindestzeichen | `search_min_chars` | number | 2 | 2–5 |
+| Verzögerung | `search_debounce` | number | 300 | ms, 100–1000 |
+| Textausschnitt | `search_excerpt_words` | number | 10 | Wörter vor/nach der Fundstelle, 3–40 |
+| WooCommerce-Attribute | `search_woo_attributes` | true_false | 1 | Globale + lokale Attribute, Konfigurator-Optionen |
+| Treffer hervorheben | `search_highlight` | true_false | 1 | `<mark>` in Titel und Ausschnitt |
+
+### Anzeige
+
+| Field | Name | Typ | Standard |
+|---|---|---|---|
+| Vorschaubild | `search_show_thumbnail` | true_false | 1 |
+| Inhaltstyp-Label | `search_show_type` | true_false | 1 |
+| Datum | `search_show_date` | true_false | 1 |
+| Textausschnitt | `search_show_excerpt` | true_false | 1 |
+| Preis (WooCommerce) | `search_show_price` | true_false | 1 |
+| Link zu allen Ergebnissen | `search_show_all_link` | true_false | 0 |
+
+### Texte (Standardtexte)
+
+| Field | Name | Typ | Standard |
+|---|---|---|---|
+| Platzhalter | `search_txt_placeholder` | text | „Suchen..." |
+| Link-Text „Alle Ergebnisse" | `search_txt_show_all` | text | „Alle Ergebnisse anzeigen" |
+| Startertext | `search_txt_intro` | textarea | leer = nicht angezeigt |
+| Hinweis „zu wenige Zeichen" | `search_txt_min_hint` | text | leer = nicht angezeigt; `{min}` = Mindestzeichen |
+| Text „Keine Ergebnisse" | `search_txt_no_results` | text | „Keine Ergebnisse gefunden." |
+| Fehlertext | `search_txt_error` | text | „Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut." |
+| Screenreader: Suche öffnen | `search_txt_aria_open` | text | „Suche öffnen" |
+| Screenreader: Suchen-Button | `search_txt_aria_submit` | text | „Suchen" |
+| Bezeichnungen der Inhaltstypen | `search_txt_type_labels` | textarea | leer; je Zeile `slug=Bezeichnung` |
+
+### Mehrsprachigkeit
+
+| Field | Name | Typ | Beschreibung |
+|---|---|---|---|
+| Mehrsprachigkeit aktivieren | `search_multilang_enabled` | true_false | Sprachzeilen statt Standardtexte |
+| Sprachen | `search_languages` | repeater | Erste Zeile = Fallback |
+| → Sprachcode | `lang_code` | text | wie in Polylang/WPML, z. B. `de`, `en` |
+| → Texte | `txt_placeholder`, `txt_show_all`, `txt_intro`, `txt_min_hint`, `txt_no_results`, `txt_error`, `txt_aria_open`, `txt_aria_submit`, `txt_type_labels` | text/textarea | Entsprechen den Standardtexten; leere Pflichttexte fallen auf die eingebauten Standardtexte zurück |
+
+Spracherkennung: Polylang → WPML → WP-Locale (gleiches Muster wie Cookie Consent).
+
+### Lesen im Code
+
+```php
+$cfg = MediaLab_Search_Settings::get();   // Einstellungen, Texte bereits in der aktuellen Sprache
+echo esc_html( $cfg['text']['no_results'] );
+```
+
+---
 
 ## 14. Hero Image Settings
 
@@ -975,4 +1051,3 @@ ACF-Feldgruppen für die 5 ACF-basierten Gutenberg Blocks.
 | URL | `url` | URL | `https://` |
 
 **Icons:** SVG data URIs direkt im Template – keine Font-Abhängigkeit.
-
