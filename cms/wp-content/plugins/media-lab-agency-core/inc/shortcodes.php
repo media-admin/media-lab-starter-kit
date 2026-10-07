@@ -2062,21 +2062,25 @@ add_shortcode('pricing_feature', 'pricing_feature_shortcode');
  */
 function ajax_search_shortcode($atts) {
     $atts = shortcode_atts(array(
-        'placeholder' => 'Suchen...',
-        'limit' => 5,
-        'post_types' => 'post,page',
+        'placeholder' => '',   // leer = globaler Wert aus den Such-Einstellungen
+        'limit'       => '',
+        'post_types'  => '',
         'search_page' => home_url('/'),
     ), $atts);
-    
-    $unique_id = 'search-' . uniqid();
-    
+
+    $cfg         = MediaLab_Search_Settings::get();
+    $placeholder = $atts['placeholder'] !== '' ? $atts['placeholder'] : $cfg['text']['placeholder'];
+    $unique_id   = 'search-' . uniqid();
+
     ob_start();
     ?>
-    <div class="ajax-search" 
-         id="<?php echo esc_attr($unique_id); ?>"
-         data-limit="<?php echo esc_attr($atts['limit']); ?>"
-         data-post-types="<?php echo esc_attr($atts['post_types']); ?>"
-         data-search-page="<?php echo esc_url($atts['search_page']); ?>">
+    <div class="ajax-search"
+        id="<?php echo esc_attr($unique_id); ?>"
+        <?php echo MediaLab_Search_Settings::container_attrs( array(
+            'limit'      => $atts['limit'],
+            'post_types' => $atts['post_types'],
+        ) ); // phpcs:ignore WordPress.Security.EscapeOutput -- in container_attrs() escaped ?>
+        data-search-page="<?php echo esc_url($atts['search_page']); ?>">
         
         <form class="ajax-search__form" method="get" action="<?php echo esc_url(home_url('/')); ?>">
             <div class="ajax-search__input-wrapper">

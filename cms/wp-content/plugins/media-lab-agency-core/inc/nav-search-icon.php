@@ -6,12 +6,17 @@
  * (analog zum Wishlist-Icon-Pattern dort, siehe inc/wishlist/class-frontend.php
  * ::add_nav_icon()) - Suche ist ein allgemeines Theme-/Core-Feature und muss
  * auch ohne aktives WooCommerce-Plugin funktionieren. Toggle liegt daher in
- * Agency Core selbst: Logo / Globale Einstellungen -> UI-Features
- * (siehe inc/acf-settings.php, Feld 'search_enabled').
+ * Agency Core selbst: Agency Core -> Suche / Live-Suche -> Allgemein
+ * (siehe inc/search-settings.php, Feld 'search_enabled').
  *
- * Wiederverwendet die bestehende Theme-Komponente .ajax-search 1:1 (Markup,
+ * Wiederverwendet die bestehende Theme-Komponente .ajax-search (Markup,
  * SCSS, JS) - baut nur eine Overlay-Hülle (Backdrop + Panel + Toggle) drumherum.
- * ajax-search.js selbst wird NICHT verändert.
+ *
+ * Texte und Verhalten (Placeholder, Startertext, Limit, Post-Types, Sprache ...)
+ * kommen seit v1.1 zentral aus MediaLab_Search_Settings (inc/search-settings.php,
+ * Agency Core -> Suche / Live-Suche) und werden per data-config an
+ * ajax-search.js übergeben - identisch zum Shortcode [ajax_search].
+ * Voraussetzung: search-settings.php wird VOR dieser Datei geladen.
  *
  * WICHTIG (Timing): render_overlay() hängt an 'wp_footer' mit Standard-
  * Priorität 10. WordPress druckt Footer-Scripts erst bei Priorität 20
@@ -51,7 +56,7 @@ class MediaLab_Nav_Search_Icon {
             return $items;
         }
 
-        $label = __( 'Suche öffnen', 'media-lab-core' );
+        $label = MediaLab_Search_Settings::get()['text']['aria_open'];
 
         $icon = '<svg class="mlc-nav-search-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">'
               . '<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>';
@@ -76,6 +81,8 @@ class MediaLab_Nav_Search_Icon {
      */
     public static function render_overlay(): void {
         if ( ! self::is_enabled() ) return;
+
+        $cfg = MediaLab_Search_Settings::get();
         ?>
         <div id="mlc-search-overlay" class="mlc-search-overlay" aria-hidden="true">
             <div class="mlc-search-overlay__backdrop"></div>
@@ -84,17 +91,17 @@ class MediaLab_Nav_Search_Icon {
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                 </button>
 
-                <div class="ajax-search" data-limit="6" data-post-types="post,page,product">
+                <div class="ajax-search"<?php echo MediaLab_Search_Settings::container_attrs(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- in container_attrs() escaped ?>>
                     <form class="ajax-search__form" role="search" method="get" action="<?php echo esc_url( home_url( '/' ) ); ?>">
                         <div class="ajax-search__input-wrapper">
                             <span class="ajax-search__icon">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                             </span>
-                            <input type="search" class="ajax-search__input" name="s" placeholder="<?php esc_attr_e( 'Wonach suchst du?', 'media-lab-core' ); ?>" autocomplete="off">
+                            <input type="search" class="ajax-search__input" name="s" placeholder="<?php echo esc_attr( $cfg['text']['placeholder'] ); ?>" aria-label="<?php echo esc_attr( $cfg['text']['placeholder'] ); ?>" autocomplete="off">
                             <span class="ajax-search__loading" style="display:none;">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke-opacity=".25"/><path d="M21 12a9 9 0 0 0-9-9"/></svg>
                             </span>
-                            <button type="submit" class="ajax-search__submit" aria-label="<?php esc_attr_e( 'Suchen', 'media-lab-core' ); ?>">
+                            <button type="submit" class="ajax-search__submit" aria-label="<?php echo esc_attr( $cfg['text']['aria_submit'] ); ?>">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                             </button>
                         </div>

@@ -275,6 +275,9 @@ function agency_core_ajax_search() {
             'message' => 'Search query too short'
         ));
     }
+
+    // Zentrale Such-Einstellungen (Agency Core → Logo / Globale Einstellungen → Suche)
+    $cfg = MediaLab_Search_Settings::get();
     
     // Get post types - handle both string and array format
     $post_types = array('post', 'page', 'product'); // Default
@@ -307,9 +310,20 @@ function agency_core_ajax_search() {
             $post_types = array_filter($post_types);
         }
     }
+
+    // Whitelist: nur öffentlich durchsuchbare Post-Types, nie rohe $_POST-Werte
+    $post_types = MediaLab_Search_Settings::sanitize_post_types( $post_types );
     
-    // Get limit
-    $limit = isset($_POST['limit']) ? absint($_POST['limit']) : 5;
+    // Get limit - serverseitig gedeckelt (MediaLab_Search_Settings::MAX_LIMIT)
+    $limit = MediaLab_Search_Settings::clamp_limit( $_POST['limit'] ?? 0, $cfg['limit'] );
+
+    // Sprache der Seite: admin-ajax.php gilt für Polylang/WPML als Admin-Kontext,
+    // ohne explizite Sprache kämen Treffer ALLER Sprachen zurück.
+    $lang = isset( $_POST['lang'] ) ? sanitize_key( wp_unslash( $_POST['lang'] ) ) : '';
+    $lang_args = MediaLab_Search_Settings::apply_language( array(), $lang );
+
+    // Textausschnitt: Wörter vor/nach der Fundstelle (Fallback-Auszug etwas länger)
+    $words_around = $cfg['excerpt_words'];
     
     // ── 1. Regulärer Titel/Content/Excerpt-Match (WP_Query 's') ──────────────
     $search_terms = apply_filters( 'media_lab_ajax_search_query_expansion', array( $search_query ), $search_query );
@@ -324,6 +338,7 @@ function agency_core_ajax_search() {
             'orderby' => 'relevance',
             'order' => 'DESC',
         );
+        $args = array_merge( $args, $lang_args );
         $term_query = new WP_Query( $args );
         foreach ( wp_list_pluck( $term_query->posts, 'ID' ) as $id ) {
             if ( ! in_array( $id, $content_ids, true ) ) $content_ids[] = $id;
@@ -335,18 +350,22 @@ function agency_core_ajax_search() {
     //    Konfigurator-Optionen) ──────────────────────────────────────────────
     $attribute_matches = array();
     if ( in_array( 'product', $post_types, true ) && class_exists( 'WooCommerce' ) ) {
-        $attribute_matches = agency_core_search_product_attributes( $search_query );
-        // += statt array_merge: bestehende Keys (frühere Treffer) bleiben
-        // Vorrang, es werden nur Produkte ergänzt, die noch nicht drin sind.
-        $attribute_matches += agency_core_search_local_product_attributes( $search_query, $limit );
 
-        // Kein class_exists()-Gate hier (anders als bei den beiden Funktionen
-        // oben) - agency_core_search_configurator_options() braucht nur
-        // get_field(), keine Instanz der Configurator-Klasse. Ein Gate auf
-        // eine Klasse, die die Funktion gar nicht nutzt, wäre nur ein
-        // zusätzlicher, unnötiger Fehlerpunkt (falsches Verhalten, falls die
-        // Klasse im AJAX-Kontext aus irgendeinem Grund nicht/später geladen wird).
-        $attribute_matches += agency_core_search_configurator_options( $search_query );
+        // Attribut-/Konfigurator-Suche ist in den Such-Einstellungen abschaltbar
+        if ( $cfg['woo_attributes'] ) {
+            $attribute_matches = agency_core_search_product_attributes( $search_query );
+            // += statt array_merge: bestehende Keys (frühere Treffer) bleiben
+            // Vorrang, es werden nur Produkte ergänzt, die noch nicht drin sind.
+            $attribute_matches += agency_core_search_local_product_attributes( $search_query, $limit );
+
+            // Kein class_exists()-Gate hier (anders als bei den beiden Funktionen
+            // oben) - agency_core_search_configurator_options() braucht nur
+            // get_field(), keine Instanz der Configurator-Klasse. Ein Gate auf
+            // eine Klasse, die die Funktion gar nicht nutzt, wäre nur ein
+            // zusätzlicher, unnötiger Fehlerpunkt (falsches Verhalten, falls die
+            // Klasse im AJAX-Kontext aus irgendeinem Grund nicht/später geladen wird).
+            $attribute_matches += agency_core_search_configurator_options( $search_query );
+        }
 
         if ( empty( $content_ids ) && empty( $attribute_matches ) ) {
             $attribute_matches += apply_filters( 'media_lab_ajax_search_extra_matches', array(), $search_query, $limit );
@@ -361,6 +380,9 @@ function agency_core_ajax_search() {
             $all_ids[] = $pid;
         }
     }
+
+    // Attribut-/Extra-Treffer laufen nicht über WP_Query -> hier auf die Sprache filtern (Polylang)
+    $all_ids = MediaLab_Search_Settings::filter_ids_by_language( $all_ids, $lang );
     $all_ids = array_slice( $all_ids, 0, $limit );
 
     $results = array();
@@ -385,15 +407,23 @@ function agency_core_ajax_search() {
             // Suchbegriff ja gar nicht enthalten.
             $context_excerpt = $attribute_matches[ $post_id ];
         } else {
-            $fallback_excerpt = wp_trim_words( get_the_excerpt(), 15 );
-            $context_excerpt  = agency_core_get_context_excerpt( get_the_content(), $search_query, $fallback_excerpt );
+            // Fallback (Begriff nicht im Content): Auszug vom Textanfang,
+            // bei Standardwert 10 -> 15 Wörter wie bisher.
+            $fallback_excerpt = wp_trim_words( get_the_excerpt(), $words_around + 5 );
+            $context_excerpt  = agency_core_get_context_excerpt( get_the_content(), $search_query, $fallback_excerpt, $words_around );
         }
 
+        // Highlighting ist in den Such-Einstellungen abschaltbar
+        // (ohne Highlighting: nur escapen, kein <mark>)
         $result = array(
             'id' => get_the_ID(),
-            'title' => agency_core_highlight_search_term( get_the_title(), $search_query ),
+            'title' => $cfg['highlight']
+                ? agency_core_highlight_search_term( get_the_title(), $search_query )
+                : esc_html( get_the_title() ),
             'permalink' => get_permalink(),
-            'excerpt' => agency_core_highlight_search_term( $context_excerpt, $search_query ),
+            'excerpt' => $cfg['highlight']
+                ? agency_core_highlight_search_term( $context_excerpt, $search_query )
+                : esc_html( $context_excerpt ),
             'date' => get_the_date('d.m.Y'),
             'post_type' => get_post_type(),
             'thumbnail' => get_the_post_thumbnail_url(get_the_ID(), 'thumbnail'),

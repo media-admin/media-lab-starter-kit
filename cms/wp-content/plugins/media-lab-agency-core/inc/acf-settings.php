@@ -501,16 +501,6 @@ add_action('acf/init', function () {
                 'instructions'  => 'Zeigt den Dark/Light-Mode-Umschalter im Frontend an.',
             ),
 
-            array(
-                'key'           => 'field_search_enabled',
-                'label'         => 'Suche in Navigation',
-                'name'          => 'search_enabled',
-                'type'          => 'true_false',
-                'ui'            => 1,
-                'default_value' => 1,
-                'instructions'  => 'Zeigt ein Such-Icon in der Hauptnavigation an (Desktop + Mobile). Öffnet beim Klick das Such-Overlay.',
-            ),
-
         ),
         'location' => array(array(array(
             'param'    => 'options_page',
