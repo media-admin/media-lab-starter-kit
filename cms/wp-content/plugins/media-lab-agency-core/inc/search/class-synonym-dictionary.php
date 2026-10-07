@@ -10,23 +10,22 @@
  * Vokabular) - beide Probleme brauchen unterschiedliche Lösungen und
  * werden deshalb bewusst nicht in einer Klasse zusammengefasst.
  *
- * Konfiguration: ACF-Repeater unter WooCommerce Products > [Tab]
- * Synonyme (analoges Options-Page-Pattern wie Wording/Attribut-Labels/
- * Sprachen in class-settings.php). Struktur pro Sprachzeile: Liste von
- * Synonym-Gruppen, jede Gruppe ist ein Kommagetrennter Satz äquivalenter
- * Begriffe (nicht nur 1:1-Paare, damit z.B. "sample bomb",
- * "bottle sampler", "Probenflasche" gemeinsam eine Gruppe bilden
- * können statt nur paarweise verknüpft zu sein).
+ * Konfiguration: Agency Core -> Suche / Live-Suche, Feldgruppe
+ * "Suche - Synonyme" (unterhalb der Such-Einstellungen). Die Seite selbst
+ * (Slug agency-core-search) wird von MediaLab_Search_Settings registriert
+ * (inc/search-settings.php) - diese Klasse hängt nur ihre Feldgruppe daran.
+ * Struktur pro Sprachzeile: Liste von Synonym-Gruppen, jede Gruppe ist ein
+ * Kommagetrennter Satz äquivalenter Begriffe (nicht nur 1:1-Paare, damit
+ * z.B. "sample bomb", "bottle sampler", "Probenflasche" gemeinsam eine
+ * Gruppe bilden können statt nur paarweise verknüpft zu sein).
  *
  * Datei ablegen unter: inc/search/class-synonym-dictionary.php
  * Einbindung: require_once in media-lab-agency-core.php, im
  * inc/search/-Block, NACH inc/search/class-fuzzy-code-search.php, plus
- * add_action('init', ['MediaLab_Synonym_Dictionary', 'init']).
+ * MediaLab_Synonym_Dictionary::init() (siehe Hauptdatei).
  *
- * Voraussetzung: ACF-Feldgruppe mit Feldname 'search_synonym_groups'
- * (Options-Page-Repeater, Sub-Felder 'language' + Repeater 'groups' mit
- * Textfeld 'terms') muss noch angelegt werden - siehe Hinweis am Ende
- * der Klasse.
+ * ACF-Feldgruppe: 'search_synonym_groups' (Repeater, Sub-Felder 'language' +
+ * Repeater 'groups' mit Textfeld 'terms') - wird in register_settings() angelegt.
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
@@ -41,23 +40,14 @@ class MediaLab_Synonym_Dictionary {
 }
 
 /**
- * Eigene Sub-Page + Feldgruppe, analog zum Share-Buttons-Pattern
- * (inc/social-share.php) - vollständig selbst-enthalten statt zentral
- * in acf-settings.php verteilt, damit die Komponente atomar bleibt.
+ * Feldgruppe für die Synonyme auf der Seite "Suche / Live-Suche".
+ *
+ * Die Options-Seite (Slug agency-core-search) registriert
+ * MediaLab_Search_Settings::register_options_page() - hier bewusst NICHT
+ * nochmal, sonst wird dieselbe Seite doppelt registriert und welcher
+ * Titel/welche Position gewinnt, hängt von der Ladereihenfolge ab.
  */
 public static function register_settings(): void {
-    if ( ! function_exists( 'acf_add_options_sub_page' ) ) return;
-
-    acf_add_options_sub_page( array(
-        'page_title'  => 'Suche / Synonyme',
-        'menu_title'  => 'Suche / Synonyme',
-        'parent_slug' => 'agency-core',
-        'capability'  => 'manage_options',
-        'slug'        => 'agency-core-search',
-        'position'    => false,
-        'redirect'    => false,
-    ) );
-
     if ( ! function_exists( 'acf_add_local_field_group' ) ) return;
 
     acf_add_local_field_group( array(
@@ -103,6 +93,7 @@ public static function register_settings(): void {
         'location' => array( array( array(
             'param' => 'options_page', 'operator' => '==', 'value' => 'agency-core-search',
         ) ) ),
+        'menu_order' => 10, // unterhalb der Gruppe "Suche" (menu_order 0)
         'position' => 'normal', 'style' => 'default',
         'label_placement' => 'top', 'instruction_placement' => 'label',
     ) );
@@ -198,14 +189,3 @@ public static function register_settings(): void {
 		return null;
 	}
 }
-
-/**
- * ACF-Feldgruppe (per PHP oder Local JSON anlegen, analog zu den
- * bestehenden Tabs in class-settings.php):
- *
- * Options Page Tab "Synonyme"
- *   Repeater: search_synonym_groups
- *     - language (Select: eure 3 Hauptsprachen, Wert = Sprachcode wie 'de','en','fr')
- *     - groups (Repeater)
- *         - terms (Text, kommagetrennt: "sample bomb, bottle sampler, Probenflasche")
- */
