@@ -168,9 +168,6 @@ $ml-star-size:  16px;
         }
 
         .mlw-add-to-wishlist { height: 48px; padding: 0 $spacing-6; }
-
-        // Bereits gemerkt: Menge steht in der Wunschliste, Feld ausblenden
-        &:has(.mlw-add-to-wishlist[aria-pressed="true"]) .mlw-wishlist-qty { display: none; }
     }
 }
 

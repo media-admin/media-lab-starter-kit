@@ -13,6 +13,8 @@
     function init() {
         updateCountBadges( mlwWishlist.count );
         initVariableButtons();
+        initQuantityTotal();
+        initListQuantity();
 
         // Add-to-Wishlist-Buttons (Shop-Loop + Einzelproduktseite) + Entfernen-Buttons
         document.addEventListener( 'click', function ( e ) {
@@ -96,6 +98,178 @@
         }
     }
 
+    // ── Menge auf der Liste (Einzelproduktseite mit Mengenfeld) ──────────────
+
+    /** Mengen der Eintraege dieses Produkts auf der Liste: { variation_id: menge } (0 = einfaches Produkt). */
+    function listQuantities( btn ) {
+        const map = {};
+        ( btn.dataset.wishlistQuantities || '' ).split( ',' ).filter( Boolean ).forEach( function ( pair ) {
+            const parts = pair.split( ':' );
+            map[ parseInt( parts[ 0 ], 10 ) || 0 ] = parseInt( parts[ 1 ], 10 ) || 1;
+        } );
+        return map;
+    }
+
+    function setListQty( btn, variationId, qty ) {
+        if ( ! btn.classList.contains( 'mlw-add-to-wishlist--single' ) ) { return; }
+        const map = listQuantities( btn );
+        if ( qty === null ) { delete map[ variationId ]; } else { map[ variationId ] = qty; }
+        btn.dataset.wishlistQuantities = Object.keys( map ).map( function ( id ) { return id + ':' + map[ id ]; } ).join( ',' );
+    }
+
+    function qtyInputFor( btn ) {
+        const wrap = btn.closest( '.mlw-wishlist-action' );
+        return wrap ? wrap.querySelector( '.mlw-wishlist-qty__input' ) : null;
+    }
+
+    function inputQuantity( input ) {
+        return input ? Math.max( 1, parseInt( input.value, 10 ) || 1 ) : 1;
+    }
+
+    /** Steht der gewaehlte Eintrag auf der Liste, zeigt das Mengenfeld dessen Menge (Summe rechnet mit). */
+    function showListQuantity( btn, variationId ) {
+        const input = qtyInputFor( btn );
+        const qty   = listQuantities( btn )[ variationId ];
+        if ( input && qty && btn.classList.contains( 'is-active' ) && parseInt( input.value, 10 ) !== qty ) {
+            input.value = qty;
+            input.dispatchEvent( new Event( 'input', { bubbles: true } ) );
+        }
+    }
+
+    let listQtyDebounce = null;
+
+    /** Aenderung im Mengenfeld bei einem Artikel auf der Liste: Eintrag aktualisieren. */
+    function initListQuantity() {
+        document.querySelectorAll( '.mlw-add-to-wishlist--single' ).forEach( function ( btn ) {
+            const input = qtyInputFor( btn );
+            if ( ! input ) { return; }
+            const isVariable = btn.dataset.variable === '1';
+
+            if ( ! isVariable ) { showListQuantity( btn, 0 ); }
+
+            input.addEventListener( 'change', function () {
+                if ( ! btn.classList.contains( 'is-active' ) ) { return; }
+                const variationId = isVariable ? selectedVariationId( btn ) : 0;
+                if ( isVariable && ! variationId ) { return; }
+                const qty = inputQuantity( input );
+                input.value = qty;
+                setListQty( btn, variationId, qty );
+                clearTimeout( listQtyDebounce );
+                listQtyDebounce = setTimeout( function () {
+                    postAjax( 'mlw_wishlist_update_qty', { item_id: ( variationId ? 'variation_' + variationId : 'product_' + btn.dataset.productId ), quantity: qty } );
+                }, 400 );
+            } );
+        } );
+    }
+
+    // ── Gesamtsumme unter dem Preis (Einzelproduktseite mit Mengenfeld) ──────
+
+    /** Betrag im Shop-Format (Dezimalstellen, Trennzeichen, Symbol und Position aus den WooCommerce-Einstellungen). */
+    function priceDecimals() {
+        const dec = parseInt( ( mlwWishlist.price || {} ).decimals, 10 );
+        return isNaN( dec ) ? 2 : dec;
+    }
+
+    function formatMoney( value ) {
+        const cfg   = mlwWishlist.price || {};
+        const parts = Math.abs( value ).toFixed( priceDecimals() ).split( '.' );
+        const thousand = typeof cfg.thousandSep === 'string' ? cfg.thousandSep : '.';
+        const decimal  = typeof cfg.decimalSep === 'string' ? cfg.decimalSep : ',';
+        const whole    = parts[ 0 ].replace( /\B(?=(\d{3})+(?!\d))/g, thousand );
+        const number   = parts[ 1 ] ? whole + decimal + parts[ 1 ] : whole;
+        const format   = ( cfg.format || '%2$s&nbsp;%1$s' ).replace( /&nbsp;/g, '\u00a0' );
+        return ( value < 0 ? '-' : '' ) + format.replace( '%1$s', cfg.symbol || '€' ).replace( '%2$s', number );
+    }
+
+    function roundMoney( value ) {
+        const factor = Math.pow( 10, priceDecimals() );
+        return Math.round( value * factor ) / factor;
+    }
+
+    /** Projekte koennen den Stueckpreis nach Menge aendern (window.mlwUnitPriceFilters, siehe CHANGELOG 2.13.0). */
+    function applyUnitPriceFilters( price, qty, ctx ) {
+        const filters = Array.isArray( window.mlwUnitPriceFilters ) ? window.mlwUnitPriceFilters : [];
+        return filters.reduce( function ( acc, fn ) {
+            try {
+                const result = fn( acc, qty, ctx );
+                return ( typeof result === 'number' && ! isNaN( result ) ) ? result : acc;
+            } catch ( e ) {
+                return acc;
+            }
+        }, price );
+    }
+
+    function initQuantityTotal() {
+        const wrap    = document.querySelector( '.product .mlw-wishlist-action' );
+        const input   = wrap ? wrap.querySelector( '.mlw-wishlist-qty__input' ) : null;
+        // Das sichtbare Preiselement: Germanized haengt davor weitere (meist versteckte) Elemente mit der Klasse "price"
+        const priceEl = Array.prototype.find.call( document.querySelectorAll( '.product .summary > .price' ), function ( el ) { return ! el.classList.contains( 'wc-gzd-additional-info' ); } );
+        if ( ! wrap || ! input || ! priceEl ) { return; }   // ohne Mengenfeld oder sichtbaren Preis gibt es keine Summe
+
+        const product  = wrap.closest( '.product' );
+        const form     = product ? product.querySelector( 'form.variations_form' ) : null;
+        const original = priceEl.innerHTML;
+        const totalEl  = document.createElement( 'p' );
+        totalEl.className = 'mlw-price-total';
+        totalEl.hidden    = true;
+        priceEl.insertAdjacentElement( 'afterend', totalEl );
+
+        const state = { base: form ? null : parseFloat( wrap.dataset.unitPrice ), variation: null };
+        if ( isNaN( state.base ) ) { state.base = null; }
+
+        function quantity() {
+            const qty = parseInt( input.value, 10 );
+            return qty > 0 ? qty : 1;
+        }
+
+        function update() {
+            if ( state.base === null ) {
+                priceEl.innerHTML = original;
+                totalEl.hidden = true;
+                document.dispatchEvent( new CustomEvent( 'mlw:price-updated', { detail: { qty: quantity(), base: null, unit: null, total: null, variation: null } } ) );
+                return;
+            }
+
+            const qty  = quantity();
+            const unit = roundMoney( applyUnitPriceFilters( state.base, qty, { variation: state.variation, productId: wrap.querySelector( '[data-product-id]' ) ? wrap.querySelector( '[data-product-id]' ).dataset.productId : null } ) );
+            const total = roundMoney( unit * qty );
+
+            // Einfaches Produkt ohne Preisaenderung: Original-Markup von WooCommerce behalten
+            if ( ! form && unit === state.base ) {
+                priceEl.innerHTML = original;
+            } else {
+                priceEl.textContent = formatMoney( unit );
+            }
+
+            const label = ( ( mlwWishlist.i18n && mlwWishlist.i18n.totalFor ) || 'Gesamt (%s Stück)' ).replace( '%s', qty );
+            totalEl.textContent = label + ': ' + formatMoney( total );
+            totalEl.hidden = false;
+
+            document.dispatchEvent( new CustomEvent( 'mlw:price-updated', { detail: { qty: qty, base: state.base, unit: unit, total: total, variation: state.variation } } ) );
+        }
+
+        [ 'input', 'change' ].forEach( function ( type ) { input.addEventListener( type, update ); } );
+        document.addEventListener( 'mlw:recalculate', update );
+
+        if ( form && typeof window.jQuery !== 'undefined' ) {
+            window.jQuery( form )
+                .on( 'found_variation', function ( e, variation ) {
+                    const price = parseFloat( variation.display_price );
+                    state.variation = variation;
+                    state.base      = isNaN( price ) ? null : price;
+                    update();
+                } )
+                .on( 'reset_data hide_variation', function () {
+                    state.variation = null;
+                    state.base      = null;
+                    update();
+                } );
+        }
+
+        window.mlwFormatMoney = formatMoney;
+        update();
+    }
+
     // ── Variable Produkte (Variantenauswahl) ─────────────────────────────────
 
     /** variation_id der aktuell gewaehlten Variante im Variationsformular (0 = keine Auswahl). */
@@ -124,6 +298,7 @@
         const text  = active ? btn.dataset.labelRemove : btn.dataset.labelAdd;
         const label = btn.querySelector( '.mlw-add-to-wishlist__label' );
         if ( text && label ) { label.textContent = text; }
+        showListQuantity( btn, variationId );
     }
 
     function initVariableButtons() {
@@ -191,6 +366,7 @@
                 if ( res.success ) {
                     updateCountBadges( res.data.count );
                     if ( variationId ) { trackVariation( btn, variationId, true ); }
+                    setListQty( btn, variationId, inputQuantity( qtyInputFor( btn ) ) );
                     if ( isIconOnly ) {
                         btn.classList.add( 'is-active' );
                         btn.setAttribute( 'aria-pressed', 'true' );
@@ -241,6 +417,7 @@
                 if ( res.success ) {
                     updateCountBadges( res.data.count );
                     if ( variationId ) { trackVariation( btn, variationId, false ); }
+                    setListQty( btn, variationId, null );
                     btn.classList.remove( 'is-active' );
                     btn.setAttribute( 'aria-pressed', 'false' );
                     if ( btn.dataset.labelAdd ) {

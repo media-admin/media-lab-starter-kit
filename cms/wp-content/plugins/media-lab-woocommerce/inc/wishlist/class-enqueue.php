@@ -35,6 +35,13 @@ class MediaLab_Wishlist_Enqueue {
             'nonce'   => wp_create_nonce( MediaLab_Wishlist_Ajax::NONCE_ACTION ),
             'count'   => MediaLab_Wishlist_Storage::count(),
             'placeholderImage' => function_exists( 'wc_placeholder_img_src' ) ? wc_placeholder_img_src() : '',
+            'price'   => [
+                'decimals'    => function_exists( 'wc_get_price_decimals' ) ? (int) wc_get_price_decimals() : 2,
+                'decimalSep'  => function_exists( 'wc_get_price_decimal_separator' ) ? wc_get_price_decimal_separator() : ',',
+                'thousandSep' => function_exists( 'wc_get_price_thousand_separator' ) ? wc_get_price_thousand_separator() : '.',
+                'symbol'      => function_exists( 'get_woocommerce_currency_symbol' ) ? html_entity_decode( get_woocommerce_currency_symbol(), ENT_QUOTES, 'UTF-8' ) : '€',
+                'format'      => function_exists( 'get_woocommerce_price_format' ) ? get_woocommerce_price_format() : '%2$s&nbsp;%1$s',
+            ],
             'i18n'    => [
                 'addButton'      => MediaLab_Inquiry_Settings::wording( 'add_button' ),
                 'submitButton'   => MediaLab_Inquiry_Settings::wording( 'submit_button' ),
@@ -46,6 +53,7 @@ class MediaLab_Wishlist_Enqueue {
                 'emptyWishlist'  => __( 'Ihre Wunschliste ist leer.', 'media-lab-woocommerce' ),
                 'perUnit'        => __( 'pro Stück', 'media-lab-woocommerce' ),
                 'total'          => __( 'gesamt', 'media-lab-woocommerce' ),
+                'totalFor'       => __( 'Gesamt (%s Stück)', 'media-lab-woocommerce' ),
             ],
         ] );
     }

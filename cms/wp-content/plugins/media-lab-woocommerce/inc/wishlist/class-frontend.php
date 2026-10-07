@@ -70,7 +70,12 @@ class MediaLab_Wishlist_Frontend {
 
         // Optionales Mengenfeld vor dem Button (Anfrage-Shops), Opt-in. wishlist.js liest es beim Hinzufuegen.
         if ( $html !== '' && apply_filters( 'mlw_wishlist_single_quantity', false ) ) {
-            $html = '<div class="mlw-wishlist-action">'
+            // Stueckpreis fuer die Summenzeile (wishlist.js): einfache Produkte direkt, variable ueber die gewaehlte Variante
+            $unit_attr = '';
+            if ( ! $product->is_type( 'variable' ) && $product->get_price() !== '' && function_exists( 'wc_get_price_to_display' ) ) {
+                $unit_attr = ' data-unit-price="' . esc_attr( wc_get_price_to_display( $product ) ) . '"';
+            }
+            $html = '<div class="mlw-wishlist-action"' . $unit_attr . '>'
                   . '<div class="mlw-wishlist-qty"><input type="number" class="mlw-wishlist-qty__input" value="1" min="1" step="1" inputmode="numeric" aria-label="' . esc_attr__( 'Menge', 'media-lab-woocommerce' ) . '"></div>'
                   . $html
                   . '</div>';
@@ -155,6 +160,18 @@ class MediaLab_Wishlist_Frontend {
         $aria_label .= sprintf( ' data-label-add="%s" data-label-remove="%s"', esc_attr( $label_add ), esc_attr( $label_remove ) );
         if ( $is_variable ) {
             $aria_label .= sprintf( ' data-variable="1" data-product-url="%s" data-wishlist-variations="%s"', esc_url( get_permalink( $product_id ) ), esc_attr( implode( ',', $var_ids ) ) );
+        }
+        // Menge der Eintraege dieses Produkts auf der Liste (Produktseite): wishlist.js zeigt sie im Mengenfeld
+        if ( $large && class_exists( 'MediaLab_Wishlist_Storage' ) ) {
+            $wl_quantities = [];
+            foreach ( MediaLab_Wishlist_Storage::get_items() as $wl_item ) {
+                if ( (int) ( $wl_item['product_id'] ?? 0 ) === $product_id && empty( $wl_item['config'] ) ) {
+                    $wl_quantities[] = (int) ( $wl_item['variation_id'] ?? 0 ) . ':' . max( 1, (int) ( $wl_item['quantity'] ?? 1 ) );
+                }
+            }
+            if ( $wl_quantities ) {
+                $aria_label .= sprintf( ' data-wishlist-quantities="%s"', esc_attr( implode( ',', $wl_quantities ) ) );
+            }
         }
 
         return sprintf(
