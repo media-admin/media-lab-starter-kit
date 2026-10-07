@@ -9,6 +9,7 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 ### Added
 - Einzelproduktseite mit Mengenfeld: Summenzeile "Gesamt (N Stück): Summe" unter dem Preis (Stückpreis mal Menge, Format aus den WooCommerce-Einstellungen; bei variablen Produkten mit dem Preis der gewählten Variante). Der Stückpreis steht als `data-unit-price` am Block `.mlw-wishlist-action`, `mlwWishlist.price` und `i18n.totalFor` im lokalisierten Skript, Stil `.mlw-price-total`. Der Preis ist das erste `.price` der Summary, das kein Germanized-Zusatzelement (`.wc-gzd-additional-info`) ist
 - JS-Haken für Projekte: `window.mlwUnitPriceFilters` (Funktionen `( preis, menge, ctx ) => neuerPreis`, z. B. für eine Mengenstaffel), Events `mlw:recalculate` und `mlw:price-updated`, Hilfsfunktion `window.mlwFormatMoney()`. Weicht der Stückpreis vom Ausgangspreis ab, ersetzt er auch den Preis oben
+- Mengeneinheit hinter der Zahl im Lagertext ("250 Stück vorrätig"), auf der Produktseite, bei Varianten und in den Produktkarten. Quelle ist das Germanized-Feld "Einheit", sonst der Filter `mlw_stock_unit( $einheit, $produkt )`; abschaltbar mit `mlw_stock_unit_enabled`. Texte ohne Zahl bleiben unverändert
 
 ### Changed
 - Artikel auf der Wunschliste: Das Mengenfeld bleibt sichtbar, zeigt die Menge des Eintrags (bei variablen Produkten pro Variante, `data-wishlist-quantities` am Button) und übernimmt Änderungen über `mlw_wishlist_update_qty`. Das Theme blendet das Feld nicht mehr aus
