@@ -4,6 +4,14 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [2.14.0] - 2026-10-07
+
+### Added
+- Einstellung "Telefon" (Tab Formularfelder, `mlw_phone_mode`, `MediaLab_Inquiry_Settings::phone_mode()`): Das eingebaute Telefonfeld im Wunschlisten-Formular ist optional (Standard), Pflichtfeld (Browser und Server prüfen) oder ausgeblendet
+
+### Changed
+- Eine Zusatzzeile mit dem Feld-Key `phone` wird im Wunschlisten-Formular nicht mehr ausgegeben (sie erzeugte ein zweites Telefonfeld unter demselben Namen). Die Pflicht dafür steht jetzt in der Einstellung "Telefon"
+
 ## [2.13.0] - 2026-10-07
 
 ### Added
