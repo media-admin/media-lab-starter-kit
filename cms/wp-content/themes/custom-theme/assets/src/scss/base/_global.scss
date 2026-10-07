@@ -17,6 +17,13 @@ body {
   flex: 1;
 }
 
+// Seitentitel (page.php, index.php, template-home.php): Abstand zum Header bzw. zum Hero und den Breadcrumbs darueber.
+// Hero und Breadcrumbs stehen vor <main>, deshalb sitzt der Abstand am Titelblock und nicht am Main-Container
+// (WooCommerce-Seiten nutzen dasselbe <main> und bringen ihren Abstand selbst mit).
+.entry-header {
+  padding-top: $spacing-4;
+}
+
 .container {
   @include container;
 }
