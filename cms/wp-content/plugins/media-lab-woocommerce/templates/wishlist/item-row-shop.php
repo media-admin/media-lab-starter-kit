@@ -14,14 +14,15 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 $added_date = ! empty( $item['added_at'] ) ? date_i18n( get_option( 'date_format' ), (int) $item['added_at'] ) : '';
-$product    = $item['exists'] ? wc_get_product( $item['product_id'] ) : null;
+$variation_id = (int) ( $item['variation_id'] ?? 0 );
+$product      = $item['exists'] ? wc_get_product( $variation_id ?: $item['product_id'] ) : null;
 
 // Nur "einfache" Produkte lassen sich per add_to_cart(product_id, qty) ohne
 // weitere Auswahl direkt in den Warenkorb legen. Variable Produkte (z.B.
 // Ringe mit Größen-Varianten) brauchen eine explizite variation_id +
 // Attribut-Auswahl, die wir hier nicht haben - Link zur Produktseite
 // stattdessen (wie bei unseren eigenen konfigurierten Artikeln).
-$is_simple = $product && $product->is_type( 'simple' );
+$is_simple = $product && ( $variation_id ? $product->is_type( 'variation' ) : $product->is_type( 'simple' ) );
 
 // Zusätzlich zur Lagerstatus-Prüfung die Menge selbst gegenchecken - ein
 // Produkt kann is_in_stock() === true liefern, obwohl die geführte Menge

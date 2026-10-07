@@ -12,6 +12,7 @@
 
     function init() {
         updateCountBadges( mlwWishlist.count );
+        initVariableButtons();
 
         // Add-to-Wishlist-Buttons (Shop-Loop + Einzelproduktseite) + Entfernen-Buttons
         document.addEventListener( 'click', function ( e ) {
@@ -95,6 +96,48 @@
         }
     }
 
+    // ── Variable Produkte (Variantenauswahl) ─────────────────────────────────
+
+    /** variation_id der aktuell gewaehlten Variante im Variationsformular (0 = keine Auswahl). */
+    function selectedVariationId( btn ) {
+        const wrap  = btn.closest( '.product' );
+        const form  = wrap ? wrap.querySelector( 'form.variations_form' ) : document.querySelector( 'form.variations_form' );
+        const input = form ? form.querySelector( 'input.variation_id, input[name="variation_id"]' ) : null;
+        return input ? ( parseInt( input.value, 10 ) || 0 ) : 0;
+    }
+
+    function trackedVariations( btn ) {
+        return ( btn.dataset.wishlistVariations || '' ).split( ',' ).filter( Boolean ).map( Number );
+    }
+
+    function trackVariation( btn, variationId, on ) {
+        const ids = trackedVariations( btn ).filter( function ( id ) { return id !== variationId; } );
+        if ( on ) { ids.push( variationId ); }
+        btn.dataset.wishlistVariations = ids.join( ',' );
+    }
+
+    /** Zustand des Buttons passend zur gewaehlten Variante (found_variation / reset_data). */
+    function syncVariableButton( btn, variationId ) {
+        const active = variationId > 0 && trackedVariations( btn ).indexOf( variationId ) !== -1;
+        btn.classList.toggle( 'is-active', active );
+        btn.setAttribute( 'aria-pressed', active ? 'true' : 'false' );
+        const text  = active ? btn.dataset.labelRemove : btn.dataset.labelAdd;
+        const label = btn.querySelector( '.mlw-add-to-wishlist__label' );
+        if ( text && label ) { label.textContent = text; }
+    }
+
+    function initVariableButtons() {
+        if ( typeof window.jQuery === 'undefined' ) { return; }
+        document.querySelectorAll( '.mlw-add-to-wishlist--single[data-variable="1"]' ).forEach( function ( btn ) {
+            const wrap = btn.closest( '.product' );
+            const form = wrap ? wrap.querySelector( 'form.variations_form' ) : null;
+            if ( ! form ) { return; }
+            window.jQuery( form )
+                .on( 'found_variation', function ( e, variation ) { syncVariableButton( btn, parseInt( variation.variation_id, 10 ) || 0 ); } )
+                .on( 'reset_data hide_variation', function () { syncVariableButton( btn, 0 ); } );
+        } );
+    }
+
     // ── Add ──────────────────────────────────────────────────────────────────
 
     function handleAdd( btn ) {
@@ -103,8 +146,24 @@
 
         // Bereits aktiv (Herz gefüllt) -> erneuter Klick entfernt statt
         // erneut hinzuzufügen (Toggle-Verhalten).
+        // Variable Produkte: auf der Produktkarte zur Produktseite (dort wird die Variante gewaehlt),
+        // auf der Produktseite gilt die gewaehlte Variante
+        const isVariable = btn.dataset.variable === '1';
+        let variationId  = 0;
+        if ( isVariable ) {
+            if ( ! btn.classList.contains( 'mlw-add-to-wishlist--single' ) ) {
+                if ( btn.dataset.productUrl ) { window.location.href = btn.dataset.productUrl; }
+                return;
+            }
+            variationId = selectedVariationId( btn );
+            if ( ! variationId ) {
+                alert( ( mlwWishlist.i18n && mlwWishlist.i18n.chooseVariation ) || 'Bitte zuerst eine Variante wählen.' );
+                return;
+            }
+        }
+
         if ( btn.classList.contains( 'is-active' ) ) {
-            handleToggleRemove( btn, productId );
+            handleToggleRemove( btn, productId, variationId );
             return;
         }
 
@@ -119,6 +178,7 @@
 
         postAjax( 'mlw_wishlist_add', {
             product_id: productId,
+            variation_id: variationId,
             // Optionales Mengenfeld im selben .mlw-wishlist-action-Wrapper; ohne Feld bleibt es bei Menge 1
             quantity: ( function () {
                 var wrap  = btn.closest( '.mlw-wishlist-action' );
@@ -130,7 +190,7 @@
             .then( function ( res ) {
                 if ( res.success ) {
                     updateCountBadges( res.data.count );
-
+                    if ( variationId ) { trackVariation( btn, variationId, true ); }
                     if ( isIconOnly ) {
                         btn.classList.add( 'is-active' );
                         btn.setAttribute( 'aria-pressed', 'true' );
@@ -173,13 +233,14 @@
      * Produktkarte nur die product_id bekannt ist, nicht die interne
      * item_id.
      */
-    function handleToggleRemove( btn, productId ) {
+    function handleToggleRemove( btn, productId, variationId ) {
         btn.disabled = true;
 
-        postAjax( 'mlw_wishlist_remove_by_product', { product_id: productId } )
+        postAjax( 'mlw_wishlist_remove_by_product', { product_id: productId, variation_id: variationId || 0 } )
             .then( function ( res ) {
                 if ( res.success ) {
                     updateCountBadges( res.data.count );
+                    if ( variationId ) { trackVariation( btn, variationId, false ); }
                     btn.classList.remove( 'is-active' );
                     btn.setAttribute( 'aria-pressed', 'false' );
                     if ( btn.dataset.labelAdd ) {

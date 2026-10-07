@@ -33,8 +33,15 @@ class MediaLab_Wishlist_Ajax {
         $product_id = (int) ( $_POST['product_id'] ?? 0 );
         $quantity   = max( 1, (int) ( $_POST['quantity'] ?? 1 ) );
 
+        $variation_id = (int) ( $_POST['variation_id'] ?? 0 );
         $config      = self::decode_json( $_POST['config']      ?? '' );
         $attachments = self::decode_json( $_POST['attachments'] ?? '' );
+
+        // Variable Produkte brauchen eine gewaehlte Variante (konfigurierte Produkte haben ihren Wizard)
+        $wc_product = $product_id ? wc_get_product( $product_id ) : null;
+        if ( $wc_product && $wc_product->is_type( 'variable' ) && ! $config && ! $variation_id ) {
+            wp_send_json_error( [ 'message' => __( 'Bitte zuerst eine Variante wählen.', 'media-lab-woocommerce' ) ] );
+        }
 
         $config_display  = null;
         $price_breakdown = null;
@@ -48,6 +55,7 @@ class MediaLab_Wishlist_Ajax {
         $result = MediaLab_Wishlist_Storage::add( [
             'product_id'      => $product_id,
             'quantity'        => $quantity,
+            'variation_id'    => $variation_id,
             'config'          => $config,
             'config_display'  => $config_display,
             'price_breakdown' => $price_breakdown,
@@ -106,7 +114,7 @@ class MediaLab_Wishlist_Ajax {
         if ( ! $product_id ) wp_send_json_error( [ 'message' => __( 'Ungültiges Produkt.', 'media-lab-woocommerce' ) ] );
 
         foreach ( MediaLab_Wishlist_Storage::get_items() as $item ) {
-            if ( (int) ( $item['product_id'] ?? 0 ) === $product_id && empty( $item['config'] ) ) {
+            if ( (int) ( $item['product_id'] ?? 0 ) === $product_id && empty( $item['config'] ) && (int) ( $item['variation_id'] ?? 0 ) === (int) ( $_POST['variation_id'] ?? 0 ) ) {
                 MediaLab_Wishlist_Storage::remove( $item['item_id'] );
                 break;
             }
@@ -180,13 +188,16 @@ class MediaLab_Wishlist_Ajax {
 
             if ( ! empty( $item['config'] ) ) { $skipped_ids[] = $item['item_id']; continue; }
 
-            $product   = wc_get_product( $item['product_id'] );
-            $is_simple = $product && $product->is_type( 'simple' );
+            $variation_id = (int) ( $item['variation_id'] ?? 0 );
+            $product      = wc_get_product( $variation_id ?: $item['product_id'] );
+            $is_simple    = $product && ( $variation_id ? $product->is_type( 'variation' ) : $product->is_type( 'simple' ) );
             $in_stock  = $is_simple && $product->is_in_stock() && ( $product->get_stock_quantity() === null || $product->get_stock_quantity() > 0 );
 
             if ( ! $in_stock ) { $skipped_ids[] = $item['item_id']; continue; }
 
-            $result = WC()->cart->add_to_cart( $item['product_id'], max( 1, (int) $item['quantity'] ) );
+            $result = $variation_id
+                ? WC()->cart->add_to_cart( $item['product_id'], max( 1, (int) $item['quantity'] ), $variation_id, $product->get_variation_attributes() )
+                : WC()->cart->add_to_cart( $item['product_id'], max( 1, (int) $item['quantity'] ) );
 
             if ( $result ) {
                 MediaLab_Wishlist_Storage::remove( $item['item_id'] );
@@ -228,10 +239,11 @@ class MediaLab_Wishlist_Ajax {
             $product = wc_get_product( $item['product_id'] );
             $engine_items[] = [
                 'product_id'      => $item['product_id'],
+                'variation_id'    => (int) ( $item['variation_id'] ?? 0 ),
                 'quantity'        => $item['quantity'],
                 'name'            => $product ? $product->get_name() : null,
                 'config'          => $item['config']          ?? null,
-                'config_display'  => $item['config_display']  ?? null,
+                'config_display'  => ! empty( $item['variation_id'] ) ? MediaLab_Wishlist_Storage::get_variation_display( wc_get_product( (int) $item['variation_id'] ) ) : ( $item['config_display'] ?? null ),
                 'price_breakdown' => $item['price_breakdown'] ?? null,
                 'attachments'     => $item['attachments']     ?? [],
             ];

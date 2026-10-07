@@ -76,6 +76,8 @@ class MediaLab_Inquiry_Channels {
             'items'      => array_map( function ( $item ) {
                 return [
                     'product_id' => $item['product_id'] ?? null,
+                    'variation_id' => $item['variation_id'] ?? null,
+                    'sku'        => $item['sku']          ?? '',
                     'name'       => $item['name']        ?? '',
                     'quantity'   => $item['quantity']     ?? 1,
                     'config'     => $item['config_display'] ?? null,

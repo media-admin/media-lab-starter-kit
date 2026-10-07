@@ -60,13 +60,17 @@ class MediaLab_Wishlist_Storage {
         return is_array( $items ) ? $items : [];
     }
 
-    public static function has_product( int $product_id ): bool {
-    foreach ( self::get_items() as $item ) {
-        if ( (int) ( $item['product_id'] ?? 0 ) === $product_id && empty( $item['config'] ) ) {
-            return true;
+    public static function has_product( int $product_id, int $variation_id = 0 ): bool {
+        foreach ( self::get_items() as $item ) {
+            if ( (int) ( $item['product_id'] ?? 0 ) !== $product_id || ! empty( $item['config'] ) ) {
+                continue;
+            }
+            // Ohne variation_id: steht das Produkt (oder irgendeine seiner Varianten) auf der Liste?
+            if ( ! $variation_id || (int) ( $item['variation_id'] ?? 0 ) === $variation_id ) {
+                return true;
+            }
         }
-    }
-    return false;
+        return false;
     }
 
 
@@ -94,9 +98,18 @@ class MediaLab_Wishlist_Storage {
         $quantity = max( 1, (int) ( $data['quantity'] ?? 1 ) );
         $config   = is_array( $data['config'] ?? null ) ? $data['config'] : null;
 
+        // Variante (variable Produkte mit Variantenauswahl): muss zu diesem Elternprodukt gehoeren
+        $variation_id = (int) ( $data['variation_id'] ?? 0 );
+        if ( $variation_id ) {
+            $variation = wc_get_product( $variation_id );
+            if ( ! $variation || ! $variation->is_type( 'variation' ) || (int) $variation->get_parent_id() !== $product_id ) {
+                return new WP_Error( 'mlw_invalid_variation', __( 'Ungültige Variante.', 'media-lab-woocommerce' ) );
+            }
+        }
+
         $item_id = $config
             ? 'cfg_' . substr( md5( $product_id . wp_json_encode( $config ) ), 0, 20 )
-            : 'product_' . $product_id;
+            : ( $variation_id ? 'variation_' . $variation_id : 'product_' . $product_id );
 
         $items = self::get_items();
 
@@ -115,6 +128,7 @@ class MediaLab_Wishlist_Storage {
         $items[] = [
             'item_id'         => $item_id,
             'product_id'      => $product_id,
+            'variation_id'    => $variation_id,
             'quantity'        => $quantity,
             'config'          => $config,
             'config_display'  => is_array( $data['config_display'] ?? null ) ? $data['config_display'] : null,
@@ -170,6 +184,15 @@ class MediaLab_Wishlist_Storage {
         foreach ( ( $items ?? self::get_items() ) as $item ) {
             $product = wc_get_product( $item['product_id'] );
 
+            // Varianten-Eintrag: Preis, SKU, Bild, Link und Merkmale kommen von der Variante, der Name vom Elternprodukt
+            $variation_id = (int) ( $item['variation_id'] ?? 0 );
+            $variation    = $variation_id ? wc_get_product( $variation_id ) : null;
+            if ( $variation_id && ( ! $variation || ! $variation->is_type( 'variation' ) ) ) {
+                $product   = null;   // Variante gelöscht: wie ein nicht mehr vorhandenes Produkt behandeln
+                $variation = null;
+            }
+            $source = $variation ?: $product;
+
             // Einzelpreis: bei konfigurierten Produkten aus 'unit_price' der
             // Preisaufschlüsselung (siehe class-price-calculator.php - das ist
             // der ECHTE Preis pro Stück, bereits korrekt netto/brutto gewählt).
@@ -181,19 +204,26 @@ class MediaLab_Wishlist_Storage {
             $unit_price = null;
             if ( isset( $item['price_breakdown']['unit_price'] ) && $item['price_breakdown']['unit_price'] !== null ) {
                 $unit_price = (float) $item['price_breakdown']['unit_price'];
-            } elseif ( $product ) {
-                $unit_price = (float) $product->get_price();
+            } elseif ( $source ) {
+                $unit_price = (float) $source->get_price();
             }
 
             $quantity   = (int) ( $item['quantity'] ?? 1 );
+
+            // Projekte koennen den Stueckpreis nach Menge anpassen (z. B. Mengenstaffel). Konfigurierte Artikel
+            // behalten ihren Preis aus der Preisaufschluesselung.
+            if ( empty( $item['config'] ) && $unit_price !== null && $source ) {
+                $unit_price = apply_filters( 'mlw_wishlist_unit_price', $unit_price, $item, $source, $quantity );
+            }
             $line_total = $unit_price !== null ? $unit_price * $quantity : null;
 
             $out[] = array_merge( $item, [
                 'name'          => $product ? $product->get_name() : __( 'Produkt nicht mehr verfügbar', 'media-lab-woocommerce' ),
-                'sku'           => $product ? $product->get_sku() : '',
-                'permalink'     => $product ? get_permalink( $product->get_id() ) : '',
-                'image'         => $product ? wp_get_attachment_image_url( $product->get_image_id(), 'thumbnail' ) : '',
+                'sku'           => $source ? ( $source->get_sku() ?: ( $product ? $product->get_sku() : '' ) ) : '',
+                'permalink'     => $variation ? $variation->get_permalink() : ( $product ? get_permalink( $product->get_id() ) : '' ),
+                'image'         => $product ? wp_get_attachment_image_url( ( $variation && $variation->get_image_id() ) ? $variation->get_image_id() : $product->get_image_id(), 'thumbnail' ) : '',
                 'exists'        => (bool) $product,
+                'config_display' => $variation ? self::get_variation_display( $variation ) : ( $item['config_display'] ?? null ),
                 'unit_price'    => $unit_price,
                 // Fertig formatiertes HTML (wc_price()) zusätzlich zum rohen
                 // Float mitliefern - wishlist.js übernimmt das direkt statt
@@ -206,6 +236,32 @@ class MediaLab_Wishlist_Storage {
                 'line_total_html' => $line_total !== null ? wc_price( $line_total ) : '',
                 'attachment_urls' => array_map( fn( $id ) => [ 'id' => $id, 'url' => wp_get_attachment_url( $id ), 'filename' => basename( (string) wp_get_attachment_url( $id ) ) ], $item['attachments'] ?? [] ),
             ] );
+        }
+        return $out;
+    }
+
+    /**
+     * Merkmale einer Variante als Label => Wert (z. B. Farbe => grey/white), fuer Anzeige und Anfrage.
+     *
+     * @param WC_Product|null $variation
+     */
+    public static function get_variation_display( $variation ): array {
+        $out = [];
+        if ( ! $variation instanceof WC_Product_Variation ) {
+            return $out;
+        }
+        foreach ( $variation->get_variation_attributes( false ) as $name => $value ) {
+            if ( $value === '' || $value === null ) {
+                continue;
+            }
+            $label = wc_attribute_label( $name, $variation );
+            if ( taxonomy_exists( $name ) ) {
+                $term = get_term_by( 'slug', $value, $name );
+                if ( $term ) {
+                    $value = $term->name;
+                }
+            }
+            $out[ $label ] = (string) $value;
         }
         return $out;
     }

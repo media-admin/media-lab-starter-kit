@@ -71,12 +71,15 @@ class MediaLab_Inquiry_Engine {
         foreach ( $items as $item ) {
             $product_id = isset( $item['product_id'] ) ? (int) $item['product_id'] : 0;
             $product    = $product_id ? wc_get_product( $product_id ) : null;
+            $variation_id = isset( $item['variation_id'] ) ? (int) $item['variation_id'] : 0;
+            $variation    = $variation_id ? wc_get_product( $variation_id ) : null;
 
             $normalized_items[] = [
                 'product_id'      => $product_id,
                 'quantity'        => max( 1, (int) ( $item['quantity'] ?? 1 ) ),
                 'name'            => $item['name'] ?? ( $product ? $product->get_name() : __( 'Unbekanntes Produkt', 'media-lab-woocommerce' ) ),
-                'sku'             => $product ? $product->get_sku() : '',
+                'variation_id'    => $variation_id,
+                'sku'             => $variation ? ( $variation->get_sku() ?: ( $product ? $product->get_sku() : '' ) ) : ( $product ? $product->get_sku() : '' ),
                 'config'          => $item['config']          ?? null,
                 'config_display'  => $item['config_display']  ?? null,
                 'price_breakdown' => $item['price_breakdown'] ?? null,

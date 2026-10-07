@@ -110,6 +110,21 @@ class MediaLab_Wishlist_Frontend {
         $label_add    = MediaLab_Inquiry_Settings::wording( 'add_button' );
         $label_remove = MediaLab_Inquiry_Settings::wording( 'remove_button' );
         $is_active = class_exists( 'MediaLab_Wishlist_Storage' ) && MediaLab_Wishlist_Storage::has_product( $product_id );
+        // Variable Produkte (Variantenauswahl): Auf der Produktseite gilt der Zustand pro gewaehlter Variante
+        // (wishlist.js), auf Produktkarten fuehrt der Klick zur Produktseite.
+        $wc_product  = function_exists( 'wc_get_product' ) ? wc_get_product( $product_id ) : null;
+        $is_variable = $wc_product && $wc_product->is_type( 'variable' );
+        $var_ids     = [];
+        if ( $is_variable && class_exists( 'MediaLab_Wishlist_Storage' ) ) {
+            foreach ( MediaLab_Wishlist_Storage::get_items() as $wl_item ) {
+                if ( (int) ( $wl_item['product_id'] ?? 0 ) === $product_id && empty( $wl_item['config'] ) && ! empty( $wl_item['variation_id'] ) ) {
+                    $var_ids[] = (int) $wl_item['variation_id'];
+                }
+            }
+            if ( $large ) {
+                $is_active = false;
+            }
+        }
         // Aktiver Zustand (Produkt steht auf der Liste, Klick entfernt es): eigener Text
         $label = ( $is_active && $label_remove !== '' ) ? $label_remove : $label_add;
 
@@ -138,6 +153,9 @@ class MediaLab_Wishlist_Frontend {
         $aria_label = ! $show_label ? sprintf( ' aria-label="%s"', esc_attr( $label ) ) : '';
         // Beide Texte fuer wishlist.js, damit der Button ohne Neuladen umschalten kann
         $aria_label .= sprintf( ' data-label-add="%s" data-label-remove="%s"', esc_attr( $label_add ), esc_attr( $label_remove ) );
+        if ( $is_variable ) {
+            $aria_label .= sprintf( ' data-variable="1" data-product-url="%s" data-wishlist-variations="%s"', esc_url( get_permalink( $product_id ) ), esc_attr( implode( ',', $var_ids ) ) );
+        }
 
         return sprintf(
             '<button type="button" class="%s" data-product-id="%d"%s aria-pressed="%s">%s%s</button>',
