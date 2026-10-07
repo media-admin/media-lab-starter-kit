@@ -264,6 +264,14 @@ class MediaLab_Wishlist_Ajax {
             }
         }
 
+        // Telefon laut Einstellung: Pflichtfeld oder ausgeblendet
+        $phone_mode = MediaLab_Inquiry_Settings::phone_mode();
+        if ( $phone_mode === 'hidden' ) {
+            $contact['phone'] = '';
+        } elseif ( $phone_mode === 'required' && trim( (string) $contact['phone'] ) === '' ) {
+            wp_send_json_error( [ 'message' => __( 'Bitte geben Sie Ihre Telefonnummer an.', 'media-lab-woocommerce' ) ] );
+        }
+
         $result = MediaLab_Inquiry_Engine::submit( $engine_items, $contact, 'wishlist' );
 
         if ( is_wp_error( $result ) ) {

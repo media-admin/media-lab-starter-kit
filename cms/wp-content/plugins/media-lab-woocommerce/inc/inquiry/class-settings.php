@@ -231,6 +231,15 @@ class MediaLab_Inquiry_Settings {
                 'message' => '<p>Diese Felder erscheinen im Anfrage-Formular (Cart-Anfrage, Konfigurator-Anfrage und Wunschliste). Name, E-Mail-Adresse und die Produktliste sind immer Teil der Anfrage und müssen hier nicht separat angelegt werden.</p>',
             ],
             [
+                'key'           => 'field_mlw_phone_mode',
+                'label'         => 'Telefon',
+                'name'          => 'mlw_phone_mode',
+                'type'          => 'select',
+                'choices'       => [ 'optional' => 'Optional', 'required' => 'Pflichtfeld', 'hidden' => 'Ausblenden' ],
+                'default_value' => 'optional',
+                'instructions'  => 'Das eingebaute Telefonfeld im Wunschlisten-Formular. Dafür ist keine zusätzliche Zeile mit dem Key "phone" nötig (sie würde ein zweites Telefonfeld erzeugen und wird im Wunschlisten-Formular nicht mehr ausgegeben).',
+            ],
+            [
                 'key'          => 'field_mlw_form_fields',
                 'label'        => 'Zusätzliche Felder',
                 'name'         => 'mlw_form_fields',
@@ -665,6 +674,12 @@ class MediaLab_Inquiry_Settings {
     }
 
     // ── Navigation-Icon-Einstellungen ────────────────────────────────────────
+
+    /** Telefonfeld im Wunschlisten-Formular: 'optional' (Standard), 'required' oder 'hidden'. */
+    public static function phone_mode(): string {
+        $mode = function_exists( 'get_field' ) ? get_field( 'mlw_phone_mode', 'option' ) : '';
+        return in_array( $mode, [ 'required', 'hidden' ], true ) ? $mode : 'optional';
+    }
 
     public static function nav_icon_enabled(): bool {
         return function_exists( 'get_field' ) && (bool) get_field( 'mlw_nav_icon_enabled', 'option' );

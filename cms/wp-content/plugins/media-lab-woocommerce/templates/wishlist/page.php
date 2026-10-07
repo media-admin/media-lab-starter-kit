@@ -90,14 +90,17 @@ $is_catalog_mode = function_exists( 'get_field' ) && get_field( 'wc_catalog_mode
                 <input type="email" id="mlw-wishlist-email" name="email" required value="<?php echo esc_attr( $contact['email'] ); ?>">
             </div>
 
+            <?php $phone_mode = MediaLab_Inquiry_Settings::phone_mode(); ?>
+            <?php if ( $phone_mode !== 'hidden' ) : ?>
             <div class="mlw-wishlist__form-row">
-                <label for="mlw-wishlist-phone"><?php esc_html_e( 'Telefon', 'media-lab-woocommerce' ); ?></label>
-                <input type="tel" id="mlw-wishlist-phone" name="phone" value="<?php echo esc_attr( $contact['phone'] ); ?>">
+                <label for="mlw-wishlist-phone"><?php esc_html_e( 'Telefon', 'media-lab-woocommerce' ); ?><?php if ( $phone_mode === 'required' ) echo ' *'; ?></label>
+                <input type="tel" id="mlw-wishlist-phone" name="phone" <?php echo $phone_mode === 'required' ? 'required' : ''; ?> value="<?php echo esc_attr( $contact['phone'] ); ?>">
             </div>
+            <?php endif; ?>
 
             <?php foreach ( $form_fields as $field ) :
                 $field_key = esc_attr( $field['field_key'] ?? '' );
-                if ( ! $field_key ) continue;
+                if ( ! $field_key || $field_key === 'phone' ) continue; // 'phone' ist das eingebaute Feld oben (Einstellung "Telefon")
                 $field_type  = $field['field_type']  ?? 'text';
                 $field_label = $field['label']       ?? '';
                 $required    = ! empty( $field['required'] );
