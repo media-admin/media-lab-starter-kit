@@ -4,6 +4,14 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [2.11.2] - 2026-10-07
+
+### Added
+- Wunschliste: Einstellung "Entfernen-Button" (Standard "Von der Wunschliste entfernen", im Mehrsprachig-Modus als Unterfeld). Der Button zeigt diesen Text, solange das Produkt auf der Liste steht, und wechselt per JS ohne Neuladen (`data-label-add`, `data-label-remove`)
+
+### Fixed
+- Wunschzettel-Seite: Das `<form>` in `templates/wishlist/page.php` hat jetzt die Klasse `mlw-wishlist__form` (Theme `_wishlist.scss`: Flex-Spalte mit Abstand, Absenden-Button nur so breit wie sein Inhalt, Abstand nach unten). Vorher hatte das Formular keine Klasse, Felder und Button standen ohne Abstand untereinander, und das Plugin-CSS dehnte den Button auf 100 % Breite
+
 ## [2.11.1] - 2026-10-06
 
 ### Fixed
