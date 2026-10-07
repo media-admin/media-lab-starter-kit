@@ -21,6 +21,22 @@ $mlw-item-grid: 72px 1fr 110px 80px 110px 36px;
         margin: 0;
     }
 
+    // Formular unter der Artikelliste: Felder untereinander mit Abstand (das Template hatte keine Klasse am <form>)
+    &__form {
+        display: flex;
+        flex-direction: column;
+        gap: $spacing-md;
+        margin-top: $spacing-lg;
+        margin-bottom: $spacing-lg;
+        padding-bottom: $spacing-lg;
+
+        // Das Plugin-CSS (wishlist.css) setzt .mlw-wishlist-submit auf width: 100%,
+        // der Button soll aber nur so breit sein wie sein Inhalt
+        .mlw-wishlist-submit {
+            width: auto;
+        }
+    }
+
     &__form-row {
         display: flex;
         flex-direction: column;

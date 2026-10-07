@@ -76,7 +76,7 @@ $is_catalog_mode = function_exists( 'get_field' ) && get_field( 'wc_catalog_mode
             </span>
         </div>
 
-        <form id="mlw-wishlist-form" novalidate>
+        <form id="mlw-wishlist-form" class="mlw-wishlist__form" novalidate>
 
             <div class="mlw-wishlist-message" style="display:none;" role="status" aria-live="polite"></div>
 
