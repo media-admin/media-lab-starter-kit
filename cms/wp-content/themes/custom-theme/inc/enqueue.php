@@ -107,11 +107,16 @@ function customtheme_enqueue_assets(): void {
 
         // JS – via Manifest (mit Hash im Dateinamen)
         if ( ! empty( $js_entry['file'] ) ) {
+            // Version = Aenderungszeit der Datei: Der Einstiegspunkt heisst bei jedem Build gleich (kein Hash im Namen),
+            // nur die Chunks tragen einen. Mit einer festen Version haelt der Browser eine alte main.js, die nach einem
+            // Update auf geloeschte Chunks verweist (dynamic import schlaegt fehl, Funktionen fallen still aus).
+            $js_file    = $dist . '/' . $js_entry['file'];
+            $js_version = file_exists( $js_file ) ? filemtime( $js_file ) : CUSTOM_THEME_VERSION;
             wp_enqueue_script(
                 'custom-theme-script',
                 VITE_DIST_URI . '/' . $js_entry['file'],
                 [],
-                CUSTOM_THEME_VERSION,
+                $js_version,
                 true
             );
         } elseif ( file_exists( $dist . '/js/main.js' ) ) {
