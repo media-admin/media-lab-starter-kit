@@ -641,7 +641,7 @@ Das Agency Core Plugin registriert mehrere separate Unterseiten unter **Agency C
 | 8 | Top Header / Kontaktdaten | `agency-core-top-header` | `group_top_header` |
 | 9 | Multi Language / Mehrsprachigkeit | `agency-core-multilang` | `group_multi_language` |
 | 10 | White Label / Agentur-Branding | `agency-core-white-label` | `group_white_label` |
-| 11 | Suche / Live-Suche | `agency-core-search` | `group_search_settings` |
+| 11 | Suche / Live-Suche | `agency-core-search` | `group_search_settings`, `group_search_synonyms` |
 
 > **Hinweis:** Gespeicherte Feldwerte bleiben bei einer Slug-Änderung erhalten, da ACF Options-Werte nach dem Feld-`name` (nicht nach dem Page-Slug) in der Datenbank gespeichert werden.
 
@@ -718,6 +718,17 @@ unverändert, gespeicherte Werte bleiben erhalten.
 | → Texte | `txt_placeholder`, `txt_show_all`, `txt_intro`, `txt_min_hint`, `txt_no_results`, `txt_error`, `txt_aria_open`, `txt_aria_submit`, `txt_type_labels` | text/textarea | Entsprechen den Standardtexten; leere Pflichttexte fallen auf die eingebauten Standardtexte zurück |
 
 Spracherkennung: Polylang → WPML → WP-Locale (gleiches Muster wie Cookie Consent).
+
+### Synonyme (eigene Feldgruppe `group_search_synonyms`)
+
+Liegt auf derselben Seite unterhalb der Tabs (`inc/search/class-synonym-dictionary.php`, seit 1.27.0). Die frühere eigene Seite „Suche / Synonyme“ wurde mit „Suche / Live-Suche“ zusammengeführt (gleicher Slug), gespeicherte Werte bleiben erhalten.
+
+| Field | Name | Typ | Beschreibung |
+|---|---|---|---|
+| Sprachen | `search_synonym_groups` | repeater | Eine Zeile pro Sprache |
+| → Sprache | `language` | text | Sprachcode, z. B. `de`, `en`, `fr` |
+| → Synonym-Gruppen | `groups` | repeater | Eine Zeile pro Gruppe |
+| → → Begriffe | `terms` | text | Kommagetrennt, mind. 2 Begriffe, z. B. `Sticker, Aufkleber` |
 
 ### Lesen im Code
 

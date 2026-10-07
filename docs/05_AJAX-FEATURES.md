@@ -169,7 +169,7 @@ der `WP_Query`, WPML: `wpml_switch_language`; Attribut-Treffer werden bei Polyla
 
 | Filter | Zweck |
 |---|---|
-| `media_lab_ajax_search_query_expansion` | Zusätzliche Suchbegriffe (Synonyme, Varianten); Argumente: `array $terms`, `string $query` |
+| `media_lab_ajax_search_query_expansion` | Zusätzliche Suchbegriffe (Synonyme, Varianten); Argumente: `array $terms`, `string $query`. Nutzt u. a. das Synonym-Wörterbuch (Agency Core → Suche / Live-Suche → „Suche – Synonyme“) |
 | `media_lab_ajax_search_extra_matches` | Zusätzliche Produkt-Treffer, nur wenn Content- und Attribut-Suche nichts finden; Rückgabe `post_id => Anzeigetext` |
 | `media_lab_ajax_search_result` | Ergebnis-Daten pro Treffer erweitern; Argumente: `array $result`, `int $post_id`, `string $post_type` |
 

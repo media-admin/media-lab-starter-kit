@@ -39,6 +39,7 @@ Live-Suche mit Ajax-Ergebnissen. Aufbau:
 | `inc/ajax-search.php` | AJAX-Handler `agency_search` (Rate-Limit, Nonce, WP_Query, Attribut-Suche) |
 | `inc/nav-search-icon.php` | Such-Icon in der Hauptnavigation + Such-Overlay |
 | `inc/shortcodes.php` | Shortcode `[ajax_search]` |
+| `inc/search/class-synonym-dictionary.php` | Synonym-Wörterbuch (Feldgruppe „Suche – Synonyme“ auf derselben Einstellungsseite) |
 | Theme: `assets/src/js/components/ajax-search.js`, `assets/src/scss/components/_ajax-search.scss` | Frontend-Komponente `.ajax-search` |
 
 ### Einstellungen
@@ -68,6 +69,10 @@ Live-Suche mit Ajax-Ergebnissen. Aufbau:
 - **Mehrsprachigkeit:** Toggle „Mehrsprachigkeit aktivieren“ + Repeater `search_languages` (Sprachcode + alle Texte). Spracherkennung: Polylang → WPML → WP-Locale. Die **erste Zeile** ist der Fallback, wenn keine Sprache passt. Bei deaktivierter Mehrsprachigkeit gelten die Standardtexte. Leere Pflichttexte (Platzhalter, „Keine Ergebnisse“, Fehlertext, Link-Text, Labels) werden durch die eingebauten deutschen Standardtexte ersetzt; Startertext und Hinweis bleiben leer = werden nicht angezeigt.
 
 > **Standardwerte entsprechen dem bisherigen Verhalten.** Ausnahme Nav-Overlay: Dort waren früher Platzhalter „Wonach suchst du?“, 6 Treffer und die Typen Beiträge/Seiten/Produkte fest verdrahtet – jetzt gelten auch hier die globalen Einstellungen.
+
+### Synonyme
+
+Auf derselben Seite, unterhalb der Tabs: Feldgruppe **Suche – Synonyme** (seit 1.27.0, `inc/search/class-synonym-dictionary.php`). Pro Sprache Gruppen äquivalenter Begriffe, kommagetrennt (z. B. „Sticker, Aufkleber“); sucht jemand einen Begriff einer Gruppe, werden alle Begriffe der Gruppe mitgesucht. Die Seite „Suche / Live-Suche“ ersetzt die frühere eigene Seite „Suche / Synonyme“ (gleicher Slug `agency-core-search`, gespeicherte Synonyme bleiben erhalten).
 
 ### Shortcode
 

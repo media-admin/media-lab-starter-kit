@@ -58,6 +58,11 @@ Ende.
   sofern nicht in den Einstellungen angepasst.
 - **Shortcode `[ajax_search]`** (`inc/shortcodes.php`): Platzhalter und
   Button-Label kommen aus den Einstellungen; Suchfeld mit `aria-label`.
+  - **Synonym-Wörterbuch auf die Seite „Suche / Live-Suche“ zusammengeführt**
+  (`inc/search/class-synonym-dictionary.php`) – die frühere eigene Seite
+  „Suche / Synonyme“ hatte denselben Slug `agency-core-search`. Die Klasse
+  registriert die Seite nicht mehr selbst, nur noch ihre Feldgruppe;
+  gespeicherte Synonyme bleiben erhalten.
 
 #### Fixed
 - **Live-Suche lieferte bei Mehrsprachigkeit Treffer aller Sprachen**
