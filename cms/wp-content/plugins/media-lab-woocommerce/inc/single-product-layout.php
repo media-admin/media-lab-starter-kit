@@ -41,6 +41,9 @@ class MediaLab_Single_Product_Layout {
     }
 
     public static function register(): void {
+        // Einheit hinter der Zahl im Lagertext ("250 Stück vorrätig"), Produktseite und Karte
+        add_filter( 'woocommerce_get_availability_text', [ __CLASS__, 'append_stock_unit' ], 20, 2 );
+
         if ( self::layout_enabled() ) {
             // Meta (WooCommerce-Standard: Prio 40) ganz nach oben
             remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_meta', 40 );
@@ -111,6 +114,44 @@ class MediaLab_Single_Product_Layout {
     public static function dedupe_stock( $html, $product ) {
         if ( $product instanceof WC_Product && ! empty( self::$stock_done[ $product->get_id() ] ) ) return '';
         return $html;
+    }
+
+    /**
+     * Mengeneinheit hinter der Zahl im Lagertext: "250 vorrätig" -> "250 Stück vorrätig".
+     * Quelle: Germanized-Einheit am Produkt (Variationen erben vom Produkt), sonst Filter
+     * mlw_stock_unit( $einheit, $produkt ), damit Projekte ohne Germanized die Einheit selbst liefern koennen.
+     * Abschalten: add_filter( 'mlw_stock_unit_enabled', '__return_false' ).
+     *
+     * @param mixed $text    Lagertext aus WC_Product::get_availability_text()
+     * @param mixed $product WC_Product
+     */
+    public static function append_stock_unit( $text, $product ) {
+        if ( ! is_string( $text ) || $text === '' || ! $product instanceof WC_Product ) return $text;
+        if ( ! apply_filters( 'mlw_stock_unit_enabled', true ) ) return $text;
+        if ( ! preg_match( '/\d/', $text ) ) return $text; // "Auf Lager", "Nicht vorrätig": keine Zahl, keine Einheit
+
+        $unit = '';
+        if ( function_exists( 'wc_gzd_get_product' ) ) {
+            $gzd = wc_gzd_get_product( $product );
+            if ( $gzd && method_exists( $gzd, 'get_unit_name' ) ) {
+                $unit = (string) $gzd->get_unit_name();
+            }
+            if ( $unit === '' && $gzd && method_exists( $gzd, 'get_unit' ) ) {
+                $slug = (string) $gzd->get_unit();
+                if ( $slug !== '' ) {
+                    $term = get_term_by( 'slug', $slug, 'product_unit' );
+                    $unit = ( $term && ! is_wp_error( $term ) ) ? $term->name : $slug;
+                }
+            }
+        }
+
+        $unit = trim( (string) apply_filters( 'mlw_stock_unit', $unit, $product ) );
+        if ( $unit === '' ) return $text;
+
+        // Einheit direkt hinter die erste Zahl (auch 1.250 oder 1,5)
+        return preg_replace_callback( '/\d+(?:[.,]\d+)*/u', static function ( $m ) use ( $unit ) {
+            return $m[0] . ' ' . $unit;
+        }, $text, 1 );
     }
 
     /** Tab "Beschreibung" entfaellt, die Beschreibung steht im Summary (gilt auch fuer konfigurierbare Produkte). */
