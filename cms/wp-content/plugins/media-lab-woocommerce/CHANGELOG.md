@@ -4,6 +4,16 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [2.12.0] - 2026-10-07
+
+### Added
+- Wunschliste: Varianten. Variable Produkte werden mit der gewählten Variante gespeichert (Eintrag `variation_<id>` mit Variations-ID, Menge wird beim erneuten Hinzufügen ersetzt). Der Button auf der Produktseite nimmt die gewählte Variante aus dem Variationsformular und zeigt den Zustand pro Variante; auf Produktkarten führt das Herz bei variablen Produkten zur Produktseite. Wunschzettel-Seite, geteilte Liste und Anfrage (Mail, gespeicherte Anfrage, Kanäle: `variation_id` und `sku`) zeigen Variante, Varianten-SKU und Merkmale. Shop-Modus: Variante direkt in den Warenkorb
+- Filter `mlw_wishlist_unit_price( $preis, $item, $produkt, $menge )`: Projekte können den Stückpreis nach Menge anpassen (z. B. Mengenstaffel). Gilt nicht für konfigurierte Artikel
+- `MediaLab_Wishlist_Storage::has_product()` nimmt optional eine `$variation_id`, neue Methode `get_variation_display()`
+
+### Changed
+- Variable Produkte ohne gewählte Variante lassen sich nicht zur Wunschliste hinzufügen ("Bitte zuerst eine Variante wählen."). Bestehende Einträge ohne Variante bleiben sichtbar
+
 ## [2.11.2] - 2026-10-07
 
 ### Added
