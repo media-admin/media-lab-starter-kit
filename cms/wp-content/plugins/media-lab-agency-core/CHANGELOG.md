@@ -20,6 +20,43 @@ Ende.
 
 ---
 
+## [1.32.0] - 2026-10-08
+
+### media-lab-agency-core 1.32.0
+
+#### Added
+- **Suche: Text und/oder Icon im Hauptmenü** (`inc/search-settings.php`,
+  `inc/nav-search-icon.php`) – neue Einstellung „Darstellung in der Navigation“
+  (Agency Core → Suche / Live-Suche → Allgemein): *Nur Icon* (Standard, bisheriges
+  Verhalten), *Icon + Text* (Icon vor dem Text) oder *Nur Text*. Der Text
+  („Navigation: Text“, Standard „Suche“) ist im Tab „Texte“ mehrsprachig pflegbar.
+  Bei sichtbarem Text liefert dieser den zugänglichen Namen des Buttons
+  (WCAG 2.5.3), bei „Nur Icon“ bleibt das `aria-label`.
+- **Plugin Status als eigene Admin-Seite** (`inc/plugin-status.php`, neu) –
+  Agency Core → Plugin Status zeigt statt eines statischen Textes eine
+  Systemübersicht (Plugin-/WordPress-/PHP-Version gegen die Mindestanforderung,
+  Umgebung, Warnungen bei aktivem Wartungsmodus / fehlendem ACF / `WP_DEBUG` auf
+  Production), System & Abhängigkeiten (ACF, Theme, WooCommerce, Polylang/WPML,
+  PHP-Speicher, Object Cache), Inhaltstypen mit Anzahl (dynamisch statt
+  hartcodierter Liste) und Schnellzugriff auf alle Agency-Core-Einstellungsseiten.
+- **README und Changelog im Backend** – Tabs „Dokumentation“ (README.md) und
+  „Changelog“ (CHANGELOG.md, je Version einklappbar) auf der Plugin-Status-Seite,
+  gerendert von einem kleinen eigenen Markdown-Renderer (escaped, ohne externe
+  Bibliothek). Ausgeblendet bei aktivem White Label; überschreibbar per Filter
+  `medialab_plugin_status_show_docs`.
+
+#### Changed
+- **Plugin Status ist keine ACF-Options-Seite mehr** – die Seite gleichen Slugs
+  (`agency-core-plugin-status`) wird in `MediaLab_Plugin_Status::register_page()`
+  durch eine eigene Seite ersetzt (kein „Aktualisieren“-Button mehr). Die ACF-Seite
+  und die Feldgruppe `group_plugin_status` in `inc/acf-settings.php` entfallen.
+
+*(Theme-seitig, gehört ins Theme-Changelog: `_search-results.scss` 2.0.1 lädt
+`templates/archive` selbst – behebt fehlende Archiv-Styles auf der Suchergebnisseite
+(Grid, Layout-Umschaltung, Dark-Mode-Karten, Leer-Zustand).)*
+
+---
+
 ## [1.31.0] - 2026-10-07
 
 ### media-lab-agency-core 1.31.0
