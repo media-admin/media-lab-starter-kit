@@ -659,8 +659,8 @@ class MediaLab_Plugin_Status {
             .mlps-link{display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid var(--mlps-border);border-radius:6px;text-decoration:none;font-weight:500;color:#1d2327;transition:border-color .15s,background .15s}
             .mlps-link:hover{border-color:var(--mlps-accent);background:#f6f7f7;color:var(--mlps-accent)}
             .mlps-link .dashicons{color:var(--mlps-muted)}
-            .mlps-card--doc{padding:8px 28px 20px}
-            .mlps-md{font-size:14px;line-height:1.65;max-width:900px}
+            .mlps-card--doc{padding:8px 28px 20px;max-width:1000px}
+            .mlps-md{font-size:14px;line-height:1.65}
             .mlps-md h2{font-size:22px;margin:1.4em 0 .5em;padding-bottom:.3em;border-bottom:1px solid var(--mlps-border)}
             .mlps-md h3{font-size:17px;margin:1.4em 0 .5em}
             .mlps-md h4{font-size:15px;margin:1.3em 0 .4em}

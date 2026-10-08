@@ -469,13 +469,13 @@ class MediaLab_Search_Settings {
                 'instructions' => 'Wird im Hauptmenü angezeigt, wenn die Darstellung „Icon + Text“ oder „Nur Text“ gewählt ist (Tab „Allgemein“).',
             ],
             'type_labels' => [
-                'label'        => 'Bezeichnungen der Inhaltstypen',
+                'label'        => 'Bezeichnungen der Inhaltstypen (Suche & Archive)',
                 'type'         => 'textarea',
                 'rows'         => 4,
                 'default'      => '',
                 'required'     => false,
                 'width'        => '100',
-                'instructions' => 'Eine Zeile pro Typ im Format slug=Bezeichnung, z. B. product=Produkt. Leer = Standardbezeichnungen des jeweiligen Post-Types.',
+                'instructions' => 'Eine Zeile pro Typ im Format slug=Singular|Plural, z. B. team=Teammitglied|Teammitglieder. Der Singular erscheint als Badge in den Suchergebnissen, Singular und Plural im Zähler der Archive („14 Teammitglieder“). Ohne Plural gilt der Plural des Inhaltstyps. Leer = Bezeichnungen des Inhaltstyps. Das Standardfeld gilt für alle Sprachen, ein Eintrag in einer Sprachzeile überschreibt ihn für diesen Typ in dieser Sprache.',
             ],
             'serp_title' => [
                 'label'        => 'Ergebnisseite: Überschrift',
@@ -549,9 +549,15 @@ class MediaLab_Search_Settings {
         if ( self::opt( 'search_multilang_enabled', false ) ) {
             $row = self::match_language_row( $lang );
             if ( $row !== null ) {
+                // Typ-Bezeichnungen: Standardfeld ist die Basis für alle Sprachen, die Sprachzeile
+                // überschreibt pro Typ (spätere Zeilen gewinnen) - kein Doppelt-Pflegen nötig.
+                $base_type_labels = $source['type_labels'];
+
                 foreach ( $defs as $key => $def ) {
                     $source[ $key ] = (string) ( $row[ 'txt_' . $key ] ?? '' );
                 }
+
+                $source['type_labels'] = $base_type_labels . "\n" . $source['type_labels'];
             }
         }
 
@@ -564,7 +570,8 @@ class MediaLab_Search_Settings {
             $out[ $key ] = $value;
         }
 
-        $out['type_labels']      = self::type_labels( $source['type_labels'] );
+        $out['type_labels']        = self::type_labels( $source['type_labels'] );
+        $out['type_labels_plural'] = self::type_labels_plural( $source['type_labels'] );
         $out['serp_sort_labels'] = self::sort_labels( $source['serp_sort_labels'] );
 
         return $out;
@@ -627,16 +634,58 @@ class MediaLab_Search_Settings {
             }
         }
 
-        foreach ( preg_split( '/\R/', $raw ) ?: [] as $line ) {
-            if ( strpos( $line, '=' ) === false ) continue;
-            [ $slug, $label ] = array_map( 'trim', explode( '=', $line, 2 ) );
-            $slug = sanitize_key( $slug );
-            if ( $slug !== '' && $label !== '' ) {
-                $labels[ $slug ] = sanitize_text_field( $label );
+        foreach ( self::parse_type_label_lines( $raw ) as $slug => [ $singular ] ) {
+            if ( $singular !== '' ) {
+                $labels[ $slug ] = $singular;
             }
         }
 
         return $labels;
+    }
+
+    /**
+     * Plural-Bezeichnungen der Inhaltstypen (Archiv-Zähler "14 Teammitglieder").
+     * Priorität: Plural aus der Textarea (slug=Singular|Plural) > Plural des Inhaltstyps
+     * (labels->name).
+     */
+    private static function type_labels_plural( string $raw ): array {
+        $labels = [];
+
+        foreach ( self::searchable_post_types() as $slug ) {
+            $obj = get_post_type_object( $slug );
+            if ( $obj && ! empty( $obj->labels->name ) ) {
+                $labels[ $slug ] = $obj->labels->name;
+            }
+        }
+
+        foreach ( self::parse_type_label_lines( $raw ) as $slug => [ , $plural ] ) {
+            if ( $plural !== '' ) {
+                $labels[ $slug ] = $plural;
+            }
+        }
+
+        return $labels;
+    }
+
+    /** Zeilen "slug=Singular|Plural" -> [ slug => [ singular, plural ('' wenn nicht angegeben) ] ]. */
+    private static function parse_type_label_lines( string $raw ): array {
+        $out = [];
+
+        foreach ( preg_split( '/\R/', $raw ) ?: [] as $line ) {
+            if ( strpos( $line, '=' ) === false ) continue;
+
+            [ $slug, $label ] = array_map( 'trim', explode( '=', $line, 2 ) );
+            $slug = sanitize_key( $slug );
+            if ( $slug === '' || $label === '' ) continue;
+
+            $parts = array_map( 'trim', explode( '|', $label, 2 ) );
+            $out[ $slug ] = [
+                sanitize_text_field( $parts[0] ),
+                sanitize_text_field( $parts[1] ?? '' ),
+            ];
+        }
+
+        return $out;
     }
 
     // ═════════════════════════════════════════════════════════════════════════
