@@ -15,6 +15,10 @@
  *  - Serverseitige Absicherung für inc/ajax-search.php (Post-Type-Whitelist,
  *    Limit-Deckel, Sprachfilter).
  *
+ * Suchergebnisseite (search.php im Theme): Sortierung, Layout, Ergebnisse pro Seite
+ * (Tab "Ergebnisseite"); die Query wird per pre_get_posts angepasst, die
+ * Konfiguration liefert MediaLab_Search_Settings::serp().
+ *
  * Mehrsprachigkeit (gleiches Muster wie inc/cookie-consent.php):
  *  - Toggle "Mehrsprachigkeit aktivieren" + Repeater search_languages.
  *  - Spracherkennung: Polylang -> WPML -> WP-Locale.
@@ -36,10 +40,16 @@ class MediaLab_Search_Settings {
     /** Harte Obergrenze für Treffer pro Anfrage (serverseitig erzwungen). */
     const MAX_LIMIT = 20;
 
+    /** Erlaubte Sortierungen der Suchergebnisseite (Query-Param ?sort=). */
+    const SORT_KEYS = [ 'relevance', 'date_desc', 'date_asc', 'title_asc', 'title_desc' ];
+
     private static ?array $cache = null;
+    private static ?array $serp_cache = null;
 
     public static function init(): void {
         add_action( 'acf/init', [ __CLASS__, 'register_options_page' ], 10 );
+        add_action( 'pre_get_posts', [ __CLASS__, 'apply_serp_query' ] );
+        add_filter( 'posts_orderby', [ __CLASS__, 'filter_orderby_type_priority' ], 10, 2 );
         add_action( 'acf/init', [ __CLASS__, 'register_fields' ], 25 );
         // Checkbox-Choices erst beim Laden des Feldes füllen: acf/init läuft
         // auf init:5, CPTs werden meist erst auf init:10 registriert.
@@ -223,6 +233,148 @@ class MediaLab_Search_Settings {
     }
 
     // ═════════════════════════════════════════════════════════════════════════
+    // Suchergebnisseite (search.php)
+    // ═════════════════════════════════════════════════════════════════════════
+
+    /**
+     * Konfiguration der Suchergebnisseite. Pro Request gecacht.
+     *
+     * @return array{
+     *   layout:string, columns:int, per_page:int, orderby:string,
+     *   type_priority:string[], extended:bool, sort_ui:bool,
+     *   sort_options:array<string,string>, sort_current:string
+     * }
+     */
+    public static function serp(): array {
+        if ( self::$serp_cache !== null ) {
+            return self::$serp_cache;
+        }
+
+        $layout = (string) self::opt( 'search_serp_layout', 'grid' );
+        $layout = in_array( $layout, [ 'grid', 'list' ], true ) ? $layout : 'grid';
+
+        $columns = (int) self::opt( 'search_serp_columns', 3 );
+        $columns = in_array( $columns, [ 2, 3, 4 ], true ) ? $columns : 3;
+
+        $per_page = max( 0, min( 50, (int) self::opt( 'search_serp_per_page', 0 ) ) );
+
+        $default = (string) self::opt( 'search_serp_orderby', 'relevance' );
+        $default = in_array( $default, self::SORT_KEYS, true ) ? $default : 'relevance';
+
+        $priority = array_values( array_filter( array_map(
+            static fn( $slug ) => sanitize_key( trim( $slug ) ),
+            explode( ',', (string) self::opt( 'search_serp_type_priority', '' ) )
+        ) ) );
+
+        $sort_ui = (bool) self::opt( 'search_serp_sort_ui', false );
+
+        $labels = array_merge(
+            self::sort_label_defaults(),
+            (array) ( self::get()['text']['serp_sort_labels'] ?? [] )
+        );
+
+        // Sortier-Optionen für Besucher: gewählte + immer die Standard-Sortierung
+        $options = [];
+        $current = $default;
+
+        if ( $sort_ui ) {
+            $enabled = (array) self::opt( 'search_serp_sort_options', self::SORT_KEYS );
+            $enabled = array_values( array_intersect( self::SORT_KEYS, array_merge( $enabled, [ $default ] ) ) );
+
+            foreach ( $enabled as $key ) {
+                $options[ $key ] = (string) ( $labels[ $key ] ?? $key );
+            }
+
+            $requested = isset( $_GET['sort'] ) ? sanitize_key( wp_unslash( $_GET['sort'] ) ) : '';
+            if ( $requested !== '' && isset( $options[ $requested ] ) ) {
+                $current = $requested;
+            }
+        }
+
+        self::$serp_cache = [
+            'layout'        => $layout,
+            'columns'       => $columns,
+            'per_page'      => $per_page,
+            'orderby'       => $default,
+            'type_priority' => $priority,
+            'extended'      => (bool) self::opt( 'search_serp_extended', true ),
+            'sort_ui'       => $sort_ui,
+            'sort_options'  => $options,
+            'sort_current'  => $current,
+        ];
+
+        return self::$serp_cache;
+    }
+
+    /** Wendet Sortierung, Ergebnisse pro Seite und Typ-Reihenfolge auf die Haupt-Suchabfrage an. */
+    public static function apply_serp_query( \WP_Query $query ): void {
+        if ( is_admin() || ! $query->is_main_query() || ! $query->is_search() ) {
+            return;
+        }
+
+        $serp = self::serp();
+
+        if ( $serp['per_page'] > 0 ) {
+            $query->set( 'posts_per_page', $serp['per_page'] );
+        }
+
+        switch ( $serp['sort_current'] ) {
+            case 'date_desc':
+                $query->set( 'orderby', 'date' );
+                $query->set( 'order', 'DESC' );
+                break;
+            case 'date_asc':
+                $query->set( 'orderby', 'date' );
+                $query->set( 'order', 'ASC' );
+                break;
+            case 'title_asc':
+                $query->set( 'orderby', 'title' );
+                $query->set( 'order', 'ASC' );
+                break;
+            case 'title_desc':
+                $query->set( 'orderby', 'title' );
+                $query->set( 'order', 'DESC' );
+                break;
+            default:
+                $query->set( 'orderby', 'relevance' );
+        }
+
+        if ( $serp['type_priority'] ) {
+            $query->set( 'mlsearch_type_priority', $serp['type_priority'] );
+        }
+    }
+
+    /**
+     * Inhaltstypen-Reihenfolge ("Produkte zuerst ..."): stellt der gewählten
+     * Sortierung ein FIELD(post_type, ...) voran. Nicht gelistete Typen
+     * kommen danach (FIELD() liefert 0, daher die Extra-Bedingung).
+     */
+    public static function filter_orderby_type_priority( string $orderby, \WP_Query $query ): string {
+        $priority = $query->get( 'mlsearch_type_priority' );
+        if ( empty( $priority ) || ! is_array( $priority ) ) {
+            return $orderby;
+        }
+
+        global $wpdb;
+
+        $list  = implode( ',', array_map( static fn( $slug ) => "'" . esc_sql( $slug ) . "'", $priority ) );
+        $field = "FIELD({$wpdb->posts}.post_type, {$list})";
+        $first = "({$field} = 0) ASC, {$field} ASC";
+
+        return $orderby !== '' ? $first . ', ' . $orderby : $first;
+    }
+
+    private static function sort_label_defaults(): array {
+        return [
+            'relevance'  => 'Relevanz',
+            'date_desc'  => 'Neueste zuerst',
+            'date_asc'   => 'Älteste zuerst',
+            'title_asc'  => 'Titel A–Z',
+            'title_desc' => 'Titel Z–A',
+        ];
+    }
+
+    // ═════════════════════════════════════════════════════════════════════════
     // Interne Helper
     // ═════════════════════════════════════════════════════════════════════════
 
@@ -310,6 +462,63 @@ class MediaLab_Search_Settings {
                 'width'        => '100',
                 'instructions' => 'Eine Zeile pro Typ im Format slug=Bezeichnung, z. B. product=Produkt. Leer = Standardbezeichnungen des jeweiligen Post-Types.',
             ],
+            'serp_title' => [
+                'label'        => 'Ergebnisseite: Überschrift',
+                'type'         => 'text',
+                'default'      => 'Suchergebnisse für: „%s“',
+                'required'     => true,
+                'width'        => '50',
+                'instructions' => '%s wird durch den Suchbegriff ersetzt.',
+            ],
+            'serp_sort_label' => [
+                'label'        => 'Ergebnisseite: Beschriftung „Sortieren“',
+                'type'         => 'text',
+                'default'      => 'Sortieren nach',
+                'required'     => true,
+                'width'        => '50',
+                'instructions' => '',
+            ],
+            'serp_count_one' => [
+                'label'        => 'Ergebnisseite: Anzahl (1 Treffer)',
+                'type'         => 'text',
+                'default'      => '%s Ergebnis',
+                'required'     => true,
+                'width'        => '50',
+                'instructions' => '%s wird durch die Anzahl ersetzt.',
+            ],
+            'serp_count_many' => [
+                'label'        => 'Ergebnisseite: Anzahl (mehrere Treffer)',
+                'type'         => 'text',
+                'default'      => '%s Ergebnisse',
+                'required'     => true,
+                'width'        => '50',
+                'instructions' => '',
+            ],
+            'serp_empty_title' => [
+                'label'        => 'Ergebnisseite: „Keine Ergebnisse“ – Überschrift',
+                'type'         => 'text',
+                'default'      => 'Keine Ergebnisse gefunden',
+                'required'     => true,
+                'width'        => '50',
+                'instructions' => '',
+            ],
+            'serp_empty_text' => [
+                'label'        => 'Ergebnisseite: „Keine Ergebnisse“ – Text',
+                'type'         => 'text',
+                'default'      => 'Für „%s“ wurden keine Inhalte gefunden. Versuche es mit anderen Suchbegriffen.',
+                'required'     => true,
+                'width'        => '50',
+                'instructions' => '%s wird durch den Suchbegriff ersetzt.',
+            ],
+            'serp_sort_labels' => [
+                'label'        => 'Ergebnisseite: Bezeichnungen der Sortierungen',
+                'type'         => 'textarea',
+                'rows'         => 5,
+                'default'      => '',
+                'required'     => false,
+                'width'        => '100',
+                'instructions' => 'Eine Zeile pro Sortierung im Format schlüssel=Bezeichnung. Schlüssel: relevance, date_desc, date_asc, title_asc, title_desc. Leer = Standardbezeichnungen (Relevanz, Neueste zuerst, Älteste zuerst, Titel A–Z, Titel Z–A).',
+            ],
         ];
     }
 
@@ -340,7 +549,8 @@ class MediaLab_Search_Settings {
             $out[ $key ] = $value;
         }
 
-        $out['type_labels'] = self::type_labels( $source['type_labels'] );
+        $out['type_labels']      = self::type_labels( $source['type_labels'] );
+        $out['serp_sort_labels'] = self::sort_labels( $source['serp_sort_labels'] );
 
         return $out;
     }
@@ -360,6 +570,22 @@ class MediaLab_Search_Settings {
         }
 
         return $rows[0]; // erste Zeile = Fallback
+    }
+
+    /** Zeilen "schluessel=Bezeichnung" -> Array, nur gültige Sortier-Schlüssel. */
+    private static function sort_labels( string $raw ): array {
+        $labels = [];
+
+        foreach ( preg_split( '/\R/', $raw ) ?: [] as $line ) {
+            if ( strpos( $line, '=' ) === false ) continue;
+            [ $key, $label ] = array_map( 'trim', explode( '=', $line, 2 ) );
+            $key = sanitize_key( $key );
+            if ( in_array( $key, self::SORT_KEYS, true ) && $label !== '' ) {
+                $labels[ $key ] = sanitize_text_field( $label );
+            }
+        }
+
+        return $labels;
     }
 
     /**
@@ -554,6 +780,85 @@ class MediaLab_Search_Settings {
         $fields[] = self::toggle( 'search_show_excerpt', 'Textausschnitt', true );
         $fields[] = self::toggle( 'search_show_price', 'Preis (WooCommerce)', true );
         $fields[] = self::toggle( 'search_show_all_link', 'Link zu allen Ergebnissen', false, 'Zeigt unter den Treffern einen Link zur vollständigen Suchergebnisseite.' );
+
+        // ── Tab: Ergebnisseite ───────────────────────────────────────────────
+        $fields[] = [ 'key' => 'field_search_tab_serp', 'label' => 'Ergebnisseite', 'type' => 'tab', 'placement' => 'top' ];
+
+        $fields[] = [
+            'key'     => 'field_search_serp_help',
+            'label'   => ' ',
+            'name'    => 'search_serp_help',
+            'type'    => 'message',
+            'message' => '<strong style="font-size:13px;">Suchergebnisseite</strong>'
+                       . '<p style="margin:.4rem 0 0;color:#666;font-size:12px;">'
+                       . 'Gilt für die Seite mit allen Ergebnissen (<code>/?s=…</code>, <code>search.php</code>). '
+                       . 'Karten-Inhalt und Hervorhebung kommen aus den Tabs „Anzeige“ und „Verhalten“, '
+                       . 'Überschriften und Beschriftungen aus „Texte“.</p>',
+        ];
+
+        $fields[] = [
+            'key'           => 'field_search_serp_layout',
+            'label'         => 'Layout',
+            'name'          => 'search_serp_layout',
+            'type'          => 'button_group',
+            'choices'       => [ 'grid' => 'Raster', 'list' => 'Liste' ],
+            'default_value' => 'grid',
+            'layout'        => 'horizontal',
+            'wrapper'       => [ 'width' => '33' ],
+        ];
+
+        $fields[] = [
+            'key'               => 'field_search_serp_columns',
+            'label'             => 'Spalten (Raster)',
+            'name'              => 'search_serp_columns',
+            'type'              => 'button_group',
+            'choices'           => [ '2' => '2', '3' => '3', '4' => '4' ],
+            'default_value'     => '3',
+            'layout'            => 'horizontal',
+            'wrapper'           => [ 'width' => '33' ],
+            'conditional_logic' => [ [ [ 'field' => 'field_search_serp_layout', 'operator' => '==', 'value' => 'grid' ] ] ],
+        ];
+
+        $fields[] = self::number( 'search_serp_per_page', 'Ergebnisse pro Seite', 0, 0, 50, 1, '', '0 = WordPress-Standard (Einstellungen → Lesen). Im 3-Spalten-Raster passen 12 oder 24 gut.' );
+
+        $fields[] = [
+            'key'           => 'field_search_serp_orderby',
+            'label'         => 'Standard-Sortierung',
+            'name'          => 'search_serp_orderby',
+            'type'          => 'select',
+            'choices'       => self::sort_label_defaults(),
+            'default_value' => 'relevance',
+            'ui'            => 1,
+            'wrapper'       => [ 'width' => '50' ],
+        ];
+
+        $fields[] = [
+            'key'           => 'field_search_serp_type_priority',
+            'label'         => 'Inhaltstypen zuerst',
+            'name'          => 'search_serp_type_priority',
+            'type'          => 'text',
+            'placeholder'   => 'product, page, post',
+            'instructions'  => 'Optional: Reihenfolge der Inhaltstypen (Slugs, kommagetrennt). Diese Typen stehen vor allen anderen, innerhalb eines Typs gilt die gewählte Sortierung. Leer = keine Gruppierung.',
+            'wrapper'       => [ 'width' => '50' ],
+        ];
+
+        $fields[] = self::toggle( 'search_serp_extended', 'Erweiterte Suche auf der Ergebnisseite', true, 'Findet wie die Live-Suche auch Synonyme, Produktattribute/Konfigurator-Optionen und Tippfehler bei Produktcodes (WooCommerce-Attribute folgen dem Schalter unter „Verhalten“).', '100' );
+
+        $fields[] = self::toggle( 'search_serp_sort_ui', 'Sortier-Auswahl für Besucher', false, 'Zeigt über den Ergebnissen eine Auswahl (?sort=…).', '50' );
+
+        $fields[] = [
+            'key'               => 'field_search_serp_sort_options',
+            'label'             => 'Angebotene Sortierungen',
+            'name'              => 'search_serp_sort_options',
+            'type'              => 'checkbox',
+            'choices'           => self::sort_label_defaults(),
+            'default_value'     => self::SORT_KEYS,
+            'layout'            => 'horizontal',
+            'return_format'     => 'value',
+            'instructions'      => 'Die Standard-Sortierung wird immer angeboten.',
+            'wrapper'           => [ 'width' => '50' ],
+            'conditional_logic' => [ [ [ 'field' => 'field_search_serp_sort_ui', 'operator' => '==', 'value' => '1' ] ] ],
+        ];
 
         // ── Tab: Texte ───────────────────────────────────────────────────────
         $fields[] = [ 'key' => 'field_search_tab_texts', 'label' => 'Texte', 'type' => 'tab', 'placement' => 'top' ];
