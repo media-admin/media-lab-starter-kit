@@ -1,32 +1,29 @@
 @use '../abstracts' as *;
 
-// Abhängigkeit explizit deklarieren: diese Datei baut auf den Archiv-Bausteinen
-// auf (.archive-layout, .archive-header, .post-grid, .post-card, .archive-empty,
-// .archive-pagination). Sass lädt ein Modul nur einmal - ist `templates/archive`
-// bereits in style.scss eingebunden, entsteht keine Dopplung; fehlt es dort,
-// wird es hier mitgezogen (und steht im CSS VOR den Such-Ergänzungen unten).
-@use 'archive';
-
 // =============================================================================
 // Search Results – nur noch das, was die Suche zusätzlich zum Archiv braucht
-// Version: 2.0.1 – SERP leitet sich vom Archiv-Design ab (lädt templates/archive selbst)
+// Version: 2.1.0 – Karten und Grid ausgelagert
 //
 // Die Suchergebnisseite (search.php) nutzt dieselben Bausteine wie archive.php:
-//   .archive-layout / .archive-header / .post-grid / .post-card /
-//   .archive-pagination / .archive-empty  (siehe templates/_archive.scss)
-// Änderungen am Archiv-Design wirken dadurch automatisch auch auf die Suche.
+//   .archive-layout / .archive-header / .post-grid / .archive-pagination /
+//   .archive-empty        → templates/_archive.scss
+//   .post-card            → components/_cards.scss
+// Änderungen am Archiv- oder Karten-Design wirken dadurch automatisch auch auf die Suche.
 //
 // Hier steht nur Such-spezifisches:
 //   - Such-Formular im Header und im Leer-Zustand
 //   - Sortier-Leiste (.search-toolbar / .search-sort)
-//   - Grid-Modifier für Spalten/Liste (.post-grid--cols-N / --list)
-//   - Post-Card-Ergänzungen: Preis, statisches Typ-Badge, Typ-Farben, <mark>
 //   - Leer-Zustand (Icon, Titel, Formular)
 //
-// ENTFERNT gegenüber 1.2.0 (nicht mehr verwendet):
-//   .search-page, .search-header*, .search-results-list, .search-result*,
-//   .search-empty*
+// Änderungen v2.1.0: Grid-Modifier → _archive.scss, Karten-Ergänzungen (Preis,
+// statisches Badge, Typ-Farben, <mark>) → _cards.scss.
 // =============================================================================
+
+// Abhängigkeiten explizit deklarieren. Sass lädt ein Modul nur einmal - ist es
+// bereits in style.scss eingebunden, entsteht keine Dopplung; fehlt es dort,
+// wird es hier mitgezogen (und steht im CSS VOR den Such-Ergänzungen unten).
+@use '../components/cards';
+@use 'archive';
 
 // ── Gemeinsames Such-Formular (get_search_form()) ─────────────────────────────
 
@@ -113,91 +110,6 @@
             box-shadow:   0 0 0 3px rgba($color-primary, 0.12);
         }
     }
-}
-
-// ── Post-Grid: Spalten / Liste ────────────────────────────────────────────────
-// Generisch - gehört langfristig nach templates/_archive.scss (dort steht die
-// Basis .post-grid mit 3 Spalten). Doppelte Klasse = ausreichende Spezifität,
-// unabhängig von der Lade-Reihenfolge.
-
-.post-grid.post-grid--cols-2 {
-    grid-template-columns: repeat(2, 1fr);
-    @include respond-below('sm') { grid-template-columns: 1fr; }
-}
-
-.post-grid.post-grid--cols-4 {
-    grid-template-columns: repeat(4, 1fr);
-    @include respond-below('xl') { grid-template-columns: repeat(3, 1fr); }
-    @include respond-below('lg') { grid-template-columns: repeat(2, 1fr); }
-    @include respond-below('sm') { grid-template-columns: 1fr; }
-}
-
-// Liste = 1 Spalte mit horizontalen Post-Cards (post-card--horizontal)
-.post-grid.post-grid--list {
-    grid-template-columns: 1fr;
-    gap:                   var(--space-md);
-}
-
-// ── Post-Card-Ergänzungen ─────────────────────────────────────────────────────
-
-.post-card {
-    // Preis (WooCommerce get_price_html)
-    &__price {
-        font-size:   var(--text-lg);
-        font-weight: $font-weight-bold;
-        color:       $color-success;
-
-        del { color: var(--color-text-muted); font-size: var(--text-sm); font-weight: $font-weight-medium; margin-right: $spacing-1; }
-        ins { text-decoration: none; }
-    }
-
-    // Badge ohne Link (z. B. Inhaltstyp)
-    &__category-link--static {
-        cursor: default;
-
-        &:hover { background: rgba($color-primary, 0.08); }
-    }
-
-    // Treffer-Hervorhebung (wie in der Live-Suche)
-    &__title mark {
-        background:    rgba($color-primary, 0.2);
-        color:         $color-primary;
-        padding:       0 0.2em;
-        border-radius: 2px;
-    }
-
-    &__excerpt mark {
-        background:    rgba($color-primary, 0.15);
-        color:         inherit;
-        padding:       0 0.15em;
-        border-radius: 2px;
-    }
-}
-
-// Typ-Farben für das Badge: .post-card--type-{post_type}
-// Weitere Typen: einfach hier in der Map ergänzen.
-$serp-type-colors: (
-    post:    $color-primary,
-    product: $color-success,
-    project: $color-info,
-    service: $color-warning,
-    job:     $color-purple,
-);
-
-@each $type, $color in $serp-type-colors {
-    .post-card--type-#{$type} .post-card__category-link {
-        background: rgba($color, 0.1);
-        color:      $color;
-
-        &:hover { background: rgba($color, 0.1); }
-    }
-}
-
-.post-card--type-page .post-card__category-link {
-    background: var(--color-hover-bg);
-    color:      var(--color-text-muted);
-
-    &:hover { background: var(--color-hover-bg); }
 }
 
 // ── Leer-Zustand (Basis: .archive-empty) ──────────────────────────────────────

@@ -2,7 +2,12 @@
 
 // =============================================================================
 // AJAX Search
-// Version: 1.3.0 – Startertext, Mindestzeichen-Hinweis, "Alle Ergebnisse"-Link
+// Version: 1.3.1 – <mark> ohne seitliches Padding (zerriss Wörter beim Highlighten)
+//
+// Änderungen v1.3.1:
+//   - mark-Padding 0.2em / 0.15em → 0 ("Arbeits[jack]e" wurde optisch auseinandergerissen)
+//
+// Version 1.3.0 – Startertext, Mindestzeichen-Hinweis, "Alle Ergebnisse"-Link
 //
 // Änderungen v1.3.0:
 //   - &__intro / &__hint: Startertext bzw. Hinweis "zu wenige Zeichen"
@@ -170,7 +175,7 @@
     mark {
       background:    rgba($color-primary, 0.2);
       color:         $color-primary;
-      padding:       0 0.2em;
+      padding:       0;
       border-radius: 2px;
     }
   }
@@ -187,7 +192,7 @@
     mark {
       background:    rgba($color-primary, 0.15);
       color:         inherit;
-      padding:       0 0.15em;
+      padding:       0;
       border-radius: 2px;
     }
   }

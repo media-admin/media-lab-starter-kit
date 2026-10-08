@@ -1,0 +1,242 @@
+@use '../abstracts' as *;
+
+// =============================================================================
+// Comments – Kommentar-Liste + Formular (comments.php)
+// Version: 1.0.0
+//
+// Optik wie die WooCommerce-Rezensionen: Avatar links (48px, rund), Text rechts,
+// Einträge durch Linien getrennt; Formularfelder wie die Theme-Formulare
+// (48px hoch, 2px Rahmen, Fokus-Ring in Primärfarbe).
+//
+// Hinweis: Die Feld-Werte entsprechen woocommerce/_woocommerce.scss
+// (.woocommerce form .form-row) und components/_contact-form-7.scss. Bei einer
+// weiteren Aufräum-Runde bietet sich ein gemeinsames Mixin an.
+// =============================================================================
+
+.comments-area {
+    margin-top: var(--space-2xl);
+}
+
+// ── Überschriften ─────────────────────────────────────────────────────────────
+
+.comments-title,
+.comment-reply-title {
+    font-size:      var(--text-2xl);
+    font-weight:    $font-weight-bold;
+    line-height:    $line-height-tight;
+    color:          var(--color-text);
+    margin:         0 0 $spacing-6;
+    padding-bottom: $spacing-3;
+    border-bottom:  2px solid var(--color-border);
+}
+
+.comment-reply-title {
+    margin-top: var(--space-2xl);
+
+    small {
+        margin-left: $spacing-3;
+        font-size:   var(--text-sm);
+        font-weight: $font-weight-medium;
+
+        a { color: $color-primary; }
+    }
+}
+
+// ── Liste ─────────────────────────────────────────────────────────────────────
+
+.comment-list {
+    list-style: none;
+    margin:     0;
+    padding:    0;
+
+    // Antworten: eingerückt
+    .children {
+        list-style:  none;
+        margin:      0 0 0 $spacing-8;
+        padding:     0;
+
+        @include respond-below('sm') { margin-left: $spacing-4; }
+    }
+}
+
+.comment__container {
+    display:       flex;
+    gap:           $spacing-4;
+    padding:       $spacing-5 0;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.comment__avatar {
+    width:         48px;
+    height:        48px;
+    border-radius: $radius-full;
+    flex-shrink:   0;
+    object-fit:    cover;
+}
+
+.comment__body {
+    flex:      1;
+    min-width: 0;
+}
+
+.comment__meta {
+    display:       flex;
+    flex-wrap:     wrap;
+    align-items:   baseline;
+    gap:           $spacing-1 $spacing-3;
+    margin-bottom: $spacing-2;
+}
+
+.comment__author {
+    font-weight: $font-weight-semibold;
+    color:       var(--color-text);
+
+    a { color: inherit; text-decoration: none; &:hover { color: $color-primary; } }
+}
+
+.comment__date,
+.comment__edit {
+    font-size:       var(--text-sm);
+    color:           var(--color-text-muted);
+    text-decoration: none;
+}
+
+.comment__date:hover,
+.comment__edit a:hover { color: $color-primary; }
+
+.comment__edit a { color: inherit; }
+
+.comment__moderation {
+    margin:        0 0 $spacing-2;
+    font-size:     var(--text-sm);
+    font-style:    italic;
+    color:         var(--color-text-muted);
+}
+
+.comment__text {
+    font-size:   var(--text-base);
+    line-height: 1.7;
+    color:       var(--color-text);
+
+    p            { margin: 0 0 $spacing-3; }
+    p:last-child { margin-bottom: 0; }
+    a            { color: $color-primary; }
+}
+
+.comment__reply {
+    margin-top: $spacing-3;
+
+    a {
+        font-size:       var(--text-sm);
+        font-weight:     $font-weight-semibold;
+        color:           $color-primary;
+        text-decoration: none;
+
+        &:hover { text-decoration: underline; }
+    }
+}
+
+// ── Seitenwechsel / Hinweise ──────────────────────────────────────────────────
+
+.comment-navigation,
+.comments-pagination {
+    margin: $spacing-6 0;
+    font-size: var(--text-sm);
+
+    .nav-links { display: flex; justify-content: space-between; gap: $spacing-4; }
+
+    a { color: $color-primary; font-weight: $font-weight-semibold; text-decoration: none; &:hover { text-decoration: underline; } }
+}
+
+.comments-closed {
+    margin:    $spacing-6 0 0;
+    color:     var(--color-text-muted);
+    font-style: italic;
+}
+
+// ── Formular ──────────────────────────────────────────────────────────────────
+
+.comment-respond { margin-top: var(--space-2xl); }
+
+.comment-form {
+    display:        flex;
+    flex-direction: column;
+    gap:            $spacing-4;
+
+    p { margin: 0; }
+
+    .comment-notes,
+    .logged-in-as {
+        font-size: var(--text-sm);
+        color:     var(--color-text-muted);
+
+        a { color: $color-primary; }
+    }
+
+    label {
+        display:       block;
+        margin-bottom: $spacing-1;
+        font-size:     var(--text-sm);
+        font-weight:   $font-weight-semibold;
+        color:         var(--color-text);
+
+        .required { color: $color-error; margin-left: 2px; }
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="url"],
+    textarea {
+        width:         100%;
+        padding:       0 $spacing-4;
+        border:        2px solid var(--color-border);
+        border-radius: $radius-md;
+        background:    var(--color-input-bg);
+        color:         var(--color-text);
+        font-family:   inherit;
+        font-size:     var(--text-base);
+        transition:    border-color $transition-base, box-shadow $transition-base;
+
+        &:focus {
+            outline:      none;
+            border-color: $color-primary;
+            box-shadow:   0 0 0 4px rgba($color-primary, 0.12);
+        }
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="url"] { height: 48px; }
+
+    textarea {
+        height:     auto;
+        min-height: 140px;
+        padding:    $spacing-3 $spacing-4;
+        resize:     vertical;
+    }
+
+    // "Name, E-Mail und Website speichern"
+    .comment-form-cookies-consent {
+        display:     flex;
+        align-items: flex-start;
+        gap:         $spacing-2;
+
+        input[type="checkbox"] {
+            flex-shrink:  0;
+            width:        18px;
+            height:       18px;
+            margin-top:   2px;
+            cursor:       pointer;
+            accent-color: $color-primary;
+        }
+
+        label {
+            margin:      0;
+            font-weight: 400;
+            line-height: 1.5;
+            cursor:      pointer;
+        }
+    }
+
+    .form-submit { margin-top: $spacing-2; }
+}

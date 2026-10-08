@@ -12,10 +12,13 @@
 // =============================================================================
 
 // ── Layout-Wrapper ────────────────────────────────────────────────────────────
+// Standard: volle Container-Breite, linksbündig (wie Archive und Seiten).
+// Lesebreite erzwingen: $single-layout-max-width: 760px;
+$single-layout-max-width: none !default;
 
 .single-post-layout {
-    max-width: 760px;
-    margin:    0 auto;
+    max-width: $single-layout-max-width;
+    margin:    0;
     padding:   var(--space-2xl) 0;
 }
 

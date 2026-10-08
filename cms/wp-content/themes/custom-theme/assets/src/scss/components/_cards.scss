@@ -1,114 +1,250 @@
 @use '../abstracts' as *;
 
-// ============================================
-// POST CARDS
-// ============================================
+// =============================================================================
+// Cards – .post-card (EINZIGE Quelle)
+// Version: 2.0.1 – konsolidiert (Footer-Meta ohne Abstand → Link auf Höhe des Datums)
 //
-// WICHTIG: Diese Datei ist jetzt die EINZIGE Quelle für .post-card.
-// War vorher zusätzlich in components/_load-more.scss dupliziert (mit
-// abweichenden Werten - CSS hat die Properties beider Dateien gemischt,
-// je nachdem was zuletzt geladen wurde). Konsolidiert am 2026-08-14,
-// entspricht dem zuvor tatsächlich gerenderten Misch-Ergebnis - bis auf
-// einen Bugfix: .post-card__thumbnail hatte gleichzeitig aspect-ratio
-// UND padding-bottom (zwei konkurrierende Höhen-Techniken übereinander,
-// vermutlich unbeabsichtigt) - hier auf aspect-ratio allein bereinigt.
+// Vorher war .post-card doppelt definiert: hier (weiße Karte, feste Farben) und
+// in templates/_archive.scss (token-basiert, Dark-Mode-fähig). Beide griffen auf
+// dieselben Elemente zu, das Ergebnis hing von der Lade-Reihenfolge ab. Jetzt
+// steht alles hier - das Ergebnis entspricht dem bisher tatsächlich gerenderten
+// Misch-Ergebnis (Archiv-Werte gewinnen), aber ohne harte Farben.
 //
-// .post-list-item (horizontale Variante) bleibt weiterhin in
-// components/_load-more.scss, da dort keine Dopplung vorlag.
-// ============================================
+// Unterstützte Markup-Varianten:
+//   1. template-parts/components/post-card.php   (__title-link, __img, __category, __footer)
+//   2. Load-More / AJAX-Templates (inc/shortcodes.php, ajax-load-more.php):
+//      __title a, __thumbnail img, __meta, __link
+//
+// Optionale Erweiterungen (post-card.php: post_card_badge / _type / _price /
+// _title_html / _excerpt_html): __category-link--static, --type-{slug}, __price, <mark>.
+// Weitere Typ-Farben: einfach in $post-card-type-colors ergänzen.
+//
+// Grid und Archiv-Layout: templates/_archive.scss
+// =============================================================================
+
+$post-card-type-colors: (
+    post:    $color-primary,
+    product: $color-success,
+    project: $color-info,
+    service: $color-warning,
+    job:     $color-purple,
+);
 
 .post-card {
-  background: $color-white;
-  border-radius: $radius-lg;
-  overflow: hidden;
-  box-shadow: $shadow-md;
-  transition: $transition-base;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-
-  &:hover {
-    box-shadow: $shadow-xl;
-    transform: translateY(-4px);
-  }
-
-  &__thumbnail {
-    overflow: hidden;
-    aspect-ratio: 16 / 9;
-    background: $color-gray-100;
-
-    img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.3s ease;
-    }
-
-    &:hover img {
-      transform: scale(1.05);
-    }
-  }
-
-  &__content {
-    padding: var(--space-md);
-    display: flex;
+    background:     var(--color-card-bg);
+    border:         1px solid var(--color-border);
+    border-radius:  $radius-lg;
+    overflow:       hidden;
+    box-shadow:     $shadow-md;
+    display:        flex;
     flex-direction: column;
-    gap: 0.75rem;
-    flex-grow: 1;
-  }
-
-  &__title {
-    font-size: var(--text-xl);
-    font-weight: $font-weight-bold;
-    margin: 0 0 0.5rem;
-    line-height: $line-height-tight;
-
-    a {
-      color: $color-text;
-      text-decoration: none;
-      transition: color 0.2s ease;
-
-      &:hover {
-        color: $color-primary;
-      }
-    }
-  }
-
-  &__meta {
-    display: flex;
-    align-items: center;
-    gap: var(--space-sm);
-    margin-bottom: var(--space-sm);
-    font-size: var(--text-sm);
-    color: $color-text-muted;
-  }
-
-  &__date {
-    font-size: $font-size-sm;
-    color: $color-text-muted;
-  }
-
-  &__excerpt {
-    font-size: $font-size-sm;
-    color: $color-text-muted;
-    line-height: 1.6;
-    flex-grow: 1;
-    margin-bottom: var(--space-sm);
-  }
-
-  &__link {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: $color-primary;
-    text-decoration: none;
-    font-weight: $font-weight-semibold;
-    font-size: $font-size-sm;
-    margin-top: auto;
-    transition: gap 0.2s ease;
+    height:         100%;
+    transition:     box-shadow $transition-base, transform $transition-base;
 
     &:hover {
-      gap: 0.75rem;
+        box-shadow: $shadow-lg;
+        transform:  translateY(-4px);
     }
-  }
+
+    // ── Bild ──────────────────────────────────────────────────────────────────
+
+    &__thumbnail {
+        display:         block;
+        overflow:        hidden;
+        aspect-ratio:    16 / 9;
+        background:      var(--color-hover-bg);
+        text-decoration: none;
+
+        img {
+            width:      100%;
+            height:     100%;
+            object-fit: cover;
+            display:    block;
+            transition: transform 0.4s ease;
+
+            .post-card:hover & { transform: scale(1.04); }
+        }
+    }
+
+    // ── Inhalt ────────────────────────────────────────────────────────────────
+
+    &__content {
+        padding:        var(--space-lg);
+        display:        flex;
+        flex-direction: column;
+        gap:            $spacing-2;
+        flex-grow:      1;
+    }
+
+    // ── Badge (Kategorie / Inhaltstyp) ────────────────────────────────────────
+
+    &__category-link {
+        display:         inline-block;
+        padding:         2px $spacing-2;
+        background:      rgba($color-primary, 0.08);
+        color:           $color-primary;
+        border-radius:   $radius-sm;
+        font-size:       var(--text-xs);
+        font-weight:     $font-weight-semibold;
+        text-decoration: none;
+        text-transform:  uppercase;
+        letter-spacing:  0.5px;
+
+        &:hover { background: rgba($color-primary, 0.18); }
+
+        // Badge ohne Link (z. B. Inhaltstyp auf der Suchergebnisseite)
+        &--static {
+            cursor: default;
+
+            &:hover { background: rgba($color-primary, 0.08); }
+        }
+    }
+
+    // ── Titel ─────────────────────────────────────────────────────────────────
+
+    &__title {
+        font-size:   var(--text-lg);
+        font-weight: $font-weight-bold;
+        line-height: $line-height-tight;
+        margin:      0;
+
+        display:            -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 3;
+        overflow:           hidden;
+
+        mark {
+            background:    rgba($color-primary, 0.2);
+            color:         $color-primary;
+            padding:       0;
+            border-radius: 2px;
+        }
+    }
+
+    // __title-link (post-card.php) und a direkt im Titel (Load-More-Templates)
+    &__title-link,
+    &__title a {
+        color:           var(--color-text);
+        text-decoration: none;
+        transition:      color $transition-base;
+
+        &:hover { color: $color-primary; }
+    }
+
+    // ── Preis (WooCommerce get_price_html) ────────────────────────────────────
+
+    &__price {
+        font-size:   var(--text-lg);
+        font-weight: $font-weight-bold;
+        color:       $color-success;
+
+        del { color: var(--color-text-muted); font-size: var(--text-sm); font-weight: $font-weight-medium; margin-right: $spacing-1; }
+        ins { text-decoration: none; }
+    }
+
+    // ── Ausschnitt ────────────────────────────────────────────────────────────
+
+    &__excerpt {
+        font-size:     var(--text-sm);
+        color:         var(--color-text-muted);
+        line-height:   1.6;
+        flex-grow:     1;
+        margin-bottom: var(--space-sm);
+
+        display:            -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 3;
+        overflow:           hidden;
+
+        mark {
+            background:    rgba($color-primary, 0.15);
+            color:         inherit;
+            padding:       0;
+            border-radius: 2px;
+        }
+    }
+
+    // ── Footer: Meta + Link ───────────────────────────────────────────────────
+
+    &__footer {
+        display:         flex;
+        align-items:     center;
+        justify-content: space-between;
+        gap:             $spacing-2;
+        padding-top:     $spacing-3;
+        border-top:      1px solid var(--color-border);
+        margin-top:      auto;
+    }
+
+    &__meta {
+        display:     flex;
+        align-items: center;
+        gap:         $spacing-1;
+        flex-wrap:   wrap;
+        font-size:   var(--text-sm);
+        color:       var(--color-text-muted);
+    }
+
+    // Meta direkt im Inhalt (Load-More-Templates): Abstand zum Ausschnitt.
+    // Im Footer (post-card.php) bewusst OHNE Abstand, sonst sitzt der Link tiefer als das Datum.
+    &__content > &__meta { margin-bottom: var(--space-sm); }
+
+    &__date,
+    &__author   { font-size: var(--text-xs); color: var(--color-text-muted); }
+    &__meta-sep { color: var(--color-border); font-size: var(--text-xs); }
+
+    &__link {
+        display:         inline-flex;
+        align-items:     center;
+        gap:             0.5rem;
+        margin-top:      auto;
+        font-size:       var(--text-sm);
+        font-weight:     $font-weight-semibold;
+        color:           $color-primary;
+        text-decoration: none;
+        white-space:     nowrap;
+        flex-shrink:     0;
+        transition:      $transition-base;
+
+        &:hover {
+            gap:             0.75rem;
+            text-decoration: underline;
+        }
+    }
+
+    // ── Horizontal-Variante (Liste) ───────────────────────────────────────────
+
+    &--horizontal {
+        flex-direction: row;
+
+        .post-card__thumbnail {
+            width:        280px;
+            flex-shrink:  0;
+            aspect-ratio: unset;
+        }
+
+        @include respond-below('sm') {
+            flex-direction: column;
+
+            .post-card__thumbnail { width: 100%; aspect-ratio: 16 / 9; }
+        }
+    }
+}
+
+// ── Typ-Farben fürs Badge: .post-card--type-{post_type} ───────────────────────
+
+@each $type, $color in $post-card-type-colors {
+    .post-card--type-#{$type} .post-card__category-link {
+        background: rgba($color, 0.1);
+        color:      $color;
+
+        &:hover { background: rgba($color, 0.1); }
+    }
+}
+
+.post-card--type-page .post-card__category-link {
+    background: var(--color-hover-bg);
+    color:      var(--color-text-muted);
+
+    &:hover { background: var(--color-hover-bg); }
 }
