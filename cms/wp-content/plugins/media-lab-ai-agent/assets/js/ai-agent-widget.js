@@ -2,14 +2,65 @@
  * media-lab-ai-agent — Frontend Chat-Widget
  * Vanilla JS, kein Build-Step. Wird über wp_enqueue_script eingebunden.
  *
- * Erwartet ein Container-Element:
- * <div id="mlt-ai-widget" data-lang="de" data-endpoint="https://.../wp-json/medialab/v1/ai-chat"></div>
+ * Erwartet ein Container-Element (wird von mlt_ai_render_widget() erzeugt):
+ *
+ * <div data-mlt-ai-widget
+ *      data-lang="de"
+ *      data-endpoint="https://.../wp-json/medialab/v1/ai-chat"
+ *      data-nonce="..."
+ *      data-default-state="collapsed|expanded"
+ *      data-dismissible="1|0"></div>
+ *
+ * Zustand pro Browser-Sitzung (ausschließlich sessionStorage, nichts davon
+ * wird an den Server gesendet):
+ * - mlt_ai_panel_closed: Besucher hat das Chat-Fenster aktiv geschlossen →
+ *   bleibt auch bei "expanded" für den Rest der Sitzung zu (auch auf
+ *   Folgeseiten), bis er es selbst wieder öffnet.
+ * - mlt_ai_dismissed: Besucher hat das Widget komplett ausgeblendet.
  */
 (function () {
 	'use strict';
 
 	const STORAGE_KEY = 'mlt_ai_session_id';
+	const PANEL_CLOSED_KEY = 'mlt_ai_panel_closed';
+	const DISMISSED_KEY = 'mlt_ai_dismissed';
 	const MAX_MESSAGE_LENGTH = 1000;
+	// Auf kleinen Bildschirmen würde ein automatisch geöffnetes Chat-Fenster
+	// große Teile der Seite verdecken — dort bleibt das Widget immer eingeklappt.
+	const SMALL_VIEWPORT_QUERY = '(max-width: 640px)';
+
+	/**
+	 * sessionStorage kann in manchen Browser-Modi (z.B. strenge
+	 * Datenschutzeinstellungen) eine Exception werfen — das Widget soll dann
+	 * einfach ohne Zustandsspeicherung weiterlaufen, statt abzubrechen.
+	 */
+	function safeStorageGet(key) {
+		try {
+			return window.sessionStorage.getItem(key);
+		} catch (e) {
+			return null;
+		}
+	}
+
+	function safeStorageSet(key, value) {
+		try {
+			window.sessionStorage.setItem(key, value);
+		} catch (e) {
+			// bewusst ignoriert, siehe oben
+		}
+	}
+
+	function safeStorageRemove(key) {
+		try {
+			window.sessionStorage.removeItem(key);
+		} catch (e) {
+			// bewusst ignoriert, siehe oben
+		}
+	}
+
+	function isSmallViewport() {
+		return !!(window.matchMedia && window.matchMedia(SMALL_VIEWPORT_QUERY).matches);
+	}
 
 	function initWidget(container) {
 		const lang = container.dataset.lang || 'de';
@@ -21,17 +72,135 @@
 			return;
 		}
 
+		const settings = {
+			defaultState: container.dataset.defaultState === 'expanded' ? 'expanded' : 'collapsed',
+			dismissible: container.dataset.dismissible === '1',
+		};
+
+		// Besucher hat das Widget in dieser Sitzung bereits komplett ausgeblendet.
+		if (settings.dismissible && safeStorageGet(DISMISSED_KEY) === '1') {
+			container.style.display = 'none';
+			return;
+		}
+
 		const i18n = getStrings(lang);
+		const openInitially = resolveInitialOpenState(settings.defaultState);
+
+		registerEscapeHandler(container);
 
 		if (!hasConsent(container)) {
-			renderConsentGate(container, i18n, function () {
+			renderConsentGate(container, i18n, settings, openInitially, function () {
 				grantConsent(container);
-				startChat(container, i18n, endpoint, nonce);
+				// Wer im Consent-Fenster auf "Zustimmen" klickt, will chatten →
+				// Fenster offen lassen und direkt ins Eingabefeld springen.
+				startChat(container, i18n, settings, endpoint, nonce, true);
+				const chatInput = container.querySelector('.mlt-ai-input');
+				if (chatInput) {
+					chatInput.focus();
+				}
 			});
 			return;
 		}
 
-		startChat(container, i18n, endpoint, nonce);
+		startChat(container, i18n, settings, endpoint, nonce, openInitially);
+	}
+
+	/**
+	 * Soll das Chat-Fenster beim Seitenaufruf offen sein?
+	 * - Hat der Besucher es in dieser Sitzung aktiv geschlossen: nein.
+	 * - Sonst nur bei Startzustand "expanded" und nicht auf kleinen Bildschirmen.
+	 */
+	function resolveInitialOpenState(defaultState) {
+		if (safeStorageGet(PANEL_CLOSED_KEY) === '1') {
+			return false;
+		}
+		if (defaultState !== 'expanded') {
+			return false;
+		}
+		return !isSmallViewport();
+	}
+
+	/**
+	 * Öffnet/schließt das Chat-Fenster. $byUser = true bei Klick/Tastatur des
+	 * Besuchers (dann wird die Entscheidung für die Sitzung gemerkt und der
+	 * Fokus sinnvoll gesetzt), false beim initialen Aufbau der Seite.
+	 */
+	function setPanelOpen(container, open, byUser) {
+		const panel = container.querySelector('.mlt-ai-panel');
+		const toggleBtn = container.querySelector('.mlt-ai-toggle');
+		if (!panel || !toggleBtn) {
+			return;
+		}
+
+		panel.classList.toggle('mlt-ai-open', open);
+		toggleBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+
+		if (!byUser) {
+			return;
+		}
+
+		if (open) {
+			safeStorageRemove(PANEL_CLOSED_KEY);
+			// Auf Smartphones nicht automatisch fokussieren: die Bildschirmtastatur
+			// würde sofort aufspringen und die Begrüßung verdecken.
+			if (!isSmallViewport()) {
+				const focusTarget = container.querySelector('.mlt-ai-input') || container.querySelector('.mlt-ai-consent-accept');
+				if (focusTarget) {
+					focusTarget.focus();
+				}
+			}
+		} else {
+			safeStorageSet(PANEL_CLOSED_KEY, '1');
+			toggleBtn.focus();
+		}
+	}
+
+	/**
+	 * Esc schließt das Chat-Fenster — aber nur, wenn der Fokus im Widget
+	 * liegt, damit Esc nicht versehentlich das Widget schließt, während der
+	 * Besucher in einem anderen Dialog der Seite arbeitet.
+	 */
+	function registerEscapeHandler(container) {
+		document.addEventListener('keydown', function (event) {
+			if (event.key !== 'Escape' || !container.contains(document.activeElement)) {
+				return;
+			}
+			const panel = container.querySelector('.mlt-ai-panel');
+			if (panel && panel.classList.contains('mlt-ai-open')) {
+				setPanelOpen(container, false, true);
+			}
+		});
+	}
+
+	/**
+	 * Bindet die Bedienelemente, die in Consent-Ansicht und Chat-Ansicht
+	 * identisch sind: Toggle-Button, Schließen-Button im Fensterkopf und das
+	 * kleine × zum kompletten Ausblenden des Widgets.
+	 */
+	function bindShell(container, onOpen) {
+		const panel = container.querySelector('.mlt-ai-panel');
+		const toggleBtn = container.querySelector('.mlt-ai-toggle');
+		const closeBtn = container.querySelector('.mlt-ai-close');
+		const dismissBtn = container.querySelector('.mlt-ai-dismiss');
+
+		toggleBtn.addEventListener('click', function () {
+			const willOpen = !panel.classList.contains('mlt-ai-open');
+			setPanelOpen(container, willOpen, true);
+			if (willOpen && onOpen) {
+				onOpen();
+			}
+		});
+
+		closeBtn.addEventListener('click', function () {
+			setPanelOpen(container, false, true);
+		});
+
+		if (dismissBtn) {
+			dismissBtn.addEventListener('click', function () {
+				safeStorageSet(DISMISSED_KEY, '1');
+				container.style.display = 'none';
+			});
+		}
 	}
 
 	/**
@@ -64,51 +233,57 @@
 		}
 	}
 
-	function renderConsentGate(container, i18n, onAccept) {
+	function dismissMarkup(i18n, settings) {
+		if (!settings.dismissible) {
+			return '';
+		}
+		return '<button type="button" class="mlt-ai-dismiss" aria-label="' + i18n.dismissLabel + '" title="' + i18n.dismissLabel + '">&times;</button>';
+	}
+
+	function renderConsentGate(container, i18n, settings, open, onAccept) {
 		container.innerHTML =
-			'<button type="button" class="mlt-ai-toggle" aria-label="' + i18n.openLabel + '">' + i18n.buttonLabel + '</button>' +
-			'<div class="mlt-ai-panel mlt-ai-open mlt-ai-consent-panel">' +
-			'  <div class="mlt-ai-header"><span>' + i18n.title + '</span></div>' +
+			'<button type="button" class="mlt-ai-toggle" aria-expanded="false" aria-label="' + i18n.openLabel + '">' + i18n.buttonLabel + '</button>' +
+			dismissMarkup(i18n, settings) +
+			'<div class="mlt-ai-panel mlt-ai-consent-panel" role="dialog" aria-label="' + i18n.title + '">' +
+			'  <div class="mlt-ai-header">' +
+			'    <span>' + i18n.title + '</span>' +
+			'    <button type="button" class="mlt-ai-close" aria-label="' + i18n.closeLabel + '">&times;</button>' +
+			'  </div>' +
 			'  <div class="mlt-ai-consent-body">' +
 			'    <p>' + i18n.consentText + '</p>' +
 			'    <button type="button" class="mlt-ai-consent-accept">' + i18n.consentAccept + '</button>' +
 			'  </div>' +
 			'</div>';
 
-		const toggleBtn = container.querySelector('.mlt-ai-toggle');
-		const panel = container.querySelector('.mlt-ai-panel');
-		toggleBtn.addEventListener('click', function () {
-			panel.classList.toggle('mlt-ai-open');
-		});
+		bindShell(container, null);
+		setPanelOpen(container, open, false);
 
 		container.querySelector('.mlt-ai-consent-accept').addEventListener('click', onAccept);
 	}
 
-	function startChat(container, i18n, endpoint, nonce) {
+	function startChat(container, i18n, settings, endpoint, nonce, openInitially) {
 		const lang = container.dataset.lang || 'de';
 		const sessionId = getOrCreateSessionId();
 		let messageCount = 0;
 		let isLoading = false;
 
-		container.innerHTML = renderShell(i18n);
+		container.innerHTML = renderShell(i18n, settings);
 
-		const toggleBtn = container.querySelector('.mlt-ai-toggle');
-		const panel = container.querySelector('.mlt-ai-panel');
 		const form = container.querySelector('.mlt-ai-form');
 		const input = container.querySelector('.mlt-ai-input');
 		const messagesEl = container.querySelector('.mlt-ai-messages');
-		const closeBtn = container.querySelector('.mlt-ai-close');
 
-		toggleBtn.addEventListener('click', () => {
-			panel.classList.toggle('mlt-ai-open');
-			if (panel.classList.contains('mlt-ai-open') && messagesEl.children.length === 0) {
+		function ensureGreeting() {
+			if (messagesEl.children.length === 0) {
 				appendMessage(messagesEl, 'assistant', i18n.greeting);
 			}
-		});
+		}
 
-		closeBtn.addEventListener('click', () => {
-			panel.classList.remove('mlt-ai-open');
-		});
+		bindShell(container, ensureGreeting);
+		setPanelOpen(container, openInitially, false);
+		if (openInitially) {
+			ensureGreeting();
+		}
 
 		form.addEventListener('submit', function (event) {
 			event.preventDefault();
@@ -230,10 +405,11 @@
 		return withLinks.replace(/\n/g, '<br>');
 	}
 
-	function renderShell(i18n) {
+	function renderShell(i18n, settings) {
 		return (
-			'<button type="button" class="mlt-ai-toggle" aria-label="' + i18n.openLabel + '">' + i18n.buttonLabel + '</button>' +
-			'<div class="mlt-ai-panel">' +
+			'<button type="button" class="mlt-ai-toggle" aria-expanded="false" aria-label="' + i18n.openLabel + '">' + i18n.buttonLabel + '</button>' +
+			dismissMarkup(i18n, settings) +
+			'<div class="mlt-ai-panel" role="dialog" aria-label="' + i18n.title + '">' +
 			'  <div class="mlt-ai-header">' +
 			'    <span>' + i18n.title + '</span>' +
 			'    <button type="button" class="mlt-ai-close" aria-label="' + i18n.closeLabel + '">&times;</button>' +
@@ -254,12 +430,12 @@
 	 * für den Backend-Log (siehe wp_mlt_ai_conversations). Kein Tracking-Cookie.
 	 */
 	function getOrCreateSessionId() {
-		let id = window.sessionStorage.getItem(STORAGE_KEY);
+		let id = safeStorageGet(STORAGE_KEY);
 		if (!id) {
 			id = 'mlt_' + Array.from(crypto.getRandomValues(new Uint8Array(16)))
 				.map((b) => b.toString(16).padStart(2, '0'))
 				.join('');
-			window.sessionStorage.setItem(STORAGE_KEY, id);
+			safeStorageSet(STORAGE_KEY, id);
 		}
 		return id;
 	}
@@ -274,6 +450,7 @@
 				buttonLabel: 'Chat',
 				openLabel: 'Chat öffnen',
 				closeLabel: 'Chat schließen',
+				dismissLabel: 'Chat-Assistent ausblenden',
 				title: 'Assistent',
 				placeholder: 'Ihre Nachricht …',
 				sendLabel: 'Senden',
@@ -292,6 +469,7 @@
 				buttonLabel: 'Chat',
 				openLabel: 'Open chat',
 				closeLabel: 'Close chat',
+				dismissLabel: 'Hide chat assistant',
 				title: 'Assistant',
 				placeholder: 'Your message …',
 				sendLabel: 'Send',

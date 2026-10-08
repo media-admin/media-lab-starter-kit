@@ -3,7 +3,7 @@
  * Plugin Name:       Media Lab AI Agent
  * Plugin URI:        https://media-lab.at
  * Description:       Datenschutzkonformer AI-Chat-Assistent für mehrsprachige WordPress-Sites, mit austauschbarem Anbieter (Anthropic, OpenAI, ...).
- * Version:           1.8.1
+ * Version:           1.9.0
  * Requires PHP:      8.1
  * Author:            Media Lab Tritremmel GmbH
  * Text Domain:        media-lab-ai-agent
@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('MLT_AI_AGENT_VERSION', '1.8.1');
+define('MLT_AI_AGENT_VERSION', '1.9.0');
 define('MLT_AI_AGENT_PATH', plugin_dir_path(__FILE__));
 define('MLT_AI_AGENT_URL', plugin_dir_url(__FILE__));
 
@@ -139,6 +139,38 @@ add_action('wp_enqueue_scripts', function () {
 });
 
 /**
+ * Liest das Verhalten des Chat-Widgets für dieses Projekt:
+ * - state: "collapsed" (nur Button) oder "expanded" (Chat-Fenster offen)
+ * - dismissible: ob Besucher das Widget über ein kleines × ausblenden können
+ *
+ * Beide Werte sind per Filter überschreibbar, z.B. um das Fenster nur auf
+ * der Startseite automatisch zu öffnen:
+ *
+ * add_filter('mlt_ai_widget_default_state', fn($state) => is_front_page() ? 'expanded' : 'collapsed');
+ *
+ * @return array{state: string, dismissible: bool}
+ */
+function mlt_ai_get_widget_settings(): array {
+    $state = get_field('mlt_ai_widget_default_state', 'option');
+    $state = in_array($state, ['collapsed', 'expanded'], true) ? $state : 'collapsed';
+
+    // Bestandsinstallationen (vor 1.9.0) haben dieses Feld nie gespeichert →
+    // Standard "ausblendbar", nicht "nicht ausblendbar". get_field() kann
+    // "nie gespeichert" und "bewusst ausgeschaltet" nicht unterscheiden,
+    // die gespeicherte Option schon.
+    $dismissible_raw = get_option('options_mlt_ai_widget_dismissible', null);
+    $dismissible = $dismissible_raw === null ? true : (bool) $dismissible_raw;
+
+    $state = apply_filters('mlt_ai_widget_default_state', $state);
+    $state = in_array($state, ['collapsed', 'expanded'], true) ? $state : 'collapsed';
+
+    return [
+        'state'       => $state,
+        'dismissible' => (bool) apply_filters('mlt_ai_widget_dismissible', $dismissible),
+    ];
+}
+
+/**
  * Rendert den Widget-Container. Aufruf im Theme via:
  *   <?php if (function_exists('mlt_ai_render_widget')) { mlt_ai_render_widget(); } ?>
  * oder als eigener Shortcode [mlt_ai_widget], falls der Client-Theme keinen
@@ -163,13 +195,17 @@ function mlt_ai_render_widget(): void {
     $consent_cookie_name = apply_filters('mlt_ai_consent_cookie_name', 'mlt_consent_ai_agent');
     $consent_cookie_value = apply_filters('mlt_ai_consent_cookie_value', 'granted');
 
+    $widget = mlt_ai_get_widget_settings();
+
     printf(
-        '<div data-mlt-ai-widget data-lang="%s" data-endpoint="%s" data-nonce="%s" data-consent-cookie="%s" data-consent-value="%s"></div>',
+        '<div data-mlt-ai-widget data-lang="%s" data-endpoint="%s" data-nonce="%s" data-consent-cookie="%s" data-consent-value="%s" data-default-state="%s" data-dismissible="%s"></div>',
         esc_attr($lang),
         esc_url(rest_url('medialab/v1/ai-chat')),
         esc_attr(wp_create_nonce('wp_rest')),
         esc_attr($consent_cookie_name),
-        esc_attr($consent_cookie_value)
+        esc_attr($consent_cookie_value),
+        esc_attr($widget['state']),
+        $widget['dismissible'] ? '1' : '0'
     );
 }
 add_shortcode('mlt_ai_widget', function () {

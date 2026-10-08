@@ -102,6 +102,27 @@
             "instructions": "Rate-Limit gegen Missbrauch / Prompt-Injection-Spam."
         },
         {
+            "key": "field_mlt_ai_widget_default_state",
+            "label": "Chat-Widget: Startzustand",
+            "name": "mlt_ai_widget_default_state",
+            "type": "select",
+            "choices": {
+                "collapsed": "Eingeklappt (nur Button unten rechts)",
+                "expanded": "Ausgeklappt (Chat-Fenster offen)"
+            },
+            "default_value": "collapsed",
+            "instructions": "Wie das Widget beim Seitenaufruf erscheint. \"Ausgeklappt\" öffnet das Chat-Fenster automatisch — nicht auf Smartphones (dort bleibt es eingeklappt) und nicht mehr, sobald der Besucher es in dieser Browser-Sitzung geschlossen hat. Per Filter mlt_ai_widget_default_state auch seitenabhängig steuerbar."
+        },
+        {
+            "key": "field_mlt_ai_widget_dismissible",
+            "label": "Chat-Widget: Ausblendbar",
+            "name": "mlt_ai_widget_dismissible",
+            "type": "true_false",
+            "default_value": 1,
+            "ui": 1,
+            "instructions": "Zeigt am Chat-Button ein kleines ×, mit dem Besucher das Widget für die laufende Browser-Sitzung komplett ausblenden können."
+        },
+        {
             "key": "field_mlt_ai_rag_enabled",
             "label": "Website-Wissen (RAG) aktiv",
             "name": "mlt_ai_rag_enabled",
@@ -282,5 +303,5 @@
     "style": "default",
     "active": true,
     "description": "Einstellungen für media-lab-ai-agent",
-    "modified": 1789453146
+    "modified": 1791398599
 }

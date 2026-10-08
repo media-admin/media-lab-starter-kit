@@ -27,6 +27,31 @@ Optional (Plugin erkennt Verfügbarkeit automatisch, kein Hard-Fail):
    ```
    oder per Shortcode `[mlt_ai_widget]`.
 
+### Widget-Verhalten (pro Projekt)
+
+Unter **AI Agent** gibt es zwei Einstellungen, damit sich das Widget je nach Kundenwunsch verhält:
+
+| Einstellung | Wirkung |
+|---|---|
+| **Chat-Widget: Startzustand** | *Eingeklappt* (Standard): nur der Button unten rechts. *Ausgeklappt*: das Chat-Fenster ist beim Seitenaufruf offen. |
+| **Chat-Widget: Ausblendbar** | Zeigt am Button ein kleines ×, mit dem Besucher das Widget für die Browser-Sitzung komplett ausblenden können. |
+
+Verhalten im Detail:
+
+- Das Chat-Fenster hat immer einen Schließen-Button (auch im Consent-Zustand), Esc schließt es ebenfalls.
+- Hat ein Besucher das Fenster geschlossen, bleibt es für den Rest der Browser-Sitzung zu, auch bei "ausgeklappt" und auf Folgeseiten. Ausgeblendet bleibt das Widget ebenfalls bis zum Ende der Sitzung.
+- Auf Smartphones (bis 640px Breite) bleibt das Widget immer eingeklappt, auch bei "ausgeklappt".
+- Gemerkt wird ausschließlich im `sessionStorage` des Browsers (`mlt_ai_panel_closed`, `mlt_ai_dismissed`), nichts davon wird an den Server gesendet.
+
+Seitenabhängig steuern (z.B. nur auf der Startseite automatisch öffnen):
+
+```php
+add_filter('mlt_ai_widget_default_state', fn($state) => is_front_page() ? 'expanded' : 'collapsed');
+add_filter('mlt_ai_widget_dismissible', '__return_false'); // × am Button ausblenden
+```
+
+Farbe des ×-Buttons anpassen: CSS-Variable `--mlt-ai-dismiss-bg` am Widget-Container setzen (Standard `#4b4b4b`).
+
 ### RAG-Modul (optional)
 
 1. `Website-Wissen (RAG) aktiv` einschalten, Post-Types wählen.

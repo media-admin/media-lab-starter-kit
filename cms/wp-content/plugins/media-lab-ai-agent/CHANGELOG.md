@@ -3,7 +3,21 @@
 Alle nennenswerten Änderungen an diesem Plugin werden hier dokumentiert.
 Format angelehnt an [Keep a Changelog](https://keepachangelog.com/), Versionierung nach [Semantic Versioning](https://semver.org/).
 
-## [1.8.1] – unreleased
+## [1.9.0] – 2026-10-07
+
+### feat(ai-agent)
+- **Chat-Widget ist pro Projekt steuerbar:** Zwei neue Einstellungen unter AI Agent → "Chat-Widget: Startzustand" (eingeklappt = nur Button unten rechts / ausgeklappt = Chat-Fenster offen) und "Chat-Widget: Ausblendbar". Beide zusätzlich per Filter überschreibbar (`mlt_ai_widget_default_state`, `mlt_ai_widget_dismissible`), z.B. um das Fenster nur auf der Startseite automatisch zu öffnen.
+- **Widget lässt sich wegklicken:** Kleines × am Chat-Button blendet das Widget für die Browser-Sitzung komplett aus. Das Chat-Fenster selbst lässt sich jetzt auch im Consent-Zustand schließen (hatte dort bisher gar keinen Schließen-Button), außerdem per Esc-Taste (nur wenn der Fokus im Widget liegt).
+- **Merkt sich das Schließen:** Hat ein Besucher das Fenster geschlossen, bleibt es für den Rest der Browser-Sitzung zu — auch bei Startzustand "ausgeklappt" und auf Folgeseiten. Gespeichert wird ausschließlich im `sessionStorage` des Browsers, nichts davon geht an den Server.
+- **Smartphones:** Ein automatisch geöffnetes Fenster (Startzustand "ausgeklappt") gibt es nur ab 641px Bildschirmbreite; auf kleinen Bildschirmen bleibt das Widget eingeklappt. Das Eingabefeld wird dort beim Öffnen nicht automatisch fokussiert (Bildschirmtastatur würde die Begrüßung verdecken).
+- Nach "Zustimmen und Chat starten" bleibt das Chat-Fenster jetzt offen und das Eingabefeld ist fokussiert (vorher klappte es nach der Zustimmung zu, man musste den Button nochmal klicken).
+- Barrierefreiheit: `aria-expanded` am Chat-Button, `role="dialog"` am Fenster, sichtbare Fokus-Rahmen bei Tastaturbedienung. Der Dismiss-Button ist per `--mlt-ai-dismiss-bg` einfärbbar.
+
+### Geändertes Standardverhalten
+- **Das Consent-Fenster ist nicht mehr automatisch offen.** Bisher war es fest auf "offen" gesetzt: jeder Besucher ohne Zustimmung bekam es bei jedem Seitenaufruf aufgeklappt, ohne Schließen-Button. Neuer Standard ist "eingeklappt"; wer das alte Verhalten möchte, stellt den Startzustand auf "ausgeklappt".
+- Bestandsinstallationen: "Ausblendbar" gilt als **eingeschaltet**, solange das Feld nie gespeichert wurde. Nach dem Einspielen ACF-Sync anstoßen (Custom Fields → Feldgruppen), damit die zwei neuen Felder auf der Options-Seite erscheinen.
+
+## [1.8.1] – 2026-09-23
 
 ### fix(ai-agent)
 - `is_post_indexable()` prüft zusätzlich `is_post_publicly_viewable()` (WP-Core-Funktion) — fängt Custom-Post-Types ab, die absichtlich nicht öffentlich abrufbar sind, obwohl sie `post_status = publish` haben. Klarstellung in den Kommentaren: WordPress-Rollen schränken die Sichtbarkeit veröffentlichter Inhalte im Frontend nicht ein (dafür sind Rollen nicht gedacht) — echte rollenbasierte Einschränkung ist immer Sache eines Mitglieder-Plugins, wofür der bestehende `mlt_ai_rag_is_post_indexable`-Filter der vorgesehene Anknüpfungspunkt bleibt.
