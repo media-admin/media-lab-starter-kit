@@ -58,6 +58,13 @@ möglich.
   den Fehlertext statt „Keine Ergebnisse gefunden."
 
 ### Fixed
+- **Suchergebnisseite ohne Archiv-Styles** – `_search-results.scss` setzte die Archiv-Bausteine
+  (`.archive-header`, `.post-grid`, `.post-card`, `.archive-empty`) voraus, `templates/_archive.scss`
+  war aber nicht in `style.scss` eingebunden: kein Gap/Grid, Layout-Umschaltung (Raster/Liste)
+  ohne Wirkung, weiße Karten mit unlesbarem Text im Dark Mode, nicht zentrierter Leer-Zustand.
+  `_search-results.scss` (2.0.1) lädt `archive` jetzt selbst per `@use 'archive'` (Sass lädt Module
+  nur einmal, keine Dopplung). **Hinweis:** Auch `archive.php` (Kategorie-/Tag-Archive) hing an
+  demselben fehlenden Import.
 - **Suchergebnisse ohne Vorschaubild hatten nur eine schmale Textspalte** – das alte
   `.search-result`-Grid reservierte fest 200 px für das Bild, auch wenn keines vorhanden war.
   Entfällt mit der Post-Card (Bild optional, Inhalt nutzt die volle Breite).

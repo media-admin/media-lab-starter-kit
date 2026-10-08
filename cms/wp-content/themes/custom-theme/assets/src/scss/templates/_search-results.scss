@@ -1,8 +1,15 @@
 @use '../abstracts' as *;
 
+// Abhängigkeit explizit deklarieren: diese Datei baut auf den Archiv-Bausteinen
+// auf (.archive-layout, .archive-header, .post-grid, .post-card, .archive-empty,
+// .archive-pagination). Sass lädt ein Modul nur einmal - ist `templates/archive`
+// bereits in style.scss eingebunden, entsteht keine Dopplung; fehlt es dort,
+// wird es hier mitgezogen (und steht im CSS VOR den Such-Ergänzungen unten).
+@use 'archive';
+
 // =============================================================================
 // Search Results – nur noch das, was die Suche zusätzlich zum Archiv braucht
-// Version: 2.0.0 – SERP leitet sich vom Archiv-Design ab
+// Version: 2.0.1 – SERP leitet sich vom Archiv-Design ab (lädt templates/archive selbst)
 //
 // Die Suchergebnisseite (search.php) nutzt dieselben Bausteine wie archive.php:
 //   .archive-layout / .archive-header / .post-grid / .post-card /
