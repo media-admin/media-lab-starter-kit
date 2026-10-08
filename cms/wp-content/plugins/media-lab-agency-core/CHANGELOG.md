@@ -20,6 +20,29 @@ Ende.
 
 ---
 
+## [1.33.0] - 2026-10-08
+
+### media-lab-agency-core 1.33.0
+
+#### Added
+- **Suche: frei wählbare, mehrsprachige Bezeichnungen der Inhaltstypen mit Singular und Plural**
+  (`inc/search-settings.php`) – das Feld „Bezeichnungen der Inhaltstypen“ (Tab „Texte“, auch pro
+  Sprachzeile) akzeptiert jetzt `slug=Singular|Plural`, z. B. `team=Teammitglied|Teammitglieder`.
+  Bisher nur der Singular (Badge in den Suchergebnissen); der Plural steht neu in
+  `MediaLab_Search_Settings::get()['text']['type_labels_plural']` und wird vom Theme für den Zähler
+  der Archive verwendet („14 Teammitglieder“). Ohne Plural gilt der Plural des Inhaltstyps; bestehende
+  Einträge im Format `slug=Bezeichnung` funktionieren unverändert. Bei aktiver Mehrsprachigkeit gilt das
+  Standardfeld als Basis für alle Sprachen; ein Eintrag in einer Sprachzeile überschreibt ihn pro Typ.
+
+#### Fixed
+- **Plugin Status, Tab „Changelog“: Text und Trennlinien gleich breit** (`inc/plugin-status.php`) –
+  der Text war schmaler als die Versions-Trennlinien.
+
+*(Theme-seitig, gehört ins Theme-Changelog: Zähler der Archive mit Typ-Bezeichnungen aus diesen
+Einstellungen, `.post-card` konsolidiert, Archiv-/Single-Styles in `style.scss` eingebunden.)*
+
+---
+
 ## [1.32.0] - 2026-10-08
 
 ### media-lab-agency-core 1.32.0
