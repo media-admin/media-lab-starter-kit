@@ -32,6 +32,126 @@ in den jeweiligen Abschnitten und den CHANGELOG.md-Dateien der Plugins.
   haben will, braucht dafür einen eigenen Weg.
 - **Autoren-Archive:** pro Projekt prüfen, ob sie gesperrt/umgeleitet sind (dann `mlt_schema_author_url` setzen).
 
+### media-lab-seo 1.15.0 – offene Punkte (Stand 08.10.2026)
+
+**Bis Montag 12.10.2026 (erster automatischer Report auf Stadtwirt, Mo 08:00)**
+
+- **Empfänger pro Site prüfen, bevor 1.15.0 ausgerollt wird.** Der Cron-Fix (Hook-Name
+  `mlt_weekly_report`) bewirkt, dass **jede Site mit aktiviertem Report erstmals automatisch
+  sendet**. Ist keine Empfänger-Adresse eingetragen, geht der Report an `admin_email`.
+  Prüfung per WP-CLI: `wp eval 'echo get_option("mlt_report_enabled") ? "AN" : "aus", " → ", implode(", ", mlt_get_report_recipients()), PHP_EOL;'`.
+  Wo der Report (noch) nicht an den Kunden gehen soll: Schalter ausschalten.
+- **Rollout in Wellen** (mit Backup des Plugin-Ordners). Stadtwirt läuft auf 1.14.1 → auf 1.15.0
+  heben. Danach pro Site `wp cron event list | grep mlt` → muss `mlt_weekly_report` zeigen
+  (nicht `mlt_send_weekly_report`), „Nächster geplanter Versand" auf der Einstellungsseite
+  zeigt einen Termin.
+- **Report-Mail in weiteren Mail-Programmen ansehen:** bisher nur Apple Mail (Dunkelmodus) und
+  der Browser. Offen: Outlook (Desktop – das Tabellen-HTML ist dafür gebaut, aber ungeprüft),
+  Gmail (Web + App; Mail ca. 50 KB, Kürzung erst ab ca. 102 KB), Apple Mail im Hellmodus.
+
+**Google-Verbindung (GA4 / OAuth)**
+
+- **Stadtwirt: GA4 per OAuth verbinden.** Symptom bis dahin: Seitenaufrufe, Sessions und Nutzer
+  = 0, die Analytics-Reiter im Verlauf-Chart fehlen. Schritte: Redirect-URI
+  (`…/cms/wp-admin/admin.php?page=media-lab-seo&mlt_ga4_callback=1`) im OAuth-Client eintragen,
+  „Google Analytics Data API" im Cloud-Projekt aktivieren, dem verbindenden Google-Konto die
+  Rolle „Betrachter" auf der Property geben, dann „Mit Google verbinden". Anschließend den
+  **Legacy-Service-Account (JSON-Key in der Datenbank) entfernen**.
+- **Alle Sites mit Legacy-Service-Account prüfen:** Zeigt das Dashboard dort 0, liefert der
+  Service-Account keine Daten (vermutlich fehlt der Zugriff auf die Property) – auf OAuth
+  umstellen.
+- **Veröffentlichungsstatus der Google-OAuth-App prüfen** (Google Auth Platform → Zielgruppe).
+  Steht er auf „Testing", **laufen Refresh-Tokens nach 7 Tagen ab** – GSC und GA4 würden
+  wöchentlich die Verbindung verlieren und der Report Nullwerte zeigen. Auf „In Produktion"
+  stellen.
+- **Redirect-URIs im gemeinsamen OAuth-Client:** pro Site zwei (GSC + GA4). Laut einer Quelle
+  gilt ein Limit von 100 URIs pro Client (nicht in der Google-Doku verifiziert) – bei ~50 Sites
+  wäre das erreicht. Bei Bedarf einen zweiten Client anlegen.
+
+**Stadtwirt**
+
+- **www / ohne www:** In „Top Seiten" erscheint die Startseite unter zwei Adressen
+  (`www.stadtwirt-berndorf.at/` 238 Klicks, Position 2,8; `stadtwirt-berndorf.at/` 103 Klicks,
+  Position 5,7). Hauptadresse festlegen, die andere per 301 auf Serverebene umleiten
+  (`.htaccess`/Hosting), Canonical und Sitemap angleichen. **Auf den anderen Sites prüfen**,
+  ob im Dashboard dieselbe Seite doppelt (mit/ohne Host) auftaucht – das Plugin zeigt den Host
+  seit 1.14.0 bei gleichem Pfad an.
+
+**Technische Restpunkte (Plugin)**
+
+- **Stille Nullwerte bei Abruffehlern:** Fehlgeschlagene Abrufe werden seit 1.11.0 nicht mehr
+  gecacht, das Dashboard zeigt aber weiterhin Nullwerte ohne Hinweis. Wünschenswert: Hinweis
+  „Abruf fehlgeschlagen" im Dashboard, Fehler ins Aktivitätslog (`medialab_log_event`).
+- **Report bei Google-Ausfall zum Versandzeitpunkt:** Die Mail geht dann mit Nullwerten raus.
+  Idee: Versand verschieben (z. B. 1 h später, max. 3 Versuche) oder überspringen, wenn weder GSC
+  noch Analytics Daten liefern.
+- **WP-Cron ist besuchsabhängig:** Für pünktlichen Versand ein echter Server-Cron auf
+  `wp-cron.php` (und `DISABLE_WP_CRON`) als Standard für alle Sites einführen.
+- **Chart-Tooltips am Handy:** Die Tooltips im Verlauf-Chart sind native SVG-`<title>`-Elemente
+  (Hover) – auf Touch-Geräten nicht zuverlässig. Optional ein kleiner JS-Tooltip.
+- **Mail im Dunkelmodus:** Apple Mail kehrt den dunklen Kopfbereich ins Helle um (lesbar,
+  aber uneinheitlich). Optional `color-scheme`-Meta; Gmail/Outlook-Apps verhalten sich anders.
+- **Zeilen-Deltas nur für GSC-Listen:** Traffic-Quellen (Analytics) haben keinen Vergleich.
+- **„28 Tage" = 27 Kalendertage:** Der Zeitraum endet wegen der GSC-Verzögerung bei heute − 2
+  Tage. Falls exakt 28 Tage gewünscht sind, `MLT_GSC_API::get_active_range()` ändern (betrifft
+  auch die Dashboard-Schnellwahl).
+- **Zeilen-Abgleich über die Top 500:** Bei sehr großen Sites kann ein Eintrag als „neu"
+  erscheinen, der im Vergleichszeitraum nur außerhalb der Top 500 lag (bewusst so gelöst;
+  ggf. Limit erhöhen).
+
+**Doku / Prozess**
+
+- **`docs/12_ANALYTICS.md` nicht geprüft** – verweist aus `13_SEO.md`. Ggf. veraltet bei
+  Adapter-Interface (neu: `MLT_Analytics_Timeseries_Interface`), Report-Aufbau und Cron-Hook.
+- **Root-README und `docs/03_PLUGINS.md`:** Versionsangabe zu `media-lab-seo` prüfen (1.15.0);
+  die Versionsangaben der Root-README wurden zuletzt am 13.08.2026 verifiziert.
+- **Release-Commit:** Die Versionen 1.11.0 bis 1.15.0 stecken in **einem** Commit (`90685e12`),
+  ohne Git-Tag. Falls Tags gewünscht: `media-lab-seo-v1.15.0` (die CHANGELOG-Einträge sind pro
+  Version getrennt).
+- **Lokales Test-Werkzeug `mlt-test-fixtures.php`** (simuliert Search Console/GA4 und fängt
+  den Report ab) liegt **nicht** im Repo. Bei Bedarf unter `tools/` ablegen – nie in
+  `mu-plugins` einer Live-Site.
+
+---
+
+### ✅ Erledigt — media-lab-seo (1.11.0 – 1.15.0, 05.–08.10.2026)
+
+- ~~Kein Vergleichszeitraum in Dashboard und Report~~ → **1.11.0**: zentrale Einstellung
+  (Vorperiode/Vorjahr/aus) für Dashboard, WP-Widget und E-Mail-Report, Hinweis zur
+  Messtoleranz (übersetzbar). Die in der Doku seit 1.2.0 behauptete „vs. Vorperiode"-Anzeige war
+  nie implementiert.
+- ~~Veränderung pro Zeile fehlt~~ → **1.14.0**: Top Keywords/Top Seiten mit absoluter
+  Veränderung von Klicks und Position, „neu"-Kennzeichnung, Host-Anzeige bei gleichem Pfad.
+- ~~Keine Diagramme~~ → **1.12.0** Verlauf-Chart im Dashboard (serverseitiges SVG, ohne
+  Bibliothek), **1.13.0** Säulendiagramme und Balken im E-Mail-Report (reines Tabellen-HTML,
+  Größen-Sicherung gegen die Gmail-Kürzung).
+- ~~**Wöchentlicher Report wurde bei neu aktivierter Einstellung nie automatisch versendet**~~
+  → **1.12.0**: Cron-Event wurde als `mlt_send_weekly_report` geplant, der Mailer lauscht auf
+  `mlt_weekly_report`; die Einstellungsseite zeigte deshalb dauerhaft „—". Nur Sites mit einem
+  älteren, zufällig noch existierenden Event hatten weitergesendet.
+- ~~Test-Mail-Button tat nichts~~ → **1.12.0**: las das seit 1.6.0 nicht mehr vorhandene Feld
+  `#mlt_report_email` (JS-Fehler). Der Button sendet jetzt den echten Report.
+- ~~Fehlgeschlagene GSC-/GA4-Abrufe wurden 6 h als „0" gecacht~~ → **1.11.0**
+  (`query_api()`/`run_report()` unterscheiden gültig-leer und Fehler).
+- ~~`/llms.txt` wurde nicht ausgeliefert~~ → **1.11.0**: `class-llms-txt.php` (1.10.2) war nie
+  eingebunden. Außerdem Header/Konstante (1.10.1 vs. CHANGELOG 1.10.2) synchronisiert und das
+  doppelte `require_once` von `class-schema-admin.php` entfernt.
+- ~~Dashboard-Karten unformatiert, Consent-Balken unsichtbar~~ → **1.12.0**
+  (`.mlt-card`/`.mlt-grid` nur in `admin.css`; Consent-Füllung war ein `<span>` ohne
+  `display:block`).
+- ~~Chart/Mail fielen am letzten Tag auf „0"~~ → **1.14.1** (Datenverzögerung wird nicht mehr als
+  Nullwert gezeichnet, Hinweis im Dashboard und seit 1.15.0 in der Mail).
+- ~~CTR/Position mit Punkt bzw. ohne Nachkommastelle, WP-Widget-Titel auseinandergezogen~~ →
+  **1.14.1**.
+- ~~Verification-Feld (GSC/Bing) speicherte und gab beliebigen Inhalt aus~~ → **1.15.0**:
+  URLs/Domains werden abgelehnt, ein eingefügter Meta-Tag wird auf den `content`-Wert gekürzt,
+  bestehende Fehleinträge (z. B. Property-URL) werden nicht mehr im `<head>` ausgegeben.
+  Stadtwirt: Feld geleert, im Quelltext geprüft.
+- ~~Doku-Fehler in `13_SEO.md`/README~~ → falscher GSC-Redirect-Parameter (`mlt_gsc_callback=1`
+  ist richtig), nicht existierende Funktion `medialab_seo_breadcrumbs()` (richtig:
+  `mlt_breadcrumbs()`), Menüpfad „Weiterleitungen", Report-Inhalt jetzt am Code verifiziert,
+  Hook-Tabelle (Schema-/llms-/Report-Filter) vervollständigt.
+
 ## ✅ Erledigt — media-lab-woocommerce (Paket A, v2.3.0)
 
 - ~~Theme-Alias-Hook (`ajax_filter_posts`) fehlt in `ajax-handlers.php`~~ → **Paket B, v2.4.0**
