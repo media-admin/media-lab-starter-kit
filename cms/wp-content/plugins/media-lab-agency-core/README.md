@@ -6,6 +6,7 @@ Core functionality plugin for Media Lab agency websites.
 
 - **Shortcodes**: Hero Slider, Accordion, Stats, Testimonials, etc.
 - **Suche**: Ajax-Live-Suche mit Treffer-Highlighting, Kontext-Ausschnitt und WooCommerce-Attribut-/Konfigurator-Suche, optionales Such-Icon in der Hauptnavigation, zentral konfigurierbar (Texte mehrsprachig, Limit, Inhaltstypen, Anzeige) unter Agency Core → Suche / Live-Suche (siehe unten)
+- **Plugin Status**: eigene Admin-Seite mit Systemübersicht, Inhaltstypen, Schnellzugriff sowie README und Changelog direkt im Backend (siehe unten)
 - **Heartbeat Monitoring**: Push-basierte Uptime-Überwachung (Better Stack / Healthchecks.io)
 - **Admin**: Dashboard customizations
 - **Helpers**: Utility functions for theme development
@@ -49,7 +50,8 @@ Live-Suche mit Ajax-Ergebnissen. Aufbau:
 **Agency Core → Suche / Live-Suche** (`wp-admin/admin.php?page=agency-core-search`). Die Einstellungen gelten für **jedes** Suchfeld (Shortcode und Nav-Overlay). Die Seite hat fünf Tabs (Allgemein, Verhalten, Anzeige, Ergebnisseite, Texte):
 
 **Allgemein**
-- **Suche in Navigation** (`search_enabled`, Standard: an) – zeigt ein Icon im Hauptmenü (Desktop + Mobile), das ein Such-Overlay öffnet. Betrifft nur das Nav-Icon, der Shortcode funktioniert unabhängig davon.
+- **Suche in Navigation** (`search_enabled`, Standard: an) – zeigt einen Eintrag im Hauptmenü (Desktop + Mobile), der ein Such-Overlay öffnet. Betrifft nur den Nav-Eintrag, der Shortcode funktioniert unabhängig davon.
+- **Darstellung in der Navigation** (`search_nav_display`, Standard: Nur Icon) – *Nur Icon*, *Icon + Text* (Icon vor dem Text) oder *Nur Text*. Der Text („Navigation: Text“, Standard „Suche“) wird im Tab „Texte“ gepflegt und ist mehrsprachig. Bei sichtbarem Text liefert dieser den zugänglichen Namen des Buttons, bei „Nur Icon“ das Screenreader-Label.
 
 **Verhalten**
 
@@ -132,6 +134,16 @@ Attribut-/Konfigurator-Treffer, bei denen der Suchbegriff nicht im Beschreibungs
 | `media_lab_ajax_search_query_expansion` | Zusätzliche Suchbegriffe (z. B. Synonyme, Fuzzy-Varianten) |
 | `media_lab_ajax_search_extra_matches` | Zusätzliche Produkt-Treffer, wenn Content- und Attribut-Suche nichts finden |
 | `media_lab_ajax_search_result` | Ergebnis-Daten pro Treffer erweitern (z. B. Preis durch WooCommerce) |
+
+## Plugin Status
+
+**Agency Core → Plugin Status** (`wp-admin/admin.php?page=agency-core-plugin-status`, `inc/plugin-status.php`). Eigene Admin-Seite (keine ACF-Options-Seite mehr, kein „Aktualisieren“-Button):
+
+- **Übersicht:** Plugin-Version, WordPress- und PHP-Version gegen die Mindestanforderung, Umgebung (`wp_get_environment_type()`), Warnungen (Wartungsmodus aktiv, ACF fehlt, `WP_DEBUG` auf Production), System & Abhängigkeiten (ACF, Theme, WooCommerce, Polylang/WPML, PHP-Speicher, Object Cache), Inhaltstypen mit Anzahl (dynamisch) und Schnellzugriff auf alle Agency-Core-Einstellungsseiten.
+- **Dokumentation:** rendert die `README.md` des Plugins direkt im Backend – die Doku passt damit immer zur installierten Version.
+- **Changelog:** rendert die `CHANGELOG.md`, je Version einklappbar (neueste offen).
+
+Die beiden Doku-Tabs sind **ausgeblendet, sobald White Label aktiv ist** (die Dateien enthalten Agentur-interne Hinweise). Überschreibbar: `add_filter( 'medialab_plugin_status_show_docs', '__return_true' );`. Ausgeblendete Inhaltstypen in der Tabelle: Filter `medialab_plugin_status_hidden_post_types`. Das Markdown wird von einem kleinen eigenen Renderer verarbeitet (Überschriften, Listen, Tabellen, Code, Links, fett/kursiv; alles escaped).
 
 ## Heartbeat Monitoring
 

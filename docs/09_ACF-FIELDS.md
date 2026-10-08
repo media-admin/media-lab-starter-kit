@@ -1,6 +1,6 @@
 # ACF Fields Reference
 
-**Version:** 1.20.0  
+**Version:** 1.21.0  
 **Letzte Aktualisierung:** 2026-10-07  
 **Plugin:** Media Lab Project Starter v1.0.0 (optional)
 
@@ -631,7 +631,7 @@ Das Agency Core Plugin registriert mehrere separate Unterseiten unter **Agency C
 
 | # | Menübezeichnung | Slug | Field Group |
 |---|---|---|---|
-| 1 | Plugin Status | `agency-core-plugin-status` | `group_plugin_status` |
+| 1 | Plugin Status | `agency-core-plugin-status` | – (eigene Admin-Seite, `inc/plugin-status.php`, seit 1.32.0 keine ACF-Seite mehr) |
 | 2 | Maintenance Mode / Wartungsmodus | `agency-core-maintenance` | `group_maintenance` |
 | 3 | Logo / Globale Einstellungen | `agency-core-logo` | `group_logo` |
 | 4 | Hero Image / Globale Einstellungen | `agency-core-hero` | `group_hero_global`, `group_hero_image` |
@@ -669,7 +669,8 @@ unverändert, gespeicherte Werte bleiben erhalten.
 
 | Field | Name | Typ | Standard | Beschreibung |
 |---|---|---|---|---|
-| Suche in Navigation | `search_enabled` | true_false | 1 | Such-Icon im Hauptmenü + Overlay (betrifft nur das Nav-Icon) |
+| Suche in Navigation | `search_enabled` | true_false | 1 | Such-Eintrag im Hauptmenü + Overlay (betrifft nur den Nav-Eintrag) |
+| Darstellung in der Navigation | `search_nav_display` | button_group | icon | `icon` (Nur Icon) / `icon_text` (Icon + Text) / `text` (Nur Text) |
 
 ### Verhalten
 
@@ -721,6 +722,7 @@ Gilt für die Suchergebnisseite (`search.php`, `/?s=…`).
 | Fehlertext | `search_txt_error` | text | „Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut." |
 | Screenreader: Suche öffnen | `search_txt_aria_open` | text | „Suche öffnen" |
 | Screenreader: Suchen-Button | `search_txt_aria_submit` | text | „Suchen" |
+| Navigation: Text | `search_txt_nav_label` | text | „Suche" – nur sichtbar bei „Icon + Text" / „Nur Text" |
 | Bezeichnungen der Inhaltstypen | `search_txt_type_labels` | textarea | leer; je Zeile `slug=Bezeichnung` |
 | Ergebnisseite: Überschrift | `search_txt_serp_title` | text | „Suchergebnisse für: „%s“" (`%s` = Suchbegriff) |
 | Ergebnisseite: Beschriftung „Sortieren“ | `search_txt_serp_sort_label` | text | „Sortieren nach" |
@@ -737,7 +739,7 @@ Gilt für die Suchergebnisseite (`search.php`, `/?s=…`).
 | Mehrsprachigkeit aktivieren | `search_multilang_enabled` | true_false | Sprachzeilen statt Standardtexte |
 | Sprachen | `search_languages` | repeater | Erste Zeile = Fallback |
 | → Sprachcode | `lang_code` | text | wie in Polylang/WPML, z. B. `de`, `en` |
-| → Texte | `txt_placeholder`, `txt_show_all`, `txt_intro`, `txt_min_hint`, `txt_no_results`, `txt_error`, `txt_aria_open`, `txt_aria_submit`, `txt_type_labels`, `txt_serp_title`, `txt_serp_sort_label`, `txt_serp_count_one`, `txt_serp_count_many`, `txt_serp_empty_title`, `txt_serp_empty_text`, `txt_serp_sort_labels` | text/textarea | Entsprechen den Standardtexten; leere Pflichttexte fallen auf die eingebauten Standardtexte zurück |
+| → Texte | `txt_placeholder`, `txt_show_all`, `txt_intro`, `txt_min_hint`, `txt_no_results`, `txt_error`, `txt_aria_open`, `txt_aria_submit`, `txt_nav_label`, `txt_type_labels`, `txt_serp_title`, `txt_serp_sort_label`, `txt_serp_count_one`, `txt_serp_count_many`, `txt_serp_empty_title`, `txt_serp_empty_text`, `txt_serp_sort_labels` | text/textarea | Entsprechen den Standardtexten; leere Pflichttexte fallen auf die eingebauten Standardtexte zurück |
 
 Spracherkennung: Polylang → WPML → WP-Locale (gleiches Muster wie Cookie Consent).
 
