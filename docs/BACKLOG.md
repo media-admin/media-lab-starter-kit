@@ -15,6 +15,23 @@ in den jeweiligen Abschnitten und den CHANGELOG.md-Dateien der Plugins.
 
 ---
 
+### Schema.org-Umbau (media-lab-seo 1.10.0) – offene Punkte
+
+- **Praxistest steht aus:** Auf einem echten Projekt (z. B. stadtwirt-berndorf.at) Startseite, Beitrag,
+  FAQ-Seite, Preisseite und Booking-Seite im Rich Results Test prüfen.
+- **Doku-Widerspruch `gmap`:** `08_CUSTOM-POST-TYPES.md`/`09_ACF-FIELDS.md` beschreiben `location`, `phone`,
+  `email`, `hours`; der Code (`acf-fields-gmap.php`) hat `embed_src`, `address`, `marker_title`, `map_height`;
+  das Theme-Backup `acf-json-backup/group_gmap.json` hat `latitude`, `longitude`, `zoom`. Die Feldgruppe
+  `group_gmap` ist doppelt definiert (Theme-JSON und PHP). CPT registriert nur `supports: title`, die Doku sagt „Title, Editor".
+- **Doku-Widerspruch `team`:** Doku sagt `position` + `social_links` (Repeater), Theme-Backup sagt `role` +
+  `social_media` (Gruppe). Der `acf-json/`-Ordner von `media-lab-project-starter` wurde im Repo nicht gefunden –
+  Ist-Zustand klären und Doku angleichen. Das Schema liest vorerst beide Varianten.
+- **Nativer Block `medialab/accordion`:** Items liegen nicht im Block-Inhalt, daher keine automatische FAQPage.
+  Entweder Items als InnerBlocks speichern oder Filter `mlt_schema_faq_items` pro Projekt nutzen.
+- **Booking-Standorte nur auf Seiten mit Shortcode:** Wer eine Filiale sitewide (z. B. Startseite) ausgezeichnet
+  haben will, braucht dafür einen eigenen Weg.
+- **Autoren-Archive:** pro Projekt prüfen, ob sie gesperrt/umgeleitet sind (dann `mlt_schema_author_url` setzen).
+
 ## ✅ Erledigt — media-lab-woocommerce (Paket A, v2.3.0)
 
 - ~~Theme-Alias-Hook (`ajax_filter_posts`) fehlt in `ajax-handlers.php`~~ → **Paket B, v2.4.0**

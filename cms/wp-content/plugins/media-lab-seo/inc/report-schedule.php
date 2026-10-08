@@ -23,8 +23,11 @@ const MLT_REPORT_WEEKDAY_KEY  = 'medialab_seo_report_weekday';
 const MLT_REPORT_TIME_KEY     = 'medialab_seo_report_time';
 const MLT_REPORT_TIMEZONE_KEY = 'medialab_seo_report_timezone';
 
-// Cron-Hook-Name (muss mit MLT_Report_Mailer übereinstimmen)
-const MLT_REPORT_CRON_HOOK = 'mlt_send_weekly_report';
+// Cron-Hook-Name (muss mit MLT_Report_Mailer übereinstimmen: add_action( 'mlt_weekly_report', … ))
+const MLT_REPORT_CRON_HOOK = 'mlt_weekly_report';
+
+// Früherer, versehentlich abweichender Hook-Name ohne Handler – wird beim Planen aufgeräumt
+const MLT_REPORT_CRON_HOOK_LEGACY = 'mlt_send_weekly_report';
 
 /**
  * Gibt die konfigurierten Schedule-Einstellungen zurück.
@@ -80,10 +83,13 @@ function mlt_calculate_next_run( array $schedule ): int {
  * Wird bei jeder Einstellungs-Änderung aufgerufen.
  */
 function mlt_schedule_report_cron(): void {
-	// Alten Job entfernen
-	$timestamp = wp_next_scheduled( MLT_REPORT_CRON_HOOK );
-	if ( $timestamp ) {
-		wp_unschedule_event( $timestamp, MLT_REPORT_CRON_HOOK );
+	// Alte Jobs entfernen (auch den früheren Hook ohne Handler)
+	wp_clear_scheduled_hook( MLT_REPORT_CRON_HOOK );
+	wp_clear_scheduled_hook( MLT_REPORT_CRON_HOOK_LEGACY );
+
+	// Nur planen, wenn der Report aktiviert ist
+	if ( ! get_option( 'mlt_report_enabled' ) ) {
+		return;
 	}
 
 	$schedule = mlt_get_report_schedule();
@@ -102,11 +108,23 @@ foreach ( array( MLT_REPORT_WEEKDAY_KEY, MLT_REPORT_TIME_KEY, MLT_REPORT_TIMEZON
 }
 
 /**
- * Beim Plugin-Aktivieren: Cron initial einrichten (falls noch keiner läuft).
+ * Cron mit dem Report-Schalter abgleichen (läuft bei jedem Seitenaufruf, ist aber billig):
+ *  - Report aktiv, kein Termin geplant   → planen (auch nach Updates/Cron-Verlust)
+ *  - Report aus, Termin noch vorhanden   → entfernen
+ *  - früherer Hook ohne Handler vorhanden → entfernen
  */
 function mlt_maybe_init_report_cron(): void {
-	if ( ! wp_next_scheduled( MLT_REPORT_CRON_HOOK ) ) {
+	$enabled = (bool) get_option( 'mlt_report_enabled' );
+	$next    = wp_next_scheduled( MLT_REPORT_CRON_HOOK );
+
+	if ( wp_next_scheduled( MLT_REPORT_CRON_HOOK_LEGACY ) ) {
+		wp_clear_scheduled_hook( MLT_REPORT_CRON_HOOK_LEGACY );
+	}
+
+	if ( $enabled && ! $next ) {
 		mlt_schedule_report_cron();
+	} elseif ( ! $enabled && $next ) {
+		wp_clear_scheduled_hook( MLT_REPORT_CRON_HOOK );
 	}
 }
 add_action( 'init', 'mlt_maybe_init_report_cron' );

@@ -13,16 +13,17 @@ Entwickelt von [Media Lab Tritremmel GmbH](https://media-lab.at).
 
 - **SEO-Grundlagen**: Open Graph Tags, Twitter Cards, Canonical URLs (WordPress-eigene Canonical-Ausgabe wird deaktiviert, um Dopplung zu vermeiden)
 - **Schema.org JSON-LD** als verknüpfter `@graph`: Organization/LocalBusiness, WebSite, WebPage, BreadcrumbList, BlogPosting (+ Autor), Service, Person (Team), JobPosting, CreativeWork, FAQPage (automatisch erkannt), OfferCatalog (`[pricing_table]`), Place (`[google_map]`), LocalBusiness je Standort (`[mlb_booking_form]`), Event. Stammdaten unter **SEO Toolkit → Schema**, Ausnahmen per Metabox pro Seite, Erweiterung über `mlt_schema_*`-Filter
+- **llms.txt**: automatisch generierte Seitenübersicht unter `/llms.txt` (Community-Format, kein offizieller Standard), Schalter unter **SEO Toolkit → Schema**
 - **Breadcrumbs**: PHP-Funktion für Templates + Schema.org-Markup
 - **Redirect-Manager**: 301/302, Wildcard-Pfade, Import/Export als CSV
 - **Google Search Console** — vollständige OAuth2-Anbindung: automatischer Datenabruf, Token-Erneuerung, Cache
 - **Google Analytics 4** — OAuth2-Anbindung, nutzt **dieselben Zugangsdaten wie GSC** (ein Client-ID/Secret-Paar für beide); Service-Account-JSON nur als Legacy-Fallback für bestehende Setups
-- **Bing Webmaster Tools**: Verifizierungs-Meta-Tag (`msvalidate.01`)
-- **SEO-Dashboard** im WP-Backend + Dashboard-Widget: KPI-Kacheln (Klicks, Impressionen, Ø CTR, Ø Position) vs. Vorperiode, Top-Keywords, Top-Seiten, konfigurierbarer Datumsbereich
+- **Bing Webmaster Tools**: Verifizierungs-Meta-Tag (`msvalidate.01`). Die Verifizierungs-Codes für Search Console und Bing werden geprüft: URLs/Domains werden abgelehnt, ein eingefügter ganzer Meta-Tag wird auf den Code gekürzt
+- **SEO-Dashboard** im WP-Backend + Dashboard-Widget: KPI-Kacheln (Klicks, Impressionen, Ø CTR, Ø Position, Seitenaufrufe, Nutzer) mit Veränderung gegenüber einem **Vergleichszeitraum** (Vorperiode oder Vorjahr, einmal unter **SEO Toolkit → Einstellungen** gesetzt, gilt auch für den E-Mail-Report), Top-Keywords und Top-Seiten (mit Veränderung pro Zeile), konfigurierbarer Datumsbereich, **Verlaufs-Chart** (Tageswerte mit gestrichelter Vergleichslinie, serverseitig gerendertes SVG ohne JS-Bibliothek)
 - **Analytics-Adapter** (pluggbar): GA4 oder Matomo, austauschbar per Filter, eigene Adapter über ein PHP-Interface möglich
 - **Consent-aware Tracking**: GA4/GTM über Google Consent Mode v2, Tracking startet erst nach Cookie-Consent (Bridge zu Agency-Core Cookie Consent)
 - **Consent-Rate-Tracking**: DSGVO-Auswertung, wie viele Besucher Analytics-Consent geben
-- **Wöchentlicher Report-Mailer**: HTML-Report per E-Mail, dynamische Empfänger-Liste (nicht nur Admin-E-Mail), konfigurierbarer Versandtag/-uhrzeit, Test-Mail-Button
+- **Wöchentlicher Report-Mailer**: HTML-Report per E-Mail mit Veränderung gegenüber dem Vergleichszeitraum, Säulendiagrammen (Tageswerte, Vergleich grau) und Balken in den Listen (reines Tabellen-HTML, ohne Bilder/JS), dynamische Empfänger-Liste (nicht nur Admin-E-Mail), konfigurierbarer Versandtag/-uhrzeit, Test-Mail-Button
 
 ---
 
@@ -61,7 +62,7 @@ GSC und GA4 teilen sich **ein** OAuth-Zugangsdaten-Paar (Client ID + Secret)
 1. Projekt in der [Google Cloud Console](https://console.cloud.google.com/) anlegen
 2. Beide APIs aktivieren: **Search Console API** und **Google Analytics Data API**
 3. OAuth2-Zugangsdaten erstellen (Typ: Webanwendung), **beide** Redirect-URIs eintragen:
-   - GSC: `{deine-domain}/wp-admin/admin.php?page=media-lab-seo&gsc_oauth=callback` *(genauer Parametername: im Dashboard/den Einstellungen nachsehen)*
+   - GSC: `{deine-domain}/wp-admin/admin.php?page=media-lab-seo&mlt_gsc_callback=1`
    - GA4: `{deine-domain}/wp-admin/admin.php?page=media-lab-seo&mlt_ga4_callback=1`
 4. **SEO Toolkit → Einstellungen**, Karte „Google Search Console": Client ID, Client Secret, Property-URL eintragen (z.B. `https://example.at/` oder `sc-domain:example.at`)
 5. **SEO Toolkit → Einstellungen**, Karte „Google Analytics 4": GA4 Property-ID eintragen (numerisch, z.B. `123456789` — **nicht** `G-XXXXXXXX`; zu finden unter GA4 → Verwaltung → Property-Einstellungen). Nutzt automatisch dieselbe Client ID/Secret wie GSC.
@@ -93,7 +94,7 @@ Nur **ein** Analytics-Adapter ist gleichzeitig aktiv, gesteuert über die Einste
 
 ### Eigenen Adapter implementieren
 
-Der Adapter-Filter heißt `mlt_analytics_adapter` und erwartet ein Objekt, das `MLT_Analytics_Adapter_Interface` implementiert:
+Der Adapter-Filter heißt `mlt_analytics_adapter` und erwartet ein Objekt, das `MLT_Analytics_Adapter_Interface` implementiert. Optional (seit 1.12.0) kann es zusätzlich `MLT_Analytics_Timeseries_Interface` mit `get_timeseries( $start, $end ): ?array` (Datum `Y-m-d` → `['pageviews' => int, 'sessions' => int]`, `null` bei Fehler) implementieren – dann erscheinen auch Analytics-Charts im Dashboard:
 
 ```php
 add_filter( 'mlt_analytics_adapter', function( $adapter ) {
@@ -116,7 +117,9 @@ add_filter( 'mlt_analytics_adapter', function( $adapter ) {
 
 ## Wöchentlicher Report
 
-**SEO Toolkit → Einstellungen**, Karte „Wöchentlicher Report": Empfänger (beliebig viele), Versandtag, Uhrzeit konfigurieren. Test-Mail-Button für sofortiges Feedback.
+**SEO Toolkit → Einstellungen**, Karte „Wöchentlicher Report": Report aktivieren, Empfänger (beliebig viele), Versandtag, Uhrzeit konfigurieren. Der Button „Test-Report senden" schickt den echten Report mit aktuellen Zahlen nur an die erste ausgefüllte Adresse. Die Einstellungsseite zeigt den „Nächsten geplanten Versand"; steht dort „—", ist kein Termin geplant (ab 1.12.0 plant sich der Event bei aktivem Schalter selbst).
+
+Zeitraum und Vergleich des Reports kommen aus der Karte „SEO": **Standard-Zeitraum** und **Vergleichszeitraum** (Vorperiode / Vorjahreszeitraum / kein Vergleich) – dieselben Einstellungen wie im Dashboard. Die Search Console speichert nur rund 16 Monate; liegt der Vergleichszeitraum weiter zurück (z. B. bei 365 Tagen), entfällt der Vergleich.
 
 Report-Inhalt per Filter erweiterbar:
 
@@ -136,29 +139,50 @@ wp cron event list | grep mlt         # Nächsten geplanten Versand anzeigen
 
 ## Hooks
 
-Nur tatsächlich im Code vorhandene Hooks (Stand 1.9.2, verifiziert gegen den Quellcode):
+Nur tatsächlich im Code vorhandene Hooks (Stand 1.14.0, verifiziert gegen den Quellcode):
 
 ### Actions
 | Hook | Beschreibung |
 |---|---|
 | `mlt_weekly_report` | Cron-Hook für den wöchentlichen Report-Versand — genau **ein** Handler (`MLT_Report_Mailer::send()`) sollte hier registriert sein, siehe CHANGELOG 1.9.0 zu einem früher aufgetretenen Duplikat-Mail-Bug |
+| `medialab_log_event` | Wird vom Plugin ausgelöst (Redirect angelegt/gelöscht/umgeschaltet, GSC-/GA4-Verbindung hergestellt/getrennt, GA4-API-Fehler). Der Handler liegt außerhalb dieses Plugins |
 
-### Filter
+### Filter – Report, Dashboard, Analytics
 | Filter | Parameter | Beschreibung |
 |---|---|---|
-| `mlt_weekly_report_html` | `$html`, `$data`, `$to` | Report-HTML vor dem Versand anpassen |
+| `mlt_weekly_report_html` | `$html`, `$data`, `$to` | Report-HTML vor dem Versand anpassen (`$data` enthält u. a. `compare`) |
 | `mlt_weekly_report_subject` | `$subject`, `$week`, `$year` | Betreff anpassen |
+| `mlt_report_max_html_bytes` | `$bytes` | Größenlimit des Report-HTML (Standard 80000); darüber entfallen die Säulendiagramme (Gmail kürzt ab ca. 102 KB) |
+| `mlt_compare_mode` | `$mode` | Vergleichsmodus überschreiben: `previous_period`, `previous_year`, `off` |
+| `mlt_compare_tolerance_note` | `$note` | Text des Messtoleranz-Hinweises unter dem Vergleich anpassen oder mit leerem String ausblenden |
 | `mlt_analytics_adapter` | `$adapter` | Eigenen Analytics-Adapter einstecken (muss `MLT_Analytics_Adapter_Interface` implementieren) |
+| `mlt_breadcrumb_items` | `$items` | Breadcrumb-Einträge anpassen |
 
-> **Hinweis:** Frühere Versionen dieser README nannten zusätzlich
-> `medialab_seo_schema_types` (Schema.org-Erweiterung) und
-> `medialab_matomo_sslverify` (SSL-Verify für Matomo) — beide existieren
-> im aktuellen Code **nicht**. Schema.org-Typen sind in `class-schema.php`
-> fest hinterlegt (WebSite, Organization, Article, BreadcrumbList), ohne
-> Erweiterungs-Hook. Falls diese Funktionen gebraucht werden, müssten sie
-> neu gebaut werden - hier bewusst nicht als vorhanden dokumentiert.
+### Filter – Schema.org
+| Filter | Parameter | Beschreibung |
+|---|---|---|
+| `mlt_schema_enabled` | `$enabled` | Schema-Ausgabe komplett an/aus (bei Yoast/Rank Math/SEOPress standardmäßig aus) |
+| `mlt_schema_graph` | `$graph`, `$schema` | Fertigen `@graph` vor der Ausgabe ändern |
+| `mlt_schema_organization` | `$node` | Organization-/LocalBusiness-Knoten anpassen |
+| `mlt_schema_org_types` | `$types` | Erlaubte Organisationstypen |
+| `mlt_schema_post_type_builders` | `$builders` | Schema-Builder je Post-Type ergänzen/ändern |
+| `mlt_schema_article_type` | `$type`, `$post` | Standard `BlogPosting` ändern |
+| `mlt_schema_faq_items` | `$items`, `$post` | Erkannte FAQ-Einträge ändern |
+| `mlt_schema_description` | `$text`, `$post` | Beschreibungstext |
+| `mlt_schema_author_is_person` | `$is_real`, `$author` | Autor als `Person` statt Organisation ausgeben |
+| `mlt_schema_author_url` | `$url`, `$author` | Autoren-URL |
+| `mlt_schema_person_contact` | `$allow`, `$post` | Kontaktdaten bei `Person` ausgeben |
+| `mlt_schema_location_email` | `$allow`, `$id` | Standort-E-Mail ausgeben (standardmäßig nie) |
+| `mlt_schema_default_country` | `$country` | Standard-Land (`AT`) |
 
----
+### Filter – llms.txt
+| Filter | Parameter | Beschreibung |
+|---|---|---|
+| `mlt_llms_txt_enabled` | `$enabled` | Ausgabe an/aus |
+| `mlt_llms_txt_description` | `$summary` | Ein-Satz-Beschreibung unter dem H1 |
+| `mlt_llms_txt_sections` | `$sections` | Abschnitte ergänzen/ändern |
+| `mlt_llms_txt_post_limit` | `$limit` | Anzahl Blogbeiträge |
+| `mlt_llms_txt_content` | `$content` | Fertigen Text nachbearbeiten |
 
 ## Troubleshooting
 

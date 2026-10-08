@@ -34,7 +34,20 @@ interface MLT_Analytics_Adapter_Interface {
 
 // ── GA4 Data API Adapter ──────────────────────────────────────────────────────
 
-class MLT_GA4_Data_Adapter implements MLT_Analytics_Adapter_Interface {
+/**
+ * Optionale Erweiterung: Tageswerte für den Verlaufs-Chart (seit 1.12.0).
+ * Eigene Adapter (Filter `mlt_analytics_adapter`) müssen das nicht implementieren –
+ * dann zeigt das Dashboard nur die GSC-Charts.
+ */
+interface MLT_Analytics_Timeseries_Interface {
+    /**
+     * @return array<string,array{pageviews:int,sessions:int}>|null Datum (Y-m-d) → Werte;
+     *         null bei Fehler
+     */
+    public function get_timeseries( string $start, string $end ) : ?array;
+}
+
+class MLT_GA4_Data_Adapter implements MLT_Analytics_Adapter_Interface, MLT_Analytics_Timeseries_Interface {
 
     /**
      * Gibt an, welche Methode aktiv ist.
@@ -79,6 +92,18 @@ class MLT_GA4_Data_Adapter implements MLT_Analytics_Adapter_Interface {
             return $this->sa_run_overview( $start, $end );
         }
         return [ 'pageviews' => 0, 'sessions' => 0, 'users' => 0 ];
+    }
+
+    public function get_timeseries( string $start, string $end ) : ?array {
+        if ( $this->mode === 'oauth' ) {
+            return $this->oauth_api->get_timeseries( $start, $end );
+        }
+        if ( $this->mode === 'service_account' ) {
+            $response = $this->sa_run_report( MLT_GA4_API::timeseries_request( $start, $end ) );
+            if ( $response === [] ) return null; // Fehler (kein Token, Netzwerk, ungültige Antwort)
+            return MLT_GA4_API::parse_timeseries( $response );
+        }
+        return null;
     }
 
     public function get_sources( string $start, string $end, int $limit = 5 ) : array {
@@ -233,7 +258,7 @@ class MLT_GA4_Data_Adapter implements MLT_Analytics_Adapter_Interface {
 
 // ── Matomo Adapter ────────────────────────────────────────────────────────────
 
-class MLT_Matomo_Adapter implements MLT_Analytics_Adapter_Interface {
+class MLT_Matomo_Adapter implements MLT_Analytics_Adapter_Interface, MLT_Analytics_Timeseries_Interface {
 
     private string $url;
     private string $token;
@@ -261,6 +286,28 @@ class MLT_Matomo_Adapter implements MLT_Analytics_Adapter_Interface {
             'sessions'  => (int) ( $data['nb_visits']        ?? 0 ),
             'users'     => (int) ( $data['nb_uniq_visitors'] ?? 0 ),
         ];
+    }
+
+    public function get_timeseries( string $start, string $end ) : ?array {
+        $data = $this->call_api( [
+            'method' => 'VisitsSummary.get',
+            'date'   => $start . ',' . $end,
+            'period' => 'day',
+        ] );
+
+        // Fehler: leere Antwort oder {"result":"error",…}
+        if ( ! is_array( $data ) || $data === [] || isset( $data['result'] ) ) return null;
+
+        $rows = [];
+        foreach ( $data as $day => $v ) {
+            if ( ! preg_match( '/^\d{4}-\d{2}-\d{2}$/', (string) $day ) ) continue;
+            $v = is_array( $v ) ? $v : []; // Tage ohne Besuche liefert Matomo als leeres Array
+            $rows[ $day ] = [
+                'pageviews' => (int) ( $v['nb_pageviews'] ?? 0 ),
+                'sessions'  => (int) ( $v['nb_visits']    ?? 0 ),
+            ];
+        }
+        return $rows;
     }
 
     public function get_sources( string $start, string $end, int $limit = 5 ) : array {

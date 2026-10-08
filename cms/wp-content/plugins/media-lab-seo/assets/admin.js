@@ -87,7 +87,9 @@
     $('#mlt_send_test_mail').on('click', function () {
         const $btn    = $(this);
         const $result = $('#mlt_test_mail_result');
-        const email   = $('#mlt_report_email').val().trim();
+        // Empfänger-Liste (seit 1.6.0): erste ausgefüllte Adresse verwenden
+        const $first  = $('.mlt-recipient-input').filter(function () { return (this.value || '').trim() !== ''; }).first();
+        const email   = $first.length ? String($first.val()).trim() : '';
 
         if (!email) {
             $result.attr('class', 'mlt-test-mail__result error').text('Bitte zuerst eine E-Mail-Adresse eintragen.');
@@ -95,7 +97,7 @@
         }
 
         $btn.prop('disabled', true);
-        $result.attr('class', 'mlt-test-mail__result loading').text('Sende …');
+        $result.attr('class', 'mlt-test-mail__result loading').text('Sende … (Zahlen werden abgerufen, das kann einige Sekunden dauern)');
 
         $.post(mltAdmin.ajaxUrl, {
             action: 'mlt_test_mail',

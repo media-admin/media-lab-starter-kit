@@ -207,6 +207,11 @@ class MLT_GSC_API {
             'rowLimit'   => 1,
         ] );
 
+        if ( $data === null ) {
+            // Abruf fehlgeschlagen: Nullwerte zurückgeben, aber NICHT cachen
+            return [ 'clicks' => 0, 'impressions' => 0, 'ctr' => 0, 'position' => 0 ];
+        }
+
         if ( ! isset( $data['rows'][0] ) ) {
             $result = [ 'clicks' => 0, 'impressions' => 0, 'ctr' => 0, 'position' => 0 ];
         } else {
@@ -250,6 +255,8 @@ class MLT_GSC_API {
             'orderBy'    => [ [ 'fieldName' => 'clicks', 'sortOrder' => 'DESCENDING' ] ],
         ] );
 
+        if ( $data === null ) return []; // Abruf fehlgeschlagen: nicht cachen
+
         $rows = [];
         foreach ( $data['rows'] ?? [] as $row ) {
             $rows[] = [
@@ -292,6 +299,8 @@ class MLT_GSC_API {
             'orderBy'    => [ [ 'fieldName' => 'clicks', 'sortOrder' => 'DESCENDING' ] ],
         ] );
 
+        if ( $data === null ) return []; // Abruf fehlgeschlagen: nicht cachen
+
         $rows = [];
         foreach ( $data['rows'] ?? [] as $row ) {
             $rows[] = [
@@ -307,13 +316,64 @@ class MLT_GSC_API {
         return $rows;
     }
 
+    /**
+     * Tageswerte (Klicks, Impressionen) für den Verlaufs-Chart.
+     *
+     * @return array<string,array{clicks:int,impressions:int}>|null Datum (Y-m-d) → Werte;
+     *         null, wenn der Abruf fehlgeschlagen ist (wird nicht gecacht)
+     */
+    public function get_timeseries( string $start, string $end, bool $force = false ) : ?array {
+        $cache_key = 'mlt_gsc_series_' . md5( $start . $end );
+        if ( ! $force ) {
+            $cached = get_transient( $cache_key );
+            if ( $cached !== false ) return $cached;
+        }
+
+        $data = $this->query_api( [
+            'startDate'  => $start,
+            'endDate'    => $end,
+            'dimensions' => [ 'date' ],
+            'rowLimit'   => 1000,
+        ] );
+
+        if ( $data === null ) return null; // Abruf fehlgeschlagen: nicht cachen
+
+        $rows = [];
+        foreach ( $data['rows'] ?? [] as $row ) {
+            $day = (string) ( $row['keys'][0] ?? '' );
+            if ( ! preg_match( '/^\d{4}-\d{2}-\d{2}$/', $day ) ) continue;
+            $rows[ $day ] = [
+                'clicks'      => (int) ( $row['clicks']      ?? 0 ),
+                'impressions' => (int) ( $row['impressions'] ?? 0 ),
+            ];
+        }
+
+        set_transient( $cache_key, $rows, HOUR_IN_SECONDS * 6 );
+        return $rows;
+    }
+
     // ── API-Request ───────────────────────────────────────────────────────────
 
-    private function query_api( array $body ) : array {
+    /**
+     * Pro Request: nach einem Netzwerk-/Serverfehler keine weiteren Versuche, sonst
+     * addieren sich die Timeouts (15 s je Abruf) zu einem hängenden Dashboard.
+     */
+    private static bool $api_down = false;
+
+    /**
+     * @return array|null Antwort der API. Ein leeres Array ist eine GÜLTIGE Antwort ohne
+     *                    Treffer (darf gecacht werden). null = Abruf fehlgeschlagen
+     *                    (kein Token, Netzwerkfehler, HTTP-Fehler, ungültige Antwort) –
+     *                    darf NICHT gecacht werden, sonst zeigt das Dashboard bis zu
+     *                    6 Stunden Nullwerte, obwohl die Verbindung längst wieder geht.
+     */
+    private function query_api( array $body ) : ?array {
+        if ( self::$api_down ) return null;
+
         $token    = $this->get_access_token();
         $property = get_option( self::OPT_PROPERTY_URL, '' );
 
-        if ( ! $token || ! $property ) return [];
+        if ( ! $token || ! $property ) return null;
 
         $response = wp_remote_post(
             'https://searchconsole.googleapis.com/webmasters/v3/sites/' . rawurlencode( $property ) . '/searchAnalytics/query',
@@ -327,8 +387,21 @@ class MLT_GSC_API {
             ]
         );
 
-        if ( is_wp_error( $response ) ) return [];
-        return json_decode( wp_remote_retrieve_body( $response ), true ) ?? [];
+        if ( is_wp_error( $response ) ) {
+            self::$api_down = true;
+            return null;
+        }
+
+        $code = (int) wp_remote_retrieve_response_code( $response );
+        if ( $code >= 500 || $code === 429 ) {
+            self::$api_down = true;
+            return null;
+        }
+
+        $data = json_decode( wp_remote_retrieve_body( $response ), true );
+        if ( $code !== 200 || ! is_array( $data ) || isset( $data['error'] ) ) return null;
+
+        return $data;
     }
 
     // ── Verschlüsselung ───────────────────────────────────────────────────────

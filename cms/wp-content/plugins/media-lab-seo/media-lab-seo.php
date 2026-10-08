@@ -3,7 +3,7 @@
  * Plugin Name: Media Lab SEO Toolkit
  * Plugin URI:  https://github.com/media-admin/media-lab-starter-kit
  * Description: SEO-Toolkit für Media Lab Kundenprojekte. GSC-Integration, GA4 OAuth, Schema.org, Breadcrumbs, Redirect-Manager, Consent-aware Analytics und wöchentlicher Report-Mailer.
- * Version:     1.10.1
+ * Version:     1.15.0
  * Author:      Media Lab
  * Author URI:  https://media-lab.at
  * Text Domain: media-lab-seo
@@ -14,7 +14,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define( 'MLT_VERSION',  '1.10.1' );
+define( 'MLT_VERSION',  '1.15.0' );
 define( 'MLT_FILE',     __FILE__ );
 define( 'MLT_PATH',     plugin_dir_path( __FILE__ ) );
 define( 'MLT_URL',      plugin_dir_url( __FILE__ ) );
@@ -48,6 +48,8 @@ function mlt_init() {
     require_once MLT_PATH . 'inc/class-gsc-api.php';
     require_once MLT_PATH . 'inc/class-ga4-api.php';
     require_once MLT_PATH . 'inc/class-analytics-adapter.php';
+    require_once MLT_PATH . 'inc/class-compare.php';
+    require_once MLT_PATH . 'inc/class-chart.php';
     require_once MLT_PATH . 'inc/class-settings.php';
     require_once MLT_PATH . 'inc/class-seo.php';
     require_once MLT_PATH . 'inc/class-schema.php';
@@ -59,15 +61,16 @@ function mlt_init() {
     require_once MLT_PATH . 'inc/class-report-mailer.php';
     require_once MLT_PATH . 'inc/report-recipients.php';
     require_once MLT_PATH . 'inc/report-schedule.php';
-    require_once MLT_PATH . 'inc/class-schema-admin.php';
     require_once MLT_PATH . 'inc/class-schema-sources.php';
     require_once MLT_PATH . 'inc/class-schema-admin.php';
+    require_once MLT_PATH . 'inc/class-llms-txt.php';
 
     new MLT_Settings();
     new MLT_SEO();
     new MLT_Schema();
     new MLT_Schema_Sources();
     new MLT_Schema_Admin();
+    new MLT_LLMS_Txt();
     new MLT_Breadcrumbs();
     new MLT_Redirects();
     new MLT_SEO_Dashboard();
@@ -125,5 +128,6 @@ function mlt_deactivate() {
     $ts = wp_next_scheduled( 'mlt_weekly_report' );
     if ( $ts ) wp_unschedule_event( $ts, 'mlt_weekly_report' );
     wp_clear_scheduled_hook( 'mlt_weekly_report' );
+    wp_clear_scheduled_hook( 'mlt_send_weekly_report' ); // früherer Hook-Name
     flush_rewrite_rules();
 }

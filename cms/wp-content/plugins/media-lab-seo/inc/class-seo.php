@@ -21,6 +21,27 @@ class MLT_SEO {
         add_action( 'wp_head', [ $this, 'output_canonical' ], 1 );
     }
 
+    /**
+     * Meta-Tags für die Search-Console- und Bing-Verifizierung. Gespeicherte Werte werden
+     * erneut geprüft (auch ältere Einträge, die vor der Prüfung in den Einstellungen gespeichert
+     * wurden, z. B. eine Property-URL statt des Codes).
+     */
+    public function verification_tags( string $gsc, string $bing ) : string {
+        $out = '';
+
+        $g = MLT_Settings::parse_verification( $gsc, 'google-site-verification' );
+        if ( $g['status'] === 'ok' ) {
+            $out .= '<meta name="google-site-verification" content="' . esc_attr( $g['value'] ) . '">' . "\n";
+        }
+
+        $b = MLT_Settings::parse_verification( $bing, 'msvalidate.01' );
+        if ( $b['status'] === 'ok' ) {
+            $out .= '<meta name="msvalidate.01" content="' . esc_attr( $b['value'] ) . '">' . "\n";
+        }
+
+        return $out;
+    }
+
     public function output_meta_tags() {
         $gsc  = get_option( 'mlt_gsc_verification', '' );
         $bing = get_option( 'mlt_bing_verification', '' );
@@ -28,24 +49,8 @@ class MLT_SEO {
 
         echo "\n<!-- Media Lab SEO Toolkit: SEO -->\n";
 
-        // Google Search Console
-        if ( $gsc ) {
-            $content = sanitize_text_field( $gsc );
-            if ( strpos( $content, 'google-site-verification=' ) === 0 ) {
-                $content = str_replace( 'google-site-verification=', '', $content );
-            }
-            echo '<meta name="google-site-verification" content="' . esc_attr( $content ) . '">' . "\n";
-        }
-
-        // Bing Webmaster Tools
-        if ( $bing ) {
-            $content = sanitize_text_field( $bing );
-            // Nutzer kann vollen Tag-Content oder nur den Wert eintragen
-            if ( strpos( $content, 'msvalidate.01=' ) === 0 ) {
-                $content = str_replace( 'msvalidate.01=', '', $content );
-            }
-            echo '<meta name="msvalidate.01" content="' . esc_attr( $content ) . '">' . "\n";
-        }
+        // Verifizierungs-Tags (nur gültige Codes – eine URL o. Ä. im Feld wird nie ausgegeben)
+        echo $this->verification_tags( (string) $gsc, (string) $bing ); // phpcs:ignore WordPress.Security.EscapeOutput -- Werte werden in verification_tags() escaped
 
         // Open Graph
         echo '<meta property="og:type"        content="' . esc_attr( $data['og_type'] ) . '">' . "\n";

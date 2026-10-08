@@ -63,8 +63,6 @@ class MLT_Settings {
 
     public function register_settings() {
         $options = [
-            self::OPT_GSC_VERIFICATION,
-            'mlt_bing_verification',
             'mlt_default_range',
             self::OPT_OG_IMAGE,
             self::OPT_ANALYTICS_ENABLED,
@@ -90,12 +88,118 @@ class MLT_Settings {
             register_setting( 'mlt_settings_group', $option );
         }
 
+        // Verifizierungs-Codes (seit 1.15.0): prüfen/normalisieren statt blind speichern
+        register_setting( 'mlt_settings_group', self::OPT_GSC_VERIFICATION, [ 'sanitize_callback' => [ __CLASS__, 'sanitize_gsc_verification' ] ] );
+        register_setting( 'mlt_settings_group', 'mlt_bing_verification',    [ 'sanitize_callback' => [ __CLASS__, 'sanitize_bing_verification' ] ] );
+
+        // Vergleichszeitraum (seit 1.11.0), eigener Sanitizer
+        register_setting( 'mlt_settings_group', MLT_Compare::OPT_MODE, [
+            'sanitize_callback' => [ 'MLT_Compare', 'sanitize_mode' ],
+            'default'           => MLT_Compare::MODE_PREVIOUS,
+        ] );
+
         // Empfänger-Liste separat mit eigenem Sanitizer
         register_setting( 'mlt_settings_group', MLT_REPORT_RECIPIENTS_KEY, [
             'sanitize_callback' => [ $this, 'sanitize_recipients' ],
         ] );
 
         // Legacy OPT_REPORT_EMAIL NICHT registrieren (nur Lesezugriff für Migration)
+    }
+
+    // ── Verifizierungs-Codes (GSC / Bing) ─────────────────────────────────────
+
+    /**
+     * Prüft und normalisiert einen Verifizierungscode.
+     *
+     * Akzeptiert den reinen Code, das TXT-Format `google-site-verification=CODE` oder einen
+     * ganz eingefügten `<meta …content="CODE">`-Tag (der Wert wird herausgezogen). URLs und
+     * Domains (z. B. die Property-URL) sind KEIN Code und werden abgelehnt.
+     *
+     * @param  mixed  $raw       Eingabe bzw. gespeicherter Wert
+     * @param  string $meta_name `google-site-verification` oder `msvalidate.01`
+     * @return array{value:string,status:string,extracted:bool} status: ok | empty | url | wrongtag | invalid
+     */
+    public static function parse_verification( $raw, string $meta_name ) : array {
+        $fail = static fn( string $status ) => [ 'value' => '', 'status' => $status, 'extracted' => false ];
+
+        $v = trim( (string) $raw );
+        if ( $v === '' ) return $fail( 'empty' );
+
+        $extracted = false;
+        if ( strpbrk( $v, '<>' ) !== false ) {
+            // ganzer Meta-Tag eingefügt → content-Wert übernehmen
+            if ( ! preg_match( '/<meta\b[^>]*\bcontent\s*=\s*(["\'])(.*?)\1/is', $v, $m ) ) return $fail( 'invalid' );
+            // Gehört der eingefügte Tag zu einem anderen Dienst (z. B. Bing-Tag im Google-Feld)?
+            if ( preg_match( '/\bname\s*=\s*(["\'])(.*?)\1/is', $v, $n ) && strcasecmp( trim( $n[2] ), $meta_name ) !== 0 ) {
+                return $fail( 'wrongtag' );
+            }
+
+            $v         = trim( $m[2] );
+            $extracted = true;
+        }
+
+        // TXT-Format „name=CODE" – oft samt Anführungszeichen kopiert (DNS-Anzeige): erst Anführungszeichen
+        // entfernen, dann das Präfix
+        $quotes = " \t\n\r\0\x0B\"'";
+        $v = trim( $v, $quotes );
+        $v = (string) preg_replace( '/^' . preg_quote( $meta_name, '/' ) . '\s*=\s*/i', '', $v );
+        $v = trim( $v, $quotes );
+        if ( $v === '' ) return $fail( 'invalid' );
+
+        // URL, Domain oder Property-Kennung (sc-domain:…) – echte Codes enthalten weder Punkt noch Doppelpunkt
+        if ( strpos( $v, '://' ) !== false || strpos( $v, '//' ) === 0 || stripos( $v, 'sc-domain:' ) === 0 || strpos( $v, '.' ) !== false || strpos( $v, ':' ) !== false ) {
+            return $fail( 'url' );
+        }
+
+        if ( ! preg_match( '/^[A-Za-z0-9_\-+=\/]{8,200}$/', $v ) ) return $fail( 'invalid' );
+
+        return [ 'value' => $v, 'status' => 'ok', 'extracted' => $extracted ];
+    }
+
+    public static function sanitize_gsc_verification( $value ) {
+        return self::sanitize_verification( $value, self::OPT_GSC_VERIFICATION, 'google-site-verification', 'Google Search Console' );
+    }
+
+    public static function sanitize_bing_verification( $value ) {
+        return self::sanitize_verification( $value, 'mlt_bing_verification', 'msvalidate.01', 'Bing Webmaster Tools' );
+    }
+
+    /** Speichert nur gültige Codes; sonst bleibt ein vorheriger gültiger Wert (oder das Feld leer) und eine Meldung erscheint. */
+    private static function sanitize_verification( $value, string $option, string $meta_name, string $label ) : string {
+        $r = self::parse_verification( $value, $meta_name );
+
+        if ( $r['status'] === 'ok' ) {
+            if ( $r['extracted'] ) {
+                add_settings_error( 'mlt_settings_group', $option . '_info', sprintf(
+                    /* translators: %s: service name */
+                    __( '%s: Der Verifizierungscode wurde aus dem eingefügten Meta-Tag übernommen.', 'media-lab-seo' ), $label
+                ), 'info' );
+            }
+            return $r['value'];
+        }
+        if ( $r['status'] === 'empty' ) return '';
+
+        if ( $r['status'] === 'wrongtag' ) {
+            $msg = sprintf(
+                /* translators: %s: service name */
+                __( '%s: Der eingefügte Meta-Tag gehört zu einem anderen Dienst (anderer name-Wert) – nicht gespeichert.', 'media-lab-seo' ), $label
+            );
+        } else {
+        $msg = $r['status'] === 'url'
+            ? sprintf(
+                /* translators: %s: service name */
+                __( '%s: Das ist eine URL bzw. Domain, aber kein Verifizierungscode – nicht gespeichert. Trage nur den Wert aus dem content-Attribut des Meta-Tags ein. Bei einer Domain-Property (DNS-Bestätigung) bleibt das Feld leer.', 'media-lab-seo' ), $label
+            )
+            : sprintf(
+                /* translators: %s: service name */
+                __( '%s: Der Verifizierungscode enthält ungültige Zeichen oder hat eine unplausible Länge – nicht gespeichert.', 'media-lab-seo' ), $label
+            );
+        }
+        add_settings_error( 'mlt_settings_group', $option . '_error', $msg, 'error' );
+
+        // Vorherigen Wert nur behalten, wenn er selbst gültig ist
+        $prev = self::parse_verification( get_option( $option, '' ), $meta_name );
+        return $prev['status'] === 'ok' ? $prev['value'] : '';
     }
 
     public function sanitize_recipients( $input ): array {
@@ -146,6 +250,10 @@ class MLT_Settings {
         $analytics_id   = get_option( self::OPT_ANALYTICS_ID, '' );
         $report_on      = get_option( self::OPT_REPORT_ENABLED, 0 );
         $default_range  = (int) get_option( 'mlt_default_range', 28 );
+        $bing_code      = get_option( 'mlt_bing_verification', '' );
+        $gsc_bad        = $gsc_code !== '' && self::parse_verification( $gsc_code, 'google-site-verification' )['status'] !== 'ok';
+        $bing_bad       = $bing_code !== '' && self::parse_verification( $bing_code, 'msvalidate.01' )['status'] !== 'ok';
+        $compare_mode   = MLT_Compare::get_mode();
 
         // Empfänger: neue Liste, Fallback auf Legacy-Einzel-Feld
         $recipients = mlt_get_report_recipients();
@@ -170,7 +278,7 @@ class MLT_Settings {
         ];
 
         // Nächsten Versand berechnen
-        $next_ts  = wp_next_scheduled( 'mlt_weekly_report' );
+        $next_ts  = wp_next_scheduled( MLT_REPORT_CRON_HOOK );
         $next_str = $next_ts ? wp_date( 'd.m.Y H:i', $next_ts ) : '—';
 
         $og_image_url    = $og_image_id ? wp_get_attachment_image_url( $og_image_id, 'medium' ) : '';
@@ -209,7 +317,12 @@ class MLT_Settings {
                                     class="regular-text"
                                     placeholder="google-site-verification=ABC123..."
                                 />
-                                <p class="mlt-hint">Wird als <code>&lt;meta name="google-site-verification"&gt;</code> im <code>&lt;head&gt;</code> ausgegeben.</p>
+                                <p class="mlt-hint">Wird als <code>&lt;meta name="google-site-verification"&gt;</code> im <code>&lt;head&gt;</code> ausgegeben.
+                                    Nur den Code eintragen (Wert aus dem <code>content</code>-Attribut; ein eingefügter ganzer Meta-Tag wird automatisch gekürzt) – <strong>keine URL</strong>.
+                                    Bei einer Domain-Property mit DNS-Bestätigung bleibt das Feld leer.</p>
+                                <?php if ( $gsc_bad ) : ?>
+                                <p class="mlt-hint" style="color:#b45309;font-weight:600">⚠ Der gespeicherte Wert ist kein gültiger Verifizierungscode und wird nicht ausgegeben. Bitte leeren oder den Code aus der Search Console eintragen.</p>
+                                <?php endif; ?>
                             </div>
 
                             <div class="mlt-field">
@@ -218,19 +331,20 @@ class MLT_Settings {
                                     type="text"
                                     id="mlt_bing_verification"
                                     name="mlt_bing_verification"
-                                    value="<?php echo esc_attr( get_option( 'mlt_bing_verification', '' ) ); ?>"
+                                    value="<?php echo esc_attr( $bing_code ); ?>"
                                     class="regular-text"
                                     placeholder="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
                                 />
                                 <p class="mlt-hint">
                                     Wird als <code>&lt;meta name="msvalidate.01"&gt;</code> im <code>&lt;head&gt;</code> ausgegeben.
-                                    Nur den Wert aus dem <code>content</code>-Attribut eintragen, nicht den ganzen Tag.<br>
+                                    Nur den Wert aus dem <code>content</code>-Attribut eintragen (ein eingefügter ganzer Meta-Tag wird automatisch gekürzt).
+                                    <?php if ( $bing_bad ) : ?><br><strong style="color:#b45309">⚠ Der gespeicherte Wert ist kein gültiger Verifizierungscode und wird nicht ausgegeben.</strong><?php endif; ?><br>
                                     <a href="https://www.bing.com/webmasters" target="_blank" rel="noopener">→ Bing Webmaster Tools öffnen</a>
                                 </p>
                             </div>
 
                             <div class="mlt-field">
-                                <label for="mlt_default_range">Standard-Zeitraum (Dashboard)</label>
+                                <label for="mlt_default_range">Standard-Zeitraum (Dashboard &amp; Report)</label>
                                 <select id="mlt_default_range" name="mlt_default_range" style="width:auto;">
                                     <?php foreach ( [ 7 => '7 Tage', 28 => '28 Tage', 90 => '90 Tage', 365 => '365 Tage' ] as $val => $label ) : ?>
                                     <option value="<?php echo esc_attr( $val ); ?>" <?php selected( $default_range, $val ); ?>>
@@ -239,6 +353,18 @@ class MLT_Settings {
                                     <?php endforeach; ?>
                                 </select>
                                 <p class="mlt-hint">Zeitraum der beim Öffnen des Dashboards standardmäßig angezeigt wird. Im Dashboard selbst kann jederzeit ein anderer Zeitraum gewählt werden.</p>
+                            </div>
+
+                            <div class="mlt-field">
+                                <label for="mlt_compare_mode">Vergleichszeitraum (Dashboard, Widget &amp; Report)</label>
+                                <select id="mlt_compare_mode" name="<?php echo esc_attr( MLT_Compare::OPT_MODE ); ?>" style="width:auto;">
+                                    <?php foreach ( MLT_Compare::modes() as $val => $label ) : ?>
+                                    <option value="<?php echo esc_attr( $val ); ?>" <?php selected( $compare_mode, $val ); ?>>
+                                        <?php echo esc_html( $label ); ?>
+                                    </option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <p class="mlt-hint">Gilt überall: SEO-Dashboard, WP-Dashboard-Widget und wöchentlicher E-Mail-Report. Die Search Console speichert nur rund 16 Monate – liegt der Vergleichszeitraum weiter zurück (z. B. bei 365 Tagen), wird kein Vergleich angezeigt.</p>
                             </div>
 
                             <div class="mlt-field">
@@ -564,7 +690,7 @@ class MLT_Settings {
 
                             <!-- Test-Mail -->
                             <div class="mlt-field mlt-test-mail">
-                                <label>Test-Mail</label>
+                                <label>Test-Report</label>
                                 <div class="mlt-test-mail__row">
                                     <button
                                         type="button"
@@ -572,11 +698,11 @@ class MLT_Settings {
                                         class="button button-secondary"
                                         <?php disabled( ! $smtp_configured ); ?>
                                     >
-                                        Test-Mail senden
+                                        Test-Report senden
                                     </button>
                                     <span id="mlt_test_mail_result" class="mlt-test-mail__result"></span>
                                 </div>
-                                <p class="mlt-hint">Sendet einen Test-Report an den ersten eingetragenen Empfänger. Speichern nicht vergessen.</p>
+                                <p class="mlt-hint">Sendet den aktuellen Report mit echten Zahlen (Betreff „[TEST] …“) nur an die erste ausgefüllte Adresse – nicht an alle Empfänger. Prüft damit auch den SMTP-Versand.</p>
                             </div>
 
                         </div>
@@ -640,52 +766,26 @@ class MLT_Settings {
 
         $recipients = mlt_get_report_recipients();
         $to         = ! empty( $recipients ) ? $recipients[0] : get_option( 'admin_email' );
-        $to         = sanitize_email( $_POST['email'] ?? $to );
+        $to         = sanitize_email( wp_unslash( $_POST['email'] ?? $to ) );
 
-        $subject = '[' . get_bloginfo( 'name' ) . '] Media Lab SEO Toolkit – Test-Mail';
-        $message = $this->build_test_mail_html();
-        $headers = [ 'Content-Type: text/html; charset=UTF-8' ];
-
-        $error = null;
-        add_action( 'wp_mail_failed', function( $e ) use ( &$error ) {
-            $error = $e->get_error_message();
-        } );
-
-        $sent = wp_mail( $to, $subject, $message, $headers );
+        // Sendet den echten Report (mit aktuellen Zahlen) an genau diese eine Adresse
+        [ $sent, $message ] = MLT_Report_Mailer::send_test( $to );
 
         if ( $sent ) {
-            wp_send_json_success( 'Mail erfolgreich gesendet an ' . esc_html( $to ) );
-        } else {
-            wp_send_json_error( $error ?: 'Unbekannter Fehler beim Senden.' );
+            wp_send_json_success( $message );
         }
-    }
-
-    private function build_test_mail_html() {
-        $site = get_bloginfo( 'name' );
-        $url  = get_bloginfo( 'url' );
-        $time = wp_date( 'd.m.Y H:i:s' );
-        return "
-        <div style='font-family:sans-serif;max-width:520px;margin:0 auto;padding:32px 24px;background:#f9fafb;border-radius:8px'>
-            <h2 style='margin:0 0 8px;color:#1a1a2e'>✓ SMTP funktioniert</h2>
-            <p style='color:#6b7280;margin:0 0 24px'>Diese Test-Mail wurde von <strong>Media Lab SEO Toolkit</strong> gesendet.</p>
-            <table style='width:100%;border-collapse:collapse'>
-                <tr><td style='padding:8px 0;color:#9ca3af;font-size:13px'>Website</td><td style='padding:8px 0;font-size:13px'><a href='{$url}'>{$site}</a></td></tr>
-                <tr><td style='padding:8px 0;color:#9ca3af;font-size:13px'>Zeitpunkt</td><td style='padding:8px 0;font-size:13px'>{$time}</td></tr>
-                <tr><td style='padding:8px 0;color:#9ca3af;font-size:13px'>Plugin</td><td style='padding:8px 0;font-size:13px'>Media Lab SEO Toolkit v" . MLT_VERSION . "</td></tr>
-            </table>
-        </div>";
+        wp_send_json_error( $message );
     }
 
     // ── WP-Cron: Scheduling ───────────────────────────────────────────────────
 
     public function sync_cron( $old, $new ) {
         if ( $new && ! $old ) {
-            if ( ! wp_next_scheduled( 'mlt_weekly_report' ) ) {
+            if ( ! wp_next_scheduled( MLT_REPORT_CRON_HOOK ) ) {
                 mlt_schedule_report_cron();
             }
         } elseif ( ! $new && $old ) {
-            $ts = wp_next_scheduled( 'mlt_weekly_report' );
-            if ( $ts ) wp_unschedule_event( $ts, 'mlt_weekly_report' );
+            wp_clear_scheduled_hook( MLT_REPORT_CRON_HOOK );
         }
     }
 

@@ -107,6 +107,14 @@ class MLT_SEO_Dashboard {
         $analytics_overview = $has_analytics ? $adapter->get_overview( $start, $end )   : [];
         $analytics_sources  = $has_analytics ? $adapter->get_sources( $start, $end, 5 ) : [];
 
+        // Vergleichszeitraum (Einstellung mlt_compare_mode)
+        $compare = MLT_Compare::fetch( [ 'start' => $start, 'end' => $end ], $overview, $analytics_overview, $has_gsc, $adapter, $queries, $pages );
+        $cmp     = $compare['range'];
+        $tip     = fn( $prev, int $dec = 0 ) => $cmp ? $cmp['label'] . ': ' . number_format_i18n( (float) $prev, $dec ) : '';
+
+        // Verlaufs-Charts (Tageswerte, aktueller Zeitraum + Vergleichszeitraum)
+        $charts = MLT_Timeseries::collect( [ 'start' => $start, 'end' => $end ], $cmp, $has_gsc, $adapter );
+
         // Aktiver Shortcut (für Button-Highlighting)
         $active_range  = isset( $_GET['mlt_range'] ) ? (int) $_GET['mlt_range'] : null;
         $is_custom     = isset( $_GET['mlt_start'] );
@@ -125,6 +133,9 @@ class MLT_SEO_Dashboard {
             <div class="mlt-header">
                 <h1>SEO Dashboard</h1>
                 <p class="mlt-subtitle"><?php echo esc_html( "$display_start – $display_end" ); ?></p>
+                <?php if ( $cmp ) : ?>
+                <p class="mlt-subtitle mlt-subtitle--compare">Vergleich mit <?php echo esc_html( MLT_Compare::describe( $cmp ) ); ?></p>
+                <?php endif; ?>
             </div>
 
             <!-- ── Zeitraum-Auswahl ──────────────────────────────────────── -->
@@ -183,17 +194,28 @@ class MLT_SEO_Dashboard {
                 </div>
             <?php endif; ?>
 
+            <?php if ( ! empty( $compare['notice'] ) ) : ?>
+                <div class="mlt-notice mlt-notice--warning" style="max-width:680px"><?php echo esc_html( $compare['notice'] ); ?></div>
+            <?php endif; ?>
+
             <!-- KPI-Kacheln -->
             <div class="mlt-kpi-grid">
-                <?php $this->kpi( 'Klicks',        $overview['clicks']      ?? '–', 'mlt-kpi--blue' ); ?>
-                <?php $this->kpi( 'Impressionen',  $overview['impressions'] ?? '–', 'mlt-kpi--purple' ); ?>
-                <?php $this->kpi( 'Ø CTR',         isset( $overview['ctr'] ) ? $overview['ctr'] . '%' : '–', 'mlt-kpi--green' ); ?>
-                <?php $this->kpi( 'Ø Position',    $overview['position']    ?? '–', 'mlt-kpi--orange' ); ?>
+                <?php $gd = $compare['gsc_deltas']; $ad = $compare['analytics_deltas']; ?>
+                <?php $this->kpi( 'Klicks',        $overview['clicks']      ?? '–', 'mlt-kpi--blue',   $gd['clicks']      ?? null, $tip( $compare['gsc_prev']['clicks']      ?? 0 ) ); ?>
+                <?php $this->kpi( 'Impressionen',  $overview['impressions'] ?? '–', 'mlt-kpi--purple', $gd['impressions'] ?? null, $tip( $compare['gsc_prev']['impressions'] ?? 0 ) ); ?>
+                <?php $this->kpi( 'Ø CTR',         isset( $overview['ctr'] ) ? number_format( (float) $overview['ctr'], 1, ',', '' ) . ' %' : '–', 'mlt-kpi--green', $gd['ctr'] ?? null, $tip( $compare['gsc_prev']['ctr'] ?? 0, 1 ) . ' %' ); ?>
+                <?php $this->kpi( 'Ø Position',    isset( $overview['position'] ) ? number_format( (float) $overview['position'], 1, ',', '' ) : '–', 'mlt-kpi--orange', $gd['position']    ?? null, $tip( $compare['gsc_prev']['position']    ?? 0, 1 ) ); ?>
                 <?php if ( $has_analytics ) : ?>
-                    <?php $this->kpi( 'Seitenaufrufe', $analytics_overview['pageviews'] ?? '–', 'mlt-kpi--teal' ); ?>
-                    <?php $this->kpi( 'Nutzer',        $analytics_overview['users']     ?? '–', 'mlt-kpi--pink' ); ?>
+                    <?php $this->kpi( 'Seitenaufrufe', $analytics_overview['pageviews'] ?? '–', 'mlt-kpi--teal', $ad['pageviews'] ?? null, $tip( $compare['analytics_prev']['pageviews'] ?? 0 ) ); ?>
+                    <?php $this->kpi( 'Nutzer',        $analytics_overview['users']     ?? '–', 'mlt-kpi--pink', $ad['users']     ?? null, $tip( $compare['analytics_prev']['users']     ?? 0 ) ); ?>
                 <?php endif; ?>
             </div>
+
+            <?php if ( ! empty( $compare['note'] ) ) : ?>
+                <p class="mlt-compare-note"><?php echo esc_html( $compare['note'] ); ?></p>
+            <?php endif; ?>
+
+            <?php MLT_Chart::render_card( $charts, $cmp, [ 'start' => $start, 'end' => $end ] ); ?>
 
             <div class="mlt-grid">
 
@@ -203,25 +225,26 @@ class MLT_SEO_Dashboard {
                     <div class="mlt-card__header">
                         <span class="mlt-card__icon">🔑</span>
                         <h2>Top Keywords</h2>
+                        <?php if ( $compare['query_deltas'] && $cmp ) : ?><span class="mlt-card__sub">Δ vs. <?php echo esc_html( $cmp['label'] ); ?></span><?php endif; ?>
                     </div>
                     <div class="mlt-card__body" style="padding:0">
                         <table class="wp-list-table widefat fixed striped mlt-table">
                             <thead><tr>
                                 <th>Keyword</th>
-                                <th style="width:70px;text-align:right">Klicks</th>
+                                <th style="width:80px;text-align:right">Klicks</th>
                                 <th style="width:90px;text-align:right">Impressionen</th>
-                                <th style="width:60px;text-align:right">Position</th>
+                                <th style="width:80px;text-align:right">Position</th>
                             </tr></thead>
                             <tbody>
-                                <?php foreach ( $queries as $row ) : ?>
+                                <?php foreach ( $queries as $row ) : $rd = $compare['query_deltas'][ $row['query'] ] ?? null; ?>
                                 <tr>
                                     <td><?php echo esc_html( $row['query'] ); ?></td>
-                                    <td style="text-align:right"><?php echo number_format( $row['clicks'], 0, ',', '.' ); ?></td>
+                                    <td style="text-align:right"><?php echo number_format( $row['clicks'], 0, ',', '.' ); ?><?php $this->row_delta( $rd, 'clicks', $cmp ); ?></td>
                                     <td style="text-align:right"><?php echo number_format( $row['impressions'], 0, ',', '.' ); ?></td>
                                     <td style="text-align:right">
                                         <span class="mlt-pos mlt-pos--<?php echo $row['position'] <= 3 ? 'top' : ( $row['position'] <= 10 ? 'mid' : 'low' ); ?>">
                                             <?php echo number_format( $row['position'], 1, ',', '' ); ?>
-                                        </span>
+                                        </span><?php $this->row_delta( $rd, 'position', $cmp ); ?>
                                     </td>
                                 </tr>
                                 <?php endforeach; ?>
@@ -237,24 +260,25 @@ class MLT_SEO_Dashboard {
                     <div class="mlt-card__header">
                         <span class="mlt-card__icon">📄</span>
                         <h2>Top Seiten (GSC)</h2>
+                        <?php if ( $compare['page_deltas'] && $cmp ) : ?><span class="mlt-card__sub">Δ vs. <?php echo esc_html( $cmp['label'] ); ?></span><?php endif; ?>
                     </div>
                     <div class="mlt-card__body" style="padding:0">
                         <table class="wp-list-table widefat fixed striped mlt-table">
                             <thead><tr>
                                 <th>URL</th>
-                                <th style="width:70px;text-align:right">Klicks</th>
-                                <th style="width:60px;text-align:right">Position</th>
+                                <th style="width:80px;text-align:right">Klicks</th>
+                                <th style="width:80px;text-align:right">Position</th>
                             </tr></thead>
                             <tbody>
-                                <?php foreach ( $pages as $row ) : ?>
-                                <?php $short = preg_replace( '#^https?://[^/]+#', '', $row['url'] ); ?>
+                                <?php $page_labels = MLT_Compare::page_labels( array_column( $pages, 'url' ), 50 ); ?>
+                                <?php foreach ( $pages as $row ) : $rd = $compare['page_deltas'][ $row['url'] ] ?? null; ?>
                                 <tr>
-                                    <td><a href="<?php echo esc_url( $row['url'] ); ?>" target="_blank" rel="noopener"><?php echo esc_html( strlen( $short ) > 50 ? substr( $short, 0, 47 ) . '…' : $short ); ?></a></td>
-                                    <td style="text-align:right"><?php echo number_format( $row['clicks'], 0, ',', '.' ); ?></td>
+                                    <td><a href="<?php echo esc_url( $row['url'] ); ?>" target="_blank" rel="noopener" title="<?php echo esc_attr( $row['url'] ); ?>"><?php echo esc_html( $page_labels[ $row['url'] ] ?? $row['url'] ); ?></a></td>
+                                    <td style="text-align:right"><?php echo number_format( $row['clicks'], 0, ',', '.' ); ?><?php $this->row_delta( $rd, 'clicks', $cmp ); ?></td>
                                     <td style="text-align:right">
                                         <span class="mlt-pos mlt-pos--<?php echo $row['position'] <= 3 ? 'top' : ( $row['position'] <= 10 ? 'mid' : 'low' ); ?>">
                                             <?php echo number_format( $row['position'], 1, ',', '' ); ?>
-                                        </span>
+                                        </span><?php $this->row_delta( $rd, 'position', $cmp ); ?>
                                     </td>
                                 </tr>
                                 <?php endforeach; ?>
@@ -303,88 +327,6 @@ class MLT_SEO_Dashboard {
 
         </div><!-- .wrap -->
 
-        <style>
-        .mlt-daterange-bar {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-            padding: 12px 16px;
-            background: #fff;
-            border: 1px solid #e5e7eb;
-            border-radius: 6px;
-        }
-        .mlt-daterange-shortcuts {
-            display: flex;
-            gap: 6px;
-        }
-        .mlt-daterange-custom {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-left: auto;
-        }
-        .mlt-daterange-custom__label {
-            font-size: 13px;
-            color: #6b7280;
-            white-space: nowrap;
-        }
-        .mlt-daterange-custom input[type="text"] {
-            width: 110px;
-            font-size: 13px;
-            padding: 4px 8px;
-            border: 1px solid #d1d5db;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .mlt-daterange-custom input.mlt-date-active {
-            border-color: #2271b1;
-            background: #f0f6fc;
-        }
-        .mlt-consent-toggle {
-            display: flex;
-            gap: 6px;
-            margin-bottom: 14px;
-        }
-        .mlt-consent-toggle .button { font-size: 12px; padding: 2px 10px; height: auto; line-height: 1.8; }
-        .mlt-consent-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid #f3f4f6;
-        }
-        .mlt-consent-row:last-child { border-bottom: none; }
-        .mlt-consent-row__label { font-size: 13px; color: #374151; }
-        .mlt-consent-row__bar {
-            flex: 1;
-            height: 6px;
-            background: #f3f4f6;
-            border-radius: 3px;
-            margin: 0 12px;
-            overflow: hidden;
-        }
-        .mlt-consent-row__fill {
-            height: 100%;
-            background: #16a34a;
-            border-radius: 3px;
-        }
-        .mlt-consent-row__rate {
-            font-size: 13px;
-            font-weight: 600;
-            color: #1a1a2e;
-            width: 48px;
-            text-align: right;
-        }
-        .mlt-consent-row__delta {
-            font-size: 11px;
-            margin-left: 6px;
-            font-weight: 600;
-        }
-        .mlt-consent-row__delta--up   { color: #16a34a; }
-        .mlt-consent-row__delta--down { color: #dc2626; }
-        </style>
 
         <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -449,10 +391,36 @@ class MLT_SEO_Dashboard {
         <?php
     }
 
-    private function kpi( string $label, $value, string $class = '' ) {
+    /** Veränderung unter dem Wert einer Tabellenzeile (Top Keywords / Top Seiten). */
+    private function row_delta( ?array $row_delta, string $metric, ?array $cmp ) : void {
+        $d = $row_delta[ $metric ] ?? null;
+        if ( ! $d ) return;
+
+        $title = '';
+        if ( $cmp ) {
+            $prev = $row_delta['prev'] ?? null;
+            if ( $prev === null ) {
+                $title = sprintf(
+                    /* translators: %s: comparison period (e.g. "Vorperiode") */
+                    __( '%s: nicht unter den Top 500', 'media-lab-seo' ),
+                    $cmp['label']
+                );
+            } elseif ( $metric === 'clicks' ) {
+                $title = $cmp['label'] . ': ' . number_format_i18n( (float) $prev['clicks'] ) . ' ' . __( 'Klicks', 'media-lab-seo' );
+            } else {
+                $title = $cmp['label'] . ': ' . number_format_i18n( (float) $prev['position'], 1 );
+            }
+        }
+        echo '<span class="mlt-rowdelta">' . MLT_Delta::html_admin( $d, $title ) . '</span>'; // escaped in MLT_Delta
+    }
+
+    private function kpi( string $label, $value, string $class = '', ?array $delta = null, string $title = '' ) {
         echo '<div class="mlt-kpi ' . esc_attr( $class ) . '">';
         echo '<div class="mlt-kpi__value">' . ( is_numeric( $value ) ? number_format( (float) $value, 0, ',', '.' ) : esc_html( $value ) ) . '</div>';
         echo '<div class="mlt-kpi__label">' . esc_html( $label ) . '</div>';
+        if ( $delta ) {
+            echo '<div class="mlt-kpi__delta">' . MLT_Delta::html_admin( $delta, $title ) . '</div>'; // escaped in MLT_Delta
+        }
         echo '</div>';
     }
 
@@ -545,7 +513,8 @@ class MLT_SEO_Dashboard {
     public function register_widget() {
         wp_add_dashboard_widget(
             'mlt_seo_widget',
-            '📊 SEO Übersicht',
+            // <span> hält Icon und Text zusammen – sonst setzt WordPress sie im Titel auseinander (flex)
+            '<span>📊 SEO Übersicht</span>',
             [ $this, 'render_widget' ]
         );
     }
@@ -554,9 +523,10 @@ class MLT_SEO_Dashboard {
         $gsc       = MLT_GSC_API::instance();
         $connected = $gsc->is_connected() && $gsc->is_configured();
         $default   = (int) get_option( 'mlt_default_range', 28 );
-        $start     = gmdate( 'Y-m-d', strtotime( "-{$default} days" ) );
-        $end       = gmdate( 'Y-m-d', strtotime( '-2 days' ) );
+        [ 'start' => $start, 'end' => $end ] = MLT_GSC_API::get_active_range();
         $overview  = $connected ? $gsc->get_overview( $start, $end ) : [];
+        $compare   = MLT_Compare::fetch( [ 'start' => $start, 'end' => $end ], $overview, [], $connected );
+        $d         = $compare['gsc_deltas'];
         ?>
         <?php if ( ! $connected ) : ?>
             <p style="color:#9ca3af;font-size:13px">
@@ -565,23 +535,26 @@ class MLT_SEO_Dashboard {
             </p>
         <?php else : ?>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
-                <?php $this->mini_kpi( 'Klicks',       $overview['clicks']      ?? 0, '#2563eb' ); ?>
-                <?php $this->mini_kpi( 'Impressionen', $overview['impressions'] ?? 0, '#7c3aed' ); ?>
-                <?php $this->mini_kpi( 'CTR',          ( $overview['ctr'] ?? 0 ) . '%', '#16a34a' ); ?>
-                <?php $this->mini_kpi( 'Ø Position',   $overview['position']    ?? 0, '#d97706' ); ?>
+                <?php $this->mini_kpi( 'Klicks',       $overview['clicks']      ?? 0, '#2563eb', $d['clicks']      ?? null ); ?>
+                <?php $this->mini_kpi( 'Impressionen', $overview['impressions'] ?? 0, '#7c3aed', $d['impressions'] ?? null ); ?>
+                <?php $this->mini_kpi( 'CTR',          number_format( (float) ( $overview['ctr'] ?? 0 ), 1, ',', '' ) . ' %', '#16a34a', $d['ctr']       ?? null ); ?>
+                <?php $this->mini_kpi( 'Ø Position',   number_format( (float) ( $overview['position'] ?? 0 ), 1, ',', '' ), '#d97706', $d['position']    ?? null ); ?>
             </div>
             <p style="font-size:11px;color:#9ca3af;margin:0">
-                Letzte <?php echo esc_html( $default ); ?> Tage &nbsp;·&nbsp;
+                <?php echo esc_html( wp_date( 'd.m.', strtotime( $start ) ) . ' – ' . wp_date( 'd.m.', strtotime( $end ) ) ); ?>
+                <?php if ( $compare['range'] ) : ?> &nbsp;·&nbsp; Δ vs. <?php echo esc_html( $compare['range']['label'] ); ?><?php endif; ?>
+                &nbsp;·&nbsp;
                 <a href="<?php echo esc_url( admin_url( 'admin.php?page=mlt-dashboard' ) ); ?>">Dashboard öffnen →</a>
             </p>
         <?php endif; ?>
         <?php
     }
 
-    private function mini_kpi( string $label, $value, string $color ) {
+    private function mini_kpi( string $label, $value, string $color, ?array $delta = null ) {
         echo '<div style="text-align:center;padding:8px;background:#f9fafb;border-radius:6px">';
         echo '<div style="font-size:18px;font-weight:700;color:' . esc_attr( $color ) . '">' . esc_html( is_numeric( $value ) ? number_format( (float) $value, 0, ',', '.' ) : $value ) . '</div>';
         echo '<div style="font-size:11px;color:#6b7280;margin-top:2px">' . esc_html( $label ) . '</div>';
+        if ( $delta ) echo '<div style="margin-top:4px">' . MLT_Delta::html_admin( $delta ) . '</div>'; // escaped in MLT_Delta
         echo '</div>';
     }
 

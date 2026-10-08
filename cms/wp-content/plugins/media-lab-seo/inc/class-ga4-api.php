@@ -192,6 +192,11 @@ class MLT_GA4_API {
             ],
         ] );
 
+        if ( $response === null ) {
+            // Abruf fehlgeschlagen: Nullwerte zurückgeben, aber NICHT cachen
+            return [ 'pageviews' => 0, 'sessions' => 0, 'users' => 0 ];
+        }
+
         if ( empty( $response['rows'][0]['metricValues'] ) ) {
             $result = [ 'pageviews' => 0, 'sessions' => 0, 'users' => 0 ];
         } else {
@@ -225,6 +230,8 @@ class MLT_GA4_API {
             'orderBys'   => [ [ 'metric' => [ 'metricName' => 'sessions' ], 'desc' => true ] ],
         ] );
 
+        if ( $response === null ) return []; // Abruf fehlgeschlagen: nicht cachen
+
         $rows = [];
         foreach ( $response['rows'] ?? [] as $row ) {
             $rows[] = [
@@ -255,6 +262,8 @@ class MLT_GA4_API {
             'orderBys'   => [ [ 'metric' => [ 'metricName' => 'screenPageViews' ], 'desc' => true ] ],
         ] );
 
+        if ( $response === null ) return []; // Abruf fehlgeschlagen: nicht cachen
+
         $rows = [];
         foreach ( $response['rows'] ?? [] as $row ) {
             $rows[] = [
@@ -267,13 +276,69 @@ class MLT_GA4_API {
         return $rows;
     }
 
+    /**
+     * Tageswerte (Seitenaufrufe, Sessions) für den Verlaufs-Chart.
+     *
+     * @return array<string,array{pageviews:int,sessions:int}>|null Datum (Y-m-d) → Werte;
+     *         null bei fehlgeschlagenem Abruf (wird nicht gecacht)
+     */
+    public function get_timeseries( string $start, string $end, bool $force = false ) : ?array {
+        $cache_key = 'mlt_ga4_series_' . md5( $start . $end );
+        if ( ! $force ) {
+            $cached = get_transient( $cache_key );
+            if ( $cached !== false ) return $cached;
+        }
+
+        $response = $this->run_report( self::timeseries_request( $start, $end ) );
+        if ( $response === null ) return null; // Abruf fehlgeschlagen: nicht cachen
+
+        $rows = self::parse_timeseries( $response );
+        set_transient( $cache_key, $rows, HOUR_IN_SECONDS * 6 );
+        return $rows;
+    }
+
+    /** Request-Body der Tages-Zeitreihe (auch vom Service-Account-Pfad genutzt). */
+    public static function timeseries_request( string $start, string $end ) : array {
+        return [
+            'dateRanges' => [ [ 'startDate' => $start, 'endDate' => $end ] ],
+            'dimensions' => [ [ 'name' => 'date' ] ],
+            'metrics'    => [ [ 'name' => 'screenPageViews' ], [ 'name' => 'sessions' ] ],
+            'orderBys'   => [ [ 'dimension' => [ 'dimensionName' => 'date' ] ] ],
+            'limit'      => 1000,
+        ];
+    }
+
+    /** GA4-Antwort (Dimension `date` = YYYYMMDD) → Datum (Y-m-d) → Werte. */
+    public static function parse_timeseries( array $response ) : array {
+        $rows = [];
+        foreach ( $response['rows'] ?? [] as $row ) {
+            $raw = (string) ( $row['dimensionValues'][0]['value'] ?? '' );
+            if ( ! preg_match( '/^(\d{4})(\d{2})(\d{2})$/', $raw, $m ) ) continue;
+            $rows[ "{$m[1]}-{$m[2]}-{$m[3]}" ] = [
+                'pageviews' => (int) ( $row['metricValues'][0]['value'] ?? 0 ),
+                'sessions'  => (int) ( $row['metricValues'][1]['value'] ?? 0 ),
+            ];
+        }
+        return $rows;
+    }
+
     // ── API-Request ───────────────────────────────────────────────────────────
 
-    private function run_report( array $body ) : array {
+    /** Pro Request: nach Netzwerk-/Serverfehler keine weiteren Versuche (Timeouts würden sich addieren). */
+    private static bool $api_down = false;
+
+    /**
+     * @return array|null Antwort der API (ein Array ohne `rows` ist eine GÜLTIGE Antwort
+     *                    ohne Daten und darf gecacht werden). null = Abruf fehlgeschlagen
+     *                    (kein Token, Netzwerk, HTTP-/API-Fehler) – darf NICHT gecacht werden.
+     */
+    private function run_report( array $body ) : ?array {
+        if ( self::$api_down ) return null;
+
         $token       = $this->get_access_token();
         $property_id = preg_replace( '/\D/', '', get_option( self::OPT_PROPERTY_ID, '' ) );
 
-        if ( ! $token || ! $property_id ) return [];
+        if ( ! $token || ! $property_id ) return null;
 
         $response = wp_remote_post(
             "https://analyticsdata.googleapis.com/v1beta/properties/{$property_id}:runReport",
@@ -287,17 +352,28 @@ class MLT_GA4_API {
             ]
         );
 
-        if ( is_wp_error( $response ) ) return [];
+        if ( is_wp_error( $response ) ) {
+            self::$api_down = true;
+            return null;
+        }
 
-        $data = json_decode( wp_remote_retrieve_body( $response ), true ) ?? [];
+        $code = (int) wp_remote_retrieve_response_code( $response );
+        if ( $code >= 500 || $code === 429 ) {
+            self::$api_down = true;
+            return null;
+        }
+
+        $data = json_decode( wp_remote_retrieve_body( $response ), true );
 
         // API-Fehler loggen (z.B. Property nicht gefunden, Scope fehlt)
-        if ( ! empty( $data['error'] ) ) {
+        if ( is_array( $data ) && ! empty( $data['error'] ) ) {
             do_action( 'medialab_log_event', 'ga4_api_error', 'ga4', null,
                 'GA4 API Fehler: ' . ( $data['error']['message'] ?? 'Unbekannt' )
             );
-            return [];
+            return null;
         }
+
+        if ( $code !== 200 || ! is_array( $data ) ) return null;
 
         return $data;
     }

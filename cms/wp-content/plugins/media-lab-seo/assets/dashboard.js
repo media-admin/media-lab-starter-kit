@@ -29,4 +29,17 @@
         });
     });
 
+    // ── Verlaufs-Chart: Reiter umschalten ───────────────────────────────────
+
+    $(document).on('click', '.mlt-chart-tab', function () {
+        const key = $(this).attr('data-chart');
+
+        $('.mlt-chart-tab').removeClass('is-active').attr('aria-selected', 'false');
+        $(this).addClass('is-active').attr('aria-selected', 'true');
+
+        $('.mlt-chart-panel').each(function () {
+            $(this).prop('hidden', $(this).attr('data-chart-panel') !== key);
+        });
+    });
+
 })(jQuery);
