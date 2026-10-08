@@ -20,6 +20,43 @@ Ende.
 
 ---
 
+## [1.31.0] - 2026-10-07
+
+### media-lab-agency-core 1.31.0
+
+#### Added
+- **Suchergebnisseite: Sortierung, Layout, Ergebnisse pro Seite**
+  (`inc/search-settings.php`) – neuer Tab „Ergebnisseite“ unter Agency Core →
+  Suche / Live-Suche: Layout (Raster mit 2/3/4 Spalten oder Liste), Ergebnisse
+  pro Seite, Standard-Sortierung (Relevanz, Neueste/Älteste zuerst, Titel
+  A–Z/Z–A), „Inhaltstypen zuerst“ (z. B. `product, page, post`) und optional
+  eine Sortier-Auswahl für Besucher (`?sort=…`). Die Haupt-Suchabfrage wird per
+  `pre_get_posts` bzw. `posts_orderby` angepasst; Konfiguration über
+  `MediaLab_Search_Settings::serp()`.
+- **Erweiterte Suche auf der Ergebnisseite** (`inc/search/class-serp-search.php`,
+  neu) – die Ergebnisseite findet jetzt dasselbe wie die Live-Suche: Synonyme
+  (`media_lab_ajax_search_query_expansion`), Produktattribute und
+  Konfigurator-Optionen sowie den Fuzzy-Fallback für Produktcodes
+  (`media_lab_ajax_search_extra_matches`). Die Haupt-Abfrage bleibt unverändert,
+  die zusätzlichen Treffer werden per `OR ID IN (…)` an die Such-Bedingung
+  gehängt (Sortierung, Pagination, Sprache und Zähler bleiben korrekt).
+  Abschaltbar; **Standard: an** – die Ergebnisseite zeigt dadurch ggf. mehr
+  Treffer als bisher.
+- **Texte der Ergebnisseite mehrsprachig** – Überschrift, Anzahl-Texte,
+  Sortier-Beschriftungen und Leer-Zustand im Tab „Texte“ (inkl. Sprachzeilen).
+
+#### Changed
+- Die Karten der Ergebnisseite nutzen dieselben Anzeige-Schalter und dieselbe
+  Hervorhebung wie die Live-Suche (Vorschaubild, Typ, Datum, Ausschnitt, Preis).
+
+*(Theme-seitig, gehört ins Theme-Changelog: `search.php` baut auf den
+Archiv-Bausteinen auf (`.archive-header`, `.post-grid`, `.post-card`,
+`.archive-pagination`, `.archive-empty`), `post-card.php` bekommt optionale
+Erweiterungen, neues `template-parts/search/result-card.php`,
+`_search-results.scss` 2.0.0.)*
+
+---
+
 ## [1.30.0] - 2026-10-07
 
 ### media-lab-agency-core 1.30.0

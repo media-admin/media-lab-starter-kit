@@ -3,7 +3,7 @@
  * Plugin Name: Media Lab Agency Core
  * Plugin URI: https://github.com/media-admin/media-lab-starter-kit
  * Description: Core functionality for Media Lab agency websites. Provides shortcodes, security features, and admin customizations.
- * Version:           1.30.0
+ * Version:           1.31.0
  * Author: Media Lab
  * Author URI: https://media-lab.at
  * Text Domain: media-lab-core
@@ -14,7 +14,7 @@
 
 if (!defined('ABSPATH')) { exit; }
 
-define('MEDIALAB_CORE_VERSION', '1.30.0');
+define('MEDIALAB_CORE_VERSION', '1.31.0');
 define('MEDIALAB_CORE_FILE', __FILE__);
 define('MEDIALAB_CORE_PATH', plugin_dir_path(__FILE__));
 define('MEDIALAB_CORE_URL', plugin_dir_url(__FILE__));
@@ -85,6 +85,10 @@ function medialab_core_init() {
     require_once MEDIALAB_CORE_PATH . 'inc/search/class-synonym-dictionary.php';
     MediaLab_Fuzzy_Code_Search::init();
     MediaLab_Synonym_Dictionary::init();
+
+    // ── Erweiterte Suche auf der Ergebnisseite — since 1.31.0 ──
+    require_once MEDIALAB_CORE_PATH . 'inc/search/class-serp-search.php';
+    MediaLab_Serp_Search::init();
 
     // ── Heartbeat Monitoring — since 1.20.0 ───────────────
     require_once MEDIALAB_CORE_PATH . 'inc/heartbeat.php';
