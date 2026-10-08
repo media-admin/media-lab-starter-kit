@@ -83,6 +83,7 @@ class MediaLab_Search_Settings {
             'min_chars'      => max( 2, min( 5, (int) self::opt( 'search_min_chars', 2 ) ) ),
             'debounce'       => max( 100, min( 1000, (int) self::opt( 'search_debounce', 300 ) ) ),
             'excerpt_words'  => max( 3, min( 40, (int) self::opt( 'search_excerpt_words', 10 ) ) ),
+            'nav_display'    => self::nav_display(),
             'woo_attributes' => (bool) self::opt( 'search_woo_attributes', true ),
             'highlight'      => (bool) self::opt( 'search_highlight', true ),
             'lang'           => $lang,
@@ -364,6 +365,12 @@ class MediaLab_Search_Settings {
         return $orderby !== '' ? $first . ', ' . $orderby : $first;
     }
 
+    /** Darstellung des Such-Eintrags im Hauptmenü: icon | icon_text | text. */
+    private static function nav_display(): string {
+        $value = (string) self::opt( 'search_nav_display', 'icon' );
+        return in_array( $value, [ 'icon', 'icon_text', 'text' ], true ) ? $value : 'icon';
+    }
+
     private static function sort_label_defaults(): array {
         return [
             'relevance'  => 'Relevanz',
@@ -452,6 +459,14 @@ class MediaLab_Search_Settings {
                 'required'     => true,
                 'width'        => '50',
                 'instructions' => '',
+            ],
+            'nav_label' => [
+                'label'        => 'Navigation: Text',
+                'type'         => 'text',
+                'default'      => 'Suche',
+                'required'     => true,
+                'width'        => '50',
+                'instructions' => 'Wird im Hauptmenü angezeigt, wenn die Darstellung „Icon + Text“ oder „Nur Text“ gewählt ist (Tab „Allgemein“).',
             ],
             'type_labels' => [
                 'label'        => 'Bezeichnungen der Inhaltstypen',
@@ -735,6 +750,18 @@ class MediaLab_Search_Settings {
             'Zeigt ein Such-Icon in der Hauptnavigation an (Desktop + Mobile). Öffnet beim Klick das Such-Overlay. Die Einstellungen unten gelten unabhängig davon auch für den Shortcode [ajax_search].',
             '100'
         );
+
+        $fields[] = [
+            'key'               => 'field_search_nav_display',
+            'label'             => 'Darstellung in der Navigation',
+            'name'              => 'search_nav_display',
+            'type'              => 'button_group',
+            'choices'           => [ 'icon' => 'Nur Icon', 'icon_text' => 'Icon + Text', 'text' => 'Nur Text' ],
+            'default_value'     => 'icon',
+            'layout'            => 'horizontal',
+            'instructions'      => 'Der Text (mehrsprachig) wird im Tab „Texte“ unter „Navigation: Text“ gepflegt.',
+            'conditional_logic' => [ [ [ 'field' => 'field_search_enabled', 'operator' => '==', 'value' => '1' ] ] ],
+        ];
 
         $fields[] = [
             'key'     => 'field_search_general_help',

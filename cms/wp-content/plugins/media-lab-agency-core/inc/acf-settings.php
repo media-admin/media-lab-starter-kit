@@ -105,15 +105,6 @@ add_action('acf/init', function () {
     $parent = 'agency-core';
 
     acf_add_options_sub_page(array(
-        'page_title'  => 'Plugin Status',
-        'menu_title'  => 'Plugin Status',
-        'parent_slug' => $parent,
-        'capability'  => 'manage_options',
-        'slug'        => 'agency-core-plugin-status',
-        'position'    => 1,
-    ));
-
-    acf_add_options_sub_page(array(
         'page_title'  => 'Maintenance Mode / Wartungsmodus',
         'menu_title'  => 'Maintenance Mode / Wartungsmodus',
         'parent_slug' => $parent,
@@ -216,36 +207,7 @@ add_action('acf/init', function () {
 
     if (!function_exists('acf_add_local_field_group')) return;
 
-    // ── Field Group: Plugin Status ────────────────────────────────
-    acf_add_local_field_group(array(
-        'key'    => 'group_plugin_status',
-        'title'  => 'Plugin Status',
-        'fields' => array(
-            array(
-                'key'     => 'field_plugin_info',
-                'label'   => 'Plugin Status',
-                'name'    => 'plugin_info',
-                'type'    => 'message',
-                'label'   => ' ',
-                'message' => '<strong>Media Lab Agency Core</strong> &nbsp;·&nbsp; Version '
-                           . MEDIALAB_CORE_VERSION
-                           . ' &nbsp;<span style="color:#00a32a;">● Aktiv</span><br><br>'
-                           . '<strong>Custom Post Types:</strong> Hero Slides, Team, Projekte, Testimonials, FAQs, Google Maps, Karussell, Services<br>'
-                           . '<strong>Theme:</strong> ' . wp_get_theme()->get('Name'),
-            ),
-        ),
-        'location' => array(array(array(
-            'param' => 'options_page', 'operator' => '==', 'value' => 'agency-core-plugin-status',
-        ))),
-        'menu_order'            => 0,
-        'position'              => 'normal',
-        'style'                 => 'default',
-        'label_placement'       => 'top',
-        'instruction_placement' => 'label',
-    ));
-
-
-    // ── Field Group: White Label ──────────────────────────────────
+        // ── Field Group: White Label ──────────────────────────────────
     acf_add_local_field_group(array(
         'key'    => 'group_white_label',
         'title'  => 'White Label / Agentur-Branding',

@@ -56,15 +56,35 @@ class MediaLab_Nav_Search_Icon {
             return $items;
         }
 
-        $label = MediaLab_Search_Settings::get()['text']['aria_open'];
+        $cfg     = MediaLab_Search_Settings::get();
+        $text    = $cfg['text'];
+        $display = $cfg['nav_display']; // icon | icon_text | text
+
+        $show_icon  = $display !== 'text';
+        $show_label = $display !== 'icon';
 
         $icon = '<svg class="mlc-nav-search-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">'
               . '<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>';
 
+        $inner = '';
+        if ( $show_icon ) {
+            $inner .= '<span class="mlc-nav-search-icon-wrap">' . $icon . '</span>';
+        }
+        if ( $show_label ) {
+            $inner .= '<span class="mlc-nav-search-label">' . esc_html( $text['nav_label'] ) . '</span>';
+        }
+
+        $classes = 'mlc-nav-search-toggle' . ( $show_label ? ' mlc-nav-search-toggle--has-label' : '' );
+
+        // Nur-Icon braucht ein aria-label; mit sichtbarem Text liefert der Text den
+        // zugänglichen Namen (WCAG 2.5.3 "Label in Name").
+        $aria = $show_label ? '' : sprintf( ' aria-label="%s"', esc_attr( $text['aria_open'] ) );
+
         $items .= sprintf(
-            '<li class="menu-item mlc-nav-search-item"><button type="button" class="mlc-nav-search-toggle" aria-label="%s" aria-expanded="false" aria-controls="mlc-search-overlay"><span class="mlc-nav-search-icon-wrap">%s</span></button></li>',
-            esc_attr( $label ),
-            $icon
+            '<li class="menu-item mlc-nav-search-item"><button type="button" class="%s"%s aria-expanded="false" aria-controls="mlc-search-overlay">%s</button></li>',
+            esc_attr( $classes ),
+            $aria,
+            $inner
         );
 
         return $items;
@@ -127,6 +147,14 @@ class MediaLab_Nav_Search_Icon {
             MEDIALAB_CORE_URL . 'assets/css/nav-search-overlay.css',
             [],
             MEDIALAB_CORE_VERSION
+        );
+
+        // Menü-Eintrag mit Text: Icon und Text nebeneinander (Modifier nur bei sichtbarem Text,
+        // das reine Icon-Layout bleibt unverändert).
+        wp_add_inline_style(
+            'mlc-nav-search-overlay',
+            '.mlc-nav-search-toggle--has-label{display:inline-flex;align-items:center;gap:.5em;width:auto;min-width:0;padding-inline:.5rem}'
+            . '.mlc-nav-search-label{white-space:nowrap}'
         );
 
         wp_enqueue_script(
