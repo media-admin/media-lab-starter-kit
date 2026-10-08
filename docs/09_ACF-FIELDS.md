@@ -723,7 +723,7 @@ Gilt für die Suchergebnisseite (`search.php`, `/?s=…`).
 | Screenreader: Suche öffnen | `search_txt_aria_open` | text | „Suche öffnen" |
 | Screenreader: Suchen-Button | `search_txt_aria_submit` | text | „Suchen" |
 | Navigation: Text | `search_txt_nav_label` | text | „Suche" – nur sichtbar bei „Icon + Text" / „Nur Text" |
-| Bezeichnungen der Inhaltstypen | `search_txt_type_labels` | textarea | leer; je Zeile `slug=Bezeichnung` |
+| Bezeichnungen der Inhaltstypen (Suche & Archive) | `search_txt_type_labels` | textarea | leer; je Zeile `slug=Singular\|Plural`, z. B. `team=Teammitglied\|Teammitglieder` (Badge in der Suche, Zähler in Archiven) |
 | Ergebnisseite: Überschrift | `search_txt_serp_title` | text | „Suchergebnisse für: „%s“" (`%s` = Suchbegriff) |
 | Ergebnisseite: Beschriftung „Sortieren“ | `search_txt_serp_sort_label` | text | „Sortieren nach" |
 | Ergebnisseite: Anzahl (1 Treffer) | `search_txt_serp_count_one` | text | „%s Ergebnis" |
