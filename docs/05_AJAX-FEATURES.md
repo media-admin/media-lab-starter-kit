@@ -1,8 +1,8 @@
 # AJAX Features Documentation
 
-**Version:** 1.5.0  
+**Version:** 1.6.0  
 **Letzte Aktualisierung:** 2026-10-07  
-**Plugin:** Media Lab Agency Core v1.30.0
+**Plugin:** Media Lab Agency Core v1.31.0
 
 Professional AJAX filtering and loading system for dynamic content.
 
@@ -189,6 +189,15 @@ BEM-Klassen unter `.ajax-search` (`_ajax-search.scss`): `__input`, `__submit`, `
 `__item` (mit `--post`, `--page`, `--product` …), `__thumbnail`, `__title`, `__excerpt`, `__meta`, `__type`, `__date`,
 `__price`, `__no-results`, `__error`, sowie neu `__intro` (Startertext), `__hint` (Mindestzeichen-Hinweis) und
 `__all` (Link „Alle Ergebnisse anzeigen"). Kompakte Variante: `.ajax-search--compact`.
+
+### Ergebnisseite (search.php)
+
+Die Seite mit allen Ergebnissen (`/?s=…`) ist **nicht** Teil der AJAX-Suche, nutzt aber dieselben Einstellungen und dieselben Such-Bausteine:
+
+- **Aufbau:** `search.php` im Theme verwendet die Archiv-Bausteine (`.archive-layout`, `.archive-header`, `.post-grid`, `.archive-pagination`, `.archive-empty`) und rendert jeden Treffer über `template-parts/search/result-card.php` → `template-parts/components/post-card.php`. Eigene Karte pro Inhaltstyp: `template-parts/search/card-{post_type}.php`.
+- **Sortierung, Layout, Ergebnisse pro Seite:** Agency Core → Suche / Live-Suche → Tab „Ergebnisseite“. Die Haupt-Abfrage wird per `pre_get_posts` angepasst (`MediaLab_Search_Settings::apply_serp_query()`); optionale Sortier-Auswahl für Besucher über `?sort=relevance|date_desc|date_asc|title_asc|title_desc`; „Inhaltstypen zuerst“ stellt der Sortierung ein `FIELD(post_type, …)` voran.
+- **Erweiterte Suche:** `MediaLab_Serp_Search` (`inc/search/class-serp-search.php`) ergänzt die Haupt-Abfrage um Synonyme (`media_lab_ajax_search_query_expansion`), Produktattribute/Konfigurator-Optionen und den Fuzzy-Fallback (`media_lab_ajax_search_extra_matches`) – per `OR ID IN (…)` an der Such-Bedingung. Abschaltbar im Tab „Ergebnisseite“.
+- **Konfiguration lesen:** `MediaLab_Search_Settings::serp()` (Layout, Spalten, Sortierung, Optionen) und `MediaLab_Search_Settings::get()` (Texte, Anzeige-Schalter).
 
 ### Testen
 

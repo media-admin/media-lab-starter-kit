@@ -1,6 +1,6 @@
 # ACF Fields Reference
 
-**Version:** 1.19.0  
+**Version:** 1.20.0  
 **Letzte Aktualisierung:** 2026-10-07  
 **Plugin:** Media Lab Project Starter v1.0.0 (optional)
 
@@ -694,6 +694,21 @@ unverändert, gespeicherte Werte bleiben erhalten.
 | Preis (WooCommerce) | `search_show_price` | true_false | 1 |
 | Link zu allen Ergebnissen | `search_show_all_link` | true_false | 0 |
 
+### Ergebnisseite
+
+Gilt für die Suchergebnisseite (`search.php`, `/?s=…`).
+
+| Field | Name | Typ | Standard | Beschreibung |
+|---|---|---|---|---|
+| Layout | `search_serp_layout` | button_group | grid | `grid` (Raster) / `list` (Liste) |
+| Spalten (Raster) | `search_serp_columns` | button_group | 3 | `2` / `3` / `4`, nur bei Raster |
+| Ergebnisse pro Seite | `search_serp_per_page` | number | 0 | 0 = WordPress-Standard, max. 50 |
+| Standard-Sortierung | `search_serp_orderby` | select | relevance | `relevance` / `date_desc` / `date_asc` / `title_asc` / `title_desc` |
+| Inhaltstypen zuerst | `search_serp_type_priority` | text | leer | Slugs kommagetrennt, z. B. `product, page, post` |
+| Erweiterte Suche | `search_serp_extended` | true_false | 1 | Synonyme, Attribute/Konfigurator, Fuzzy wie in der Live-Suche |
+| Sortier-Auswahl für Besucher | `search_serp_sort_ui` | true_false | 0 | Dropdown (`?sort=…`) |
+| Angebotene Sortierungen | `search_serp_sort_options` | checkbox | alle | Nur bei aktiver Sortier-Auswahl; die Standard-Sortierung wird immer angeboten |
+
 ### Texte (Standardtexte)
 
 | Field | Name | Typ | Standard |
@@ -707,6 +722,13 @@ unverändert, gespeicherte Werte bleiben erhalten.
 | Screenreader: Suche öffnen | `search_txt_aria_open` | text | „Suche öffnen" |
 | Screenreader: Suchen-Button | `search_txt_aria_submit` | text | „Suchen" |
 | Bezeichnungen der Inhaltstypen | `search_txt_type_labels` | textarea | leer; je Zeile `slug=Bezeichnung` |
+| Ergebnisseite: Überschrift | `search_txt_serp_title` | text | „Suchergebnisse für: „%s“" (`%s` = Suchbegriff) |
+| Ergebnisseite: Beschriftung „Sortieren“ | `search_txt_serp_sort_label` | text | „Sortieren nach" |
+| Ergebnisseite: Anzahl (1 Treffer) | `search_txt_serp_count_one` | text | „%s Ergebnis" |
+| Ergebnisseite: Anzahl (mehrere) | `search_txt_serp_count_many` | text | „%s Ergebnisse" |
+| Ergebnisseite: „Keine Ergebnisse" – Überschrift | `search_txt_serp_empty_title` | text | „Keine Ergebnisse gefunden" |
+| Ergebnisseite: „Keine Ergebnisse" – Text | `search_txt_serp_empty_text` | text | „Für „%s" wurden keine Inhalte gefunden. …" |
+| Ergebnisseite: Bezeichnungen der Sortierungen | `search_txt_serp_sort_labels` | textarea | leer; je Zeile `schluessel=Bezeichnung` |
 
 ### Mehrsprachigkeit
 
@@ -715,7 +737,7 @@ unverändert, gespeicherte Werte bleiben erhalten.
 | Mehrsprachigkeit aktivieren | `search_multilang_enabled` | true_false | Sprachzeilen statt Standardtexte |
 | Sprachen | `search_languages` | repeater | Erste Zeile = Fallback |
 | → Sprachcode | `lang_code` | text | wie in Polylang/WPML, z. B. `de`, `en` |
-| → Texte | `txt_placeholder`, `txt_show_all`, `txt_intro`, `txt_min_hint`, `txt_no_results`, `txt_error`, `txt_aria_open`, `txt_aria_submit`, `txt_type_labels` | text/textarea | Entsprechen den Standardtexten; leere Pflichttexte fallen auf die eingebauten Standardtexte zurück |
+| → Texte | `txt_placeholder`, `txt_show_all`, `txt_intro`, `txt_min_hint`, `txt_no_results`, `txt_error`, `txt_aria_open`, `txt_aria_submit`, `txt_type_labels`, `txt_serp_title`, `txt_serp_sort_label`, `txt_serp_count_one`, `txt_serp_count_many`, `txt_serp_empty_title`, `txt_serp_empty_text`, `txt_serp_sort_labels` | text/textarea | Entsprechen den Standardtexten; leere Pflichttexte fallen auf die eingebauten Standardtexte zurück |
 
 Spracherkennung: Polylang → WPML → WP-Locale (gleiches Muster wie Cookie Consent).
 

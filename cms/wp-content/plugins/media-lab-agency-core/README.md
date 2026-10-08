@@ -40,11 +40,13 @@ Live-Suche mit Ajax-Ergebnissen. Aufbau:
 | `inc/nav-search-icon.php` | Such-Icon in der Hauptnavigation + Such-Overlay |
 | `inc/shortcodes.php` | Shortcode `[ajax_search]` |
 | `inc/search/class-synonym-dictionary.php` | Synonym-Wörterbuch (Feldgruppe „Suche – Synonyme“ auf derselben Einstellungsseite) |
+| `inc/search/class-serp-search.php` | Erweiterte Suche (Synonyme, Attribute, Fuzzy) auf der Ergebnisseite |
+| Theme: `search.php`, `template-parts/search/result-card.php` | Suchergebnisseite, baut auf den Archiv-Bausteinen und `.post-card` auf |
 | Theme: `assets/src/js/components/ajax-search.js`, `assets/src/scss/components/_ajax-search.scss` | Frontend-Komponente `.ajax-search` |
 
 ### Einstellungen
 
-**Agency Core → Suche / Live-Suche** (`wp-admin/admin.php?page=agency-core-search`). Die Einstellungen gelten für **jedes** Suchfeld (Shortcode und Nav-Overlay). Die Seite hat vier Tabs:
+**Agency Core → Suche / Live-Suche** (`wp-admin/admin.php?page=agency-core-search`). Die Einstellungen gelten für **jedes** Suchfeld (Shortcode und Nav-Overlay). Die Seite hat fünf Tabs (Allgemein, Verhalten, Anzeige, Ergebnisseite, Texte):
 
 **Allgemein**
 - **Suche in Navigation** (`search_enabled`, Standard: an) – zeigt ein Icon im Hauptmenü (Desktop + Mobile), das ein Such-Overlay öffnet. Betrifft nur das Nav-Icon, der Shortcode funktioniert unabhängig davon.
@@ -69,6 +71,25 @@ Live-Suche mit Ajax-Ergebnissen. Aufbau:
 - **Mehrsprachigkeit:** Toggle „Mehrsprachigkeit aktivieren“ + Repeater `search_languages` (Sprachcode + alle Texte). Spracherkennung: Polylang → WPML → WP-Locale. Die **erste Zeile** ist der Fallback, wenn keine Sprache passt. Bei deaktivierter Mehrsprachigkeit gelten die Standardtexte. Leere Pflichttexte (Platzhalter, „Keine Ergebnisse“, Fehlertext, Link-Text, Labels) werden durch die eingebauten deutschen Standardtexte ersetzt; Startertext und Hinweis bleiben leer = werden nicht angezeigt.
 
 > **Standardwerte entsprechen dem bisherigen Verhalten.** Ausnahme Nav-Overlay: Dort waren früher Platzhalter „Wonach suchst du?“, 6 Treffer und die Typen Beiträge/Seiten/Produkte fest verdrahtet – jetzt gelten auch hier die globalen Einstellungen.
+
+### Suchergebnisseite
+
+Die Seite mit allen Ergebnissen (`/?s=…`, `search.php` im Theme) ist aus denselben Bausteinen aufgebaut wie das Archiv (`.archive-header`, `.post-grid`, `.post-card`, `.archive-pagination`, `.archive-empty`) – es gibt kein eigenes Such-Design mehr. Ändert sich das Archiv-Design, zieht die Suche mit. Steuerung im Tab **Ergebnisseite**:
+
+| Einstellung | Standard | Hinweis |
+|---|---|---|
+| Layout | Raster | Raster (2/3/4 Spalten) oder Liste (horizontale Karten) |
+| Ergebnisse pro Seite | 0 | 0 = WordPress-Standard (Einstellungen → Lesen) |
+| Standard-Sortierung | Relevanz | Relevanz, Neueste/Älteste zuerst, Titel A–Z/Z–A |
+| Inhaltstypen zuerst | leer | Slugs kommagetrennt, z. B. `product, page, post`; innerhalb eines Typs gilt die gewählte Sortierung |
+| Sortier-Auswahl für Besucher | aus | Dropdown über den Ergebnissen (`?sort=…`), angebotene Sortierungen wählbar |
+| Erweiterte Suche | an | Synonyme, Produktattribute/Konfigurator-Optionen und Tippfehler-Toleranz für Produktcodes wie in der Live-Suche |
+
+Karten-Inhalt (Vorschaubild, Typ, Datum, Ausschnitt, Preis) und Hervorhebung kommen aus den Tabs „Anzeige“ und „Verhalten“ – dieselben Schalter wie bei der Live-Suche. Überschriften, Anzahl-Texte, Sortier-Beschriftungen und Leer-Zustand sind im Tab „Texte“ mehrsprachig pflegbar.
+
+**Eigene Karte pro Inhaltstyp:** Datei `template-parts/search/card-{post_type}.php` im Theme anlegen (z. B. `card-product.php`), sie ersetzt für diesen Typ die Standardkarte.
+
+**Erweiterte Suche (seit 1.31.0):** Die Haupt-Abfrage von WordPress bleibt unverändert (Sortierung, Pagination, Sprache, Zähler). Zusätzlich werden die Treffer der Live-Suche-Bausteine (Synonym-Erweiterung, Attribut-/Konfigurator-Suche, Fuzzy-Fallback) per `OR ID IN (…)` an die Such-Bedingung gehängt (`inc/search/class-serp-search.php`). Treffer, die nur über ein Attribut gefunden wurden, zeigen „Attribut: Wert“ als Ausschnitt.
 
 ### Synonyme
 
