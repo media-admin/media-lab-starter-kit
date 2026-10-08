@@ -28,8 +28,24 @@ möglich.
   `.ajax-search__hint`, `.ajax-search__all`. Texte und Optionen werden in
   `media-lab-agency-core` unter Agency Core → Suche / Live-Suche gepflegt
   (ab Plugin 1.30.0).
+- **Suchergebnisseite: Sortier-Leiste** (`.search-toolbar` / `.search-sort`) und Grid-Modifier
+  `.post-grid--cols-2` / `--cols-4` / `--list` (`_search-results.scss` 2.0.0, generisch – gehören
+  langfristig nach `_archive.scss`).
+- **`template-parts/search/result-card.php`**: bereitet einen Treffer auf (Typ-Badge, Preis,
+  Kontext-Ausschnitt, Hervorhebung, „Attribut: Wert") und rendert ihn über die Post-Card. Eigene
+  Karte pro Inhaltstyp über `template-parts/search/card-{post_type}.php`.
+- **`post-card.php`: optionale Erweiterungen** (`post_card_badge`, `post_card_type`, `post_card_price`,
+  `post_card_title_html`, `post_card_excerpt_html`, `post_card_link_label`, `post_card_show`) –
+  vollständig abwärtskompatibel, Archiv und Load-More bleiben unverändert.
 
 ### Changed
+- **`search.php` baut auf den Archiv-Bausteinen auf** (`.archive-layout`, `.archive-header`,
+  `.post-grid`, `.post-card`, `.archive-pagination`, `.archive-empty`) statt auf einem eigenen
+  Listen-Design. Layout, Spalten, Ergebnisse pro Seite, Sortierung und Texte kommen aus den
+  Such-Einstellungen im Plugin (ab media-lab-agency-core 1.31.0); ohne Plugin gelten Standardwerte.
+- **`_search-results.scss` auf 2.0.0 reduziert** – die Klassen `.search-page`, `.search-header*`,
+  `.search-results-list`, `.search-result*` und `.search-empty*` entfallen. Projekte mit eigener
+  `search.php` müssen auf die Archiv-Klassen umstellen.
 - **`ajax-search.js` liest seine Konfiguration aus `data-config`** (JSON am
   `.ajax-search`-Container, gerendert von `MediaLab_Search_Settings` im Plugin)
   statt Texte, Limit, Post-Types, Mindestzeichen (2) und Debounce (300 ms) fest
@@ -42,6 +58,9 @@ möglich.
   den Fehlertext statt „Keine Ergebnisse gefunden."
 
 ### Fixed
+- **Suchergebnisse ohne Vorschaubild hatten nur eine schmale Textspalte** – das alte
+  `.search-result`-Grid reservierte fest 200 px für das Bild, auch wenn keines vorhanden war.
+  Entfällt mit der Post-Card (Bild optional, Inhalt nutzt die volle Breite).
 - **Veraltete Antworten bei schnellem Tippen** (`ajax-search.js`) – eine spät
   eintreffende Antwort einer älteren Anfrage konnte die aktuelle Trefferliste
   überschreiben bzw. nach dem Leeren des Feldes wieder einblenden. Antworten
