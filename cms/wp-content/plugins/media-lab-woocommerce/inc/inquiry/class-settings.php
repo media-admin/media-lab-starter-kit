@@ -87,6 +87,16 @@ class MediaLab_Inquiry_Settings {
                 'conditional_logic' => $hide_if_multilang,
             ],
             [
+                'key'          => 'field_mlw_availability_on_request',
+                'label'        => 'Verfügbarkeit: ohne Bestand',
+                'name'         => 'mlw_availability_on_request',
+                'type'         => 'text',
+                'placeholder'  => 'Lieferzeit auf Anfrage',
+                'instructions' => 'Ersetzt „Nicht vorrätig“ bei Produkten ohne Bestand (Shop, Produktseite). Leer = Standardtext von WooCommerce.',
+                'wrapper'      => [ 'width' => '33' ],
+                'conditional_logic' => $hide_if_multilang,
+            ],
+            [
                 'key'          => 'field_mlw_remove_button_label',
                 'label'        => '„Entfernen"-Button',
                 'name'         => 'mlw_remove_button_label',
@@ -192,6 +202,7 @@ class MediaLab_Inquiry_Settings {
                     [ 'key' => 'field_mlw_lang_wishlist_success','label' => 'Erfolgsmeldung Wunschliste','name' => 'wishlist_success','type' => 'text', 'wrapper' => [ 'width' => '14' ] ],
                     [ 'key' => 'field_mlw_lang_wishlist_empty', 'label' => 'Hinweistext: Liste leer',    'name' => 'wishlist_empty',  'type' => 'text', 'wrapper' => [ 'width' => '14' ] ],
                     [ 'key' => 'field_mlw_lang_price_notice',   'label' => 'Preis-Hinweistext',          'name' => 'price_notice',    'type' => 'text', 'placeholder' => 'zzgl. Versandkosten', 'wrapper' => [ 'width' => '16' ] ],
+                    [ 'key' => 'field_mlw_lang_availability_on_request', 'label' => 'Verfügbarkeit: ohne Bestand', 'name' => 'availability_on_request', 'type' => 'text', 'placeholder' => 'Lieferzeit auf Anfrage', 'wrapper' => [ 'width' => '16' ] ],
                     [ 'key' => 'field_mlw_lang_privacy_text',   'label' => 'Datenschutz-Text',           'name' => 'privacy_text',    'type' => 'textarea', 'rows' => 2, 'wrapper' => [ 'width' => '100' ] ],
 
                     $sep( 'Navigation' ),
@@ -723,6 +734,7 @@ class MediaLab_Inquiry_Settings {
             'wishlist_success' => 'Vielen Dank für Ihre Wunschliste! Wir melden uns in Kürze bei Ihnen.',
             'wishlist_empty'   => 'Ihre Wunschliste ist zurzeit leer.',
             'price_notice'     => '',
+            'availability_on_request' => '',
         ];
         $field_map = [
             'wishlist_label'   => 'mlw_wishlist_label',
@@ -733,6 +745,7 @@ class MediaLab_Inquiry_Settings {
             'wishlist_success' => 'mlw_wishlist_success_message',
             'wishlist_empty'   => 'mlw_wishlist_empty_message',
             'price_notice'     => 'mlw_price_notice',
+            'availability_on_request' => 'mlw_availability_on_request',
         ];
         if ( ! isset( $field_map[ $key ] ) ) return '';
 
