@@ -37,6 +37,14 @@ möglich.
 - **`post-card.php`: optionale Erweiterungen** (`post_card_badge`, `post_card_type`, `post_card_price`,
   `post_card_title_html`, `post_card_excerpt_html`, `post_card_link_label`, `post_card_show`) –
   vollständig abwärtskompatibel, Archiv und Load-More bleiben unverändert.
+- **`post-card.php`: eigene Meta-Angaben im Footer** (`post_card_meta`) – Liste aus
+  `[ 'label' => …, 'value' => … ]` oder Strings, z. B. Artikelnummer und Verfügbarkeit statt Datum;
+  leere Werte werden übersprungen, abwärtskompatibel (`_cards.scss`: `.post-card__meta-item`,
+  `__meta-label`, `__meta-value`).
+- **`result-card.php`: Filter für projektspezifische Suchkarten** – `ml_search_card_meta`
+  (Meta-Angaben je Inhaltstyp, ersetzt das Datum) und `ml_search_card_link_label` (Link-Text je
+  Inhaltstyp). Dadurch braucht es keine eigene `card-{post_type}.php` mehr, wenn nur Meta oder
+  Link-Text abweichen.
 - **`comments.php`** (neu) – Kommentar-Liste und -Formular im Theme-Stil (Avatar links, Text rechts,
   getrennte Einträge, Theme-Formularfelder wie die WooCommerce-Rezensionen), Styles in
   `templates/_comments.scss` (neu, in `style.scss` einbinden). Verschachtelte Antworten,
@@ -102,6 +110,14 @@ möglich.
   der Titel kommt mit `<mark>`-Highlighting vom Server und wurde unverändert in
   das `alt`-Attribut übernommen (zerbrach das Markup, sobald ein Treffer
   hervorgehoben war). `alt` bekommt jetzt den reinen, escapten Text.
+- **Ajax-Suche: Submit-Button auf WooCommerce-Seiten zu breit** (`woocommerce/_woocommerce.scss`) –
+  die Regel `.woocommerce form button[type="submit"]` (Theme-Button-Look inkl. Padding) griff auch auf
+  den runden Submit-Button im Such-Overlay und drückte ihn auf Shop- und Produktseiten breit.
+  Der Selektor nimmt `.ajax-search__submit` jetzt aus (`:not(.ajax-search__submit)`).
+- **`.post-card`-Footer: Meta-Angaben brachen mitten im Wert um** (`components/_cards.scss`) – bei
+  eigenen Meta-Angaben (`post_card_meta`, z. B. Artikelnummer) blieb neben dem Link zu wenig Platz,
+  sodass Werte wie die Artikelnummer zerrissen wurden. Meta-Angaben stehen jetzt untereinander in
+  voller Breite, der Link folgt rechts darunter; Karten ohne eigene Meta-Angaben unverändert.
 
 ## [1.15.4] - 2026-08-22
 
