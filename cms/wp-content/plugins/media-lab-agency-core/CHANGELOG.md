@@ -20,6 +20,36 @@ Ende.
 
 ---
 
+## [1.34.0] - 2026-10-09
+
+### media-lab-agency-core 1.34.0
+
+#### Added
+- **Beobachter-Rolle und zusätzliche Benachrichtigungsempfänger**
+  (`inc/observer-notifications.php`, neu) – WordPress kennt nur eine
+  `admin_email`. Neue Einstellungsseite **Agency Core → Benachrichtigungen / Beobachter**
+  (`agency-core-observer`): beliebig viele Adressen (eine pro Zeile, Komma/Semikolon
+  ebenfalls möglich), die ausgewählte System-Mails zusätzlich als Bcc
+  erhalten. Mail-Typen einzeln schaltbar: automatische Updates (Core,
+  Plugins, Themes; Standard an), Fatal-Error-Benachrichtigung,
+  Kommentare zur Freigabe, neue Benutzerregistrierungen (Standard aus).
+  Ungültige Adressen und die reguläre Admin-Adresse werden herausgefiltert.
+  Option: `medialab_observer_notifications`.
+- **Rolle „Beobachter“** (`medialab_observer`) mit `read` und
+  `view_site_health_checks` – Dashboard, Profil und Site Health ohne
+  Bearbeitungsrechte. Wird idempotent auf `init` angelegt, kein
+  Activation-Hook nötig.
+
+#### Hinweis
+- Bewusst kein generischer `wp_mail`-Filter: Dieser würde auch
+  Passwort-Reset-Mails duplizieren, sobald die Admin-Adresse zugleich die
+  E-Mail eines Benutzers ist. Es werden nur gezielt freigegebene Hooks
+  erweitert (`auto_core_update_email`, `auto_plugin_theme_update_email`,
+  `recovery_mode_email`, `wp_new_user_notification_email_admin`,
+  `comment_moderation_recipients`).
+
+---
+
 ## [1.33.0] - 2026-10-08
 
 ### media-lab-agency-core 1.33.0

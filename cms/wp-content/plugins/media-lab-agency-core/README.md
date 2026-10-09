@@ -8,6 +8,7 @@ Core functionality plugin for Media Lab agency websites.
 - **Suche**: Ajax-Live-Suche mit Treffer-Highlighting, Kontext-Ausschnitt und WooCommerce-Attribut-/Konfigurator-Suche, optionales Such-Icon in der Hauptnavigation, zentral konfigurierbar (Texte mehrsprachig, Limit, Inhaltstypen, Anzeige) unter Agency Core → Suche / Live-Suche (siehe unten)
 - **Plugin Status**: eigene Admin-Seite mit Systemübersicht, Inhaltstypen, Schnellzugriff sowie README und Changelog direkt im Backend (siehe unten)
 - **Heartbeat Monitoring**: Push-basierte Uptime-Überwachung (Better Stack / Healthchecks.io)
+- **Beobachter & zusätzliche Empfänger**: Rolle „Beobachter“ (nur lesen) und beliebig viele zusätzliche Bcc-Empfänger für Update-, Fatal-Error-, Kommentar- und Benutzer-Mails, unter Agency Core → Benachrichtigungen / Beobachter (siehe unten)
 - **Admin**: Dashboard customizations
 - **Helpers**: Utility functions for theme development
 - **WP All Import Integration**: Timeout- und User-Agent-Blocking-Fixes für Bilder-Downloads (siehe Hinweis unten)
@@ -145,6 +146,29 @@ Attribut-/Konfigurator-Treffer, bei denen der Suchbegriff nicht im Beschreibungs
 - **Changelog:** rendert die `CHANGELOG.md`, je Version einklappbar (neueste offen).
 
 Die beiden Doku-Tabs sind **ausgeblendet, sobald White Label aktiv ist** (die Dateien enthalten Agentur-interne Hinweise). Überschreibbar: `add_filter( 'medialab_plugin_status_show_docs', '__return_true' );`. Ausgeblendete Inhaltstypen in der Tabelle: Filter `medialab_plugin_status_hidden_post_types`. Das Markdown wird von einem kleinen eigenen Renderer verarbeitet (Überschriften, Listen, Tabellen, Code, Links, fett/kursiv; alles escaped).
+
+## Beobachter-Rolle & zusätzliche Empfänger
+
+**Agency Core → Benachrichtigungen / Beobachter** (`wp-admin/admin.php?page=agency-core-observer`, `inc/observer-notifications.php`, seit 1.34.0). WordPress kennt nur eine `admin_email`. Für Kunden, die „mehr im Bild“ sein wollen, ohne etwas ändern zu dürfen, gibt es zwei voneinander unabhängige Bausteine:
+
+**1. Zusätzliche Empfänger (Bcc)**
+
+Adressen (eine pro Zeile, Komma/Semikolon ebenfalls möglich) erhalten ausgewählte System-Mails zusätzlich als Bcc. Ungültige Adressen werden verworfen, Duplikate und die reguläre Admin-Adresse herausgefiltert. Die Adressen brauchen keinen WordPress-Benutzer.
+
+| Mail-Typ | Hook | Standard |
+|---|---|---|
+| Automatische Updates (Core, Plugins, Themes) | `auto_core_update_email`, `auto_plugin_theme_update_email` | an |
+| Fatal-Error-Benachrichtigung | `recovery_mode_email` | aus |
+| Kommentare zur Freigabe | `comment_moderation_recipients` | aus |
+| Neue Benutzerregistrierungen | `wp_new_user_notification_email_admin` | aus |
+
+Die Fatal-Error-Mail enthält den Link zum Wiederherstellungsmodus (Login bleibt nötig) – nur für vertrauenswürdige Empfänger aktivieren. Gespeichert wird in der Option `medialab_observer_notifications` (`emails`, `types`); die Einstellungen gelten pro Seite.
+
+> **Bewusst kein generischer `wp_mail`-Filter:** Er würde auch Passwort-Reset-Mails duplizieren, sobald die Admin-Adresse zugleich die E-Mail eines Benutzers ist. Es werden nur die oben genannten Hooks erweitert. Contact Form 7 und WooCommerce haben eigene Empfängerfelder und sind nicht betroffen.
+
+**2. Rolle „Beobachter“** (`medialab_observer`)
+
+Capabilities: `read` und `view_site_health_checks` – Dashboard, Profil und Site Health, keine Bearbeitungsrechte. Die Rolle wird idempotent auf `init` angelegt (kein Activation-Hook nötig) und beim Deaktivieren des Plugins nicht entfernt. Menüs und Widgets anderer Plugins (z. B. SEO Toolkit, Activity Log) erscheinen nur, wenn deren Capability-Prüfung zur Rolle passt.
 
 ## Heartbeat Monitoring
 
