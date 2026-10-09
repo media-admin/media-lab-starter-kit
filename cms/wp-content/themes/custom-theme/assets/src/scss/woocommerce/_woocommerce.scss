@@ -752,7 +752,7 @@
     }
 
     .button,
-    button[type="submit"] { @include btn-base; @include btn-primary; cursor: pointer; }
+    button[type="submit"]:not(.ajax-search__submit) { @include btn-base; @include btn-primary; cursor: pointer; }
 }
 
 // ── Shop-Resultat-Count + Ordering ───────────────────────────────────────────
