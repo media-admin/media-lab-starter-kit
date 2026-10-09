@@ -585,3 +585,10 @@ $ml-chevron-svg: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' w
         &:not(.is-active) { color: var(--color-text) !important; }
     }
 }
+
+// Abstand unter den Produktlisten (Shop, Kategorie, Produktsuche): Seitenzahlen und Footer sitzen sonst direkt
+// aufeinander, seit der Standard-Sidebar (theme-compat/sidebar.php) nicht mehr darunter steht
+body.archive .woocommerce-wrapper {
+    padding-bottom: $spacing-8;
+    margin-bottom:  $spacing-8;
+}

@@ -199,3 +199,15 @@ add_action('wp_enqueue_scripts', function() {
         wp_dequeue_script('wc-cart-fragments');
     }
 }, 100);
+
+// Kein Standard-Sidebar-Fallback unter den WooCommerce-Archiven (Shop, Kategorie, Produktsuche):
+// WooCommerce ruft get_sidebar('shop') auf, und ohne sidebar.php im Theme laedt WordPress theme-compat/sidebar.php
+// (Suchfeld, "Seiten", "Archiv", "Kategorien" ungestylt unter den Produktlisten, dazu eine "deprecated"-Meldung).
+// Eigene Sidebar-Systeme des Themes: ajax-filters__sidebar, media-lab-woocommerce filter-bar.php.
+add_action( 'wp', function () {
+    // Eigene sidebar.php des Themes (nicht locate_template: das findet auch wp-includes/theme-compat/sidebar.php)
+    if ( ! file_exists( get_stylesheet_directory() . '/sidebar.php' ) && ! file_exists( get_template_directory() . '/sidebar.php' ) ) {
+        remove_action( 'woocommerce_sidebar', 'woocommerce_get_sidebar', 10 );
+    }
+} );
+
