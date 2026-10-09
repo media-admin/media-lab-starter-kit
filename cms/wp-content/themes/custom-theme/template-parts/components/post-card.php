@@ -25,6 +25,11 @@
  *   post_card_title_html    string  Titel mit <mark>-Hervorhebung (bereits escaped)
  *   post_card_excerpt_html  string  Ausschnitt mit <mark>-Hervorhebung (bereits escaped)
  *   post_card_link_label    string  Link-Text statt "Lesen"
+ *   post_card_meta          array   Eigene Meta-Angaben im Footer, z. B. Artikelnummer
+ *                                   oder Verfügbarkeit. Einträge: [ 'label' => '…', 'value' => '…' ]
+ *                                   oder einfache Strings. Leere Werte werden übersprungen.
+ *                                   Wird zusätzlich zu Datum/Autor ausgegeben; diese lassen
+ *                                   sich über post_card_show abschalten.
  *   post_card_show          array   thumbnail|excerpt|date|author|link => bool (Standard: alle true)
  *
  * @package custom-theme
@@ -41,6 +46,7 @@ $card_price        = (string) get_query_var( 'post_card_price', '' );
 $card_title_html   = (string) get_query_var( 'post_card_title_html', '' );
 $card_excerpt_html = (string) get_query_var( 'post_card_excerpt_html', '' );
 $card_link_label   = (string) get_query_var( 'post_card_link_label', '' );
+$card_meta         = get_query_var( 'post_card_meta', [] );
 $card_show         = get_query_var( 'post_card_show', [] );
 
 // Query-Vars zurücksetzen
@@ -52,6 +58,7 @@ set_query_var( 'post_card_price', '' );
 set_query_var( 'post_card_title_html', '' );
 set_query_var( 'post_card_excerpt_html', '' );
 set_query_var( 'post_card_link_label', '' );
+set_query_var( 'post_card_meta', [] );
 set_query_var( 'post_card_show', [] );
 
 $show = wp_parse_args( is_array( $card_show ) ? $card_show : [], [
@@ -99,6 +106,11 @@ if ( $card_type !== '' ) {
 $allowed_mark = [ 'mark' => [] ];
 
 $link_label = $card_link_label !== '' ? $card_link_label : __( 'Lesen', 'custom-theme' );
+
+// Eigene Meta-Angaben: leere Einträge entfernen
+$card_meta = is_array( $card_meta ) ? array_filter( $card_meta, static function ( $item ) {
+    return is_array( $item ) ? (string) ( $item['value'] ?? '' ) !== '' : (string) $item !== '';
+} ) : [];
 ?>
 
 <article class="<?php echo esc_attr( implode( ' ', $card_classes ) ); ?>">
@@ -160,9 +172,22 @@ $link_label = $card_link_label !== '' ? $card_link_label : __( 'Lesen', 'custom-
         <?php endif; ?>
 
         <?php /* Meta + Link */ ?>
-        <?php if ( $show['date'] || ( $show['author'] && $author ) || $show['link'] ) : ?>
+        <?php if ( $card_meta || $show['date'] || ( $show['author'] && $author ) || $show['link'] ) : ?>
         <footer class="post-card__footer">
             <div class="post-card__meta">
+                <?php /* Eigene Meta-Angaben (z. B. Artikelnummer, Verfügbarkeit) */ ?>
+                <?php foreach ( $card_meta as $meta_item ) :
+                    $meta_label = is_array( $meta_item ) ? (string) ( $meta_item['label'] ?? '' ) : '';
+                    $meta_value = is_array( $meta_item ) ? (string) $meta_item['value'] : (string) $meta_item;
+                ?>
+                <span class="post-card__meta-item">
+                    <?php if ( $meta_label !== '' ) : ?>
+                    <span class="post-card__meta-label"><?php echo esc_html( $meta_label ); ?>:</span>
+                    <?php endif; ?>
+                    <span class="post-card__meta-value"><?php echo esc_html( $meta_value ); ?></span>
+                </span>
+                <?php endforeach; ?>
+
                 <?php if ( $show['date'] ) : ?>
                 <time class="post-card__date" datetime="<?php echo esc_attr( $date_iso ); ?>">
                     <?php echo esc_html( $date ); ?>

@@ -15,6 +15,15 @@
  *   template-parts/search/card-{post_type}.php
  * anlegen (z. B. card-product.php) - sie ersetzt dann diese Standard-Karte.
  *
+ * Projektspezifische Ergänzungen ohne Theme-Änderung (Filter, z. B. im Projekt-Plugin):
+ *
+ *   ml_search_card_meta( array $meta, string $post_type, int $post_id )
+ *       Liste von [ 'label' => '…', 'value' => '…' ] (z. B. Artikelnummer,
+ *       Verfügbarkeit). Ist die Liste nicht leer, ersetzt sie das Datum.
+ *
+ *   ml_search_card_link_label( string $label, string $post_type, int $post_id )
+ *       Link-Text der Karte je Inhaltstyp (Standard: "Mehr erfahren").
+ *
  * @package custom-theme
  */
 
@@ -84,17 +93,30 @@ if ( $show['price'] && $post_type === 'product' && function_exists( 'wc_get_prod
     }
 }
 
+// Projektspezifische Meta-Angaben und Link-Text (per Filter, siehe Kopfkommentar)
+$card_meta = apply_filters( 'ml_search_card_meta', [], $post_type, get_the_ID() );
+$card_meta = is_array( $card_meta ) ? $card_meta : [];
+
+$link_label = (string) apply_filters(
+    'ml_search_card_link_label',
+    __( 'Mehr erfahren', 'custom-theme' ),
+    $post_type,
+    get_the_ID()
+);
+
 set_query_var( 'post_card_variant', ( $serp['layout'] ?? 'grid' ) === 'list' ? 'horizontal' : 'default' );
 set_query_var( 'post_card_type', $post_type );
 set_query_var( 'post_card_badge', $show['type'] ? $type_label : '' );
 set_query_var( 'post_card_price', $price_html );
 set_query_var( 'post_card_title_html', $title_html );
 set_query_var( 'post_card_excerpt_html', $excerpt_html );
-set_query_var( 'post_card_link_label', __( 'Mehr erfahren', 'custom-theme' ) );
+set_query_var( 'post_card_link_label', $link_label );
+set_query_var( 'post_card_meta', $card_meta );
 set_query_var( 'post_card_show', [
     'thumbnail' => (bool) $show['thumbnail'],
     'excerpt'   => (bool) $show['excerpt'],
-    'date'      => (bool) $show['date'],
+    // Eigene Meta-Angaben ersetzen das Datum
+    'date'      => (bool) $show['date'] && empty( $card_meta ),
     'author'    => false,
     'link'      => true,
 ] );
