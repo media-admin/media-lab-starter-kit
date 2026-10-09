@@ -538,6 +538,16 @@ $ml-chevron-svg: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' w
             text-align:   right;
             padding:      $spacing-3 $spacing-4 0 0;
         }
+
+        // Preisspanne (variable Produkte, zwei Betraege) braucht die Zeilenbreite: die Verfuegbarkeit
+        // steht dann in einer eigenen Zeile darunter, statt mit dem Preis zu ueberlappen (z. B. bei dem
+        // laengeren Text "Lieferzeit auf Anfrage")
+        &:has(> .price > .woocommerce-Price-amount ~ .woocommerce-Price-amount) > .mlw-loop-availability {
+            grid-column:  1 / -1;
+            justify-self: start;
+            text-align:   left;
+            padding:      $spacing-2 $spacing-4 0 $spacing-4;
+        }
     }
 
     // Germanized-Hinweise (exkl. MwSt., zzgl. Versandkosten) stehen als Geschwister UNTER dem
