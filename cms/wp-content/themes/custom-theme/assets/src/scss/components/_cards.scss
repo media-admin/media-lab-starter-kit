@@ -168,6 +168,7 @@ $post-card-type-colors: (
 
     &__footer {
         display:         flex;
+        flex-wrap:       wrap;
         align-items:     center;
         justify-content: space-between;
         gap:             $spacing-2;
@@ -193,17 +194,22 @@ $post-card-type-colors: (
     &__author   { font-size: var(--text-xs); color: var(--color-text-muted); }
     &__meta-sep { color: var(--color-border); font-size: var(--text-xs); }
 
-    // Eigene Meta-Angaben (post_card_meta), z. B. Art.-Nr. und Verfügbarkeit
-    &__meta-item {
-        display:           inline-flex;
-        flex-wrap:         wrap;
-        align-items:       baseline;
-        gap:               0 $spacing-1;
-        margin-inline-end: $spacing-2;
-        font-size:         var(--text-xs);
-        color:             var(--color-text-muted);
+    // Eigene Meta-Angaben (post_card_meta), z. B. Art.-Nr. und Verfügbarkeit:
+    // volle Breite, untereinander; der Link rutscht darunter nach rechts.
+    &__meta:has(.post-card__meta-item) {
+        flex:           1 1 100%;
+        flex-direction: column;
+        align-items:    flex-start;
+        gap:            0;
+    }
 
-        &:last-child { margin-inline-end: 0; }
+    &__meta-item {
+        display:     inline-flex;
+        flex-wrap:   wrap;
+        align-items: baseline;
+        gap:         0 $spacing-1;
+        font-size:   var(--text-xs);
+        color:       var(--color-text-muted);
     }
 
     &__meta-label { color: var(--color-text-muted); }
@@ -218,6 +224,7 @@ $post-card-type-colors: (
         align-items:     center;
         gap:             0.5rem;
         margin-top:      auto;
+        margin-left:     auto;
         font-size:       var(--text-sm);
         font-weight:     $font-weight-semibold;
         color:           $color-primary;
