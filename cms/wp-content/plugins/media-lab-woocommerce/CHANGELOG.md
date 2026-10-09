@@ -4,6 +4,11 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [2.15.0] - 2026-10-09
+
+### Added
+- Text "Verfügbarkeit: ohne Bestand" (z. B. "Lieferzeit auf Anfrage") im Wording-System der Anfrage-Einstellungen: `MediaLab_Inquiry_Settings::wording( 'availability_on_request' )`, einsprachig als Feld `mlw_availability_on_request`, mehrsprachig als Unterfeld in der Sprach-Zeile. Der Code-Standard ist leer (ohne Eintrag ändert sich nichts). Projekte nutzen den Text für Produkte ohne Bestand
+
 ## [2.14.0] - 2026-10-07
 
 ### Added
