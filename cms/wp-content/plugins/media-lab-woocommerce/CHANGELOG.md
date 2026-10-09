@@ -4,6 +4,25 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [2.16.0] - 2026-10-09
+
+### Added
+- Die Einstellung "Telefon" (`mlw_phone_mode`, seit 2.14.0 nur im Wunschlisten-Formular) gilt jetzt in allen Anfrage-Formularen: Anfrage-Seite/Checkout (`templates/inquiry-checkout.php`), Shortcode `[mlw_inquiry_form]` (`templates/inquiry-form.php`), Konfigurator-Kontaktformular (`templates/configurator/fields/contact-form.php`) und Wunschliste. Das eingebaute Telefonfeld ist optional (Standard), Pflichtfeld oder ausgeblendet
+- Konfigurator: Bei "Pflichtfeld" blockiert `isStepValid()` in `configurator.js` den Kontaktdaten-Schritt ohne Telefonnummer (neuer Wert `configuratorData.phoneRequired`)
+- Reservierte Basisfeld-Keys (`MediaLab_Inquiry_Settings::RESERVED_FIELD_KEYS`: `name`, `email`, `phone`, `message`, `privacy_consent`): Im Repeater "Zusätzliche Felder" lassen sie sich als Feld-Key nicht mehr speichern (ACF-Validierung `validate_field_key()`)
+
+### Changed
+- Die Telefon-Prüfung sitzt zentral in `MediaLab_Inquiry_Engine::submit()` (Fehlercode `mlw_missing_phone`) und gilt damit für Warenkorb, Konfigurator und Wunschliste gleich. Der eigene Block in `MediaLab_Wishlist_Ajax::submit()` entfällt, die Meldung bleibt dieselbe. Bei "Ausblenden" wird eine mitgesendete Nummer verworfen
+- `MediaLab_Inquiry_Settings::get_form_fields()` filtert Zeilen mit reserviertem Key heraus. Das wirkt einheitlich auf Templates, Ajax-Handler, Engine und die an das Konfigurator-JS übergebenen Listen (`extraFieldKeys`, `requiredExtraFieldKeys`). Die Sonderbehandlung von `phone` in `templates/wishlist/page.php` ist damit redundant, bleibt aber unschädlich
+- Hilfetexte der Einstellung "Telefon" und des Feld-Keys angepasst (Beispiel jetzt "company" oder "position" statt "phone")
+
+### Fixed
+- Eine Zusatzzeile mit dem Feld-Key `phone` erzeugte auf der Anfrage-Seite, im Shortcode-Formular und im Konfigurator ein zweites Telefonfeld. Beim Absenden überschrieb das spätere, leere Feld die Nummer des eingebauten Felds (gleicher Feldname im Formular bzw. `extraFieldKeys` im Konfigurator-JS). Im Wunschlisten-Formular war das seit 2.14.0 behoben, jetzt gilt es für alle Formulare
+
+### Hinweis zum Update
+- Projekte mit einer Zusatzzeile `phone`: Die Zeile wird nicht mehr ausgegeben. Einstellung "Telefon" auf den gewünschten Modus stellen und die Zeile löschen. Label und Platzhalter der alten Zeile entfallen. Bestandszeilen finden: `wp option list --search='options_mlw_form_fields_*_field_key'`
+- Das Standard-Mail-Template (Admin) enthält weiterhin die Zeile `Telefon: {phone}`. Bei "Ausblenden" bleibt sie leer, projektspezifische Templates ggf. anpassen
+
 ## [2.15.0] - 2026-10-09
 
 ### Added

@@ -136,6 +136,11 @@ function productConfigurator(initialData) {
                 if (!this.config['customer_name'] || this.config['customer_name'].trim() === '') return false;
                 if (!this.config['customer_email'] || this.config['customer_email'].trim() === '') return false;
 
+                // Telefon als Pflichtfeld (Einstellung "Telefon" = Pflichtfeld).
+                // Die verbindliche Prüfung läuft serverseitig in der Inquiry-Engine.
+                if (typeof configuratorData !== 'undefined' && configuratorData.phoneRequired &&
+                    (!this.config['customer_phone'] || this.config['customer_phone'].trim() === '')) return false;
+
                 // Konfigurierte Pflicht-Zusatzfelder (z.B. "Firma") prüfen -
                 // vorher wurde hier nur Name/E-Mail geprüft, wodurch man mit
                 // "Zur Zusammenfassung" weiterkommen konnte, obwohl Pflicht-

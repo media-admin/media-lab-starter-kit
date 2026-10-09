@@ -12,6 +12,7 @@ $mlw_extra_fields     = class_exists( 'MediaLab_Inquiry_Settings' ) ? MediaLab_I
 $mlw_privacy_required = class_exists( 'MediaLab_Inquiry_Settings' ) ? MediaLab_Inquiry_Settings::privacy_required() : false;
 $mlw_privacy_text     = class_exists( 'MediaLab_Inquiry_Settings' ) ? MediaLab_Inquiry_Settings::privacy_text() : '';
 $mlw_submit_label     = class_exists( 'MediaLab_Inquiry_Settings' ) ? MediaLab_Inquiry_Settings::wording( 'submit_button' ) : 'Anfrage absenden';
+$mlw_phone_mode       = class_exists( 'MediaLab_Inquiry_Settings' ) ? MediaLab_Inquiry_Settings::phone_mode() : 'optional';
 ?>
 
 <div class="woocommerce">
@@ -172,14 +173,16 @@ $mlw_submit_label     = class_exists( 'MediaLab_Inquiry_Settings' ) ? MediaLab_I
                                 placeholder="max@beispiel.de">
                         </p>
                         
+                        <?php if ( $mlw_phone_mode !== 'hidden' ) : ?>
                         <p class="form-row" style="margin-bottom:1.5rem;">
                             <label for="inquiry_phone" style="display:block;margin-bottom:0.5rem;font-weight:600;">
-                                Telefonnummer
+                                Telefonnummer<?php if ( $mlw_phone_mode === 'required' ) : ?> <span class="required" style="color:red;">*</span><?php endif; ?>
                             </label>
-                            <input type="tel" name="phone" id="inquiry_phone" class="input-text" 
+                            <input type="tel" name="phone" id="inquiry_phone" class="input-text" <?php echo $mlw_phone_mode === 'required' ? 'required' : ''; ?>
                                 style="width:100%;padding:0.75rem;border:2px solid #e0e0e0;border-radius:8px;font-size:16px;"
                                 placeholder="+43 123 456789">
                         </p>
+                        <?php endif; ?>
 
                         <?php foreach ( $mlw_extra_fields as $field ) :
                             $key         = esc_attr( $field['field_key'] ?? '' );

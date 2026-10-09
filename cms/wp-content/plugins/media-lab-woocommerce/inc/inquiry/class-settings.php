@@ -22,6 +22,7 @@ class MediaLab_Inquiry_Settings {
         add_action( 'acf/include_fields', [ __CLASS__, 'register_options_page' ] );
         add_action( 'admin_menu', [ __CLASS__, 'add_settings_submenu' ], 30 );
         add_action( 'admin_notices', [ __CLASS__, 'render_completeness_notice' ] );
+        add_filter( 'acf/validate_value/key=field_mlw_ff_key', [ __CLASS__, 'validate_field_key' ], 10, 2 );
     }
 
     // ── ACF Options Page ──────────────────────────────────────────────────────
@@ -248,7 +249,7 @@ class MediaLab_Inquiry_Settings {
                 'type'          => 'select',
                 'choices'       => [ 'optional' => 'Optional', 'required' => 'Pflichtfeld', 'hidden' => 'Ausblenden' ],
                 'default_value' => 'optional',
-                'instructions'  => 'Das eingebaute Telefonfeld im Wunschlisten-Formular. Dafür ist keine zusätzliche Zeile mit dem Key "phone" nötig (sie würde ein zweites Telefonfeld erzeugen und wird im Wunschlisten-Formular nicht mehr ausgegeben).',
+                'instructions'  => 'Das eingebaute Telefonfeld in allen Anfrage-Formularen (Warenkorb, Checkout, Konfigurator, Wunschliste). Eine zusätzliche Zeile mit dem Key "phone" ist nicht nötig und nicht erlaubt. Bei „Ausblenden" bleibt der Mail-Platzhalter {phone} leer.',
             ],
             [
                 'key'          => 'field_mlw_form_fields',
@@ -263,7 +264,7 @@ class MediaLab_Inquiry_Settings {
                         'label' => 'Feld-Key',
                         'name'  => 'field_key',
                         'type'  => 'text',
-                        'instructions' => 'Interner Bezeichner, z.B. "phone" oder "company". Nur Kleinbuchstaben, Zahlen, Unterstrich. Sprachunabhängig - wird als Platzhalter {feldkey} in Mails verwendet.',
+                        'instructions' => 'Interner Bezeichner, z.B. "company" oder "position". Reserviert sind name, email, phone, message und privacy_consent (Telefon wird über die Einstellung „Telefon" oben gesteuert). Nur Kleinbuchstaben, Zahlen, Unterstrich. Sprachunabhängig - wird als Platzhalter {feldkey} in Mails verwendet.',
                         'required' => 1,
                         'wrapper' => [ 'width' => '20' ],
                     ],
@@ -524,13 +525,20 @@ class MediaLab_Inquiry_Settings {
 
     // ── Öffentliche Helper ───────────────────────────────────────────────────
 
+    /** Basisfeld-Keys, die nicht als Zusatzfeld vergeben werden dürfen. */
+    const RESERVED_FIELD_KEYS = [ 'name', 'email', 'phone', 'message', 'privacy_consent' ];
+
     /**
      * Konfigurierte Zusatzfelder des Anfrage-Formulars (Rohdaten, unlokalisiert).
+     * Reservierte Basisfeld-Keys werden herausgefiltert.
      */
     public static function get_form_fields(): array {
         if ( ! function_exists( 'get_field' ) ) return [];
         $fields = get_field( 'mlw_form_fields', 'option' );
-        return is_array( $fields ) ? $fields : [];
+        if ( ! is_array( $fields ) ) return [];
+        return array_values( array_filter( $fields, function ( $f ) {
+            return ! in_array( strtolower( trim( $f['field_key'] ?? '' ) ), self::RESERVED_FIELD_KEYS, true );
+        } ) );
     }
 
     /**
@@ -562,6 +570,25 @@ class MediaLab_Inquiry_Settings {
         unset( $field );
 
         return $fields;
+    }
+
+    /**
+     * ACF-Validierung für den Feld-Key im Repeater "Zusätzliche Felder":
+     * verhindert reservierte Basisfeld-Keys (z.B. "phone").
+     */
+    public static function validate_field_key( $valid, $value ) {
+        if ( $valid !== true ) return $valid;
+        $value = strtolower( trim( (string) $value ) );
+        if ( in_array( $value, self::RESERVED_FIELD_KEYS, true ) ) {
+            return sprintf( 'Der Key „%s" ist ein Basisfeld und deshalb reserviert. Das Telefonfeld wird über die Einstellung „Telefon" gesteuert.', $value );
+        }
+        return $valid;
+    }
+
+    /** Telefonfeld in allen Anfrage-Formularen: 'optional' (Standard), 'required' oder 'hidden'. */
+    public static function phone_mode(): string {
+        $mode = function_exists( 'get_field' ) ? get_field( 'mlw_phone_mode', 'option' ) : '';
+        return in_array( $mode, [ 'required', 'hidden' ], true ) ? $mode : 'optional';
     }
 
     public static function privacy_required(): bool {
@@ -685,12 +712,6 @@ class MediaLab_Inquiry_Settings {
     }
 
     // ── Navigation-Icon-Einstellungen ────────────────────────────────────────
-
-    /** Telefonfeld im Wunschlisten-Formular: 'optional' (Standard), 'required' oder 'hidden'. */
-    public static function phone_mode(): string {
-        $mode = function_exists( 'get_field' ) ? get_field( 'mlw_phone_mode', 'option' ) : '';
-        return in_array( $mode, [ 'required', 'hidden' ], true ) ? $mode : 'optional';
-    }
 
     public static function nav_icon_enabled(): bool {
         return function_exists( 'get_field' ) && (bool) get_field( 'mlw_nav_icon_enabled', 'option' );

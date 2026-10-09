@@ -75,7 +75,7 @@ gibt es im Wizard kein Kontaktformular.
 |---|---|
 | Wording | Bezeichnungen, Button-Texte, Erfolgsmeldung (einsprachiger Fallback) |
 | Sprachen | Mehrsprachigkeit an/aus, pro Sprache: Wording, Wunschlisten-Seite, Mail-Templates |
-| Formularfelder | Zusatzfelder (Text/E-Mail/Auswahl/Checkbox/…), Pflicht/Optional, pro Sprache übersetzbar |
+| Formularfelder | Eingebautes Telefonfeld (Optional / Pflichtfeld / Ausblenden, gilt für alle Anfrage-Formulare), Zusatzfelder (Text/E-Mail/Auswahl/Checkbox/…), Pflicht/Optional, pro Sprache übersetzbar |
 | Kanäle | E-Mail, WhatsApp-Link, Webhook (JSON-POST) – beliebig kombinierbar |
 | Mail-Templates | Kunden-/Admin-Mail, Platzhalter-basiert (einsprachiger Fallback) |
 | Navigation | Wunschlisten-Icon im Hauptmenü an/aus, Mengen-Badge an/aus |
@@ -83,6 +83,19 @@ gibt es im Wizard kein Kontaktformular.
 Mehrsprachigkeit funktioniert unabhängig davon, ob WPML, Polylang oder gar
 kein Mehrsprachigkeits-Plugin installiert ist (eigene Sprach-Erkennung,
 Fallback auf `get_locale()`).
+
+### Telefonfeld und reservierte Feld-Keys
+
+Name, E-Mail und Telefon sind eingebaute Basisfelder. Das Telefonfeld steuert
+die Einstellung **„Telefon"** (Tab „Formularfelder"): *Optional* (Standard),
+*Pflichtfeld* oder *Ausblenden*. Sie gilt einheitlich für Anfrage-Seite
+(Checkout), `[mlw_inquiry_form]`, Konfigurator-Kontaktformular und Wunschliste.
+Die verbindliche Prüfung läuft serverseitig in der Inquiry-Engine.
+
+Die Keys `name`, `email`, `phone`, `message` und `privacy_consent` sind für
+Basisfelder reserviert und lassen sich im Repeater „Zusätzliche Felder" nicht
+als Feld-Key vergeben (ACF-Validierung beim Speichern). Bereits vorhandene
+Zeilen mit einem reservierten Key werden nicht mehr ausgegeben.
 
 ---
 

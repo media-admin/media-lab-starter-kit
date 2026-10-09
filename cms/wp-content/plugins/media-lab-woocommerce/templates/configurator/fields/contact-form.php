@@ -6,10 +6,12 @@
  * Inquiry-Engine immer erwartet). Zusätzliche, projektspezifisch konfigurierte
  * Felder sowie die Datenschutz-Zustimmung werden dynamisch aus den
  * Inquiry-Einstellungen gerendert - siehe inc/inquiry/class-settings.php.
+ * Das Telefonfeld ist per Einstellung "Telefon" optional, Pflicht oder ausgeblendet.
  */
 $mlw_extra_fields     = class_exists( 'MediaLab_Inquiry_Settings' ) ? MediaLab_Inquiry_Settings::get_form_fields_localized() : [];
 $mlw_privacy_required = class_exists( 'MediaLab_Inquiry_Settings' ) ? MediaLab_Inquiry_Settings::privacy_required() : false;
 $mlw_privacy_text     = class_exists( 'MediaLab_Inquiry_Settings' ) ? MediaLab_Inquiry_Settings::privacy_text() : '';
+$mlw_phone_mode       = class_exists( 'MediaLab_Inquiry_Settings' ) ? MediaLab_Inquiry_Settings::phone_mode() : 'optional';
 ?>
 
 <div class="configurator-field configurator-field--contact">
@@ -43,18 +45,21 @@ $mlw_privacy_text     = class_exists( 'MediaLab_Inquiry_Settings' ) ? MediaLab_I
                    required>
         </div>
         
+        <?php if ( $mlw_phone_mode !== 'hidden' ) : ?>
         <!-- Telefon -->
         <div class="configurator-form-group">
             <label class="configurator-form-label" for="customer_phone">
-                Telefon
+                Telefon<?php if ( $mlw_phone_mode === 'required' ) : ?> <span class="required">*</span><?php endif; ?>
             </label>
             <input type="tel" 
                    id="customer_phone"
                    class="configurator-form-input"
                    x-model="config['customer_phone']"
                    @input="onFieldChange('customer_phone')"
-                   placeholder="+43 123 456789">
+                   placeholder="+43 123 456789"
+                   <?php echo $mlw_phone_mode === 'required' ? 'required' : ''; ?>>
         </div>
+        <?php endif; ?>
 
         <?php foreach ( $mlw_extra_fields as $field ) :
             $key         = esc_attr( $field['field_key'] ?? '' );

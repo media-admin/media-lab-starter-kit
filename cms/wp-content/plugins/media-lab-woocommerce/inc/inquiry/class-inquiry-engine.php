@@ -40,6 +40,15 @@ class MediaLab_Inquiry_Engine {
         if ( ! $name )  return new WP_Error( 'mlw_missing_name',  __( 'Bitte geben Sie Ihren Namen an.', 'media-lab-woocommerce' ) );
         if ( ! is_email( $email ) ) return new WP_Error( 'mlw_invalid_email', __( 'Bitte geben Sie eine gültige E-Mail-Adresse an.', 'media-lab-woocommerce' ) );
 
+        // Telefon laut Einstellung "Telefon" (optional / Pflichtfeld / ausgeblendet).
+        // Zentral hier, damit die Regel für Warenkorb, Konfigurator und Wunschliste identisch gilt.
+        $phone_mode = MediaLab_Inquiry_Settings::phone_mode();
+        if ( $phone_mode === 'hidden' ) {
+            $phone = '';
+        } elseif ( $phone_mode === 'required' && $phone === '' ) {
+            return new WP_Error( 'mlw_missing_phone', __( 'Bitte geben Sie Ihre Telefonnummer an.', 'media-lab-woocommerce' ) );
+        }
+
         // Datenschutz-Zustimmung
         if ( MediaLab_Inquiry_Settings::privacy_required() && empty( $contact['privacy_consent'] ) ) {
             return new WP_Error( 'mlw_privacy_required', __( 'Bitte stimmen Sie der Datenschutzerklärung zu.', 'media-lab-woocommerce' ) );

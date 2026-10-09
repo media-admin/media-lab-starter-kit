@@ -726,6 +726,10 @@ class MediaLab_Product_Configurator {
                 ? array_values( array_filter( array_map( fn( $f ) => ! empty( $f['required'] ) ? ( $f['field_key'] ?? '' ) : '', MediaLab_Inquiry_Settings::get_form_fields() ) ) )
                 : array(),
             'privacyRequired' => class_exists( 'MediaLab_Inquiry_Settings' ) ? MediaLab_Inquiry_Settings::privacy_required() : false,
+            // Telefon als Pflichtfeld (Einstellung "Telefon") - für die client-seitige
+            // Validierung in isStepValid() (configurator.js). Die verbindliche Prüfung
+            // läuft serverseitig in MediaLab_Inquiry_Engine::submit().
+            'phoneRequired'   => class_exists( 'MediaLab_Inquiry_Settings' ) ? ( MediaLab_Inquiry_Settings::phone_mode() === 'required' ) : false,
             // Für den "Zur Wunschliste hinzufügen"-Button im Wizard (eigener Nonce,
             // da die Wunschliste ein separater Ajax-Namespace ist, siehe class-ajax.php).
             'wishlistNonce'   => wp_create_nonce( class_exists( 'MediaLab_Wishlist_Ajax' ) ? MediaLab_Wishlist_Ajax::NONCE_ACTION : 'mlw_wishlist_nonce' ),

@@ -16,6 +16,7 @@ $mlw_extra_fields     = class_exists( 'MediaLab_Inquiry_Settings' ) ? MediaLab_I
 $mlw_privacy_required = class_exists( 'MediaLab_Inquiry_Settings' ) ? MediaLab_Inquiry_Settings::privacy_required() : false;
 $mlw_privacy_text     = class_exists( 'MediaLab_Inquiry_Settings' ) ? MediaLab_Inquiry_Settings::privacy_text() : '';
 $mlw_submit_label     = class_exists( 'MediaLab_Inquiry_Settings' ) ? MediaLab_Inquiry_Settings::wording( 'submit_button' ) : 'Anfrage senden';
+$mlw_phone_mode       = class_exists( 'MediaLab_Inquiry_Settings' ) ? MediaLab_Inquiry_Settings::phone_mode() : 'optional';
 ?>
 
 <div class="woocommerce-catalog-inquiry">
@@ -48,10 +49,12 @@ $mlw_submit_label     = class_exists( 'MediaLab_Inquiry_Settings' ) ? MediaLab_I
                 <input type="email" name="email" id="inquiry_email" required>
             </p>
             
+            <?php if ( $mlw_phone_mode !== 'hidden' ) : ?>
             <p class="form-row">
-                <label for="inquiry_phone">Telefonnummer</label>
-                <input type="tel" name="phone" id="inquiry_phone">
+                <label for="inquiry_phone">Telefonnummer<?php echo $mlw_phone_mode === 'required' ? ' *' : ''; ?></label>
+                <input type="tel" name="phone" id="inquiry_phone" <?php echo $mlw_phone_mode === 'required' ? 'required' : ''; ?>>
             </p>
+            <?php endif; ?>
 
             <?php foreach ( $mlw_extra_fields as $field ) :
                 $key         = esc_attr( $field['field_key'] ?? '' );
