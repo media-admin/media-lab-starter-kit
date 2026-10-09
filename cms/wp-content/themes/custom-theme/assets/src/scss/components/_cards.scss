@@ -193,6 +193,26 @@ $post-card-type-colors: (
     &__author   { font-size: var(--text-xs); color: var(--color-text-muted); }
     &__meta-sep { color: var(--color-border); font-size: var(--text-xs); }
 
+    // Eigene Meta-Angaben (post_card_meta), z. B. Art.-Nr. und Verfügbarkeit
+    &__meta-item {
+        display:           inline-flex;
+        flex-wrap:         wrap;
+        align-items:       baseline;
+        gap:               0 $spacing-1;
+        margin-inline-end: $spacing-2;
+        font-size:         var(--text-xs);
+        color:             var(--color-text-muted);
+
+        &:last-child { margin-inline-end: 0; }
+    }
+
+    &__meta-label { color: var(--color-text-muted); }
+
+    &__meta-value {
+        color:       var(--color-text);
+        font-weight: $font-weight-semibold;
+    }
+
     &__link {
         display:         inline-flex;
         align-items:     center;
