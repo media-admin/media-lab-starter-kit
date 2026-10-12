@@ -16,6 +16,18 @@ import noUiSlider from 'nouislider';
  * 'janecka_*' zu verweisen, damit das Script auch in Projekten funktioniert,
  * die die Janecka-Rückwärtskompatibilitäts-Aliase nicht (mehr) haben.
  *
+ * Such-Kontext (Produktfilter auf der Suchergebnisseite, search-filters.php):
+ *   - die Leiste trägt data-search="<Suchbegriff>" und ein hidden-Feld "search";
+ *     der Suchbegriff geht damit bei jedem Request mit (collectFormData)
+ *   - Preisspanne gilt für die gefundenen Produkte (loadPriceRange)
+ *   - der Suchbegriff bleibt in der URL (?s=...) (updateUrl)
+ *   - Filter-Werte aus der URL (Kategorie, Marke, Attribute) werden auf die
+ *     Checkboxen übertragen (syncFromUrl)
+ *   - Zurücksetzen lädt die ungefilterte Ergebnisseite (resetFilters)
+ *   - ein Element mit .js-search-count zeigt die Trefferzahl (data-one / data-many)
+ *   - .js-product-count mit data-range: Text der Trefferanzeige aus den
+ *     Such-Einstellungen ("%1$s" = erstes, "%2$s" = letztes, "%3$s" = Gesamtzahl)
+ *
  * @package MedialabWooFilters
  */
 
@@ -28,9 +40,13 @@ import noUiSlider from 'nouislider';
 	const FORM              = '.js-filter-form';
 	const PRODUCTS_CONTAINER = '.wc-products-container'; // Wrapper um ul.products + Pagination
 	const COUNT_LABEL       = '.js-product-count';
+	const SEARCH_COUNT      = '.js-search-count';
 	const RESET_BTN         = '.js-filter-reset';
 	const MOBILE_BTN        = '.js-filter-toggle-mobile';
 	const ACTIVE_COUNT      = '.js-active-filter-count';
+
+	// URL-Parameter, zu denen es keine Filter-Checkboxen gibt (syncFromUrl überspringt sie)
+	const NON_FILTER_PARAMS = [ 's', 'price_min', 'price_max', 'orderby', 'paged', 'subcat' ];
 
 	// ── State ─────────────────────────────────────────────────────────────────
 
@@ -135,11 +151,15 @@ import noUiSlider from 'nouislider';
 
 	async function loadPriceRange( sidebar ) {
 		const category = sidebar.dataset.category || '';
+		const search   = sidebar.dataset.search   || ''; // Such-Kontext: Spanne der gefundenen Produkte
 		try {
 			const action = window.mlwf?.actionPriceRange || 'mlwf_get_price_range';
-			const res    = await ajaxPost( action, { category } );
+			const res    = await ajaxPost( action, { category, search } );
 			priceMin     = Math.floor( res.data.min );
 			priceMax     = Math.ceil(  res.data.max );
+
+			// noUiSlider verträgt kein min === max (z. B. alle Treffer gleich teuer)
+			if ( priceMax <= priceMin ) priceMax = priceMin + 1;
 		} catch ( e ) {
 			console.warn( '[MLWF] Preis-Bereich konnte nicht geladen werden.', e );
 		}
@@ -282,10 +302,31 @@ import noUiSlider from 'nouislider';
 				const perPage = res.data.per_page || 12;
 				const start   = n === 0 ? 0 : ( current - 1 ) * perPage + 1;
 				const end     = Math.min( current * perPage, n );
-				const text    = n === 1
-					? '1 Ergebnis wird angezeigt'
-					: `${ start }–${ end } von ${ n } Ergebnissen werden angezeigt`;
-				countEl.innerHTML = `<p class="woocommerce-result-count">${ text }</p>`;
+				const fmt     = v => v.toLocaleString( document.documentElement.lang || undefined );
+
+				// Such-Kontext: Text aus den Such-Einstellungen (data-range, "%1$s" "%2$s" "%3$s")
+				const template = countEl.dataset.range;
+				let text;
+				if ( n === 1 ) {
+					text = '1 Ergebnis wird angezeigt';
+				} else if ( template ) {
+					text = template.replace( '%1$s', fmt( start ) ).replace( '%2$s', fmt( end ) ).replace( '%3$s', fmt( n ) );
+				} else {
+					text = `${ start }–${ end } von ${ n } Ergebnissen werden angezeigt`;
+				}
+
+				const p       = document.createElement( 'p' );
+				p.className   = 'woocommerce-result-count';
+				p.textContent = text;
+				countEl.replaceChildren( p );
+			}
+
+			// Such-Kontext: Trefferzahl im Seitenkopf ("%s Ergebnisse")
+			const searchCount = document.querySelector( SEARCH_COUNT );
+			if ( searchCount ) {
+				const n   = res.data.found_posts;
+				const tpl = n === 1 ? searchCount.dataset.one : searchCount.dataset.many;
+				searchCount.textContent = ( tpl || '%s' ).replace( '%s', n.toLocaleString( document.documentElement.lang || undefined ) );
 			}
 
 		} catch ( e ) {
@@ -337,8 +378,16 @@ import noUiSlider from 'nouislider';
 
 	// ── URL-State ────────────────────────────────────────────────────────────
 
+	/** Pfad ohne /page/N/ und mit abschließendem Slash. */
+	function basePath() {
+		return window.location.pathname.replace( /\/page\/\d+\/?$/, '' ).replace( /\/?$/, '/' );
+	}
+
 	function updateUrl( data ) {
 		const params = new URLSearchParams();
+
+		// Such-Kontext: ohne den Suchbegriff in der URL ginge er beim Neuladen verloren
+		if ( data.search ) params.set( 's', data.search );
 
 		if ( data.price_min && data.price_min > priceMin ) params.set( 'price_min', data.price_min );
 		if ( data.price_max && data.price_max < priceMax ) params.set( 'price_max', data.price_max );
@@ -348,28 +397,35 @@ import noUiSlider from 'nouislider';
 			if ( vals.length ) params.set( attr, vals.join( ',' ) );
 		}
 
-		const newUrl = params.toString()
-			? `${ window.location.pathname }?${ params.toString() }`
-			: window.location.pathname;
+		// /page/N/ nur bei paged > 1 - sonst stünde nach einem Filterwechsel weiter
+		// die alte Seitenzahl in der URL, während Seite 1 angezeigt wird
+		const base = basePath();
+		const path = data.paged > 1 ? `${ base }page/${ data.paged }/` : base;
+
+		const newUrl = params.toString() ? `${ path }?${ params.toString() }` : path;
 
 		window.history.replaceState( {}, '', newUrl );
 	}
 
+	/**
+	 * Überträgt Filter-Werte aus der URL auf die Checkboxen (Attribute pa_*,
+	 * Kategorie, Marke ...). Läuft über die vorhandenen Checkboxen statt über
+	 * Selektoren aus URL-Werten.
+	 */
 	function syncFromUrl() {
 		const params = new URLSearchParams( window.location.search );
 
-		params.forEach( ( val, key ) => {
-			if ( ! key.startsWith( 'pa_' ) ) return;
-			val.split( ',' ).forEach( slug => {
-				const cb = document.querySelector( `input[name="attributes[${ key }][]"][value="${ slug }"]` );
-				if ( cb ) {
-					cb.checked = true;
-					updateGroupCount( cb.closest( '.wc-filter-group' ) );
-					// Dropdown geschlossen lassen — nur Button-Zustand aktualisieren
-					const toggle = cb.closest( '.wc-filter-group' )?.querySelector( '.wc-filter-group__toggle' );
-					if ( toggle ) toggle.setAttribute( 'aria-expanded', 'false' );
-				}
-			} );
+		document.querySelectorAll( '.wc-filter-option__checkbox' ).forEach( cb => {
+			const match = cb.name.match( /^attributes\[(.+?)\]\[\]$/ );
+			if ( ! match || NON_FILTER_PARAMS.includes( match[1] ) || ! params.has( match[1] ) ) return;
+
+			if ( params.get( match[1] ).split( ',' ).includes( cb.value ) ) {
+				cb.checked = true;
+				updateGroupCount( cb.closest( '.wc-filter-group' ) );
+				// Dropdown geschlossen lassen — nur Button-Zustand aktualisieren
+				const toggle = cb.closest( '.wc-filter-group' )?.querySelector( '.wc-filter-group__toggle' );
+				if ( toggle ) toggle.setAttribute( 'aria-expanded', 'false' );
+			}
 		} );
 	}
 
@@ -393,6 +449,14 @@ import noUiSlider from 'nouislider';
 	// ── Filter zurücksetzen ───────────────────────────────────────────────────
 
 	function resetFilters() {
+		// Such-Kontext: zurück zur ungefilterten Ergebnisseite (gemischte Treffer,
+		// Zähler und Pagination stimmen wieder)
+		const searchTerm = document.querySelector( SIDEBAR )?.dataset.search;
+		if ( searchTerm ) {
+			window.location.href = `${ basePath() }?s=${ encodeURIComponent( searchTerm ) }`;
+			return;
+		}
+
 		document.querySelectorAll( '.wc-filter-option__checkbox:checked' ).forEach( cb => {
 			cb.checked = false;
 			updateGroupCount( cb.closest( '.wc-filter-group' ) );

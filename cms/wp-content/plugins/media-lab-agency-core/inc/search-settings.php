@@ -274,6 +274,11 @@ class MediaLab_Search_Settings {
             (array) ( self::get()['text']['serp_sort_labels'] ?? [] )
         );
 
+        $per_page = max( 0, min( 50, (int) self::opt( 'search_serp_per_page', 0 ) ) );
+        if ( $per_page === 0 ) {
+            $per_page = max( 0, min( 50, (int) apply_filters( 'media_lab_search_serp_per_page', 0 ) ) );
+        }
+
         // Sortier-Optionen für Besucher: gewählte + immer die Standard-Sortierung
         $options = [];
         $current = $default;
@@ -508,6 +513,14 @@ class MediaLab_Search_Settings {
                 'required'     => true,
                 'width'        => '50',
                 'instructions' => '',
+            ],
+            'serp_range' => [
+                'label'        => 'Ergebnisseite: Anzeige-Bereich (unter den Filtern)',
+                'type'         => 'text',
+                'default'      => 'Ergebnisse %1$s–%2$s von %3$s werden angezeigt',
+                'required'     => true,
+                'width'        => '50',
+                'instructions' => '%1$s = erstes, %2$s = letztes angezeigtes Ergebnis, %3$s = Gesamtzahl. Erscheint unter den Produktfiltern.',
             ],
             'serp_empty_title' => [
                 'label'        => 'Ergebnisseite: „Keine Ergebnisse“ – Überschrift',

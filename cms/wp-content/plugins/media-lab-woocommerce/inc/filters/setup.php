@@ -4,6 +4,15 @@
  *
  * Registriert nonce und JS-Objekt für das Frontend.
  *
+ * Das Objekt (window.mlwf, kompatibel auch window.janeckaWC) wird auf den Shop-Seiten
+ * (Shop, Kategorie, Tag, Marke) und auf der Suchergebnisseite ausgegeben - dort
+ * brauchen es die Produktfilter (search-filters.php). Weitere Seiten, z. B.
+ * Shortcode-Seiten mit Filterleiste, können es per Filter anfordern:
+ *
+ *   add_filter( 'mlwf_enqueue_frontend_data', function ( bool $needed ): bool {
+ *       return $needed || is_page( 'schmuck-uebersicht' );
+ *   } );
+ *
  * @package MedialabWooFilters
  */
 
@@ -12,7 +21,9 @@ defined( 'ABSPATH' ) || exit;
 add_action( 'wp_enqueue_scripts', 'mlwf_enqueue_frontend_data' );
 
 function mlwf_enqueue_frontend_data(): void {
-	if ( ! ( is_shop() || is_product_category() || is_product_tag() || is_tax( 'product_brand' ) ) ) {
+	$needs_data = is_shop() || is_product_category() || is_product_tag() || is_tax( 'product_brand' ) || is_search();
+
+	if ( ! apply_filters( 'mlwf_enqueue_frontend_data', $needs_data ) ) {
 		return;
 	}
 

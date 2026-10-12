@@ -18,6 +18,11 @@
  *     / _configurator_options()                (WooCommerce)
  *   - media_lab_ajax_search_extra_matches     (Fuzzy-Produktcodes, nur wenn sonst nichts gefunden)
  *
+ * Zusätzlich: matching_ids() liefert dieselbe Treffermenge als ID-Liste,
+ * unabhängig von der Haupt-Abfrage. Gedacht für Facetten-Filter (Produktfilter
+ * auf der Ergebnisseite: Werte und Anzahlen aus ALLEN gefundenen Produkten) und
+ * deren AJAX-Handler - beide arbeiten so garantiert mit derselben Treffermenge.
+ *
  * Schaltbar: Agency Core -> Suche / Live-Suche -> Ergebnisseite ->
  * "Erweiterte Suche auf der Ergebnisseite" (WooCommerce-Attribute zusätzlich
  * über "Verhalten -> WooCommerce-Attribute durchsuchen").
@@ -149,5 +154,111 @@ class MediaLab_Serp_Search {
         $inner = preg_replace( '/^\s*AND\s*/i', '', $search, 1 );
 
         return " AND ( ( {$inner} ) OR {$wpdb->posts}.ID IN ({$ids}) ) ";
+    }
+
+    /**
+     * Alle Treffer-IDs der erweiterten Suche, unabhängig von der Haupt-Abfrage.
+     *
+     * Dieselben Bausteine wie die Live-Suche und prepare(): native Treffer
+     * (inkl. Synonyme), Produktattribute / Konfigurator-Optionen, Woo-Extras
+     * (Filter 'media_lab_search_woo_matches': SKU, Kategorien, Marken) und der
+     * Fuzzy-Fallback für Produktcodes. Reihenfolge: native Treffer in Relevanz-
+     * Reihenfolge zuerst, dann die übrigen.
+     *
+     * Läuft über sekundäre WP_Querys - die Haupt-Abfrage-Erweiterung
+     * (extend_search_sql) greift dort bewusst nicht, es gibt keine Rekursion.
+     *
+     * Ergebnis wird pro Request und kurz in einem Transient gecacht, weil die
+     * AJAX-Filter bei jeder Änderung dieselbe Menge brauchen.
+     *   - 'media_lab_ajax_search_query_args'  Query-Args anpassen (z. B. Sichtbarkeit)
+     *   - 'media_lab_search_result_ids'        ID-Liste filtern (letzter Parameter: 'matching')
+     *   - 'media_lab_search_ids_cache_ttl'     Transient-Dauer in Sekunden (Standard 300, 0 = aus)
+     *
+     * @param string   $search Suchbegriff (Rohwert, wird bereinigt)
+     * @param string[] $types  Post-Types (Standard: nur Produkte)
+     * @param int      $cap    Obergrenze der IDs (1..20000)
+     * @return int[]
+     */
+    public static function matching_ids( string $search, array $types = [ 'product' ], int $cap = 5000 ): array {
+        static $memo = [];
+
+        $search = sanitize_text_field( $search );
+        if ( mb_strlen( $search ) < 2 || ! class_exists( 'MediaLab_Search_Settings' ) ) return [];
+
+        $lang  = MediaLab_Search_Settings::current_lang();
+        $types = MediaLab_Search_Settings::sanitize_post_types( $types );
+        $cap   = max( 1, min( 20000, $cap ) );
+        $key   = md5( wp_json_encode( [ $search, $types, $lang, $cap ] ) );
+
+        if ( isset( $memo[ $key ] ) ) return $memo[ $key ];
+
+        $ttl = (int) apply_filters( 'media_lab_search_ids_cache_ttl', 300 );
+        if ( $ttl > 0 ) {
+            $cached = get_transient( 'mls_ids_' . $key );
+            if ( is_array( $cached ) ) return $memo[ $key ] = $cached;
+        }
+
+        $cfg       = MediaLab_Search_Settings::get();
+        $lang_args = MediaLab_Search_Settings::apply_language( [], $lang );
+        $has_products = in_array( 'product', $types, true ) && class_exists( 'WooCommerce' );
+
+        // ── 1. Native Treffer + Synonyme (Relevanz-Reihenfolge) ──────────────
+        $terms = (array) apply_filters( 'media_lab_ajax_search_query_expansion', [ $search ], $search );
+        $ids   = [];
+
+        foreach ( $terms as $term ) {
+            if ( ! is_string( $term ) || $term === '' ) continue;
+
+            $args = array_merge( [
+                'post_type'      => $types,
+                'post_status'    => 'publish',
+                's'              => $term,
+                'orderby'        => 'relevance',
+                'fields'         => 'ids',
+                'posts_per_page' => $cap,
+                'no_found_rows'  => true,
+            ], $lang_args );
+            $args = apply_filters( 'media_lab_ajax_search_query_args', $args, $term );
+
+            $q   = new \WP_Query( $args );
+            $ids = array_merge( $ids, array_map( 'intval', $q->posts ) );
+        }
+
+        // ── 2. WooCommerce: Attribute, Konfigurator-Optionen, Woo-Extras ─────
+        $extra = [];
+        if ( $has_products && ! empty( $cfg['woo_attributes'] ) ) {
+            if ( function_exists( 'agency_core_search_product_attributes' ) ) {
+                $extra = agency_core_search_product_attributes( $search );
+            }
+            if ( function_exists( 'agency_core_search_local_product_attributes' ) ) {
+                $extra += agency_core_search_local_product_attributes( $search, 50 );
+            }
+            if ( function_exists( 'agency_core_search_configurator_options' ) ) {
+                $extra += agency_core_search_configurator_options( $search );
+            }
+        }
+        if ( $has_products ) {
+            $extra += (array) apply_filters( 'media_lab_search_woo_matches', [], $search, $cap );
+        }
+        $ids = array_merge( $ids, array_map( 'intval', array_keys( $extra ) ) );
+
+        // ── 3. Fuzzy-Fallback (Produktcodes), nur wenn sonst nichts gefunden wird ──
+        if ( $has_products && empty( $ids ) ) {
+            $fuzzy = (array) apply_filters( 'media_lab_ajax_search_extra_matches', [], $search, 50 );
+            $ids   = array_map( 'intval', array_keys( $fuzzy ) );
+        }
+
+        // ── Bereinigen ────────────────────────────────────────────────────────
+        $ids = array_values( array_unique( $ids ) );
+        $ids = MediaLab_Search_Settings::filter_ids_by_language( $ids, $lang );
+        $ids = array_values( array_filter( $ids, static fn( $id ) => ! post_password_required( $id ) ) );
+        $ids = (array) apply_filters( 'media_lab_search_result_ids', $ids, $search, 'matching' );
+        $ids = array_slice( array_values( array_map( 'intval', $ids ) ), 0, $cap );
+
+        if ( $ttl > 0 ) {
+            set_transient( 'mls_ids_' . $key, $ids, $ttl );
+        }
+
+        return $memo[ $key ] = $ids;
     }
 }

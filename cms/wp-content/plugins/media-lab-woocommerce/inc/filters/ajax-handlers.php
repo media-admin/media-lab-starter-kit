@@ -2,6 +2,11 @@
 /**
  * AJAX Handler: Produktfilter
  *
+ * Such-Kontext: Mit dem POST-Parameter "search" filtert der Handler innerhalb der
+ * Treffer einer Suche (Produktfilter auf der Suchergebnisseite, siehe
+ * search-filters.php). Die Treffermenge kommt aus mlwf_search_product_ids() -
+ * dieselbe wie bei den Filter-Werten und der Seite selbst.
+ *
  * @package MedialabWooFilters
  */
 
@@ -83,6 +88,7 @@ function mlwf_ajax_filter_products(): void {
 	$price_max     = ( isset( $_POST['price_max'] ) && $_POST['price_max'] !== '' ) ? (float) $_POST['price_max'] : null;
 	$orderby       = sanitize_text_field( $_POST['orderby']       ?? 'menu_order' );
 	$paged         = (int) ( $_POST['paged']                      ?? 1 );
+	$search        = sanitize_text_field( wp_unslash( $_POST['search'] ?? '' ) ); // Such-Kontext (leer = Shop/Kategorie/Marke)
 
 	// ── Tax Query ────────────────────────────────────────────────────────────
 
@@ -151,7 +157,9 @@ function mlwf_ajax_filter_products(): void {
 		'date'       => [ 'orderby' => 'date', 'order' => 'DESC' ],
 	];
 
-	$order_args = $orderby_map[ $orderby ] ?? $orderby_map['menu_order'];
+	// Unbekannte Werte wie die Standard-Sortierung behandeln
+	$orderby    = isset( $orderby_map[ $orderby ] ) ? $orderby : 'menu_order';
+	$order_args = $orderby_map[ $orderby ];
 
 	// ── Query ────────────────────────────────────────────────────────────────
 
@@ -159,13 +167,33 @@ function mlwf_ajax_filter_products(): void {
 		'post_type'      => 'product',
 		'post_status'    => 'publish',
 		// Vereinheitlicht mit shop-products-per-page.php: eine Option statt
-        // zweier getrennter, damit "Produkte pro Seite" auf normaler
-        // Shopseite UND bei AJAX-Filterung konsistent bleibt.
-        'posts_per_page' => (int) get_option( 'mlw_products_per_page', 12 ),
+		// zweier getrennter, damit "Produkte pro Seite" auf normaler
+		// Shopseite UND bei AJAX-Filterung konsistent bleibt.
+		'posts_per_page' => (int) get_option( 'mlw_products_per_page', 12 ),
 		'paged'          => $paged,
 		'tax_query'      => $tax_query,
 		'meta_query'     => $meta_query,
 	], $order_args );
+
+	// ── Such-Kontext ─────────────────────────────────────────────────────────
+	// Nur Treffer der Suche (dieselbe Menge wie Filter-Werte und Ergebnisseite).
+	// Standard-Sortierung = Relevanz (Reihenfolge der Treffer-IDs). Ergebnisse
+	// pro Seite wie auf der Suchergebnisseite eingestellt.
+	if ( $search !== '' && function_exists( 'mlwf_search_product_ids' ) ) {
+		$args['post__in'] = mlwf_search_product_ids( $search ) ?: [ 0 ];
+
+		if ( $orderby === 'menu_order' ) {
+			$args['orderby'] = 'post__in';
+			$args['order']   = 'ASC';
+		}
+
+		if ( class_exists( 'MediaLab_Search_Settings' ) ) {
+			$serp_per_page = (int) MediaLab_Search_Settings::serp()['per_page'];
+			if ( $serp_per_page > 0 ) {
+				$args['posts_per_page'] = $serp_per_page;
+			}
+		}
+	}
 
 	// HPOS-Fix: Produkttyp-Term-Cache primen, BEVOR WooCommerce während der
 	// eigentlichen Query volle Produktobjekte lädt. NICHT weglassbar —
@@ -188,7 +216,9 @@ function mlwf_ajax_filter_products(): void {
 		// Pagination
 		if ( $query->max_num_pages > 1 ) {
 			// Basis-URL ermitteln
-			if ( $brand_slug ) {
+			if ( $search !== '' ) {
+				$base_url = home_url( '/' );
+			} elseif ( $brand_slug ) {
 				$brand_term = get_term_by( 'slug', $brand_slug, 'product_brand' );
 				$base_url   = $brand_term ? get_term_link( $brand_term ) : home_url( '/' );
 			} elseif ( $category_slug ) {
@@ -201,6 +231,7 @@ function mlwf_ajax_filter_products(): void {
 
 			// Filter-Params
 			$filter_params = [];
+			if ( $search !== '' ) $filter_params['s'] = $search;
 			if ( $subcat_slug ) $filter_params['subcat'] = $subcat_slug;
 			if ( is_array( $attributes ) ) {
 				foreach ( $attributes as $tax => $vals ) {
@@ -242,7 +273,8 @@ function mlwf_ajax_filter_products(): void {
 		'found_posts' => $query->found_posts,
 		'max_pages'   => $query->max_num_pages,
 		'current'     => $paged,
-		'per_page'    => (int) get_option( 'mlw_products_per_page', 12 ),
+		// tatsächlich verwendete Anzahl (im Such-Kontext die der Suchergebnisseite)
+		'per_page'    => (int) $args['posts_per_page'],
 	] );
 }
 
@@ -265,8 +297,32 @@ function mlwf_ajax_get_price_range(): void {
 
 	$category_slug = sanitize_text_field( $_POST['category'] ?? '' );
 	$brand_slug    = sanitize_text_field( $_POST['brand']    ?? '' );
+	$search        = sanitize_text_field( wp_unslash( $_POST['search'] ?? '' ) );
 
 	global $wpdb;
+
+	// ── Such-Kontext: Preisspanne der gefundenen Produkte ────────────────────
+	if ( $search !== '' && function_exists( 'mlwf_search_product_ids' ) ) {
+		$ids    = array_map( 'intval', mlwf_search_product_ids( $search ) );
+		$id_sql = implode( ',', $ids ?: [ 0 ] );
+
+		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared -- IDs per intval()
+		$row = $wpdb->get_row( "
+			SELECT MIN(CAST(meta_value AS DECIMAL(10,2))) AS min_price,
+			       MAX(CAST(meta_value AS DECIMAL(10,2))) AS max_price
+			FROM {$wpdb->postmeta}
+			WHERE meta_key = '_price'
+			  AND meta_value <> ''
+			  AND post_id IN ({$id_sql})
+		" );
+		// phpcs:enable
+
+		wp_send_json_success( [
+			'min' => (float) ( $row->min_price ?? 0 ),
+			'max' => (float) ( $row->max_price ?? 10000 ),
+		] );
+	}
+
 	$where = '';
 
 	if ( $brand_slug ) {
@@ -340,3 +396,6 @@ function mlwf_count_term_in_context( int $term_id, string $taxonomy, array $cont
 function janecka_count_term_in_category( int $term_id, string $taxonomy, array $cat_product_ids ): int {
 	return mlwf_count_term_in_context( $term_id, $taxonomy, $cat_product_ids );
 }
+
+// Produktfilter auf der Suchergebnisseite (die Funktionen werden vom Handler genutzt)
+require_once __DIR__ . '/search-filters.php';

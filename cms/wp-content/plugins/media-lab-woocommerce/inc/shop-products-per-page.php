@@ -55,3 +55,7 @@ add_filter( 'loop_shop_per_page', function ( $per_page ) {
     }
     return $per_page;
 }, 30 );
+
+add_filter( 'media_lab_search_serp_per_page', static function ( int $n ): int {
+    return $n > 0 ? $n : (int) get_option( 'mlw_products_per_page', 0 );
+} );

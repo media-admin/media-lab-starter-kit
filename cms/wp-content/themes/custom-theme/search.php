@@ -11,7 +11,27 @@
  * Such-Einstellungen im Plugin (Agency Core → Suche / Live-Suche → Ergebnisseite);
  * ohne Plugin gelten die Standardwerte unten.
  *
+ * Produktfilter: Gibt es unter den Treffern Produkte und ist das WooCommerce-Plugin
+ * aktiv, steht über den Ergebnissen die Filterleiste samt Trefferanzeige
+ * ("Ergebnisse 1–24 von 139 werden angezeigt"), beides aus
+ * mlwf_get_search_filter_bar(). Die Ergebnisse stehen dann in
+ * .wc-products-container - das JS der Filter (mlwf-filters.js) ersetzt deren
+ * Inhalt per AJAX. Die Sortier-Auswahl des Cores entfällt in dem Fall (die
+ * Filterleiste hat eine eigene, die auch nach Preis sortiert). Der Wrapper
+ * bekommt die Klasse .search-layout--filters: der Trenner unter dem Seitenkopf
+ * entfällt, weil dann die Trefferanzeige (.wc-loop-header) wie im Shop den
+ * Trenner zu den Ergebnissen setzt.
+ *
  * Die einzelne Karte rendert template-parts/search/result-card.php.
+ *
+ * Pagination anpassen (Pfeil-Texte, Anzahl der Seitenzahlen ...), ohne das Template
+ * zu ändern - z. B. im Theme, damit sie wie die Shop-Pagination aussieht:
+ *
+ *   add_filter( 'ml_search_pagination_args', function ( array $args ): array {
+ *       return array_merge( $args, [ 'end_size' => 3, 'mid_size' => 3 ] );
+ *   } );
+ *
+ * Die Argumente gehen an paginate_links(); 'type' bleibt immer 'array'.
  *
  * @package custom-theme
  */
@@ -20,7 +40,8 @@ get_header();
 get_template_part( 'template-parts/components/breadcrumbs' );
 
 global $wp_query;
-$search_query = get_search_query();
+$search_query = get_search_query();          // escaped (für die Ausgabe)
+$search_raw   = get_search_query( false );   // roh (für Funktionen, die selbst escapen)
 $found_posts  = (int) $wp_query->found_posts;
 
 // Konfiguration (Plugin) mit Fallbacks
@@ -36,10 +57,17 @@ $t = static function ( string $key, string $fallback ) use ( $text ): string {
 };
 
 $grid_class = $layout === 'list' ? 'post-grid--list' : 'post-grid--cols-' . $columns;
+
+// Produktfilter + Trefferanzeige (WooCommerce-Plugin, optional)
+$filter_bar = ( $search_raw !== '' && function_exists( 'mlwf_get_search_filter_bar' ) )
+    ? mlwf_get_search_filter_bar( $search_raw )
+    : '';
+
+$layout_class = 'archive-layout search-layout container' . ( $filter_bar !== '' ? ' search-layout--filters' : '' );
 ?>
 
 <main id="primary" class="site-main">
-<div class="archive-layout search-layout container">
+<div class="<?php echo esc_attr( $layout_class ); ?>">
 
     <?php /* ── Header ───────────────────────────────────────────────────── */ ?>
     <header class="archive-header">
@@ -60,7 +88,10 @@ $grid_class = $layout === 'list' ? 'post-grid--list' : 'post-grid--cols-' . $col
         </h1>
 
         <?php if ( $found_posts > 0 ) : ?>
-        <p class="archive-header__count">
+        <?php /* js-search-count: wird vom Filter-JS nach dem Filtern aktualisiert */ ?>
+        <p class="archive-header__count js-search-count"
+           data-one="<?php echo esc_attr( $t( 'serp_count_one', '%s Ergebnis' ) ); ?>"
+           data-many="<?php echo esc_attr( $t( 'serp_count_many', '%s Ergebnisse' ) ); ?>">
             <?php
             printf(
                 esc_html( $found_posts === 1
@@ -79,10 +110,15 @@ $grid_class = $layout === 'list' ? 'post-grid--list' : 'post-grid--cols-' . $col
 
     </header>
 
+    <?php /* ── Produktfilter + Trefferanzeige (Facetten aus allen gefundenen Produkten) ── */ ?>
+    <?php echo $filter_bar; // phpcs:ignore WordPress.Security.EscapeOutput -- Markup in mlwf_get_search_filter_bar() escaped ?>
+
+    <?php if ( $filter_bar !== '' ) : ?><div class="wc-products-container"><?php endif; ?>
+
     <?php if ( have_posts() ) : ?>
 
-    <?php /* ── Sortierung (optional, Such-Einstellungen) ───────────────── */ ?>
-    <?php if ( $found_posts > 1 && ! empty( $serp['sort_ui'] ) && count( $serp['sort_options'] ) > 1 ) : ?>
+    <?php /* ── Sortierung (optional, Such-Einstellungen; entfällt mit Filterleiste) ── */ ?>
+    <?php if ( $filter_bar === '' && $found_posts > 1 && ! empty( $serp['sort_ui'] ) && count( $serp['sort_options'] ) > 1 ) : ?>
     <div class="search-toolbar">
         <form class="search-sort" method="get" action="<?php echo esc_url( home_url( '/' ) ); ?>">
             <input type="hidden" name="s" value="<?php echo esc_attr( $search_query ); ?>">
@@ -114,11 +150,13 @@ $grid_class = $layout === 'list' ? 'post-grid--list' : 'post-grid--cols-' . $col
 
     <?php /* ── Pagination ───────────────────────────────────────────────── */ ?>
     <?php
-    $pagination = paginate_links( [
+    $pagination_args = (array) apply_filters( 'ml_search_pagination_args', [
         'prev_text' => '← ' . esc_html__( 'Zurück', 'custom-theme' ),
         'next_text' => esc_html__( 'Weiter', 'custom-theme' ) . ' →',
-        'type'      => 'array',
     ] );
+    $pagination_args['type'] = 'array'; // das Markup unten erwartet ein Array
+
+    $pagination = paginate_links( $pagination_args );
 
     if ( $pagination ) :
     ?>
@@ -168,6 +206,8 @@ $grid_class = $layout === 'list' ? 'post-grid--list' : 'post-grid--cols-' . $col
     </div>
 
     <?php endif; ?>
+
+    <?php if ( $filter_bar !== '' ) : ?></div><!-- .wc-products-container --><?php endif; ?>
 
 </div><!-- .archive-layout -->
 </main>
