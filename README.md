@@ -22,6 +22,7 @@ media-lab-woocommerce      →  WooCommerce-Erweiterungen (Catalog Mode, Konfigu
 media-lab-bookings         →  Standortbasiertes Buchungssystem
 media-lab-events           →  Event-CPT mit Shortcodes
 media-lab-backup           →  SFTP-Backup zur Hetzner Storage Box
+media-lab-ai-agent         →  HIER KURZBESCHREIBUNG
 media-lab-project-starter  →  Scaffold, wird pro Projekt dupliziert + individuell angepasst (siehe unten)
 custom-theme                →  Präsentationsebene (pro Projekt anpassen)
 ```
@@ -44,6 +45,7 @@ nicht diese Tabelle.
 | `media-lab-bookings`        | `1.7.0`                     | Buchungssystem                                   |
 | `media-lab-events`          | `1.0.1`                     | Event-CPT + Shortcodes                           |
 | `media-lab-backup`          | `2.2.0`                     | SFTP-Backup                                      |
+| `media-lab-ai-agent`        | `1.9.0`                     | HIER KURZBESCHREIBUNG |
 | `media-lab-project-starter` | `1.0.0` (Scaffold)          | Vorlage, siehe eigener Abschnitt unten           |
 | `custom-theme`              | `1.15.4`                    | Theme (Vite-Build, SCSS, JS)                     |
 
@@ -159,8 +161,7 @@ Zwei separate Vite-Configs werden via `npm run build` nacheinander ausgeführt:
 
 **Versionshistorie:** Es gibt bewusst **keine** projektweite Changelog-
 Tabelle mehr in dieser README. Jede Komponente pflegt ihre eigene
-`CHANGELOG.md` (bzw. bei `media-lab-agency-core` aktuell noch inline in
-dessen README) — eine zusätzliche, hier duplizierte Versionshistorie lief
+`CHANGELOG.md` — eine zusätzliche, hier duplizierte Versionshistorie lief
 in der Vergangenheit mehrfach aus dem Takt mit den tatsächlichen
 Komponenten-Versionen (siehe `docs/BACKLOG.md`).
 
