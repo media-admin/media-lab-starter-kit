@@ -20,6 +20,16 @@ Ende.
 
 ---
 
+## [1.34.2] - 2026-10-12
+
+### media-lab-agency-core 1.34.2
+
+#### Changed
+- **Cookie-Dialog, Kategorie „Komfort": Beispieltext nennt jetzt auch Instagram-Beiträge.** Der Social-Embed-Block (`blocks/social-embed`) rendert neben Facebook auch Instagram und lädt beides erst nach Komfort-Zustimmung, der Dialog erwähnte Instagram bisher nicht. Der Standardtext in `inc/cookie-consent.php` (ACF-Default sowie die Fallbacks in `resolve_texts()` und `output_config()`) lautet jetzt „… (z.B. YouTube- und Facebook-Videos, Instagram-Beiträge, Google Maps).", der Hinweis am Schalter „Komfort-Kategorie aktivieren" „(z.B. YouTube, Facebook, Instagram, Google Maps)"
+
+#### Hinweis
+- Die Standardtexte wirken nur bei Projekten, die den Komfort-Text noch nie gespeichert haben. Wo er im Backend gespeichert ist (Cookie-Einstellungen, bei Mehrsprachigkeit pro Sprache), den Text von Hand anpassen
+
 ## [1.34.1] - 2026-10-09
 
 ### media-lab-agency-core 1.34.1

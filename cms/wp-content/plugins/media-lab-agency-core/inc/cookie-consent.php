@@ -184,7 +184,7 @@ class MediaLab_Cookie_Consent {
             '_catMarketingLabel' => $s( 'cc_cat_marketing_label', 'Marketing' ),
             '_catMarketingDesc'  => $s( 'cc_cat_marketing_desc',  'Werden für personalisierte Werbung, Remarketing und die Messung von Werbekampagnen verwendet (z.B. Meta Pixel, Google Ads).' ),
             '_catComfortLabel'   => $s( 'cc_cat_comfort_label', 'Komfort' ),
-            '_catComfortDesc'    => $s( 'cc_cat_comfort_desc',  'Ermöglichen eingebettete Inhalte und Karten von Drittanbietern (z.B. YouTube- und Facebook-Videos, Google Maps).' ),
+            '_catComfortDesc'    => $s( 'cc_cat_comfort_desc',  'Ermöglichen eingebettete Inhalte und Karten von Drittanbietern (z.B. YouTube- und Facebook-Videos, Instagram-Beiträge, Google Maps).' ),
         );
     }
 
@@ -255,7 +255,7 @@ class MediaLab_Cookie_Consent {
         if ( $b( 'cc_cat_comfort_enabled', false ) ) {
             $categories['comfort'] = array(
                 'label'       => $t['_catComfortLabel'] ?: $s( 'cc_cat_comfort_label', 'Komfort' ),
-                'description' => $t['_catComfortDesc']  ?: $s( 'cc_cat_comfort_desc',  'Ermöglichen eingebettete Inhalte und Karten von Drittanbietern (z.B. YouTube- und Facebook-Videos, Google Maps).' ),
+                'description' => $t['_catComfortDesc']  ?: $s( 'cc_cat_comfort_desc',  'Ermöglichen eingebettete Inhalte und Karten von Drittanbietern (z.B. YouTube- und Facebook-Videos, Instagram-Beiträge, Google Maps).' ),
                 'required'    => false,
             );
         }
@@ -483,12 +483,12 @@ class MediaLab_Cookie_Consent {
                     'conditional_logic' => array( array( array( 'field' => 'field_cc_cat_marketing_enabled', 'operator' => '==', 'value' => '1' ) ) ),
                 ),
 
-                array( 'key' => 'field_cc_cat_comfort_enabled', 'label' => 'Komfort-Kategorie aktivieren', 'name' => 'cc_cat_comfort_enabled', 'type' => 'true_false', 'ui' => 1, 'default_value' => 0, 'instructions' => 'Nur aktivieren wenn Komfort-Cookies verwendet werden (z.B. YouTube, Facebook, Google Maps).', 'wrapper' => array( 'width' => '100' ) ),
+                array( 'key' => 'field_cc_cat_comfort_enabled', 'label' => 'Komfort-Kategorie aktivieren', 'name' => 'cc_cat_comfort_enabled', 'type' => 'true_false', 'ui' => 1, 'default_value' => 0, 'instructions' => 'Nur aktivieren wenn Komfort-Cookies verwendet werden (z.B. YouTube, Facebook, Instagram, Google Maps).', 'wrapper' => array( 'width' => '100' ) ),
                 array( 'key' => 'field_cc_cat_comfort_label', 'label' => 'Komfort – Bezeichnung (Fallback)', 'name' => 'cc_cat_comfort_label', 'type' => 'text', 'default_value' => 'Komfort', 'wrapper' => array( 'width' => '50' ),
                     'conditional_logic' => array( array( array( 'field' => 'field_cc_cat_comfort_enabled', 'operator' => '==', 'value' => '1' ) ) ),
                 ),
                 array( 'key' => 'field_cc_cat_comfort_desc', 'label' => 'Komfort – Beschreibung (Fallback)', 'name' => 'cc_cat_comfort_desc', 'type' => 'textarea', 'rows' => 2,
-                    'default_value' => 'Ermöglichen eingebettete Inhalte und Karten von Drittanbietern (z.B. YouTube- und Facebook-Videos, Google Maps).',
+                    'default_value' => 'Ermöglichen eingebettete Inhalte und Karten von Drittanbietern (z.B. YouTube- und Facebook-Videos, Instagram-Beiträge, Google Maps).',
                     'wrapper' => array( 'width' => '50' ),
                     'conditional_logic' => array( array( array( 'field' => 'field_cc_cat_comfort_enabled', 'operator' => '==', 'value' => '1' ) ) ),
                 ),
