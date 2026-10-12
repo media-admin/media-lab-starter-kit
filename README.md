@@ -36,16 +36,16 @@ genau das passiert ist). **Verbindlich ist immer der `Version:`-Header der
 jeweiligen Komponente selbst** (Plugin-Hauptdatei bzw. Theme `style.css`),
 nicht diese Tabelle.
 
-| Komponente                 | Version (Stand 13.08.2026) | Beschreibung                                    |
+| Komponente                 | Version (Stand 09.10.2026) | Beschreibung                                    |
 |-----------------------------|------------------------------|--------------------------------------------------|
-| `media-lab-agency-core`     | `1.20.1`                    | Framework-Plugin (nicht modifizieren)            |
-| `media-lab-seo`             | `1.9.1`                     | SEO-Toolkit + GSC/GA4-Dashboard + Report-Mailer  |
-| `media-lab-woocommerce`     | `2.5.1`                     | WooCommerce-Erweiterungen                        |
+| `media-lab-agency-core`     | `1.34.1`                    | Framework-Plugin (nicht modifizieren)            |
+| `media-lab-seo`             | `1.15.0`                    | SEO-Toolkit + GSC/GA4-Dashboard + Report-Mailer  |
+| `media-lab-woocommerce`     | `2.16.0`                    | WooCommerce-Erweiterungen                        |
 | `media-lab-bookings`        | `1.7.0`                     | Buchungssystem                                   |
 | `media-lab-events`          | `1.0.1`                     | Event-CPT + Shortcodes                           |
-| `media-lab-backup`          | `1.3.4`                     | SFTP-Backup                                      |
+| `media-lab-backup`          | `2.2.0`                     | SFTP-Backup                                      |
 | `media-lab-project-starter` | `1.0.0` (Scaffold)          | Vorlage, siehe eigener Abschnitt unten           |
-| `custom-theme`              | `1.15.2`                    | Theme (Vite-Build, SCSS, JS)                     |
+| `custom-theme`              | `1.15.4`                    | Theme (Vite-Build, SCSS, JS)                     |
 
 ---
 

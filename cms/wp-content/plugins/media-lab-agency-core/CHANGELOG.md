@@ -20,6 +20,16 @@ Ende.
 
 ---
 
+## [1.34.1] - 2026-10-09
+
+### media-lab-agency-core 1.34.1
+
+#### Changed
+- **Cookie-Dialog, Kategorie „Komfort": restliche Stellen auf den Text mit Facebook-Videos angeglichen** (`inc/cookie-consent.php`). Der Facebook-Video-Block (`blocks/facebook-video`) und der Social-Embed-Block (`blocks/social-embed`) laden ihre Inhalte erst nach Komfort-Zustimmung. Der Standardtext in `resolve_texts()` und im ACF-Feld nannte Facebook bereits, übrig waren der abweichende Fallback in `output_config()` („…wie YouTube-Videos oder Google Maps.") und der Hinweis am Schalter „Komfort-Kategorie aktivieren". Beide lauten jetzt wie der Standardtext bzw. „z.B. YouTube, Facebook, Google Maps"
+
+#### Hinweis
+- Die Standardtexte wirken nur bei Projekten, die den Komfort-Text noch nie gespeichert haben. Wo er im Backend gespeichert ist (Cookie-Einstellungen, bei Mehrsprachigkeit pro Sprache), den Text von Hand anpassen
+
 ## [1.34.0] - 2026-10-09
 
 ### media-lab-agency-core 1.34.0
