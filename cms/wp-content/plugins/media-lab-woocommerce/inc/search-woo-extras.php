@@ -12,8 +12,8 @@
  *      (Einstellungen -> Produkte -> Lagerbestand -> "Nicht vorrätige Artikel ausblenden").
  *   2. SKU: Teilstring-Suche (nicht nur Treffer bei null Ergebnissen), Varianten führen
  *      zum Elternprodukt.
- *   3. Kategorien und Marken: Produkte, deren Kategorie bzw. Marke zum Suchbegriff passt
- *      ("Eheringe", "One More").
+ *   3. Marken (Kategorien nur auf Wunsch): Produkte, deren Marke zum Suchbegriff passt
+ *      ("One More"). Kategorien sind standardmäßig aus, siehe Filter mlw_search_taxonomies.
  *
  * Hooks (Core):
  *   media_lab_ajax_search_query_args  ( array $args, string $term )
@@ -21,7 +21,7 @@
  *   media_lab_search_result_ids       ( array $ids, string $search, string $context )
  * Hooks (hier, zum Anpassen):
  *   mlw_search_excluded_visibility_terms ( string[] )  Sichtbarkeits-Terms, die ausgeschlossen werden
- *   mlw_search_taxonomies                ( string[] )  Taxonomien, die als Treffer zählen
+ *   mlw_search_taxonomies                ( string[] )  Taxonomien, die als Treffer zählen (Standard: product_brand)
  *
  * Datei ablegen unter: inc/search-woo-extras.php
  * Einbindung: require_once am Ende von inc/ajax-search-wc.php.
@@ -180,10 +180,22 @@ add_filter( 'media_lab_search_woo_matches', function ( array $matches, string $s
 		}
 	}
 
-	// ── Kategorien und Marken: Produkte, deren Term-Name zum Suchbegriff passt ──
+	// ── Marken (und optional Kategorien): Produkte, deren Term-Name zum Suchbegriff passt ──
+	//
+	// Standard: nur Marken. Kategorien sind aus: "ring" würde sonst auch alle Produkte der Kategorien
+	// Ringe, Eheringe, Ohrringe ... finden (bei Janecka 439 statt 139 Treffer).
+	//
+	// Kategorien als Treffer einschalten (wie "Suche in Kategorie" bei Advanced Woo Search), z. B. im Theme:
+	//
+	//   add_filter( 'mlw_search_taxonomies', function ( array $taxonomies ): array {
+	//       return array_merge( $taxonomies, [ 'product_cat' ] );
+	//   } );
+	//
+	// Dann findet "Eheringe" auch Produkte, in deren Titel das Wort nicht vorkommt (Fundstelle "Kategorie: Eheringe").
+	// Ganz ohne Marken: add_filter( 'mlw_search_taxonomies', '__return_empty_array' );
 	$per_term = min( $limit, 500 );
 
-	foreach ( (array) apply_filters( 'mlw_search_taxonomies', [ 'product_cat', 'product_brand' ] ) as $taxonomy ) {
+	foreach ( (array) apply_filters( 'mlw_search_taxonomies', [ 'product_brand' ] ) as $taxonomy ) {
 		if ( ! taxonomy_exists( $taxonomy ) ) {
 			continue;
 		}

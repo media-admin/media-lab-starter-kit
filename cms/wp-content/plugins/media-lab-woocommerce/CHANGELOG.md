@@ -4,6 +4,14 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [2.17.1] - 2026-10-13
+
+### Changed
+- Such-Erweiterungen (`inc/search-woo-extras.php`): Kategorien zählen nicht mehr standardmäßig als Treffer, nur noch Marken. Mit Kategorien fand „ring" auch alle Produkte der Kategorien Ringe, Eheringe, Ohrringe … (bei Janecka 439 statt 139 Treffer). Per Filter `mlw_search_taxonomies` lassen sich Kategorien wieder einschalten (Beispiel im Code)
+
+### Hinweis zum Update
+- Projekte, die Kategorien als Treffer wollen (wie „Suche in Kategorie" bei Advanced Woo Search): `add_filter( 'mlw_search_taxonomies', fn( array $t ): array => array_merge( $t, [ 'product_cat' ] ) );`
+
 ## [2.17.0] - 2026-10-13
 
 ### Added
