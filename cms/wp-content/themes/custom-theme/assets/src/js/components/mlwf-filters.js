@@ -20,7 +20,8 @@ import noUiSlider from 'nouislider';
  *   - die Leiste trägt data-search="<Suchbegriff>" und ein hidden-Feld "search";
  *     der Suchbegriff geht damit bei jedem Request mit (collectFormData)
  *   - Preisspanne gilt für die gefundenen Produkte (loadPriceRange)
- *   - der Suchbegriff bleibt in der URL (?s=...) (updateUrl)
+ *   - der Suchbegriff bleibt in der URL (?s=...) (updateUrl); Filter-Werte stehen dort
+ *     mit Präfix f_ (?s=ring&f_product_cat=...), sonst lädt WordPress ein Kategorie-Archiv
  *   - Filter-Werte aus der URL (Kategorie, Marke, Attribute) werden auf die
  *     Checkboxen übertragen (syncFromUrl)
  *   - Zurücksetzen lädt die ungefilterte Ergebnisseite (resetFilters)
@@ -47,6 +48,11 @@ import noUiSlider from 'nouislider';
 
 	// URL-Parameter, zu denen es keine Filter-Checkboxen gibt (syncFromUrl überspringt sie)
 	const NON_FILTER_PARAMS = [ 's', 'price_min', 'price_max', 'orderby', 'paged', 'subcat' ];
+
+	// Such-Kontext: Filter-Parameter mit Präfix (?s=ring&f_product_cat=...). Ohne Präfix würde
+	// WordPress ?s=ring&product_cat=... als Kategorie-Archiv laden statt der Suchergebnisseite
+	// (siehe mlwf_search_filter_param() in search-filters.php).
+	const SEARCH_PARAM_PREFIX = 'f_';
 
 	// ── State ─────────────────────────────────────────────────────────────────
 
@@ -393,8 +399,9 @@ import noUiSlider from 'nouislider';
 		if ( data.price_max && data.price_max < priceMax ) params.set( 'price_max', data.price_max );
 		if ( data.orderby && data.orderby !== 'menu_order' ) params.set( 'orderby', data.orderby );
 
+		const prefix = data.search ? SEARCH_PARAM_PREFIX : '';
 		for ( const [ attr, vals ] of Object.entries( data.attributes || {} ) ) {
-			if ( vals.length ) params.set( attr, vals.join( ',' ) );
+			if ( vals.length ) params.set( prefix + attr, vals.join( ',' ) );
 		}
 
 		// /page/N/ nur bei paged > 1 - sonst stünde nach einem Filterwechsel weiter
@@ -414,12 +421,16 @@ import noUiSlider from 'nouislider';
 	 */
 	function syncFromUrl() {
 		const params = new URLSearchParams( window.location.search );
+		const prefix = document.querySelector( SIDEBAR )?.dataset.search ? SEARCH_PARAM_PREFIX : '';
 
 		document.querySelectorAll( '.wc-filter-option__checkbox' ).forEach( cb => {
 			const match = cb.name.match( /^attributes\[(.+?)\]\[\]$/ );
-			if ( ! match || NON_FILTER_PARAMS.includes( match[1] ) || ! params.has( match[1] ) ) return;
+			if ( ! match ) return;
 
-			if ( params.get( match[1] ).split( ',' ).includes( cb.value ) ) {
+			const key = prefix + match[1];
+			if ( NON_FILTER_PARAMS.includes( key ) || ! params.has( key ) ) return;
+
+			if ( params.get( key ).split( ',' ).includes( cb.value ) ) {
 				cb.checked = true;
 				updateGroupCount( cb.closest( '.wc-filter-group' ) );
 				// Dropdown geschlossen lassen — nur Button-Zustand aktualisieren
