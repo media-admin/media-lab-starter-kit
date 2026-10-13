@@ -373,7 +373,7 @@ class MediaLab_Search_Settings {
     /** Darstellung des Such-Eintrags im Hauptmenü: icon | icon_text | text. */
     private static function nav_display(): string {
         $value = (string) self::opt( 'search_nav_display', 'icon' );
-        return in_array( $value, [ 'icon', 'icon_text', 'text' ], true ) ? $value : 'icon';
+        return in_array( $value, [ 'icon', 'icon_text', 'text', 'none' ], true ) ? $value : 'icon';
     }
 
     private static function sort_label_defaults(): array {
@@ -818,7 +818,7 @@ class MediaLab_Search_Settings {
             'label'             => 'Darstellung in der Navigation',
             'name'              => 'search_nav_display',
             'type'              => 'button_group',
-            'choices'           => [ 'icon' => 'Nur Icon', 'icon_text' => 'Icon + Text', 'text' => 'Nur Text' ],
+            'choices' => [ 'icon' => 'Nur Icon', 'icon_text' => 'Icon + Text', 'text' => 'Nur Text', 'none' => 'Kein Menü-Eintrag (eigener Button im Theme)' ],
             'default_value'     => 'icon',
             'layout'            => 'horizontal',
             'instructions'      => 'Der Text (mehrsprachig) wird im Tab „Texte“ unter „Navigation: Text“ gepflegt.',

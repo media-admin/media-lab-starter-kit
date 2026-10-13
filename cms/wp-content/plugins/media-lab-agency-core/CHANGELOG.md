@@ -20,6 +20,28 @@ Ende.
 
 ---
 
+## [1.35.0] - 2026-10-13
+
+### media-lab-agency-core 1.35.0
+
+#### Added
+- **Suche: Erweiterungspunkte, die Live-Suche, Ergebnisseite und Treffermenge gemeinsam nutzen.** `media_lab_ajax_search_query_args` (Query-Args je Suchbegriff, z. B. Produkt-Sichtbarkeit), `media_lab_search_woo_matches` (zusätzliche Produkt-Treffer als `post_id => Anzeige-Text`, z. B. SKU, Kategorien, Marken) und `media_lab_search_result_ids` (Treffer-IDs bereinigen, Kontext `live`, `serp` oder `matching`). Dazu `media_lab_ajax_search_rate_limit`. Genutzt vom WooCommerce-Plugin (`inc/search-woo-extras.php`, media-lab-woocommerce 2.17.0)
+- **`MediaLab_Serp_Search::matching_ids( $search, $types, $cap )`: Treffermenge einer Suche als ID-Liste.** Dieselbe Menge wie Live-Suche und Ergebnisseite (native Treffer, Synonyme, Attribute, Konfigurator-Optionen, Woo-Extras, Fuzzy-Produktcodes), pro Request und kurz als Transient gecacht (`mls_ids_*`, Filter `media_lab_search_ids_cache_ttl`, Standard 300 s). Grundlage der Produktfilter auf der Suchergebnisseite
+- **`MediaLab_Serp_Search::extra_ids()`:** IDs, die die erweiterte Suche der Haupt-Abfrage hinzugefügt hat, z. B. zum Priming des Produkttyp-Caches im Theme
+- **Text „Ergebnisseite: Anzeige-Bereich" (`serp_range`).** Standard „Ergebnisse %1$s–%2$s von %3$s werden angezeigt" (Platzhalter: erstes und letztes angezeigtes Ergebnis, Gesamtzahl)
+- **Such-Icon in der Navigation: Darstellung „Kein Menü-Eintrag" (`none`).** Das Theme setzt dann einen eigenen Button, der das Overlay über `[data-search-toggle]` öffnet; `nav-search-toggle.js` unterstützt mehrere Trigger
+- **Filter `media_lab_search_serp_per_page`:** „Ergebnisse pro Seite = 0" kann auf einen anderen Standard zurückfallen (WooCommerce-Plugin: Anzahl der Shop-Seite) statt auf den WordPress-Wert
+
+#### Changed
+- **Live-Suche: Rate-Limit 60 statt 20 Anfragen pro Minute und IP.** 20 war beim Tippen nach rund sieben Sekunden erreicht. Per Filter `media_lab_ajax_search_rate_limit` anpassbar
+- **Ergebnisseite (`MediaLab_Serp_Search::prepare()`) wendet dieselben Erweiterungspunkte an wie die Live-Suche.** Vorher liefen dort nur Synonyme, Attribute und der Fuzzy-Fallback
+
+#### Fixed
+- **`[ajax_search]`: Platzhalter und `aria-label` des Such-Buttons stammten nicht aus den Such-Einstellungen.** Der Platzhalter blieb ohne Shortcode-Attribut leer, der Button hatte ein festes „Suche starten". Beide kommen jetzt aus den Texten der Such-Einstellungen
+
+#### Hinweis
+- Projekte, die die Header-Suche bisher über ein Fremd-Plugin lösen (z. B. Advanced Woo Search): `[ajax_search]` im Overlay einsetzen und unter Agency Core → Suche die Inhaltstypen, die Anzahl der Ergebnisse und „Link zu allen Ergebnissen" setzen. Der Standard durchsucht nur Beiträge und Seiten
+
 ## [1.34.2] - 2026-10-12
 
 ### media-lab-agency-core 1.34.2

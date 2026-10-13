@@ -14,14 +14,19 @@
  * (Filter posts_search). Verwendet werden dieselben Bausteine und Hooks wie
  * in der Live-Suche:
  *   - media_lab_ajax_search_query_expansion  (Synonyme)
+ *   - media_lab_ajax_search_query_args        (Query-Args, z. B. Produkt-Sichtbarkeit)
  *   - agency_core_search_product_attributes() / _local_product_attributes()
  *     / _configurator_options()                (WooCommerce)
+ *   - media_lab_search_woo_matches            (SKU, Kategorien, Marken ... aus dem Woo-Plugin)
  *   - media_lab_ajax_search_extra_matches     (Fuzzy-Produktcodes, nur wenn sonst nichts gefunden)
+ *   - media_lab_search_result_ids              (ID-Bereinigung, Kontext 'serp' bzw. 'matching')
  *
  * Zusätzlich: matching_ids() liefert dieselbe Treffermenge als ID-Liste,
  * unabhängig von der Haupt-Abfrage. Gedacht für Facetten-Filter (Produktfilter
  * auf der Ergebnisseite: Werte und Anzahlen aus ALLEN gefundenen Produkten) und
  * deren AJAX-Handler - beide arbeiten so garantiert mit derselben Treffermenge.
+ * extra_ids() gibt die über die Erweiterung gefundenen IDs der Haupt-Abfrage zurück
+ * (z. B. fürs Priming des Produkttyp-Caches im Theme).
  *
  * Schaltbar: Agency Core -> Suche / Live-Suche -> Ergebnisseite ->
  * "Erweiterte Suche auf der Ergebnisseite" (WooCommerce-Attribute zusätzlich
@@ -52,10 +57,19 @@ class MediaLab_Serp_Search {
 
     /**
      * "Attribut: Wert"-Text, falls der Treffer nur über ein Produktattribut /
-     * eine Konfigurator-Option gefunden wurde (für den Karten-Ausschnitt).
+     * eine Konfigurator-Option / die SKU gefunden wurde (für den Karten-Ausschnitt).
      */
     public static function attribute_label( int $post_id ): string {
         return self::$attribute_labels[ $post_id ] ?? '';
+    }
+
+    /**
+     * IDs, die die Erweiterung der Haupt-Abfrage hinzugefügt hat (nach prepare()).
+     *
+     * @return int[]
+     */
+    public static function extra_ids(): array {
+        return self::$extra_ids;
     }
 
     public static function prepare( \WP_Query $query ): void {
@@ -85,19 +99,21 @@ class MediaLab_Serp_Search {
         foreach ( (array) $terms as $term ) {
             if ( ! is_string( $term ) || $term === '' || $term === $search ) continue; // Original deckt die Haupt-Abfrage ab
 
-            $sub = new \WP_Query( array_merge( [
+            $args = array_merge( [
                 'post_type'      => $types,
                 'post_status'    => 'publish',
                 's'              => $term,
                 'fields'         => 'ids',
                 'posts_per_page' => self::MAX_EXTRA_IDS,
                 'no_found_rows'  => true,
-            ], $lang_args ) );
+            ], $lang_args );
+            $args = apply_filters( 'media_lab_ajax_search_query_args', $args, $term );
 
+            $sub   = new \WP_Query( $args );
             $extra = array_merge( $extra, array_map( 'intval', $sub->posts ) );
         }
 
-        // ── 2. WooCommerce: Attribute + Konfigurator-Optionen ─────────────────
+        // ── 2. WooCommerce: Attribute, Konfigurator-Optionen, Woo-Extras ─────
         $attribute_matches = [];
         $has_products      = in_array( 'product', $types, true ) && class_exists( 'WooCommerce' );
 
@@ -111,6 +127,10 @@ class MediaLab_Serp_Search {
             if ( function_exists( 'agency_core_search_configurator_options' ) ) {
                 $attribute_matches += agency_core_search_configurator_options( $search );
             }
+        }
+        if ( $has_products ) {
+            // SKU (Teilstring), Kategorien, Marken ... (Woo-Plugin: search-woo-extras.php)
+            $attribute_matches += (array) apply_filters( 'media_lab_search_woo_matches', [], $search, self::MAX_EXTRA_IDS );
         }
 
         // ── 3. Fuzzy-Fallback (Produktcodes), nur wenn sonst nichts gefunden wird ──
@@ -131,6 +151,7 @@ class MediaLab_Serp_Search {
 
         // ── Zusammenführen, filtern, begrenzen ───────────────────────────────
         $ids = array_values( array_unique( array_merge( $extra, array_map( 'intval', array_keys( $attribute_matches ) ) ) ) );
+        $ids = array_values( array_map( 'intval', (array) apply_filters( 'media_lab_search_result_ids', $ids, $search, 'serp' ) ) );
         $ids = MediaLab_Search_Settings::filter_ids_by_language( $ids, $lang );
         $ids = array_values( array_filter( $ids, static fn( $id ) => ! post_password_required( $id ) ) );
         $ids = array_slice( $ids, 0, self::MAX_EXTRA_IDS );

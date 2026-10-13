@@ -59,6 +59,10 @@ class MediaLab_Nav_Search_Icon {
         $cfg     = MediaLab_Search_Settings::get();
         $text    = $cfg['text'];
         $display = $cfg['nav_display']; // icon | icon_text | text
+        
+        if ( $display === 'none' ) {
+            return $items; // eigener Button im Theme (Selektor [data-search-toggle])
+        }
 
         $show_icon  = $display !== 'text';
         $show_label = $display !== 'icon';

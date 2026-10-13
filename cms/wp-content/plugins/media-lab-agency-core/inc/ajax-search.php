@@ -1,7 +1,19 @@
 <?php
 /**
  * AJAX Search Handler
- * 
+ *
+ * Erweiterungspunkte (Filter), genutzt z. B. vom WooCommerce-Plugin
+ * (media-lab-woocommerce/inc/search-woo-extras.php):
+ *
+ *   media_lab_ajax_search_query_args ( array $args, string $term )
+ *       Query-Args der WP_Query je Suchbegriff (z. B. Produkt-Sichtbarkeit).
+ *   media_lab_search_woo_matches ( array $matches, string $search, int $limit )
+ *       Zusätzliche Produkt-Treffer: post_id => Anzeige-Text (z. B. "Art.-Nr.: R123").
+ *   media_lab_search_result_ids ( array $ids, string $search, string $context )
+ *       Treffer-IDs bereinigen, die nicht über WP_Query laufen. $context: 'live'.
+ *   media_lab_ajax_search_rate_limit ( int $limit )
+ *       Anfragen pro Minute und IP (Standard 60).
+ *
  * @package Agency_Core
  */
 
@@ -260,7 +272,9 @@ function agency_core_search_configurator_options( string $query ): array {
 }
 
 function agency_core_ajax_search() {
-    if ( ! medialab_check_rate_limit( 'ajax_search', 20, 60 ) ) {
+    // Live-Suche löst beim Tippen viele Anfragen aus (Standard: 60 pro Minute und IP)
+    $rate_limit = max( 1, (int) apply_filters( 'media_lab_ajax_search_rate_limit', 60 ) );
+    if ( ! medialab_check_rate_limit( 'ajax_search', $rate_limit, 60 ) ) {
         wp_send_json_error( array( 'message' => 'Too many requests. Please try again later.' ), 429 );
     }
 
@@ -339,6 +353,10 @@ function agency_core_ajax_search() {
             'order' => 'DESC',
         );
         $args = array_merge( $args, $lang_args );
+
+        // z. B. Produkt-Sichtbarkeit (Woo-Plugin: search-woo-extras.php)
+        $args = apply_filters( 'media_lab_ajax_search_query_args', $args, $term );
+
         $term_query = new WP_Query( $args );
         foreach ( wp_list_pluck( $term_query->posts, 'ID' ) as $id ) {
             if ( ! in_array( $id, $content_ids, true ) ) $content_ids[] = $id;
@@ -367,6 +385,10 @@ function agency_core_ajax_search() {
             $attribute_matches += agency_core_search_configurator_options( $search_query );
         }
 
+        // Weitere Produkt-Treffer: SKU (Teilstring), Kategorien, Marken ...
+        // (Woo-Plugin: search-woo-extras.php). Format: post_id => Anzeige-Text.
+        $attribute_matches += (array) apply_filters( 'media_lab_search_woo_matches', array(), $search_query, $limit );
+
         if ( empty( $content_ids ) && empty( $attribute_matches ) ) {
             $attribute_matches += apply_filters( 'media_lab_ajax_search_extra_matches', array(), $search_query, $limit );
         }
@@ -380,6 +402,10 @@ function agency_core_ajax_search() {
             $all_ids[] = $pid;
         }
     }
+
+    // Treffer, die nicht über WP_Query laufen (Attribute, SKU, Kategorien ...),
+    // z. B. auf Produkt-Sichtbarkeit prüfen (Woo-Plugin: search-woo-extras.php)
+    $all_ids = array_values( (array) apply_filters( 'media_lab_search_result_ids', $all_ids, $search_query, 'live' ) );
 
     // Attribut-/Extra-Treffer laufen nicht über WP_Query -> hier auf die Sprache filtern (Polylang)
     $all_ids = MediaLab_Search_Settings::filter_ids_by_language( $all_ids, $lang );

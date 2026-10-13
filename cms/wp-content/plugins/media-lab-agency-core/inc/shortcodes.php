@@ -2097,13 +2097,13 @@ function ajax_search_shortcode($atts) {
                     type="search" 
                     name="s"
                     class="ajax-search__input" 
-                    placeholder="<?php echo esc_attr($atts['placeholder']); ?>"
+                    placeholder="<?php echo esc_attr( $placeholder ); ?>"
                     autocomplete="off"
                     value="<?php echo esc_attr( get_search_query() ); ?>"
                 >
                 
                 <!-- Submit Button -->
-                <button type="submit" class="ajax-search__submit" aria-label="Suche starten">
+                <button type="submit" class="ajax-search__submit" aria-label="<?php echo esc_attr( $cfg['text']['aria_submit'] ); ?>">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="11" cy="11" r="8"></circle>
                         <path d="m21 21-4.35-4.35"></path>
@@ -3107,7 +3107,7 @@ function filter_search_shortcode($atts) {
         <div class="ajax-filter__search-wrapper">
             <input type="text" 
                    class="ajax-filter__search-input" 
-                   placeholder="<?php echo esc_attr($atts['placeholder']); ?>">
+                   placeholder="<?php echo esc_attr( $placeholder ); ?>">
             <button type="button" class="ajax-filter__search-button">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="11" cy="11" r="8"></circle>
