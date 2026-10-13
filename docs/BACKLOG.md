@@ -366,6 +366,24 @@ dauerhaft, nicht nur im "keine Produkte gefunden"-Fall. Fix: Registrierung
 in die Funktion verschieben. Niedriges Risiko, noch nicht eingespielt
 (client-spezifisch, nicht Teil des Starter Kits).
 
+### Theme: WooCommerce-Submit-Button-Regel zu breit gefasst
+
+**Verifiziert offen** (10/2026, `assets/src/scss/woocommerce/_woocommerce.scss`, Block `.woocommerce form`).
+
+```scss
+button[type="submit"]:not(.ajax-search__submit) { @include btn-base; @include btn-primary; cursor: pointer; }
+```
+
+Der Theme-Button-Look galt für jedes `button[type="submit"]` unter `.woocommerce form` und
+traf dadurch auch den runden Submit-Button der Ajax-Suche im Such-Overlay: Auf Shop- und
+Produktseiten wurde er mit 16/32 px Padding breit gedrückt. Behoben per `:not(.ajax-search__submit)`
+(Starter-Kit und at.media-lab), die Ursache bleibt aber: der nächste eigene Button in einem
+WooCommerce-Formular (Wunschliste, Filter, Plugin-Formulare) kann dasselbe auslösen. Fix:
+Regel auf den gemeinten Kontext einschränken (Warenkorb, Checkout, Konto) oder auf eine eigene
+Klasse umstellen und das `:not()` entfernen; vorher prüfen, welche Formulare (Rezensionen,
+Gutscheinfeld, Kontoformulare) bisher vom breiten Selektor leben. Ob das Symptom im
+Starter-Kit selbst auftritt, wurde nicht geprüft.
+
 ### media-lab-backup: `cleanup()` löscht Dateien anderer paralleler Jobs
 
 **Verifiziert offen** (08/2026, `includes/class-mlb-backup-runner.php`, Zeile 270–278).
