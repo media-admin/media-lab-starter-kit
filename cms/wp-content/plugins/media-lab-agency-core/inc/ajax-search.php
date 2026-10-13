@@ -13,6 +13,8 @@
  *       Treffer-IDs bereinigen, die nicht über WP_Query laufen. $context: 'live'.
  *   media_lab_ajax_search_rate_limit ( int $limit )
  *       Anfragen pro Minute und IP (Standard 60).
+ *   media_lab_ajax_search_term_results ( array $results, string $search, array $post_types, string $lang )
+ *       Treffer ohne Post-ID (z. B. Kategorien und Marken), stehen ganz oben. Felder wie die übrigen Treffer.
  *
  * @package Agency_Core
  */
@@ -462,6 +464,13 @@ function agency_core_ajax_search() {
     }
     
     wp_reset_postdata();
+
+    // Treffer ohne Post-ID (z. B. WooCommerce-Kategorien und -Marken) stehen ganz oben. Die Einträge haben
+    // dieselben Felder wie die übrigen Treffer (id, title, permalink, excerpt, date, post_type, thumbnail).
+    $term_results = (array) apply_filters( 'media_lab_ajax_search_term_results', array(), $search_query, $post_types, $lang );
+    if ( ! empty( $term_results ) ) {
+        $results = array_merge( array_values( $term_results ), $results );
+    }
     
     if (!empty($results)) {
         wp_send_json_success(array(

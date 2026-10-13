@@ -20,6 +20,13 @@ Ende.
 
 ---
 
+## [1.36.0] - 2026-10-13
+
+### media-lab-agency-core 1.36.0
+
+#### Added
+- **Filter `media_lab_ajax_search_term_results` (`array $results`, `string $search`, `array $post_types`, `string $lang`):** Treffer ohne Post-ID in der Live-Suche, z. B. Kategorien und Marken (media-lab-woocommerce 2.18.0). Die Einträge haben dieselben Felder wie die übrigen Treffer (`id`, `title`, `permalink`, `excerpt`, `date`, `post_type`, `thumbnail`) und stehen ganz oben (`inc/ajax-search.php`)
+
 ## [1.35.1] - 2026-10-13
 
 ### media-lab-agency-core 1.35.1
