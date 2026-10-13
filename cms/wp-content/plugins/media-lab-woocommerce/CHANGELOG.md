@@ -4,6 +4,17 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [2.17.2] - 2026-10-13
+
+### Changed
+- Such-Erweiterungen (`inc/search-woo-extras.php`): Kategorien zählen wieder standardmäßig als Treffer (Rücknahme der Änderung aus 2.17.1). Ohne Kategorien fand „Eheringe" keine Produkte, weil die Trauringe nur über die Kategorie auffindbar sind und das Wort weder im Titel noch im Text steht. Nachteil: Kurze Begriffe finden alle Produkte passender Kategorien („ring" bei Janecka etwa dreimal so viele Treffer). Per Filter `mlw_search_taxonomies` lassen sich Kategorien ausschließen, ein Beispiel steht im Kopfkommentar der Datei
+
+### Fixed
+- Such-Erweiterungen (`inc/search-woo-extras.php`): Treffer über Kategorien und Marken wurden je Term bei 500 Produkten abgeschnitten (z. B. fehlten bei einer Kategorie mit 508 Produkten acht). Die Obergrenze legt jetzt der Aufrufer fest: Live-Suche klein, Ergebnisseite und Produktfilter bis 5000 (zusammen mit media-lab-agency-core 1.35.1)
+
+### Hinweis zum Update
+- Der Filter `mlw_search_taxonomies` hat wieder den Standard `[ 'product_cat', 'product_brand' ]`. Projekte, die zu 2.17.1 einen Block im Theme einkommentiert haben, um Kategorien zu aktivieren, brauchen ihn nicht mehr
+
 ## [2.17.1] - 2026-10-13
 
 ### Changed
