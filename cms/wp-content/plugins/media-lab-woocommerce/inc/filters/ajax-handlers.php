@@ -237,7 +237,10 @@ function mlwf_ajax_filter_products(): void {
 				foreach ( $attributes as $tax => $vals ) {
 					$tax  = preg_replace( '/[^a-z0-9_\-]/', '', strtolower( $tax ) );
 					$vals = array_map( 'sanitize_text_field', (array) $vals );
-					if ( ! empty( $vals ) ) $filter_params[ $tax ] = implode( ',', $vals );
+					// Such-Kontext: Präfix, damit ?s=…&product_cat=… kein Kategorie-Archiv wird
+					// (siehe mlwf_search_filter_param() in search-filters.php)
+					$key  = ( $search !== '' && function_exists( 'mlwf_search_filter_param' ) ) ? mlwf_search_filter_param( $tax ) : $tax;
+					if ( ! empty( $vals ) ) $filter_params[ $key ] = implode( ',', $vals );
 				}
 			}
 			if ( $price_min !== null ) $filter_params['price_min'] = $price_min;

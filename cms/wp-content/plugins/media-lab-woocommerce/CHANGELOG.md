@@ -4,6 +4,26 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [2.17.0] - 2026-10-13
+
+### Added
+- Produktfilter auf der Suchergebnisseite (`inc/filters/search-filters.php`): Kategorie, Marke und alle Produktattribute werden aus der Treffermenge der Suche berechnet, nicht aus der globalen Filter-Konfiguration. Angezeigt werden nur Werte, die in mindestens einem gefundenen Produkt vorkommen, mit Anzahl (eine gruppierte Abfrage), Filter mit nur einem Wert entfallen. Dazu Preis-Slider mit der Preisspanne der Treffer und eine Sortierung (Relevanz, Preis auf- und absteigend, Neueste). Das Markup entspricht der Shop-Filterleiste, Styling und `mlwf-filters.js` greifen ohne Anpassung. Hooks: `mlwf_search_facet_taxonomies`, `mlwf_search_facet_min_terms`, `mlwf_search_facets`, `mlwf_search_filter_min_products`, `mlwf_search_sort_options`
+- Mobil und Tablet: Schalter „Filter" mit Zähler der aktiven Filter (`.js-filter-toggle-mobile`), die Gruppen sind zugeklappt, bis er gedrückt wird. Das Layout steht im Theme-CSS
+- Trefferanzeige „Ergebnisse 1–24 von 139 werden angezeigt" unter der Leiste (`.wc-loop-header`, `.js-product-count`), Text aus der Core-Einstellung `serp_range`
+- Filter-URLs der Suche mit Präfix `f_` (`?s=ring&f_product_cat=eheringe`): Kategorie, Marke und Attribute werden beim Neuladen auf die Haupt-Abfrage angewendet, ebenso `price_min`, `price_max` und `orderby`. Ohne Präfix lädt WordPress `?s=ring&product_cat=…` als Kategorie-Archiv statt der Suchergebnisseite
+- AJAX-Handler `mlwf_filter_products` und `mlwf_get_price_range`: Parameter `search` (nur Treffer der Suche, Preisspanne der Treffer, Ergebnisse pro Seite wie die Suchergebnisseite, Pagination-Links mit `s` und Präfix)
+- Such-Erweiterungen (`inc/search-woo-extras.php`): Produkte mit Katalog-Sichtbarkeit „Nur Shop" oder „Versteckt" erscheinen nicht in der Suche (bei „Nicht vorrätige Artikel ausblenden" auch ausverkaufte), SKU-Teilsuche (Varianten führen zum Elternprodukt), Kategorien und Marken als Treffer. Hooks: `mlw_search_excluded_visibility_terms`, `mlw_search_taxonomies`
+- Die Suchergebnisseite übernimmt als Standard für „Ergebnisse pro Seite" die Anzahl der Shop-Seite, wenn im Core `0` eingestellt ist (Filter `media_lab_search_serp_per_page`)
+- Filter `mlwf_enqueue_frontend_data` in `inc/filters/setup.php`: weitere Seiten können das Filter-Objekt anfordern
+
+### Changed
+- `mlwf_enqueue_frontend_data()` gibt `window.mlwf` und `window.janeckaWC` auch auf der Suchergebnisseite aus
+
+### Hinweis zum Update
+- Das Filter-JS lädt nur dort, wo das Theme es einreiht. Themes, die es selbst einreihen (z. B. Janecka), müssen es auf der Suche zulassen (`is_search()`), und die `search.php` des Themes muss `mlwf_get_search_filter_bar()` ausgeben
+- `mlwf-filters.js` schreibt und liest im Such-Kontext die URL-Parameter mit Präfix `f_`. Projekt-Kopien des Skripts aktualisieren
+- Produkte mit der Sichtbarkeit „Nur Shop" erscheinen nicht mehr in Live-Suche und Ergebnisseite. Wer sie in der Suche haben will, stellt sie im Produkt auf „Shop und Suchergebnisse"
+
 ## [2.16.0] - 2026-10-09
 
 ### Added

@@ -37,3 +37,5 @@ add_filter('media_lab_ajax_search_result', function($result, $post_id, $post_typ
 
     return $result;
 }, 10, 3);
+
+require_once __DIR__ . '/search-woo-extras.php';

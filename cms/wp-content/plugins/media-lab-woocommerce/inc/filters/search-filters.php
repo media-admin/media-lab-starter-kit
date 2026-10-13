@@ -15,9 +15,12 @@
  *   - mlwf_get_search_filter_bar()     Markup, identisch zur Shop-Filterleiste
  *                                      (gleiche Klassen -> gleiches CSS und JS), inklusive
  *                                      Trefferanzeige in .wc-loop-header wie im Shop
- *   - mlwf_search_apply_request_filters()  Filter aus der URL (?product_cat=a,b&pa_x=y&price_min=...)
+ *   - mlwf_search_apply_request_filters()  Filter aus der URL (?f_product_cat=a,b&f_pa_x=y&price_min=...)
  *                                      auf die Haupt-Abfrage der Suche anwenden:
- *                                      geteilte Links, Neuladen und Pagination funktionieren
+ *                                      geteilte Links, Neuladen und Pagination funktionieren.
+ *                                      Das Präfix f_ verhindert, dass WordPress die Anfrage als
+ *                                      Kategorie-/Marken-Archiv interpretiert (siehe
+ *                                      mlwf_search_filter_param())
  *   - AJAX: ajax-handlers.php akzeptiert den Parameter "search" (post__in = Treffer-IDs,
  *     Preisspanne der Treffer)
  *
@@ -185,8 +188,22 @@ function mlwf_search_facets( array $ids ): array {
 // ---------------------------------------------------------------------------
 
 /**
+ * URL-Parameter eines Filters auf der Suche: Taxonomie mit Präfix "f_".
+ *
+ * Ohne Präfix wäre ?s=ring&product_cat=armschmuck ein öffentlicher WordPress-Query-Var:
+ * WordPress/WooCommerce behandeln die Anfrage dann als Kategorie-Archiv und laden das
+ * Shop-Template statt search.php (Seitenkopf der Kategorie, Woo-Sortierung, kein
+ * Produktfilter). Das gilt für product_cat und product_brand, bei öffentlichen
+ * Attributen auch für pa_*. Mit Präfix bleibt es eine Suche. Das Filter-JS verwendet
+ * dasselbe Präfix (mlwf-filters.js, SEARCH_PARAM_PREFIX).
+ */
+function mlwf_search_filter_param( string $taxonomy ): string {
+	return 'f_' . $taxonomy;
+}
+
+/**
  * Aktive Filter aus der URL. Format wie das JS (updateUrl): Werte kommagetrennt,
- * z. B. ?s=ring&product_cat=eheringe,damenringe&pa_material=gold&price_min=100&orderby=price
+ * z. B. ?s=ring&f_product_cat=eheringe,damenringe&f_pa_material=gold&price_min=100&orderby=price
  */
 function mlwf_search_request_filters(): array {
 	static $cache = null;
@@ -197,10 +214,12 @@ function mlwf_search_request_filters(): array {
 	// phpcs:disable WordPress.Security.NonceVerification.Recommended -- reine Anzeige-Filter (GET)
 	$taxonomies = [];
 	foreach ( mlwf_search_facet_taxonomies() as $taxonomy ) {
-		if ( empty( $_GET[ $taxonomy ] ) || ! is_string( $_GET[ $taxonomy ] ) ) {
+		$param = mlwf_search_filter_param( $taxonomy );
+
+		if ( empty( $_GET[ $param ] ) || ! is_string( $_GET[ $param ] ) ) {
 			continue;
 		}
-		$slugs = array_values( array_filter( array_map( 'sanitize_title', explode( ',', wp_unslash( $_GET[ $taxonomy ] ) ) ) ) );
+		$slugs = array_values( array_filter( array_map( 'sanitize_title', explode( ',', wp_unslash( $_GET[ $param ] ) ) ) ) );
 		if ( $slugs ) {
 			$taxonomies[ $taxonomy ] = $slugs;
 		}
@@ -379,6 +398,11 @@ function mlwf_get_search_filter_bar( string $search ): string {
 		$price_label = __( 'Preis', 'medialab-woo-filters' );
 	}
 
+	// Schalter "Filter" (nur unterhalb von Desktop sichtbar, per CSS): Zähler wie im JS
+	// (updateActiveCount) = ausgewählte Werte + Preisfilter
+	$filter_label = __( 'Filter', 'medialab-woo-filters' );
+	$active_count = array_sum( array_map( 'count', $active['taxonomies'] ) ) + ( $has_price ? 1 : 0 );
+
 	ob_start();
 	?>
 	<div class="wc-filter-bar wc-filter-bar--search"
@@ -387,12 +411,25 @@ function mlwf_get_search_filter_bar( string $search ): string {
 		data-brand=""
 		data-search="<?php echo esc_attr( $search ); ?>">
 
+		<?php
+		// Mobil/Tablet: Schalter statt zwei Dutzend Pills. Das Filter-JS (initMobileToggle) schaltet
+		// die Klasse is-open an der Leiste um und pflegt aria-expanded; den Zähler aktualisiert
+		// updateActiveCount() (.js-active-filter-count). Ab Desktop blendet das CSS den Schalter aus.
+		?>
+		<button class="wc-filter-bar__toggle js-filter-toggle-mobile" type="button"
+			aria-expanded="false" aria-controls="wc-filter-groups">
+			<span class="wc-filter-bar__toggle-label"><?php echo esc_html( $filter_label ); ?></span>
+			<span class="wc-filter-bar__toggle-count js-active-filter-count"<?php echo $active_count ? '' : ' hidden'; ?>><?php echo (int) $active_count; ?></span>
+			<svg class="wc-filter-bar__toggle-icon" width="14" height="14" viewBox="0 0 24 24" fill="none"
+				stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+		</button>
+
 		<form class="wc-filter-bar__form js-filter-form" novalidate>
 			<input type="hidden" name="category" value="">
 			<input type="hidden" name="brand"    value="">
 			<input type="hidden" name="search"   value="<?php echo esc_attr( $search ); ?>">
 
-			<div class="wc-filter-bar__groups">
+			<div class="wc-filter-bar__groups" id="wc-filter-groups">
 
 				<div class="wc-filter-bar__groups-filters">
 
