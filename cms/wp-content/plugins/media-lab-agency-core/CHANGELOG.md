@@ -20,6 +20,13 @@ Ende.
 
 ---
 
+## [1.35.1] - 2026-10-13
+
+### media-lab-agency-core 1.35.1
+
+#### Fixed
+- **Suchergebnisseite: Treffer der erweiterten Suche wurden bei 300 IDs abgeschnitten (`MediaLab_Serp_Search::MAX_EXTRA_IDS`).** Bei Treffern über Kategorien oder Marken (media-lab-woocommerce) zeigte die Seite nur 300 der Produkte, während die Produktfilter und deren AJAX-Anfragen mit der vollständigen Treffermenge (`matching_ids()`, bis 5000) arbeiteten. Nach dem ersten Filtern sprang die Liste dadurch auf eine größere Trefferzahl. Die Grenze liegt jetzt bei 5000, wie der Standard von `matching_ids()`
+
 ## [1.35.0] - 2026-10-13
 
 ### media-lab-agency-core 1.35.0

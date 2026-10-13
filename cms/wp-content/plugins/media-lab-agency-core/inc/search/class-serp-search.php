@@ -40,8 +40,12 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 class MediaLab_Serp_Search {
 
-    /** Obergrenze zusätzlicher Treffer-IDs (Schutz vor riesigen IN()-Listen). */
-    const MAX_EXTRA_IDS = 300;
+    /**
+     * Obergrenze zusätzlicher Treffer-IDs der Haupt-Abfrage (Schutz vor riesigen IN()-Listen).
+     * Gleich groß wie der Standard von matching_ids() (Produktfilter), damit Ergebnisseite und
+     * Filter dieselbe Treffermenge haben.
+     */
+    const MAX_EXTRA_IDS = 5000;
 
     /** @var int[] */
     private static array $extra_ids = [];
