@@ -35,6 +35,8 @@ const DEFAULT_CONFIG = {
             project: 'Projekt',
             service: 'Leistung',
             job: 'Job',
+            product_cat: 'Kategorie',
+            product_brand: 'Marke',
         },
     },
 };

@@ -141,3 +141,36 @@
 }
 
 
+
+
+// ── Suche: passende Kategorien und Marken unter dem Suchfeld (WooCommerce-Plugin, mlw_get_search_term_links) ──
+
+.search-terms {
+    display:         flex;
+    flex-wrap:       wrap;
+    justify-content: center;
+    align-items:     baseline;
+    gap:             0.25rem 0.75rem;
+    margin-top:      var(--space-md);
+    font-size:       var(--text-sm);
+    color:           var(--color-text-muted);
+}
+
+.search-terms__list {
+    display:    flex;
+    flex-wrap:  wrap;
+    gap:        0.25rem 1rem;
+    margin:     0;
+    padding:    0;
+    list-style: none;
+}
+
+.search-terms__link {
+    color:                 var(--color-text);
+    text-decoration:       underline;
+    text-underline-offset: 0.2em;
+
+    &:hover { color: var(--color-primary); }
+}
+
+.search-terms__count { color: var(--color-text-muted); }

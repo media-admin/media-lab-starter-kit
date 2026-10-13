@@ -367,3 +367,12 @@
   0%   { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+
+// ── Anzahl hinter Kategorie- und Marken-Einträgen (Treffer ohne Post-ID, z. B. "Eheringe (508)") ──
+
+.ajax-search__count {
+    margin-left: 0.25em;
+    font-weight: inherit;
+    opacity:     0.6;
+}

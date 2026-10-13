@@ -108,6 +108,11 @@ $layout_class = 'archive-layout search-layout container' . ( $filter_bar !== '' 
             <?php get_search_form(); ?>
         </div>
 
+        <?php /* Passende Kategorien und Marken (WooCommerce-Plugin, optional) */ ?>
+        <?php if ( $search_raw !== '' && function_exists( 'mlw_get_search_term_links' ) ) : ?>
+            <?php echo mlw_get_search_term_links( $search_raw ); // phpcs:ignore WordPress.Security.EscapeOutput -- Markup in mlw_get_search_term_links() escaped ?>
+        <?php endif; ?>
+
     </header>
 
     <?php /* ── Produktfilter + Trefferanzeige (Facetten aus allen gefundenen Produkten) ── */ ?>

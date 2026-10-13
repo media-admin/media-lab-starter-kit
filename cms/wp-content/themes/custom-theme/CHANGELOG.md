@@ -16,6 +16,12 @@ möglich.
 
 ## [Unreleased]
 
+## [1.17.0] - 2026-10-13
+
+### Added
+- `ajax-search.js`: Typ-Labels „Kategorie“ (`product_cat`) und „Marke“ (`product_brand`) für Treffer ohne Post-ID, `_ajax-search.scss`: `.ajax-search__count` (Produktanzahl hinter dem Namen)
+- `search.php`: Zeile „Passende Kategorien und Marken“ unter dem Suchfeld, wenn das WooCommerce-Plugin (ab 2.18.0) sie liefert (`mlw_get_search_term_links()`); `_search-results.scss`: `.search-terms`
+
 ## [1.16.0] - 2026-10-13
 
 ### Added
