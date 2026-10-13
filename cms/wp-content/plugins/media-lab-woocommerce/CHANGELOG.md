@@ -4,6 +4,14 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [2.18.0] - 2026-10-13
+
+### Added
+- Kategorien und Marken als eigene Einträge in der Suche (`inc/search-woo-extras.php`): Live-Suche (ab media-lab-agency-core 1.36.0): bis zu 3 Einträge ganz oben mit Label „Kategorie“ bzw. „Marke“, Name, Produktanzahl und Link auf die Archivseite. Ergebnisseite: Zeile „Passende Kategorien und Marken“ unter dem Suchfeld (`mlw_get_search_term_links()`, wird von `search.php` des Themes ausgegeben, Kit-Theme 1.17.0). Reihenfolge: exakter Name, Wortanfang, „enthält“; innerhalb davon Kategorien vor Marken, dann nach Produktanzahl. Hooks: `mlw_search_term_taxonomies` (Standard `product_cat`, `product_brand`; leer = keine Einträge), `mlw_search_term_results_max` (Standard 3)
+
+### Hinweis zum Update
+- Ohne media-lab-agency-core 1.36.0 erscheint nur die Zeile auf der Ergebnisseite, die Live-Suche zeigt die Einträge erst mit dem neuen Core
+
 ## [2.17.2] - 2026-10-13
 
 ### Changed

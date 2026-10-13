@@ -233,3 +233,165 @@ add_filter( 'media_lab_search_woo_matches', function ( array $matches, string $s
 
 	return $matches;
 }, 10, 3 );
+
+
+// ---------------------------------------------------------------------------
+// Kategorien und Marken als eigene Einträge (Live-Suche und Ergebnisseite)
+// ---------------------------------------------------------------------------
+//
+// Zusätzlich zu den Produkten, die über eine Kategorie oder Marke gefunden werden (siehe oben), erscheint die
+// Kategorie bzw. Marke selbst als Eintrag mit Link auf ihre Archivseite:
+//   - Live-Suche: bis zu 3 Einträge ganz oben (Filter media_lab_ajax_search_term_results des Cores, ab 1.36.0)
+//   - Ergebnisseite: Zeile "Passende Kategorien und Marken" unter dem Suchfeld (mlw_get_search_term_links(),
+//     aufgerufen von search.php des Themes)
+//
+// Reihenfolge: exakter Name, Wortanfang, "enthält"; innerhalb davon Kategorien vor Marken, dann nach Produktanzahl.
+//
+// Hooks:
+//   mlw_search_term_taxonomies ( string[] )  Taxonomien für die Einträge, Standard product_cat und product_brand.
+//                                            Keine Einträge: add_filter( 'mlw_search_term_taxonomies', '__return_empty_array' );
+//   mlw_search_term_results_max ( int )      Anzahl der Einträge, Standard 3
+
+/**
+ * Passende Kategorien und Marken zu einem Suchbegriff.
+ *
+ * @return WP_Term[] nach Relevanz sortiert, höchstens $max Einträge (Standard: Filter mlw_search_term_results_max)
+ */
+function mlw_search_matching_terms( string $search, int $max = 0 ): array {
+	$search = trim( $search );
+	if ( mb_strlen( $search ) < 2 || ! function_exists( 'WC' ) ) {
+		return [];
+	}
+
+	$max = $max > 0 ? $max : max( 1, (int) apply_filters( 'mlw_search_term_results_max', 3 ) );
+
+	$taxonomies = array_values( array_filter(
+		(array) apply_filters( 'mlw_search_term_taxonomies', [ 'product_cat', 'product_brand' ] ),
+		'taxonomy_exists'
+	) );
+	if ( empty( $taxonomies ) ) {
+		return [];
+	}
+
+	$word_start = '/(?<![\p{L}\p{N}])' . preg_quote( $search, '/' ) . '/iu';
+	$default_cat = (int) get_option( 'default_product_cat' );
+	$candidates  = [];
+
+	foreach ( $taxonomies as $order => $taxonomy ) {
+		$terms = get_terms( [
+			'taxonomy'   => $taxonomy,
+			'name__like' => $search,
+			'hide_empty' => true,
+			'number'     => 20,
+		] );
+		if ( is_wp_error( $terms ) ) {
+			continue;
+		}
+
+		foreach ( $terms as $term ) {
+			if ( $taxonomy === 'product_cat' && (int) $term->term_id === $default_cat ) {
+				continue; // Standardkategorie ("Unkategorisiert")
+			}
+
+			if ( mb_strtolower( $term->name ) === mb_strtolower( $search ) ) {
+				$rank = 0;
+			} elseif ( preg_match( $word_start, $term->name ) === 1 ) {
+				$rank = 1;
+			} else {
+				$rank = 2;
+			}
+
+			$candidates[] = [
+				'rank'  => $rank,
+				'order' => $order,
+				'count' => (int) $term->count,
+				'term'  => $term,
+			];
+		}
+	}
+
+	// aufsteigend nach Relevanz und Taxonomie, absteigend nach Produktanzahl
+	usort( $candidates, static function ( array $a, array $b ): int {
+		return [ $a['rank'], $a['order'], -$a['count'] ] <=> [ $b['rank'], $b['order'], -$b['count'] ];
+	} );
+
+	return array_slice( array_column( $candidates, 'term' ), 0, $max );
+}
+
+// Live-Suche: Kategorien und Marken ganz oben (Felder wie die übrigen Treffer)
+add_filter( 'media_lab_ajax_search_term_results', function ( array $results, string $search, array $post_types ): array {
+	if ( ! in_array( 'product', $post_types, true ) ) {
+		return $results;
+	}
+
+	$highlight = ! class_exists( 'MediaLab_Search_Settings' ) || ! empty( MediaLab_Search_Settings::get()['highlight'] );
+
+	foreach ( mlw_search_matching_terms( $search ) as $term ) {
+		$link = get_term_link( $term );
+		if ( is_wp_error( $link ) ) {
+			continue;
+		}
+
+		$name  = ( $highlight && function_exists( 'agency_core_highlight_search_term' ) )
+			? agency_core_highlight_search_term( $term->name, $search )
+			: esc_html( $term->name );
+		$count = (int) $term->count;
+
+		$results[] = [
+			'id'        => (int) $term->term_id,
+			'title'     => $name . ' <span class="ajax-search__count">(' . esc_html( number_format_i18n( $count ) ) . ')</span>',
+			'permalink' => $link,
+			/* translators: %s: Anzahl der Produkte */
+			'excerpt'   => sprintf( _n( '%s Produkt', '%s Produkte', $count, 'medialab-woo-filters' ), number_format_i18n( $count ) ),
+			'date'      => '',
+			'post_type' => $term->taxonomy,
+			'thumbnail' => false,
+		];
+	}
+
+	return $results;
+}, 10, 3 );
+
+/**
+ * Zeile "Passende Kategorien und Marken" für die Ergebnisseite (search.php des Themes).
+ * Leerer String, wenn nichts passt. Alles Markup ist escaped.
+ */
+function mlw_get_search_term_links( string $search ): string {
+	$has_category = false;
+	$has_other    = false;
+	$items        = '';
+
+	foreach ( mlw_search_matching_terms( $search ) as $term ) {
+		$link = get_term_link( $term );
+		if ( is_wp_error( $link ) ) {
+			continue;
+		}
+
+		if ( $term->taxonomy === 'product_cat' ) {
+			$has_category = true;
+		} else {
+			$has_other = true;
+		}
+
+		$items .= '<li class="search-terms__item"><a class="search-terms__link" href="' . esc_url( $link ) . '">'
+			. esc_html( $term->name )
+			. ' <span class="search-terms__count">(' . esc_html( number_format_i18n( (int) $term->count ) ) . ')</span></a></li>';
+	}
+
+	if ( $items === '' ) {
+		return '';
+	}
+
+	if ( $has_category && $has_other ) {
+		$label = __( 'Passende Kategorien und Marken:', 'medialab-woo-filters' );
+	} elseif ( $has_other ) {
+		$label = __( 'Passende Marken:', 'medialab-woo-filters' );
+	} else {
+		$label = __( 'Passende Kategorien:', 'medialab-woo-filters' );
+	}
+
+	return '<nav class="search-terms" aria-label="' . esc_attr( rtrim( $label, ':' ) ) . '">'
+		. '<span class="search-terms__label">' . esc_html( $label ) . '</span>'
+		. '<ul class="search-terms__list">' . $items . '</ul>'
+		. '</nav>';
+}
