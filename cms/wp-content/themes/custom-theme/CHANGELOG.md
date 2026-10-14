@@ -16,6 +16,18 @@ möglich.
 
 ## [Unreleased]
 
+## [1.18.0] - 2026-10-14
+
+### Changed
+- **`mlwf-filters.js`: Unterkategorie-Filter als Mehrfachauswahl** –
+  `collectFormData()` sammelt `subcat[]` als Liste, `updateUrl()` schreibt
+  `?subcat=a,b` in die URL, `syncFromUrl()` stellt die Haken beim Laden wieder
+  her, `updateActiveCount()` und `hasActiveFilters()` berücksichtigen die
+  Unterkategorien (Zähler, „Zurücksetzen“).
+
+### Hinweis
+- Gehört zu `media-lab-woocommerce` 2.19.0 (Markup `subcat[]` und AJAX-Handler).
+
 ## [1.17.0] - 2026-10-13
 
 ### Added

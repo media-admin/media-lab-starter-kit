@@ -358,6 +358,11 @@ import noUiSlider from 'nouislider';
 			// der übergebene paged-Parameter hat immer Vorrang.
 			if ( key === 'paged' ) continue;
 
+			if ( key === 'subcat[]' ) {
+				( data.subcat = data.subcat || [] ).push( value );
+				continue;
+			}
+
 			const attrMatch = key.match( /^attributes\[(.+?)\]\[\]$/ );
 			if ( attrMatch ) {
 				const attr = attrMatch[1];
@@ -398,6 +403,7 @@ import noUiSlider from 'nouislider';
 		if ( data.price_min && data.price_min > priceMin ) params.set( 'price_min', data.price_min );
 		if ( data.price_max && data.price_max < priceMax ) params.set( 'price_max', data.price_max );
 		if ( data.orderby && data.orderby !== 'menu_order' ) params.set( 'orderby', data.orderby );
+		if ( data.subcat && data.subcat.length ) params.set( 'subcat', data.subcat.join( ',' ) );
 
 		const prefix = data.search ? SEARCH_PARAM_PREFIX : '';
 		for ( const [ attr, vals ] of Object.entries( data.attributes || {} ) ) {
@@ -423,6 +429,13 @@ import noUiSlider from 'nouislider';
 		const params = new URLSearchParams( window.location.search );
 		const prefix = document.querySelector( SIDEBAR )?.dataset.search ? SEARCH_PARAM_PREFIX : '';
 
+		// Unterkategorien (Checkboxen name="subcat[]"): Parameter "subcat" ohne Präfix, kommagetrennt
+		const subcats = ( params.get( 'subcat' ) || '' ).split( ',' ).filter( Boolean );
+		document.querySelectorAll( '.wc-filter-option__checkbox[name="subcat[]"]' ).forEach( cb => {
+			cb.checked = subcats.includes( cb.value );
+			updateGroupCount( cb.closest( '.wc-filter-group' ) );
+		} );
+
 		document.querySelectorAll( '.wc-filter-option__checkbox' ).forEach( cb => {
 			const match = cb.name.match( /^attributes\[(.+?)\]\[\]$/ );
 			if ( ! match ) return;
@@ -443,6 +456,7 @@ import noUiSlider from 'nouislider';
 	function updateActiveCount( data ) {
 		let count = 0;
 		for ( const vals of Object.values( data.attributes || {} ) ) count += vals.length;
+		count += ( data.subcat || [] ).length;
 		if ( data.price_min > priceMin || data.price_max < priceMax ) count++;
 
 		const el = document.querySelector( ACTIVE_COUNT );
@@ -454,7 +468,7 @@ import noUiSlider from 'nouislider';
 	function hasActiveFilters( data ) {
 		const hasAttr  = Object.values( data.attributes || {} ).some( v => v.length > 0 );
 		const hasPrice = ( data.price_min > priceMin ) || ( data.price_max < priceMax );
-		return hasAttr || hasPrice;
+		return hasAttr || hasPrice || ( data.subcat || [] ).length > 0;
 	}
 
 	// ── Filter zurücksetzen ───────────────────────────────────────────────────
