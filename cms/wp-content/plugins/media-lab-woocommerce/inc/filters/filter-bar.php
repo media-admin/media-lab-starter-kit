@@ -83,7 +83,9 @@ function mlwf_render_filter_bar(): void {
 					] );
 
 					if ( ! is_wp_error( $subcategories ) && ! empty( $subcategories ) ) :
-						$active_subcat = sanitize_text_field( $_GET['subcat'] ?? '' );
+						$subcat_raw     = $_GET['subcat'] ?? '';
+						$subcat_raw     = is_array( $subcat_raw ) ? implode( ',', $subcat_raw ) : (string) $subcat_raw;
+						$active_subcats = array_values( array_filter( array_map( 'sanitize_text_field', explode( ',', $subcat_raw ) ) ) );
 						$group_id      = 'filter-drop-subcategories';
 				?>
 				<div class="wc-filter-group js-filter-group" data-filter-type="subcategory">
@@ -92,8 +94,8 @@ function mlwf_render_filter_bar(): void {
 						aria-expanded="false"
 						aria-controls="<?php echo esc_attr( $group_id ); ?>">
 						<?php echo esc_html( MediaLab_Filter_Settings::label( 'category' ) ); ?>
-						<?php if ( $active_subcat ) : ?>
-							<span class="wc-filter-group__count">1</span>
+						<?php if ( $active_subcats ) : ?>
+							<span class="wc-filter-group__count"><?php echo count( $active_subcats ); ?></span>
 						<?php endif; ?>
 						<span class="wc-filter-group__icon" aria-hidden="true"></span>
 					</button>
@@ -106,10 +108,10 @@ function mlwf_render_filter_bar(): void {
 								<label class="wc-filter-option" for="<?php echo esc_attr( $input_id ); ?>">
 									<input class="wc-filter-option__checkbox"
 										id="<?php echo esc_attr( $input_id ); ?>"
-										type="radio"
-										name="subcat"
+										type="checkbox"
+										name="subcat[]"
 										value="<?php echo esc_attr( $subcat->slug ); ?>"
-										<?php checked( $active_subcat, $subcat->slug ); ?>>
+										<?php checked( in_array( $subcat->slug, $active_subcats, true ) ); ?>>
 									<span class="wc-filter-option__label"><?php echo esc_html( $subcat->name ); ?></span>
 									<span class="wc-filter-option__count">(<?php echo absint( $subcat->count ); ?>)</span>
 								</label>

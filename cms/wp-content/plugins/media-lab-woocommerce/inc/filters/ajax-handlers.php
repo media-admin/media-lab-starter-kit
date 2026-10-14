@@ -82,7 +82,8 @@ function mlwf_ajax_filter_products(): void {
 
 	$category_slug = sanitize_text_field( $_POST['category']      ?? '' );
 	$brand_slug    = sanitize_text_field( $_POST['brand']         ?? '' );
-	$subcat_slug   = sanitize_text_field( $_POST['subcat']        ?? '' );
+	$subcat_slugs  = array_values( array_filter( array_map( 'sanitize_text_field', (array) ( $_POST['subcat'] ?? [] ) ) ) );
+	$subcat_slug   = implode( ',', $subcat_slugs ); // für Zeile 235 (Filter-Parameter der Pagination)
 	$attributes    = $_POST['attributes'] ?? [];
 	$price_min     = ( isset( $_POST['price_min'] ) && $_POST['price_min'] !== '' ) ? (float) $_POST['price_min'] : null;
 	$price_max     = ( isset( $_POST['price_max'] ) && $_POST['price_max'] !== '' ) ? (float) $_POST['price_max'] : null;
@@ -110,11 +111,12 @@ function mlwf_ajax_filter_products(): void {
 		];
 	}
 
-	if ( $subcat_slug ) {
+	if ( ! empty( $subcat_slugs ) ) {
 		$tax_query[] = [
 			'taxonomy' => 'product_cat',
 			'field'    => 'slug',
-			'terms'    => $subcat_slug,
+			'terms'    => $subcat_slugs,
+			'operator' => 'IN',
 		];
 	}
 

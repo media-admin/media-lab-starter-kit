@@ -4,6 +4,32 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [2.19.0] - 2026-10-14
+
+### Changed
+- **Unterkategorie-Filter als Mehrfachauswahl** (`inc/filters/filter-bar.php`,
+  `inc/filters/ajax-handlers.php`) – die Gruppe „Kategorie“ der Filterleiste auf
+  Kategorie-Archiven nutzt jetzt Checkboxen (`name="subcat[]"`) statt
+  Radio-Buttons (`name="subcat"`). Mehrere Unterkategorien lassen sich
+  kombinieren (ODER-Verknüpfung innerhalb der Gruppe).
+  - Der Zähler am Gruppen-Button zeigt die Anzahl der gesetzten Haken
+    (vorher fest `1`).
+  - Initialzustand aus der URL: `?subcat=damenuhren,herrenuhren`
+    (kommagetrennt); ein einzelner Wert (`?subcat=slug`) funktioniert weiterhin.
+  - `mlwf_ajax_filter_products()` akzeptiert `subcat` als Liste und filtert mit
+    `operator => IN`; der Parameter `subcat` in der Pagination wird
+    kommagetrennt ausgegeben.
+
+### Fixed
+- Eine einmal gewählte Unterkategorie ließ sich nicht mehr abwählen
+  (Radio-Button).
+
+### Hinweis
+- Benötigt `custom-theme` ab 1.18.0: `mlwf-filters.js` sammelt `subcat[]` als
+  Liste, schreibt sie in die URL und berücksichtigt sie im Zähler und bei
+  „Zurücksetzen“. Mit älterem Theme-JS wirkt bei mehreren Haken nur der zuletzt
+  gesetzte.
+
 ## [2.18.0] - 2026-10-13
 
 ### Added
