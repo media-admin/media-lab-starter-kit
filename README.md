@@ -22,7 +22,7 @@ media-lab-woocommerce      →  WooCommerce-Erweiterungen (Catalog Mode, Konfigu
 media-lab-bookings         →  Standortbasiertes Buchungssystem
 media-lab-events           →  Event-CPT mit Shortcodes
 media-lab-backup           →  SFTP-Backup zur Hetzner Storage Box
-media-lab-ai-agent         →  HIER KURZBESCHREIBUNG
+media-lab-ai-agent         →  Datenschutzkonformer AI-Chat-Assistent (mehrsprachig, austauschbarer Anbieter)
 media-lab-project-starter  →  Scaffold, wird pro Projekt dupliziert + individuell angepasst (siehe unten)
 custom-theme                →  Präsentationsebene (pro Projekt anpassen)
 ```
@@ -37,17 +37,17 @@ genau das passiert ist). **Verbindlich ist immer der `Version:`-Header der
 jeweiligen Komponente selbst** (Plugin-Hauptdatei bzw. Theme `style.css`),
 nicht diese Tabelle.
 
-| Komponente                 | Version (Stand 09.10.2026) | Beschreibung                                    |
+| Komponente                 | Version (Stand 15.10.2026) | Beschreibung                                    |
 |-----------------------------|------------------------------|--------------------------------------------------|
-| `media-lab-agency-core`     | `1.34.1`                    | Framework-Plugin (nicht modifizieren)            |
+| `media-lab-agency-core`     | `1.36.0`                    | Framework-Plugin (nicht modifizieren)            |
 | `media-lab-seo`             | `1.15.0`                    | SEO-Toolkit + GSC/GA4-Dashboard + Report-Mailer  |
-| `media-lab-woocommerce`     | `2.16.0`                    | WooCommerce-Erweiterungen                        |
+| `media-lab-woocommerce`     | `2.19.1`                    | WooCommerce-Erweiterungen                        |
 | `media-lab-bookings`        | `1.7.0`                     | Buchungssystem                                   |
 | `media-lab-events`          | `1.0.1`                     | Event-CPT + Shortcodes                           |
 | `media-lab-backup`          | `2.2.0`                     | SFTP-Backup                                      |
-| `media-lab-ai-agent`        | `1.9.0`                     | HIER KURZBESCHREIBUNG |
+| `media-lab-ai-agent`        | `1.9.0`                     | AI-Chat-Assistent (datenschutzkonform, mehrsprachig, austauschbarer Anbieter) |
 | `media-lab-project-starter` | `1.0.0` (Scaffold)          | Vorlage, siehe eigener Abschnitt unten           |
-| `custom-theme`              | `1.15.4`                    | Theme (Vite-Build, SCSS, JS)                     |
+| `custom-theme`              | `1.18.1`                    | Theme (Vite-Build, SCSS, JS)                     |
 
 ---
 
@@ -100,6 +100,7 @@ media-lab-starter-kit/
 │       │   ├── media-lab-bookings/          # Buchungssystem
 │       │   ├── media-lab-events/            # Event-CPT
 │       │   ├── media-lab-backup/            # SFTP-Backup
+│       │   ├── media-lab-ai-agent/          # AI-Chat-Assistent
 │       │   └── media-lab-project-starter/   # Scaffold (pro Projekt duplizieren)
 │       └── themes/
 │           └── custom-theme/                # Theme
@@ -116,10 +117,10 @@ media-lab-starter-kit/
 └── .gitignore
 ```
 
-> **Hinweis Gutenberg-Blocks:** Die 8 Custom-Blocks (Hero, Testimonial,
-> Team-Mitglied, Logo-Leiste, Logo-Slider, CTA-Banner, Accordion/FAQ,
-> Icon+Text) sind Teil von `media-lab-agency-core` (`inc/blocks.php`,
-> `blocks/{name}/`), nicht des Themes — siehe
+> **Hinweis Gutenberg-Blocks:** Die Custom-Blocks (u. a. Hero, Testimonial,
+> Team-Mitglied, Logo-Leiste, Logo-Slider, Slider, CTA-Banner, Accordion/FAQ,
+> Icon+Text, Social-Share, Social-Embed) sind Teil von `media-lab-agency-core`
+> (`inc/blocks.php`, `blocks/{name}/`), nicht des Themes — siehe
 > [docs/03_PLUGINS.md](docs/03_PLUGINS.md) für die vollständige Referenz.
 > `vite.config.blocks.js` baut die JS-Assets dafür, das PHP-seitige
 > Registrieren passiert im Plugin.
@@ -147,17 +148,17 @@ Zwei separate Vite-Configs werden via `npm run build` nacheinander ausgeführt:
 
 ## Dokumentation
 
-| Dokument                     | Inhalt                              |
-|------------------------------|--------------------------------------|
-| [docs/02_INSTALLATION.md]    | Vollständige Installationsanleitung  |
-| [docs/03_PLUGINS.md]         | Plugin-Referenz                      |
-| [docs/12_ANALYTICS.md]       | Analytics-Dokumentation              |
-| [docs/13_SEO.md]             | SEO-Toolkit-Dokumentation            |
-| [docs/14_BOOKINGS.md]        | Bookings-Plugin-Dokumentation        |
-| [docs/06_DEVELOPMENT.md]     | Entwicklungs-Guide                   |
-| [docs/07_TROUBLESHOOTING.md] | Fehlerbehebung                       |
-| [docs/09_ACF-FIELDS.md]      | ACF-Felder-Referenz                  |
-| [docs/BACKLOG.md]            | Offene Punkte & Änderungshistorie größerer Aufräum-Sessions |
+| Dokument                                              | Inhalt                              |
+|-------------------------------------------------------|--------------------------------------|
+| [docs/02_INSTALLATION.md](docs/02_INSTALLATION.md)    | Vollständige Installationsanleitung  |
+| [docs/03_PLUGINS.md](docs/03_PLUGINS.md)              | Plugin-Referenz                      |
+| [docs/12_ANALYTICS.md](docs/12_ANALYTICS.md)          | Analytics-Dokumentation              |
+| [docs/13_SEO.md](docs/13_SEO.md)                      | SEO-Toolkit-Dokumentation            |
+| [docs/14_BOOKINGS.md](docs/14_BOOKINGS.md)            | Bookings-Plugin-Dokumentation        |
+| [docs/06_DEVELOPMENT.md](docs/06_DEVELOPMENT.md)      | Entwicklungs-Guide                   |
+| [docs/07_TROUBLESHOOTING.md](docs/07_TROUBLESHOOTING.md) | Fehlerbehebung                    |
+| [docs/09_ACF-FIELDS.md](docs/09_ACF-FIELDS.md)        | ACF-Felder-Referenz                  |
+| [docs/BACKLOG.md](docs/BACKLOG.md)                    | Offene Punkte & Änderungshistorie größerer Aufräum-Sessions |
 
 **Versionshistorie:** Es gibt bewusst **keine** projektweite Changelog-
 Tabelle mehr in dieser README. Jede Komponente pflegt ihre eigene
