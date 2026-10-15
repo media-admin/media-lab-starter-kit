@@ -148,17 +148,23 @@ Zwei separate Vite-Configs werden via `npm run build` nacheinander ausgeführt:
 
 ## Dokumentation
 
-| Dokument                                              | Inhalt                              |
-|-------------------------------------------------------|--------------------------------------|
-| [docs/02_INSTALLATION.md](docs/02_INSTALLATION.md)    | Vollständige Installationsanleitung  |
-| [docs/03_PLUGINS.md](docs/03_PLUGINS.md)              | Plugin-Referenz                      |
-| [docs/12_ANALYTICS.md](docs/12_ANALYTICS.md)          | Analytics-Dokumentation              |
-| [docs/13_SEO.md](docs/13_SEO.md)                      | SEO-Toolkit-Dokumentation            |
-| [docs/14_BOOKINGS.md](docs/14_BOOKINGS.md)            | Bookings-Plugin-Dokumentation        |
-| [docs/06_DEVELOPMENT.md](docs/06_DEVELOPMENT.md)      | Entwicklungs-Guide                   |
-| [docs/07_TROUBLESHOOTING.md](docs/07_TROUBLESHOOTING.md) | Fehlerbehebung                    |
-| [docs/09_ACF-FIELDS.md](docs/09_ACF-FIELDS.md)        | ACF-Felder-Referenz                  |
-| [docs/BACKLOG.md](docs/BACKLOG.md)                    | Offene Punkte & Änderungshistorie größerer Aufräum-Sessions |
+| Dokument                                                     | Inhalt                                                      |
+|--------------------------------------------------------------|-------------------------------------------------------------|
+| [docs/01_README.md](docs/01_README.md)                       | Einstieg und Überblick der Dokumentation                    |
+| [docs/02_INSTALLATION.md](docs/02_INSTALLATION.md)           | Vollständige Installationsanleitung                         |
+| [docs/03_PLUGINS.md](docs/03_PLUGINS.md)                     | Plugin-Referenz                                             |
+| [docs/04_SHORTCODES.md](docs/04_SHORTCODES.md)               | Shortcode-Referenz                                          |
+| [docs/05_AJAX-FEATURES.md](docs/05_AJAX-FEATURES.md)         | AJAX-Features-Dokumentation                                 |
+| [docs/06_DEVELOPMENT.md](docs/06_DEVELOPMENT.md)             | Entwicklungs-Guide                                          |
+| [docs/07_TROUBLESHOOTING.md](docs/07_TROUBLESHOOTING.md)     | Fehlerbehebung                                              |
+| [docs/08_CUSTOM-POST-TYPES.md](docs/08_CUSTOM-POST-TYPES.md) | Custom Post Types                                           |
+| [docs/09_ACF-FIELDS.md](docs/09_ACF-FIELDS.md)               | ACF-Felder-Referenz                                         |
+| [docs/10_DEPLOYMENT.md](docs/10_DEPLOYMENT.md)               | Deployment                                                  |
+| [docs/11_TESTING.md](docs/11_TESTING.md)                     | Testing                                                     |
+| [docs/12_ANALYTICS.md](docs/12_ANALYTICS.md)                 | Analytics-Dokumentation                                     |
+| [docs/13_SEO.md](docs/13_SEO.md)                             | SEO-Toolkit-Dokumentation                                   |
+| [docs/14_BOOKINGS.md](docs/14_BOOKINGS.md)                   | Bookings-Plugin-Dokumentation                               |
+| [docs/BACKLOG.md](docs/BACKLOG.md)                           | Offene Punkte & Änderungshistorie größerer Aufräum-Sessions |
 
 **Versionshistorie:** Es gibt bewusst **keine** projektweite Changelog-
 Tabelle mehr in dieser README. Jede Komponente pflegt ihre eigene
