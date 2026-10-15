@@ -16,6 +16,14 @@ möglich.
 
 ## [Unreleased]
 
+## [1.18.1] - 2026-10-15
+
+### Added
+- Standard-Styles für die Shop-Modus-Wunschlisten-Tabelle (`_wishlist.scss`): Tabelle, Auswahl-Zelle mit Checkbox und Entfernen-Button, Karten-Ansicht unter 1100px (Zellen mit `data-label`-Präfix), Teilen-Zeile im Fußbereich (`.mlw-wishlist__share--footer`) und Modifier `.mlw-wishlist-message--warning`. Abgeleitet aus dem Stand in juwelier-janecka
+
+### Hinweis
+- Gehört zu `media-lab-woocommerce` 2.19.1 (Markup in `templates/wishlist/item-row-shop.php` und `page.php`)
+
 ## [1.18.0] - 2026-10-14
 
 ### Changed
