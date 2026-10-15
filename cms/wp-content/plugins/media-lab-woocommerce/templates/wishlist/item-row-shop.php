@@ -34,18 +34,22 @@ $selectable = $item['exists'] && empty( $item['config'] ) && $in_stock;
 <tr class="mlw-wishlist-row" data-item-id="<?php echo esc_attr( $item['item_id'] ); ?>">
 
     <td class="mlw-wishlist-row__select">
-        <?php if ( $selectable ) : ?>
-            <input type="checkbox" class="mlw-wishlist-row__checkbox" value="<?php echo esc_attr( $item['item_id'] ); ?>">
-        <?php endif; ?>
+        <div class="mlw-wishlist-row__select-inner">
+            <?php if ( $selectable ) : ?>
+                <input type="checkbox" class="mlw-wishlist-row__checkbox" value="<?php echo esc_attr( $item['item_id'] ); ?>">
+            <?php else : ?>
+                <span class="mlw-wishlist-row__checkbox-placeholder" aria-hidden="true"></span>
+            <?php endif; ?>
+            <button
+                type="button"
+                class="mlw-wishlist-row__remove-btn"
+                data-item-id="<?php echo esc_attr( $item['item_id'] ); ?>"
+                aria-label="<?php esc_attr_e( 'Entfernen', 'media-lab-woocommerce' ); ?>"
+            >✕</button>
+        </div>
     </td>
 
     <td class="mlw-wishlist-row__thumb">
-        <button
-            type="button"
-            class="mlw-wishlist-row__remove-btn"
-            data-item-id="<?php echo esc_attr( $item['item_id'] ); ?>"
-            aria-label="<?php esc_attr_e( 'Entfernen', 'media-lab-woocommerce' ); ?>"
-        >✕</button>
         <div class="mlw-wishlist-row__thumb-wrap">
             <?php if ( ! empty( $item['image'] ) ) : ?>
                 <img src="<?php echo esc_url( $item['image'] ); ?>" alt="<?php echo esc_attr( $item['name'] ); ?>">

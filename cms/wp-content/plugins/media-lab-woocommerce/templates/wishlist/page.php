@@ -170,7 +170,7 @@ $is_catalog_mode = function_exists( 'get_field' ) && get_field( 'wc_catalog_mode
 
         <table class="mlw-wishlist-table">
             <colgroup>
-                <col style="width: 32px;">
+                <col style="width: 64px;">
                 <col style="width: 88px;">
                 <col style="width: 30%;">
                 <col style="width: 90px;">

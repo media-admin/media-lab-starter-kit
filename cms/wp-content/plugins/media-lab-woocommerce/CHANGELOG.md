@@ -4,6 +4,18 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [2.19.1] - 2026-10-15
+
+### Changed
+- Wunschliste (Shop-Modus): Der Entfernen-Button (✕) sitzt jetzt in der ersten
+  Spalte neben der Checkbox statt in der Thumbnail-Zelle. Zeilen ohne Checkbox
+  (nicht auswählbar) erhalten einen Platzhalter. Erste Tabellenspalte von 32px
+  auf 64px verbreitert (`templates/wishlist/item-row-shop.php`, `page.php`).
+
+*(Theme-seitig, gehört ins Theme-Changelog: Standard-Styles für die
+Shop-Modus-Wunschlisten-Tabelle in `components/_wishlist.scss` – Tabelle,
+Auswahl-Zelle mit Checkbox und Entfernen-Button, Karten-Ansicht unter 1100px.)*
+
 ## [2.19.0] - 2026-10-14
 
 ### Changed
@@ -151,13 +163,13 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 ## [2.10.0] - 2026-10-03
 
 ### Added
-- Modul `inc/single-product-layout.php` (Opt-in per Filter, Standard aus): `mlw_single_product_layout` (Summary-Reihenfolge, Beschreibung im Summary, Preis hinter dem Anfrage-Button), `mlw_loop_product_info` (Marke und Verfuegbarkeit auf Produktkarten, ueberschreibbar ueber `mlw_loop_availability`), `mlw_reviews_always_open`
+- Modul `inc/single-product-layout.php` (Opt-in per Filter, Standard aus): `mlw_single_product_layout` (Summary-Reihenfolge, Beschreibung im Summary, Preis hinter dem Anfrage-Button), `mlw_loop_product_info` (Marke und Verfügbarkeit auf Produktkarten, überschreibbar über `mlw_loop_availability`), `mlw_reviews_always_open`
 - Wunschliste: optionales Mengenfeld auf der Einzelproduktseite (`mlw_wishlist_single_quantity`), eigener Button-Stil dort (`mlw_wishlist_single_button_style`); `wishlist.js` sendet die Menge mit
 
 ### Changed
-- `configurator.css`: Regel fuer `flex-basis: 50%` mit `:where()` entschaerft, damit Theme-Layouts sie ueberstimmen koennen
-- `templates/configurator/wizard.php`: Beschreibungsblock des Wizards entfaellt bei aktivem `mlw_single_product_layout` (Beschreibung und Lagerstatus stehen dann unter dem Titel)
-- `wishlist.js`: Text-/Icon+Text-Button setzt nach dem Hinzufuegen `aria-pressed` (Zustand wechselt ohne Neuladen)
+- `configurator.css`: Regel für `flex-basis: 50%` mit `:where()` entschärft, damit Theme-Layouts sie überstimmen können
+- `templates/configurator/wizard.php`: Beschreibungsblock des Wizards entfällt bei aktivem `mlw_single_product_layout` (Beschreibung und Lagerstatus stehen dann unter dem Titel)
+- `wishlist.js`: Text-/Icon+Text-Button setzt nach dem Hinzufügen `aria-pressed` (Zustand wechselt ohne Neuladen)
 - `Storage::add()`: Bei einfachen Produkten ersetzt eine erneute Anfrage die Menge statt sie zu addieren (Filter `mlw_wishlist_replace_quantity`)
 
 ## [2.9.1] - 2026-10-01
@@ -289,51 +301,53 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ---
 
-## [2.7.0] – 2026-08-23
+## [2.7.0] - 2026-08-23
 
-### Neu: Konfigurierbare & mehrsprachige Filter-Labels
-- Neue Optionsseite *Produkte → Filter-Einstellungen* (`inc/filters/class-settings.php`):
+### Added
+- **Konfigurierbare und mehrsprachige Filter-Labels:** Neue Optionsseite
+  *Produkte → Filter-Einstellungen* (`inc/filters/class-settings.php`):
   Preis-/Kategorie-/Marke-/Zurücksetzen-Label, Attribut-Label-Overrides, je Sprache
   pflegbar (eigener, von der Inquiry-Engine entkoppelter Sprachen-Repeater +
   plugin-agnostische Spracherkennung, `inc/filters/class-i18n.php`, Polylang → WPML
   → WP-Locale-Fallback).
+- **Konfigurator-Schritte als Shop-Filter nutzbar (kuratierter Ansatz):**
+  `config_steps` (select/radio/checkbox/color_picker) können optional mit einem
+  bestehenden WooCommerce-Attribut verknüpft werden (`use_as_filter` +
+  `filter_attribute`, `inc/configurator/class-acf-fields.php`).
+  - `inc/configurator/filter-sync.php`: gleicht Options-Labels beim Produkt-Speichern
+    mit Terms der gewählten Taxonomie ab (Matching per Label, Neuanlage falls nötig),
+    schreibt die ermittelte term_id zusätzlich in `filter_term_id` zurück (Brücke,
+    ohne das interne `value`-Feld anzufassen).
+  - `wp mlwf sync-configurator-filters [--dry-run]`: einmaliger Bulk-Sync für
+    Bestandsprodukte, die vor diesem Feature gespeichert wurden.
+  - Wichtig: `value` (Konfigurator-intern) und Attribut-Term-Slug bleiben getrennte
+    Bezeichner — künftige Verknüpfungen (z.B. Vorauswahl im Wizard) müssen explizit
+    über das Label brücken.
+- **Interaktive Filter-Bar (Frontend-JS und Styling):**
+  - `assets/src/js/components/mlwf-filters.js`: portiert & generalisiert aus dem
+    Janecka-Projekt (at.janecka-2026) — Action-Namen/Nonce jetzt dynamisch aus
+    `window.mlwf` statt hartkodiert.
+  - Preis-Slider (noUISlider), Dropdown-Filtergruppen, AJAX-Filterung, URL-State,
+    Pagination-Interception.
+  - SCSS ebenfalls aus Janecka portiert, an Starter-Kit-Breakpoints (`respond-to`)
+    und Design-Tokens angepasst (Dark-Mode-sicher statt hartkodierter Farben);
+    Fullwidth-Breakout entfernt, Bar liegt innerhalb `.container`.
+  - noUiSlider-CSS läuft über die Sass- statt JS-Pipeline (`@use` in
+    `_woocommerce.scss`, `--load-path=node_modules` in `build:css`) — Vite bindet
+    aus JS importiertes CSS im Production-Build nicht automatisch ein.
+
+### Changed
 - `mlwf_get_attribute_labels()` nutzt jetzt Custom-Labels vor dem WC-nativen
   Attribut-Label.
 
-### Neu: Konfigurator-Steps als Shop-Filter nutzbar (kuratierter Ansatz)
-- `config_steps` (select/radio/checkbox/color_picker) können optional mit einem
-  bestehenden WooCommerce-Attribut verknüpft werden (`use_as_filter` +
-  `filter_attribute`, `inc/configurator/class-acf-fields.php`).
-- `inc/configurator/filter-sync.php`: gleicht Options-Labels beim Produkt-Speichern
-  mit Terms der gewählten Taxonomie ab (Matching per Label, Neuanlage falls nötig),
-  schreibt die ermittelte term_id zusätzlich in `filter_term_id` zurück (Brücke,
-  ohne das interne `value`-Feld anzufassen).
-- `wp mlwf sync-configurator-filters [--dry-run]`: einmaliger Bulk-Sync für
-  Bestandsprodukte, die vor diesem Feature gespeichert wurden.
-- Wichtig: `value` (Konfigurator-intern) und Attribut-Term-Slug bleiben getrennte
-  Bezeichner — künftige Verknüpfungen (z.B. Vorauswahl im Wizard) müssen explizit
-  über das Label brücken.
-
-### Fix: Produktfilter-Bar war nie mit dem Theme verdrahtet
-- `mlwf_render_filter_bar()` existierte bereits vollständig, wurde aber nirgends
+### Fixed
+- **Produktfilter-Bar war nie mit dem Theme verdrahtet:**
+  `mlwf_render_filter_bar()` existierte bereits vollständig, wurde aber nirgends
   gehookt. Jetzt selbst-registrierend an `woocommerce_before_shop_loop` (Prio 15) —
   funktioniert in jedem Projekt ohne Theme-seitige Verdrahtung.
-- Neuer `.wc-products-container`-Wrapper um `ul.products` + Pagination
+  Neuer `.wc-products-container`-Wrapper um `ul.products` + Pagination
   (`woocommerce_before_shop_loop`/`_after_shop_loop`, Prio 20), Ziel für den
   AJAX-Ergebnisaustausch im Frontend-JS.
-
-### Neu: Interaktive Filter-Bar (Frontend-JS + Styling)
-- `assets/src/js/components/mlwf-filters.js`: portiert & generalisiert aus dem
-  Janecka-Projekt (at.janecka-2026) — Action-Namen/Nonce jetzt dynamisch aus
-  `window.mlwf` statt hartkodiert.
-- Preis-Slider (noUISlider), Dropdown-Filtergruppen, AJAX-Filterung, URL-State,
-  Pagination-Interception.
-- SCSS ebenfalls aus Janecka portiert, an Starter-Kit-Breakpoints (`respond-to`)
-  und Design-Tokens angepasst (Dark-Mode-sicher statt hartkodierter Farben);
-  Fullwidth-Breakout entfernt, Bar liegt innerhalb `.container`.
-- noUiSlider-CSS läuft über die Sass- statt JS-Pipeline (`@use` in
-  `_woocommerce.scss`, `--load-path=node_modules` in `build:css`) — Vite bindet
-  aus JS importiertes CSS im Production-Build nicht automatisch ein.
 
 ---
 
