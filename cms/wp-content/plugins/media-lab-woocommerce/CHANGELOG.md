@@ -4,6 +4,16 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [2.19.2] - 2026-10-16
+
+### Fixed
+- Such-Erweiterungen (`inc/search-woo-extras.php`): Treffer über Kategorien wurden nur für die ersten 5 passenden Terms gesammelt (alphabetisch). Bei Begriffen mit vielen passenden Kategorien fehlten die Produkte aller weiteren, z. B. bei „T-Shirt" 285 von 291 Produkten der Kategorie „T-Shirts", deren Titel das Wort nicht enthalten. Jetzt werden bis zu 25 Terms je Taxonomie ausgewertet, die mit den meisten Produkten zuerst (Filter `mlw_search_match_terms_max`)
+- Live-Suche: Die Produktanzahl hinter Kategorie- und Marken-Einträgen enthielt versteckte Produkte (z. B. 322 statt 291), weil WooCommerce die Umrechnung `wc_change_term_counts()` bei AJAX-Anfragen überspringt. Die Anzahl kommt jetzt aus dem Term-Meta `product_count_<Taxonomie>`, mit dem Rohwert als Rückfall
+
+### Hinweis zum Update
+- Die Suchergebnisseite zeigt danach mehr Treffer: Produkte, die nur über eine passende Kategorie auffindbar sind, kommen vollständig dazu (Standard seit 2.17.2). Kategorien lassen sich per `mlw_search_taxonomies` ausschließen
+- Die gemerkten Treffermengen (`mls_ids_*`) laufen nach 5 Minuten ab, wer sofort neue Ergebnisse braucht, leert sie
+
 ## [2.19.1] - 2026-10-15
 
 ### Changed
