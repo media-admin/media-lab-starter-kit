@@ -22,9 +22,17 @@
 
 // Verhindert horizontalen Overflow
 html, body {
-  overflow-x: hidden;
   max-width: 100vw;
 }
+
+// "overflow-x: hidden" auf html UND body macht den body zum Scroll-Container, der selbst nicht scrollt. Ein sticky
+// Header bezieht sich auf den nächsten Scroll-Container und klebte deshalb nie (gemessen: position: sticky, nach dem
+// Scrollen trotzdem 1325 px über dem Bildschirm). Jetzt nur html (der Wert geht an den Viewport), body clip.
+html { overflow-x: hidden; }
+body { overflow-x: clip; }
+
+// Der Header klebt oben: Anker-Sprünge und Fokus-Scrollen landen nicht unter ihm.
+html { scroll-padding-top: var(--header-height, 0px); }
 
 .hero-slider {
   position:  relative;
