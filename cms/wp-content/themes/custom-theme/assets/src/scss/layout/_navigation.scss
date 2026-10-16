@@ -728,3 +728,68 @@
         white-space:   nowrap;
     }
 }
+
+
+// ── Mobiles Menü: Such-Auslöser und Wunschliste als Textzeilen ───────────────────────────────────
+// Die Plugins hängen beide Einträge ans Menü (Agency Core: Such-Auslöser, WooCommerce: Wunschliste), je nach
+// Projekt mit Icon oder Text. Mobil sehen sie aus wie die übrigen Einträge: nur Text in derselben Zeile.
+// Fehlt dem Such-Auslöser das Label, steht der Text seines aria-labels da, ebenso bei der Wunschliste.
+
+.mobile-menu .mlc-nav-search-item > .mlc-nav-search-toggle {
+    display:         flex;
+    align-items:     center;
+    justify-content: flex-start;
+    gap:             0;
+    width:           100%;
+    min-width:       0;
+    min-height:      3rem;
+    padding:         0.375rem $spacing-2;
+    color:           var(--color-text);
+    font:            inherit;
+    font-size:       var(--text-lg);
+    font-weight:     500;
+    line-height:     1.4;
+    text-align:      left;
+    transition:      color 0.2s ease, background 0.2s ease;
+
+    &:hover {
+        color:      $color-primary;
+        background: var(--color-hover-bg);
+    }
+
+    // Variante nur mit Icon: Icon aus, aria-label als Text
+    .mlc-nav-search-icon-wrap { display: none; }
+
+    &:not(.mlc-nav-search-toggle--has-label)::after { content: attr(aria-label); }
+}
+
+.mobile-menu .mlw-nav-wishlist-item > .mlw-nav-wishlist-link {
+    // Beschriftung links, Zähler rechts (die übrigen Eigenschaften der Zeile kommen von ".mobile-menu a")
+    &::before { content: attr(aria-label); }
+
+    .mlw-nav-wishlist-icon { display: none; }
+
+    .mlw-nav-wishlist-icon-wrap {
+        position:    static;
+        display:     inline-flex;
+        align-items: center;
+    }
+
+    .mlw-wishlist-count {
+        position:        static;
+        transform:       none;
+        margin:          0;
+        display:         inline-flex;
+        align-items:     center;
+        justify-content: center;
+        min-width:       1.5rem;
+        height:          1.5rem;
+        padding:         0 0.375rem;
+        border-radius:   999px;
+        background:      var(--color-primary);
+        color:           $color-white;
+        font-size:       0.75rem;
+        font-weight:     700;
+        line-height:     1;
+    }
+}
