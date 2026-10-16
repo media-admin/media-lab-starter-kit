@@ -280,6 +280,8 @@ function initSearch(container) {
                         <div class="ajax-search__title">${result.title}</div>
                         ${show.excerpt && result.excerpt ? `<div class="ajax-search__excerpt">${result.excerpt}</div>` : ''}
                         ${show.price && result.price ? `<div class="ajax-search__price">${result.price}</div>` : ''}
+                        ${result.availability_badge ? `<span class="ajax-search__availability">${escapeHtml(result.availability_badge)}</span>` : ''}
+                        ${result.product_badge_label ? `<span class="ajax-search__product-badge ${escapeAttr(result.product_badge_class || '')}">${escapeHtml(result.product_badge_label)}</span>` : ''}
                     </div>
                 </a>
             `;

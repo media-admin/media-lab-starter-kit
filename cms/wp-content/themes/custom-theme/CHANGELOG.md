@@ -16,6 +16,9 @@ möglich.
 
 ## [Unreleased]
 
+### Added
+- `ajax-search.js`, `_ajax-search.scss`: optionale Treffer-Felder `availability_badge`, `product_badge_label` und `product_badge_class` (Badge unter dem Preis, z. B. von einem Projekt-Plugin über den Filter `media_lab_ajax_search_result`). Ohne die Felder ändert sich nichts. Abgeleitet aus dem Stand in at.media-lab
+
 ## [1.18.1] - 2026-10-15
 
 ### Added

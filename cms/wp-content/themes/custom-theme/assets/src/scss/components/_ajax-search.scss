@@ -376,3 +376,31 @@
     font-weight: inherit;
     opacity:     0.6;
 }
+
+
+// ── Verfügbarkeits- und Produkt-Badge (optionale Treffer-Felder, z. B. aus einem Projekt-Plugin) ──
+
+.ajax-search__availability,
+.ajax-search__product-badge {
+    display:        inline-block;
+    margin-top:     0.25rem;
+    padding:        2px 0.5rem;
+    color:          $color-white;
+    font-size:      var(--text-xs);
+    font-weight:    $font-weight-bold;
+    border-radius:  $radius-sm;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.ajax-search__availability { background: $color-info; }
+
+.ajax-search__product-badge {
+    margin-left: 0.375rem;
+
+    &.ml-product-badge--new        { background: $color-success; }
+    &.ml-product-badge--restposten { background: $color-warning; }
+    &.ml-product-badge--bestseller,
+    &.ml-product-badge--limited,
+    &.ml-product-badge--eco        { background: $color-gray-400; }
+}
