@@ -16,6 +16,15 @@ möglich.
 
 ## [Unreleased]
 
+## [1.18.6] - 2026-10-16
+
+### Fixed
+- **Suche, Suchfeld am Desktop:** Das Suchfeld im Seitenkopf und im Leer-Zustand blieb so breit wie ein Standard-Input (ca. 250 px), weil das `<label>` als Flex-Item nicht wuchs. Das Label wächst jetzt, das Feld füllt den Platz neben dem Button (Seitenkopf bis 560 px Formularbreite, Leer-Zustand bis 520 px Feldbreite) (`_search-results.scss`)
+- **Suche, Leer-Zustand mobil:** Der Button „Suchen“ lief aus dem Bildschirm (eigenes Formular `.archive-empty__form`, Feld bis 320 px, `<label>` als Flex-Item). Das Feld nutzt jetzt die volle Breite, der Button ist mobil nur visuell ausgeblendet (`_search-results.scss`)
+- **WooCommerce-Pagination:** Die Regel `nav.woocommerce-pagination ul li a, … li span` galt auch für die Spans innerhalb der Pfeil-Links (Pfeil und Screenreader-Text), der Pfeil bekam einen Rahmen im Rahmen und einen leeren Kasten daneben. Die Selektoren gelten jetzt nur für direkte Kinder (`li > a`, `li > span`)
+- **Suche mobil:** Der Suchbegriff steht in der Überschrift in einer eigenen Zeile, die Anführungszeichen gehören dazu (`search.php`). Das Suchfeld im Seitenkopf nutzt die volle Breite (WordPress rendert es in einem `<label>`, das Label war das Flex-Item und blieb so breit wie ein Standard-Input), der Text beginnt links mit `$spacing-2` statt `$spacing-4`
+- **Suchfelder:** Das Löschen-Kreuz (WebKit, `type="search"`) erscheint in der Textfarbe statt im Browser-Blau (`_search-results.scss`)
+
 ## [1.18.5] - 2026-10-16
 
 ### Fixed
