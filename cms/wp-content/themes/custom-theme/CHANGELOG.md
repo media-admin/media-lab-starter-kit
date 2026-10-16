@@ -16,8 +16,13 @@ möglich.
 
 ## [Unreleased]
 
+## [1.18.2] - 2026-10-16
+
 ### Added
 - `ajax-search.js`, `_ajax-search.scss`: optionale Treffer-Felder `availability_badge`, `product_badge_label` und `product_badge_class` (Badge unter dem Preis, z. B. von einem Projekt-Plugin über den Filter `media_lab_ajax_search_result`). Ohne die Felder ändert sich nichts. Abgeleitet aus dem Stand in at.media-lab
+
+### Fixed
+- Suche: Der Schalter „Filter" der Produktfilter (`.wc-filter-bar__toggle`, Markup aus media-lab-woocommerce ab 2.17.0) hatte keine Stile und erschien auf dem Desktop als ungestylter Knopf. Unterhalb von 992 px klappt er die Filtergruppen jetzt auf (mit Zähler der aktiven Filter und Pfeil), ab 992 px ist er ausgeblendet und die Gruppen stehen als Pills neben der Sortierung (`_search-results.scss`, abgeleitet aus juwelier-janecka)
 
 ## [1.18.1] - 2026-10-15
 
