@@ -661,3 +661,70 @@
         backdrop-filter: blur(10px);
     }
 }
+
+
+// ── Mobil (unter lg, Burger statt Desktop-Menü): flacher, sticky Header und kompaktes Menü ────────
+// Vorher: Header ca. 140px hoch (zweimal Padding), Menüzeilen von ca. 90px, das Menü scrollte.
+// --header-height setzt header.php weiterhin per Skript aus der echten Höhe, alles, was die Variable nutzt
+// (Hero-Offset, Menü, Theme-Switcher), folgt also von selbst. Pro Projekt überschreibbar:
+//   --header-mobile-height    Mindesthöhe des Headers (Standard 4rem = 64px)
+//   --header-mobile-position  Standard sticky; "relative" schaltet das Mitscrollen ab
+
+@include respond-below('lg') {
+    // Fallback, bis das Skript die echte Höhe gesetzt hat (html:root schlägt das :root im Kopf von header.php)
+    html:root { --header-height: calc(var(--header-mobile-height, 4rem) + 1px); }
+
+    header.site-header {
+        position: var(--header-mobile-position, sticky);
+        top:      0;
+        padding:  0;
+    }
+
+    header.site-header .site-navigation {
+        min-height:    var(--header-mobile-height, 4rem);
+        padding-block: 0;
+    }
+
+    .mobile-menu {
+        height:              100vh;   // Rückfall
+        height:              100dvh;  // iOS: ohne die ein- und ausfahrende Adressleiste
+        padding-block:       var(--space-sm) calc(var(--space-md) + env(safe-area-inset-bottom, 0px));
+        padding-inline:      var(--container-padding);
+        padding-top:         calc(var(--header-height, 4rem) + var(--space-sm));
+        overscroll-behavior: contain; // der Hintergrund scrollt nicht mit
+
+        > ul > li > a {
+            min-height:     3rem;
+            padding-block:  0.375rem;
+            padding-inline: $spacing-2;
+        }
+
+        .sub-menu a {
+            min-height:    2.75rem; // WCAG 2.5.5: 44px
+            padding-block: 0.25rem;
+        }
+    }
+}
+
+
+// ── Mobil: Untermenüs und Logo ────────────────────────────────────────────────────────────────────
+// navigation.js setzt .is-open am Listenpunkt (.menu-item-has-children), nicht am .sub-menu: das Untermenü
+// direkt darunter wird deshalb über den Listenpunkt eingeblendet.
+.mobile-menu .menu-item-has-children.is-open > .sub-menu { display: block; }
+
+@include respond-below('lg') {
+    // Platz rechts für Burger und Theme-Switcher reservieren: ein langer Seitenname wird gekürzt
+    // statt vom Switcher überdeckt
+    .site-logo {
+        flex:      0 1 auto;
+        min-width: 0;
+        max-width: calc(100% - 88px - #{$spacing-2} - #{$spacing-2});
+    }
+
+    .site-logo__text {
+        display:       block;
+        overflow:      hidden;
+        text-overflow: ellipsis;
+        white-space:   nowrap;
+    }
+}

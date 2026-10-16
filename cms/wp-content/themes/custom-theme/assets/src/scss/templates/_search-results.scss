@@ -36,6 +36,7 @@
 
     .search-field {
         flex:          1;
+        min-width:     0;   // sonst schiebt das Feld den Button aus dem Bildschirm
         max-width:     $field-max;
         height:        48px;
         padding:       0 $spacing-4;
@@ -266,5 +267,46 @@
             flex:  0 0 auto;
             width: auto;
         }
+    }
+}
+
+
+// ── Suche: Suchformular im Seitenkopf mobil ───────────────────────────────────
+// Das Feld nutzt die volle Breite, "Suchen" entfällt visuell (Enter startet die Suche, der Button
+// bleibt für Screenreader im DOM).
+
+@include respond-below('md') {
+    .archive-header__search .search-submit {
+        position:    absolute;
+        width:       1px;
+        height:      1px;
+        min-width:   0;
+        min-height:  0;
+        margin:      -1px;
+        padding:     0;
+        border:      0;
+        overflow:    hidden;
+        clip:        rect(0, 0, 0, 0);
+        white-space: nowrap;
+    }
+}
+
+
+// ── Suche mit Produktfiltern: Abstände (search.php setzt .search-layout--filters) ──
+
+.search-layout--filters {
+    // Trefferanzeige: Luft nach oben
+    .wc-loop-header { margin-top: var(--space-sm); }
+
+    // Erstes Ergebnis klebt nicht an der Trefferanzeige
+    .wc-products-container { padding-top: var(--space-md); }
+
+    // Solange der Schalter "Filter" sichtbar ist (unter lg)
+    @include respond-below('lg') {
+        // weniger Abstand zwischen Seitenkopf und Filterleiste
+        .archive-header { margin-bottom: var(--space-md); }
+
+        // Trefferanzeige bündig mit dem Text im Schalter (Rahmen 1px plus Innenabstand 1rem)
+        .wc-loop-header { padding-inline-start: calc(1rem + 1px); }
     }
 }

@@ -64,3 +64,21 @@
     .theme-toggle__icon--dark  { opacity: 1; }
   }
 }
+
+
+// ── Mobil (unter lg, Burger statt Desktop-Menü): links neben dem Burger im Header ──────────────
+// Der Header ist mobil sticky (_navigation.scss), der Knopf fixed: beide bleiben beim Scrollen auf einer Linie.
+// Der Knopf liegt über dem Header (z-index 1000), mittig zur Header-Höhe und um Burger (44px) plus Abstand
+// versetzt. Überschreibbar: --theme-toggle-mobile-top / --theme-toggle-mobile-right.
+
+@include respond-below('lg') {
+  .theme-toggle {
+    top:     var(--theme-toggle-mobile-top, calc((var(--header-height, 64px) - 44px) / 2));
+    right:   var(--theme-toggle-mobile-right, calc(var(--container-padding, #{$spacing-4}) + 44px + #{$spacing-2}));
+    width:   44px;
+    height:  44px;
+    z-index: $z-dropdown + 1;
+
+    &__icon { font-size: 20px; }
+  }
+}
