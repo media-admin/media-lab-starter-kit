@@ -16,6 +16,11 @@ möglich.
 
 ## [Unreleased]
 
+## [1.18.5] - 2026-10-16
+
+### Fixed
+- **Sticky Header (alle Breiten):** `html, body { overflow-x: hidden; }` in `components/_hero-slider.scss` machte den `body` zum Scroll-Container, deshalb klebte der sticky Header nie (gemessen: `position: sticky`, nach dem Scrollen trotzdem 1325 px über dem Bildschirm). Jetzt `html { overflow-x: hidden; }` und `body { overflow-x: clip; }`, dazu `html { scroll-padding-top: var(--header-height, 0px); }`, damit Anker-Sprünge nicht unter dem Header landen. Projekte mit eigener Kopie der Regel haben denselben Fehler
+
 ## [1.18.4] - 2026-10-16
 
 ### Changed
