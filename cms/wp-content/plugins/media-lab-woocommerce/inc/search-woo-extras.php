@@ -22,6 +22,7 @@
  * Hooks (hier, zum Anpassen):
  *   mlw_search_excluded_visibility_terms ( string[] )  Sichtbarkeits-Terms, die ausgeschlossen werden
  *   mlw_search_taxonomies                ( string[] )  Taxonomien, die als Treffer zählen (Standard: product_cat, product_brand)
+ *   mlw_search_match_terms_max            ( int )       Wie viele passende Kategorien/Marken je Taxonomie ausgewertet werden (Standard 25, die größten zuerst)
  *
  * Kategorien nicht als Treffer zählen lassen (z. B. im Theme): Dann findet "ring" nur Titel-Treffer und Marken,
  * nicht mehr alle Produkte der Kategorien Ringe, Eheringe ... - dafür findet "Eheringe" die Trauringe nicht,
@@ -199,7 +200,9 @@ add_filter( 'media_lab_search_woo_matches', function ( array $matches, string $s
 			'taxonomy'   => $taxonomy,
 			'name__like' => $search,
 			'hide_empty' => true,
-			'number'     => 5,
+			'number'     => max( 1, (int) apply_filters( 'mlw_search_match_terms_max', 25 ) ),
+                       'orderby'    => 'count',
+                       'order'      => 'DESC',
 		] );
 		if ( is_wp_error( $terms ) || empty( $terms ) ) {
 			continue;
@@ -318,6 +321,17 @@ function mlw_search_matching_terms( string $search, int $max = 0 ): array {
 	return array_slice( array_column( $candidates, 'term' ), 0, $max );
 }
 
+/**
+ * Produktanzahl eines Terms für die Anzeige. WooCommerce rechnet die Anzahl auf normalen Seiten
+ * um (Katalog-Sichtbarkeit, wc_change_term_counts()), überspringt das aber bei AJAX-Anfragen:
+ * die Live-Suche bekäme sonst den Rohwert inklusive versteckter Produkte. Wir lesen deshalb
+ * dasselbe Term-Meta, das WooCommerce pflegt, und fallen auf den Rohwert zurück.
+ */
+function mlw_search_term_display_count( WP_Term $term ): int {
+	$meta = get_term_meta( $term->term_id, 'product_count_' . $term->taxonomy, true );
+	return ( '' !== $meta && false !== $meta ) ? absint( $meta ) : (int) $term->count;
+}
+
 // Live-Suche: Kategorien und Marken ganz oben (Felder wie die übrigen Treffer)
 add_filter( 'media_lab_ajax_search_term_results', function ( array $results, string $search, array $post_types ): array {
 	if ( ! in_array( 'product', $post_types, true ) ) {
@@ -335,7 +349,7 @@ add_filter( 'media_lab_ajax_search_term_results', function ( array $results, str
 		$name  = ( $highlight && function_exists( 'agency_core_highlight_search_term' ) )
 			? agency_core_highlight_search_term( $term->name, $search )
 			: esc_html( $term->name );
-		$count = (int) $term->count;
+		$count = mlw_search_term_display_count( $term );
 
 		$results[] = [
 			'id'        => (int) $term->term_id,

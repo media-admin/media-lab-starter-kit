@@ -299,6 +299,7 @@ Anzahl der Shop-Seite, wenn im Core `0` eingestellt ist (Filter
 | `mlwf_enqueue_frontend_data` | Weitere Seiten fordern das Filter-Objekt `window.mlwf` an |
 | `mlwf_search_facet_taxonomies`, `mlwf_search_facet_min_terms`, `mlwf_search_facets`, `mlwf_search_filter_min_products`, `mlwf_search_sort_options` | Filter auf der Suchergebnisseite anpassen |
 | `mlw_search_taxonomies` | Taxonomien, die als Treffer zählen (Standard `product_cat`, `product_brand`) |
+| `mlw_search_match_terms_max` | Wie viele passende Kategorien und Marken je Taxonomie als Treffer ausgewertet werden (Standard 25, die größten zuerst) |
 | `mlw_search_excluded_visibility_terms` | Sichtbarkeits-Terms, die aus der Suche ausgeschlossen werden |
 | `mlw_search_term_taxonomies`, `mlw_search_term_results_max` | Kategorien/Marken als Einträge (Standard `product_cat`, `product_brand`; leer = keine; Maximum 3) |
 | `media_lab_search_serp_per_page` | „Ergebnisse pro Seite" der Suche (Core-Filter) |
