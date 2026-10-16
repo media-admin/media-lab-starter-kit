@@ -793,7 +793,8 @@
     justify-content: center;
 
     li {
-        a, span {
+        > a,
+        > span {
             display:        flex;
             align-items:    center;
             justify-content: center;

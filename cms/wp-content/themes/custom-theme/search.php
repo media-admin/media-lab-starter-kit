@@ -77,10 +77,17 @@ $layout_class = 'archive-layout search-layout container' . ( $filter_bar !== '' 
         <h1 class="archive-header__title">
             <?php if ( $search_query ) : ?>
                 <?php
-                printf(
-                    esc_html( $t( 'serp_title', __( 'Suchergebnisse für: „%s“', 'custom-theme' ) ) ),
-                    '<span class="archive-header__term">' . esc_html( $search_query ) . '</span>'
-                );
+                // Die Anführungszeichen gehören zum Suchbegriff: so bleibt „Begriff“ beim Umbruch zusammen (mobil eigene Zeile)
+                $title_format = esc_html( $t( 'serp_title', __( 'Suchergebnisse für: „%s“', 'custom-theme' ) ) );
+                $quote_open   = '(?:„|“|‚|«|&quot;|&#039;)?';
+                $quote_close  = '(?:“|”|’|»|&quot;|&#039;)?';
+                if ( preg_match( '/^(.*?)(' . $quote_open . ')%s(' . $quote_close . ')(.*)$/su', $title_format, $tm ) ) {
+                    // phpcs:ignore WordPress.Security.EscapeOutput -- Format per esc_html() escaped, Suchbegriff per esc_html()
+                    echo $tm[1] . '<span class="archive-header__term">' . $tm[2] . esc_html( $search_query ) . $tm[3] . '</span>' . $tm[4];
+                } else {
+                    // phpcs:ignore WordPress.Security.EscapeOutput -- Format per esc_html() escaped, Suchbegriff per esc_html()
+                    printf( $title_format, '<span class="archive-header__term">' . esc_html( $search_query ) . '</span>' );
+                }
                 ?>
             <?php else : ?>
                 <?php esc_html_e( 'Suchergebnisse', 'custom-theme' ); ?>
