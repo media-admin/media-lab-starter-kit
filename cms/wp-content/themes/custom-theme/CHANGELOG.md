@@ -16,6 +16,11 @@ möglich.
 
 ## [Unreleased]
 
+## [1.18.4] - 2026-10-16
+
+### Changed
+- **Mobiles Menü: Such-Auslöser und Wunschliste** erscheinen als Textzeilen wie die übrigen Einträge (Höhe 3 rem, gleicher Einzug und gleiche Schrift), unabhängig davon, ob das Plugin Icon oder Text rendert. Ohne Label zeigt der Such-Auslöser den Text seines `aria-label`, die Wunschliste ihren `aria-label` mit dem Zähler als Badge rechts (`_navigation.scss`). Desktop unverändert
+
 ## [1.18.3] - 2026-10-16
 
 ### Changed
