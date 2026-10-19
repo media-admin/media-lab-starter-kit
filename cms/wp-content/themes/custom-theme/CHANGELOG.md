@@ -16,6 +16,11 @@ möglich.
 
 ## [Unreleased]
 
+## [1.18.10] - 2026-10-19
+
+### Fixed
+- **Filterleiste im Shop- und Kategorie-Archiv:** Die Gruppen liegen dort direkt in `.wc-filter-bar__groups` (kein `.wc-filter-bar__groups-filters` wie auf der Suchseite), die Sortierung steht als Geschwister neben dem Formular. Mit `justify-content: space-between` verteilten sich die Chips über die ganze Breite und die Sortierung stand darunter. Jetzt stehen die Chips links und die Sortierung rechts in derselben Zeile (schmal darunter), die aktiven Filter folgen darunter. Die Suchseite (`.wc-filter-bar--search`) bleibt unverändert (`woocommerce/_woocommerce.scss`)
+
 ## [1.18.9] - 2026-10-19
 
 ### Fixed
