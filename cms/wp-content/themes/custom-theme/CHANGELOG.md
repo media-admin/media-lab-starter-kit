@@ -16,6 +16,11 @@ möglich.
 
 ## [Unreleased]
 
+## [1.18.9] - 2026-10-19
+
+### Fixed
+- **Such-Overlay (Agency Core) und Header:** Der Schließen-Knopf des Overlays sitzt 2,5 rem über dem Panel (`top: -2.5rem`) und lag mit dem flachen sticky Header mobil auf dem Burger, am Desktop auf dem Menü. Das Panel beginnt jetzt unter dem Header (`margin-top: max(10vh, header-height + 3.5rem)`, `_navigation.scss`). `navigation.js` schließt das Mobil-Menü, wenn der Such-Auslöser darin angetippt wird (vorher blieb es hinter dem Overlay offen, der Burger blieb im X-Zustand)
+
 ## [1.18.8] - 2026-10-19
 
 ### Fixed
