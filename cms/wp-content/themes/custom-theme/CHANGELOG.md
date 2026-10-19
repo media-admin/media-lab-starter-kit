@@ -16,6 +16,12 @@ möglich.
 
 ## [Unreleased]
 
+## [1.18.8] - 2026-10-19
+
+### Fixed
+- **WooCommerce-Hinweise im Dunkelmodus:** `.woocommerce-info`, `-message` und `-error` nutzten feste Hell-Farben (`$color-*-light-bg`, `$color-*-dark`) und erschienen im dunklen Theme als grelle blaue, grüne oder rote Kästen (z. B. „Es wurden keine Produkte gefunden“). Hintergrund und Rahmen entstehen jetzt per `color-mix` aus der Akzentfarbe (`--color-info`, `--color-success`, `--color-error`) und der Kartenfarbe, der Text bleibt in `--color-text`, das Symbol trägt die Akzentfarbe
+- **WooCommerce-Hinweise: Innenabstand:** Der Kasten hatte 32 px oben und unten und 40 px seitlich (`$spacing-4 $spacing-5`), mobil wurde aus einer Zeile Text ein hoher Block. Jetzt `$spacing-2 $spacing-3` und `gap: $spacing-2` (`woocommerce/_woocommerce.scss`)
+
 ## [1.18.7] - 2026-10-16
 
 ### Fixed
