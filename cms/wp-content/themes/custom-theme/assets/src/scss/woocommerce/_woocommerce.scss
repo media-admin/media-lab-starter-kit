@@ -39,8 +39,8 @@
 .woocommerce-info {
     display:       flex;
     align-items:   flex-start;
-    gap:           $spacing-3;
-    padding:       $spacing-4 $spacing-5;
+    gap:           $spacing-2;
+    padding:       $spacing-2 $spacing-3;
     border-radius: $radius-md;
     font-size:     var(--text-sm);
     font-weight:   500;
@@ -59,9 +59,24 @@
     }
 }
 
-.woocommerce-message { background: $color-success-light-bg; border-color: $color-success; color: $color-success-dark; &::before { content: '✓'; } }
-.woocommerce-error   { background: $color-error-light-bg;   border-color: $color-error;   color: $color-error-dark;   &::before { content: '!'; } }
-.woocommerce-info    { background: $color-info-light-bg;    border-color: $color-info;    color: $color-info-dark;    &::before { content: 'ℹ'; } }
+// Hinweise: Hintergrund und Rahmen entstehen per color-mix aus der Akzentfarbe und der Kartenfarbe des Themes,
+// der Text bleibt in der normalen Textfarbe, das Symbol trägt die Akzentfarbe. So sind sie im Hell- und im
+// Dunkelmodus lesbar, ohne feste Farbwerte. Vorher: feste Hell-Farben ($color-*-light-bg), im dunklen Theme ein
+// grell blauer, grüner oder roter Kasten.
+.woocommerce-message,
+.woocommerce-error,
+.woocommerce-info {
+    background:   var(--color-card-bg); // Rückfall ohne color-mix
+    background:   color-mix(in srgb, var(--notice-accent) 14%, var(--color-card-bg));
+    border-color: var(--notice-accent);
+    color:        var(--color-text);
+
+    &::before { color: var(--notice-accent); }
+}
+
+.woocommerce-message { --notice-accent: var(--color-success); &::before { content: '✓'; } }
+.woocommerce-error   { --notice-accent: var(--color-error);   &::before { content: '!'; } }
+.woocommerce-info    { --notice-accent: var(--color-info);    &::before { content: 'ℹ'; } }
 
 // ── 2. Shop-Grid ─────────────────────────────────────────────────────────────
 
