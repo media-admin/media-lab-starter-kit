@@ -16,6 +16,12 @@ möglich.
 
 ## [Unreleased]
 
+## [1.18.7] - 2026-10-16
+
+### Fixed
+- **Weitere Scroll-Sperren am `body`** (Lightbox, Top-Header, Cookie-Dialog, Popups, Such-Overlay des Cores) bekamen dieselbe Ursache: `html { overflow-x: hidden; }` lässt den `overflow` des `body` nicht mehr auf den Viewport wirken. Sie werden jetzt per `html:has(body…)` auf `html` übertragen, der `body` bleibt dabei kein Scroll-Container, damit der sticky Header klebt (`_hero-slider.scss`)
+- **Mobil-Menü, Scroll-Sperre:** `navigation.js` setzte beim Öffnen `overflow: hidden` inline am `body`. Seit `html` selbst `overflow-x: hidden` hat (1.18.5), macht das den `body` zum Scroll-Container: Der sticky Header klebte bei offenem Menü nicht mehr (nach dem Scrollen weg, nur der Theme-Switcher blieb), und der Hintergrund ließ sich weiter scrollen. Jetzt setzt `navigation.js` die Klasse `is-menu-open` an `html`, `html.is-menu-open { overflow: hidden; }` sperrt am Viewport (`navigation.js`, `_navigation.scss`)
+
 ## [1.18.6] - 2026-10-16
 
 ### Fixed
