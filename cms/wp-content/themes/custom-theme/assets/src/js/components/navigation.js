@@ -76,14 +76,14 @@ export default class Navigation {
         this.mobileToggle?.classList.add('is-active');
         this.mobileMenu.classList.add('is-active');
         this.mobileOverlay?.classList.add('is-active');
-        document.body.style.overflow = 'hidden';
+        document.documentElement.classList.add('is-menu-open'); // Scroll-Sperre am Viewport (html), nicht am body
     }
 
     _closeMobileMenu() {
         this.mobileToggle?.classList.remove('is-active');
         this.mobileMenu.classList.remove('is-active');
         this.mobileOverlay?.classList.remove('is-active');
-        document.body.style.overflow = '';
+        document.documentElement.classList.remove('is-menu-open');
 
         // Alle Submenüs schließen
         this.mobileItems.forEach(item => item.classList.remove('is-open'));

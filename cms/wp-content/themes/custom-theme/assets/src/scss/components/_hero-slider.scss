@@ -178,3 +178,22 @@ html { scroll-padding-top: var(--header-height, 0px); }
   width:         32px !important;
   border-radius: 6px !important;
 }
+
+
+// Scroll-Sperren, die den overflow am body setzen (Lightbox und Top-Header per JS inline, Cookie-Dialog, Popups, Such-
+// Overlay des Cores): gleiche Ursache wie bei .is-menu-open (_navigation.scss). Weil html selbst overflow-x: hidden
+// hat, wirkt der Wert des body nicht mehr auf den Viewport: die Seite dahinter scrollt weiter, der sticky Header
+// klebt nicht. Die Sperre wird deshalb auf html übertragen.
+html:has(body[style*="overflow: hidden"]),
+html:has(body.cookie-modal-open),
+html:has(body.popup-open),
+html:has(body.mlc-search-overlay-active) { overflow: hidden; }
+
+// Der body darf dabei selbst kein Scroll-Container werden: steht auf html UND body overflow: hidden, klebt der sticky
+// Header nicht mehr (gemessen bei offenem Cookie-Dialog nach 1622 px Scrollen: Header 1622 px über dem Bildschirm).
+// overflow: visible am body (!important gegen den inline-Wert der Lightbox) lässt nur html sperren. Nur overflow-y
+// reicht nicht: body.cookie-modal-open setzt auch overflow-x: hidden, und visible wird neben hidden zu auto.
+html:has(body[style*="overflow: hidden"]) body,
+html:has(body.cookie-modal-open) body,
+html:has(body.popup-open) body,
+html:has(body.mlc-search-overlay-active) body { overflow: visible !important; }

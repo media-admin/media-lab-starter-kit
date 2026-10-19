@@ -793,3 +793,10 @@
         line-height:     1;
     }
 }
+
+
+// ── Scroll-Sperre bei offenem Mobil-Menü ──────────────────────────────────────────────────────────
+// navigation.js setzt .is-menu-open an html. Früher stand overflow: hidden inline am body: seit html selbst
+// overflow-x: hidden hat (_hero-slider.scss), wirkt der Wert des body nicht mehr auf den Viewport, sondern macht den
+// body zum Scroll-Container. Der sticky Header klebte dann nicht mehr, und die Seite dahinter scrollte weiter.
+html.is-menu-open { overflow: hidden; }
