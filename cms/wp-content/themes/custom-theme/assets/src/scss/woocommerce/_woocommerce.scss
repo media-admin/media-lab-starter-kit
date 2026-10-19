@@ -1215,3 +1215,38 @@
 // ---------------------------------------------------------------------------
 
 .wc-filter-sidebar__footer { display: none; }
+
+
+// ── Filterleiste im Shop- und Kategorie-Archiv (Markup aus media-lab-woocommerce, mlwf_render_filter_bar) ──────────
+// Anders als die Suche (.wc-filter-bar--search) liegen die Gruppen direkt in .wc-filter-bar__groups (kein
+// .wc-filter-bar__groups-filters), und die Sortierung steht als Geschwister neben dem Formular. Mit "space-between"
+// aus dem Grundstil verteilten sich die Chips über die ganze Breite (links, Mitte, rechts), die Sortierung stand
+// darunter. Jetzt: Chips links, Sortierung rechts in derselben Zeile (schmal: darunter), aktive Filter darunter.
+
+.wc-filter-bar:not(.wc-filter-bar--search) {
+    display:         flex;
+    flex-wrap:       wrap;
+    align-items:     flex-start;
+    justify-content: space-between;
+    gap:             0.375rem 1rem;
+
+    .wc-filter-bar__form {
+        flex:      1 1 20rem;
+        min-width: 0;
+    }
+
+    .wc-filter-bar__groups {
+        flex-wrap:       wrap;
+        justify-content: flex-start;
+    }
+
+    .wc-filter-bar__groups-sort { flex: 0 0 auto; }
+
+    .woocommerce-ordering { margin: 0; }
+
+    .wc-active-filters {
+        flex: 1 1 100%;
+
+        &:empty { display: none; }
+    }
+}
