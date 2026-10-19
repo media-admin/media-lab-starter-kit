@@ -53,6 +53,12 @@ export default class Navigation {
 
         this.mobileToggle.addEventListener('click', () => this._toggleMobileMenu());
 
+        // Such-Overlay (Agency Core) aus dem Mobil-Menü öffnen: das Menü schließen, sonst bleibt es dahinter offen
+        // (und der Burger im X-Zustand). Der Listener des Plugins am Auslöser läuft vorher und öffnet das Overlay.
+        this.mobileMenu.addEventListener('click', (e) => {
+            if (e.target.closest('.mlc-nav-search-toggle')) this._closeMobileMenu();
+        });
+
         if (this.mobileOverlay) {
             this.mobileOverlay.addEventListener('click', () => this._closeMobileMenu());
         }

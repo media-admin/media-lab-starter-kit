@@ -800,3 +800,12 @@
 // overflow-x: hidden hat (_hero-slider.scss), wirkt der Wert des body nicht mehr auf den Viewport, sondern macht den
 // body zum Scroll-Container. Der sticky Header klebte dann nicht mehr, und die Seite dahinter scrollte weiter.
 html.is-menu-open { overflow: hidden; }
+
+
+// ── Such-Overlay (Agency Core, nav-search-overlay.css) und flacher Header ────────────────────────
+// Der Schließen-Knopf sitzt 2.5rem über dem Panel (top: -2.5rem), das Panel beginnt bei 10vh: mit dem sticky Header
+// lag das X mobil auf dem Burger und am Desktop auf dem Menü. Das Panel beginnt jetzt unter dem Header, der Knopf
+// darüber. --header-height setzt header.php aus der echten Höhe (ohne Header-Variable bleibt es bei 10vh).
+.mlc-search-overlay .mlc-search-overlay__panel {
+    margin-top: max(10vh, calc(var(--header-height, 0px) + 3.5rem));
+}
