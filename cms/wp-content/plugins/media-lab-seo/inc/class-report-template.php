@@ -36,6 +36,7 @@ class MLT_Report_Template {
         $a_d       = $compare['analytics_deltas'] ?? [];
         $q_d       = $compare['query_deltas'] ?? [];
         $pg_d      = $compare['page_deltas']  ?? [];
+        $s_d       = $compare['source_deltas'] ?? [];
         $cmp_name  = $cmp_range['label'] ?? '';
 
         // Säulendiagramme (Tageswerte) – nur, wenn vorhanden
@@ -207,17 +208,18 @@ class MLT_Report_Template {
     <tr>
         <td style="background:#fff;padding:0 32px 24px">
             <hr style="border:none;border-top:1px solid #f3f4f6;margin:0 0 20px">
-            <p style="margin:0 0 12px;font-size:11px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:.8px">📡 Traffic-Quellen</p>
+            <p style="margin:0 0 12px;font-size:11px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:.8px">📡 Traffic-Quellen<?php if ( $s_d && $cmp_name ) : ?> &nbsp;·&nbsp; Δ vs. <?php echo esc_html( $cmp_name ); ?><?php endif; ?></p>
             <table width="100%" cellpadding="0" cellspacing="0" border="0">
                 <?php
                 $s_max   = max( 1, ...array_map( 'intval', array_column( $a_src, 'sessions' ) ?: [ 1 ] ) );
                 $s_total = (int) ( $a_over['sessions'] ?? 0 );
                 foreach ( $a_src as $i => $row ) :
                     $share = ( $s_total > 0 && (int) $row['sessions'] <= $s_total ) ? round( (int) $row['sessions'] / $s_total * 100 ) : null;
+                    $s_delta = $s_d[ $row['source'] ]['sessions'] ?? null;
                 ?>
                 <tr style="background:<?php echo $i % 2 === 0 ? '#fff' : '#f9fafb'; ?>">
                     <td style="padding:8px 10px;font-size:13px;color:#374151"><?php echo esc_html( $row['source'] ); ?><?php echo MLT_Chart::mail_bar( (int) $row['sessions'] / $s_max, '#0284c7' ); ?></td>
-                    <td style="padding:8px 10px;font-size:13px;color:#6b7280;text-align:right" valign="top"><?php echo number_format( $row['sessions'], 0, ',', '.' ); ?> Sessions<?php if ( $share !== null ) : ?><br><span style="font-size:11px;color:#9ca3af"><?php echo (int) $share; ?> %</span><?php endif; ?></td>
+                    <td style="padding:8px 10px;font-size:13px;color:#6b7280;text-align:right" valign="top"><?php echo number_format( $row['sessions'], 0, ',', '.' ); ?> Sessions<?php if ( $share !== null || $s_delta ) : ?><br><?php if ( $share !== null ) : ?><span style="font-size:11px;color:#9ca3af"><?php echo (int) $share; ?> %</span><?php endif; ?><?php if ( $share !== null && $s_delta ) : ?> &nbsp;·&nbsp; <?php endif; ?><?php echo MLT_Delta::html_mail_span( $s_delta ); ?><?php endif; ?></td>
                 </tr>
                 <?php endforeach; ?>
             </table>

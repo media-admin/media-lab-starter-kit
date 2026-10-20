@@ -15,6 +15,30 @@ ist hierbei **kein Feature verloren gegangen**, nur die Zählung war falsch.
 
 ---
 
+## [1.16.0] - 2026-10-19
+
+### media-lab-seo 1.16.0
+
+#### Added
+- **Veränderung pro Traffic-Quelle im E-Mail-Report.** Unter jeder Session-Zahl steht der
+  Prozentanteil an allen Sessions und daneben die **absolute** Veränderung gegenüber dem
+  Vergleichszeitraum (z. B. „66 % · ▲ +40"). Quellen, die im Vergleichszeitraum fehlten, sind
+  „neu". Die Kartenüberschrift zeigt „Δ vs. Vorperiode", wie bei Top Keywords und Top Seiten.
+  - Abgleich über die ersten 100 Quellen des Vergleichszeitraums (eine zusätzliche, gecachte
+    Abfrage über `get_sources()` des Analytics-Adapters – das Adapter-Interface bleibt
+    unverändert, GA4, Matomo und eigene Adapter funktionieren ohne Anpassung).
+  - Gilt derselbe Vergleichsmodus wie überall (Vorperiode/Vorjahr/aus); keine Quellen-Deltas
+    ohne belastbare Vergleichsbasis (kein Vergleich, Analytics-Vergleich ohne Daten,
+    fehlgeschlagene Abfrage).
+  - Neue Methoden `MLT_Compare::source_deltas()` und `MLT_Delta::html_mail_span()` (Delta als
+    Inline-Span ohne Zeilenumbruch), neue Konstante `MLT_Compare::SOURCE_COMPARE_LIMIT`.
+    `MLT_Compare::fetch()` nimmt optional die aktuellen Quellen entgegen (`$sources`, 8. Parameter)
+    und liefert `source_deltas` zurück. Bestehende Aufrufe bleiben kompatibel.
+  - Report-Rohdaten (Filter `mlt_weekly_report_html`): `compare` enthält den neuen Key
+    `source_deltas`.
+
+---
+
 ## [1.15.0] - 2026-10-05
 
 ### media-lab-seo 1.15.0

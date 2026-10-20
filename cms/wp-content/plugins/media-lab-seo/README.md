@@ -23,7 +23,7 @@ Entwickelt von [Media Lab Tritremmel GmbH](https://media-lab.at).
 - **Analytics-Adapter** (pluggbar): GA4 oder Matomo, austauschbar per Filter, eigene Adapter über ein PHP-Interface möglich
 - **Consent-aware Tracking**: GA4/GTM über Google Consent Mode v2, Tracking startet erst nach Cookie-Consent (Bridge zu Agency-Core Cookie Consent)
 - **Consent-Rate-Tracking**: DSGVO-Auswertung, wie viele Besucher Analytics-Consent geben
-- **Wöchentlicher Report-Mailer**: HTML-Report per E-Mail mit Veränderung gegenüber dem Vergleichszeitraum, Säulendiagrammen (Tageswerte, Vergleich grau) und Balken in den Listen (reines Tabellen-HTML, ohne Bilder/JS), dynamische Empfänger-Liste (nicht nur Admin-E-Mail), konfigurierbarer Versandtag/-uhrzeit, Test-Mail-Button
+- **Wöchentlicher Report-Mailer**: HTML-Report per E-Mail mit Veränderung gegenüber dem Vergleichszeitraum (KPIs, Top-Keywords, Top-Seiten und Traffic-Quellen), Säulendiagrammen (Tageswerte, Vergleich grau) und Balken in den Listen (reines Tabellen-HTML, ohne Bilder/JS), dynamische Empfänger-Liste (nicht nur Admin-E-Mail), konfigurierbarer Versandtag/-uhrzeit, Test-Mail-Button
 
 ---
 
@@ -119,7 +119,7 @@ add_filter( 'mlt_analytics_adapter', function( $adapter ) {
 
 **SEO Toolkit → Einstellungen**, Karte „Wöchentlicher Report": Report aktivieren, Empfänger (beliebig viele), Versandtag, Uhrzeit konfigurieren. Der Button „Test-Report senden" schickt den echten Report mit aktuellen Zahlen nur an die erste ausgefüllte Adresse. Die Einstellungsseite zeigt den „Nächsten geplanten Versand"; steht dort „—", ist kein Termin geplant (ab 1.12.0 plant sich der Event bei aktivem Schalter selbst).
 
-Zeitraum und Vergleich des Reports kommen aus der Karte „SEO": **Standard-Zeitraum** und **Vergleichszeitraum** (Vorperiode / Vorjahreszeitraum / kein Vergleich) – dieselben Einstellungen wie im Dashboard. Die Search Console speichert nur rund 16 Monate; liegt der Vergleichszeitraum weiter zurück (z. B. bei 365 Tagen), entfällt der Vergleich.
+Zeitraum und Vergleich des Reports kommen aus der Karte „SEO": **Standard-Zeitraum** und **Vergleichszeitraum** (Vorperiode / Vorjahreszeitraum / kein Vergleich) – dieselben Einstellungen wie im Dashboard. Die Search Console speichert nur rund 16 Monate; liegt der Vergleichszeitraum weiter zurück (z. B. bei 365 Tagen), entfällt der Vergleich. Die Veränderung wird im Report für KPI-Kacheln, Top Keywords, Top Seiten und Traffic-Quellen angezeigt: bei Klicks und Sessions als absolute Veränderung („▲ +30"), bei der Position als Verbesserung/Verschlechterung (kleiner = besser), neue Einträge sind „neu". Fehlt die Vergleichsbasis (Modus „Kein Vergleich", Vergleichszeitraum ohne Daten), entfallen die Veränderungswerte.
 
 Report-Inhalt per Filter erweiterbar:
 
@@ -139,7 +139,7 @@ wp cron event list | grep mlt         # Nächsten geplanten Versand anzeigen
 
 ## Hooks
 
-Nur tatsächlich im Code vorhandene Hooks (Stand 1.14.0, verifiziert gegen den Quellcode):
+Nur tatsächlich im Code vorhandene Hooks (Stand 1.16.0, verifiziert gegen den Quellcode):
 
 ### Actions
 | Hook | Beschreibung |
@@ -150,7 +150,7 @@ Nur tatsächlich im Code vorhandene Hooks (Stand 1.14.0, verifiziert gegen den Q
 ### Filter – Report, Dashboard, Analytics
 | Filter | Parameter | Beschreibung |
 |---|---|---|
-| `mlt_weekly_report_html` | `$html`, `$data`, `$to` | Report-HTML vor dem Versand anpassen (`$data` enthält u. a. `compare`) |
+| `mlt_weekly_report_html` | `$html`, `$data`, `$to` | Report-HTML vor dem Versand anpassen (`$data` enthält u. a. `compare` mit `query_deltas`, `page_deltas`, `source_deltas`) |
 | `mlt_weekly_report_subject` | `$subject`, `$week`, `$year` | Betreff anpassen |
 | `mlt_report_max_html_bytes` | `$bytes` | Größenlimit des Report-HTML (Standard 80000); darüber entfallen die Säulendiagramme (Gmail kürzt ab ca. 102 KB) |
 | `mlt_compare_mode` | `$mode` | Vergleichsmodus überschreiben: `previous_period`, `previous_year`, `off` |

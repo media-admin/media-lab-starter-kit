@@ -10,11 +10,15 @@
  *  - fetch():     holt die Vergleichsdaten (GSC + Analytics-Adapter) und
  *                 berechnet die Deltas – wird von Dashboard, WP-Widget und
  *                 Report-Mailer gleichermaßen verwendet
+ *  - row_deltas():    Trend je Zeile (Top Keywords / Top Seiten)
+ *  - source_deltas(): Trend je Traffic-Quelle (Sessions)
  *
  * MLT_Delta
- *  - calc():       Veränderung berechnen (Zählwert in %, Rate in PP, Position absolut)
- *  - html_admin(): Darstellung im Backend (CSS-Klassen aus dashboard.css)
- *  - html_mail():  Darstellung im E-Mail-Report (Inline-CSS)
+ *  - calc():           Veränderung berechnen (Zählwert in %, Rate in PP, Position absolut)
+ *  - html_admin():     Darstellung im Backend (CSS-Klassen aus dashboard.css)
+ *  - html_mail():      Darstellung im E-Mail-Report (Inline-CSS)
+ *  - html_mail_inline(): kleine Zeile unter dem Wert (mit <br>)
+ *  - html_mail_span():   Delta als Inline-Span ohne Umbruch (neben anderen Angaben)
  *
  * Hinweis: Die Klassen sind nicht GSC-spezifisch (auch Analytics wird verglichen),
  * deshalb eigene Datei statt Erweiterung von MLT_GSC_API.
@@ -34,6 +38,9 @@ class MLT_Compare {
 
     /** So viele Zeilen des Vergleichszeitraums werden für den Abgleich der Top-Listen geholt. */
     const ROW_COMPARE_LIMIT = 500;
+
+    /** So viele Traffic-Quellen des Vergleichszeitraums werden für den Abgleich geholt. */
+    const SOURCE_COMPARE_LIMIT = 100;
 
     // ── Setting ───────────────────────────────────────────────────────────────
 
@@ -170,6 +177,47 @@ class MLT_Compare {
         return $out;
     }
 
+    // ── Quellen-Vergleich (Traffic-Quellen) ───────────────────────────────────
+
+    /**
+     * Veränderung der Sessions je Traffic-Quelle gegenüber dem Vergleichszeitraum.
+     *
+     * Abgeglichen wird über die ersten SOURCE_COMPARE_LIMIT Quellen des Vergleichszeitraums.
+     * Fehlt eine Quelle dort, war sie im Vergleichszeitraum nicht vorhanden – sie wird als
+     * „neu" gekennzeichnet. Wie bei den Keywords wird die absolute Veränderung gezeigt
+     * (bei kleinen Zahlen aussagekräftiger als Prozent).
+     *
+     * @param array<int,array{source:string,sessions:int}> $rows       aktuelle Quellen
+     * @param array<int,array{source:string,sessions:int}> $prev_rows  Quellen des Vergleichszeitraums
+     * @return array<string,array{sessions:?array,prev:?array}> Schlüssel = Quelle
+     */
+    public static function source_deltas( array $rows, array $prev_rows ) : array {
+        $prev = [];
+        foreach ( $prev_rows as $r ) {
+            $prev[ (string) ( $r['source'] ?? '' ) ] = $r;
+        }
+
+        $out = [];
+        foreach ( $rows as $r ) {
+            $k        = (string) ( $r['source'] ?? '' );
+            $sessions = $r['sessions'] ?? null;
+
+            if ( isset( $prev[ $k ] ) ) {
+                $p         = $prev[ $k ];
+                $out[ $k ] = [
+                    'sessions' => MLT_Delta::calc( $sessions, $p['sessions'] ?? null, 'abs' ),
+                    'prev'     => [ 'sessions' => (int) ( $p['sessions'] ?? 0 ) ],
+                ];
+            } else {
+                $out[ $k ] = [
+                    'sessions' => ( is_numeric( $sessions ) && (float) $sessions > 0 ) ? MLT_Delta::calc( $sessions, 0, 'count' ) : null,
+                    'prev'     => null,
+                ];
+            }
+        }
+        return $out;
+    }
+
     /**
      * Kurze, eindeutige Beschriftungen für URLs (Top Seiten).
      * Normal nur der Pfad; haben mehrere URLs denselben Pfad (z. B. `https://x.at/` und
@@ -252,13 +300,14 @@ class MLT_Compare {
      * @param object|null $adapter       Analytics-Adapter (MLT_Analytics_Adapter_Interface) oder null
      * @param array       $queries       aktuelle Top-Keywords (für Zeilen-Deltas), optional
      * @param array       $pages         aktuelle Top-Seiten (für Zeilen-Deltas), optional
+     * @param array       $sources       aktuelle Traffic-Quellen (für Quellen-Deltas), optional
      * @return array{
      *     range: array|null, gsc_prev: array, analytics_prev: array,
      *     gsc_deltas: array, analytics_deltas: array, notice: string, note: string,
-     *     query_deltas: array, page_deltas: array
+     *     query_deltas: array, page_deltas: array, source_deltas: array
      * }
      */
-    public static function fetch( array $range, array $gsc_cur, array $analytics_cur, bool $has_gsc, $adapter = null, array $queries = [], array $pages = [] ) : array {
+    public static function fetch( array $range, array $gsc_cur, array $analytics_cur, bool $has_gsc, $adapter = null, array $queries = [], array $pages = [], array $sources = [] ) : array {
         $result = [
             'range'            => null,
             'gsc_prev'         => [],
@@ -269,6 +318,7 @@ class MLT_Compare {
             'note'             => '',
             'query_deltas'     => [],
             'page_deltas'      => [],
+            'source_deltas'    => [],
         ];
 
         $cmp = self::get_range( $range );
@@ -300,6 +350,12 @@ class MLT_Compare {
                 $pp = $gsc_api->get_top_pages( self::ROW_COMPARE_LIMIT, $cmp['start'], $cmp['end'] );
                 if ( $pp ) $result['page_deltas'] = self::row_deltas( $pages, $pp, 'url' );
             }
+        }
+
+        // Quellen-Deltas für Traffic-Quellen (nur mit belastbarer Vergleichsbasis, wie bei den Analytics-KPIs)
+        if ( $adapter && $result['analytics_deltas'] && $sources ) {
+            $ps = $adapter->get_sources( $cmp['start'], $cmp['end'], self::SOURCE_COMPARE_LIMIT );
+            if ( $ps ) $result['source_deltas'] = self::source_deltas( $sources, $ps );
         }
 
         // Messtoleranz-Hinweis nur, wenn tatsächlich Veränderungswerte angezeigt werden
@@ -442,6 +498,20 @@ class MLT_Delta {
         $color = $delta['good'] === null ? self::COLOR_FLAT : ( $delta['good'] ? self::COLOR_GOOD : self::COLOR_BAD );
 
         return '<br><span style="font-size:11px;font-weight:600;color:' . $color . '">'
+            . esc_html( $delta['arrow'] . ' ' . $delta['text'] )
+            . '</span>';
+    }
+
+    /**
+     * E-Mail, Tabellenzeile: Delta als reiner Inline-Span OHNE Zeilenumbruch,
+     * z. B. neben dem Prozentanteil einer Traffic-Quelle.
+     */
+    public static function html_mail_span( ?array $delta ) : string {
+        if ( ! $delta ) return '';
+
+        $color = $delta['good'] === null ? self::COLOR_FLAT : ( $delta['good'] ? self::COLOR_GOOD : self::COLOR_BAD );
+
+        return '<span style="font-size:11px;font-weight:600;color:' . $color . '">'
             . esc_html( $delta['arrow'] . ' ' . $delta['text'] )
             . '</span>';
     }

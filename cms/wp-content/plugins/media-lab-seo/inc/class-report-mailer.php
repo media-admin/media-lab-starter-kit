@@ -145,7 +145,17 @@ class MLT_Report_Mailer {
         }
 
         // Vergleichszeitraum + Deltas (Einstellung mlt_compare_mode)
-        $data['compare'] = MLT_Compare::fetch( $data['range'], $data['gsc_overview'], $data['analytics'], $has_gsc, $adapter, $data['gsc_queries'], $data['gsc_pages'] );
+        // Keywords, Seiten und Traffic-Quellen werden mitgegeben, damit auch deren Trend berechnet wird.
+        $data['compare'] = MLT_Compare::fetch(
+            $data['range'],
+            $data['gsc_overview'],
+            $data['analytics'],
+            $has_gsc,
+            $adapter,
+            $data['gsc_queries'],
+            $data['gsc_pages'],
+            $data['analytics_sources']
+        );
 
         // Tageswerte für die Säulendiagramme in der Mail (gleiche Quelle wie der Dashboard-Chart)
         $data['charts'] = MLT_Timeseries::collect( $data['range'], $data['compare']['range'] ?? null, $has_gsc, $adapter );

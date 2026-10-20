@@ -1,6 +1,6 @@
 # Analytics Dokumentation
 
-**Version:** 1.14.0 | **Letzte Aktualisierung:** 2026-08-13
+**Version:** 1.14.0 | **Letzte Aktualisierung:** 2026-10-19
 
 ---
 
@@ -13,6 +13,7 @@ Frontend-Tracking als auch die Backend-Dashboard-Daten.
 |---|---|
 | SEO-KPIs (GSC) | `media-lab-seo` → Dashboard → immer verfügbar |
 | Pageviews / Quellen (Adapter) | `media-lab-seo` → Dashboard → optional (GA4 oder Matomo) |
+| Veränderung gegenüber Vorperiode/Vorjahr | `media-lab-seo` → Dashboard, Widget und E-Mail-Report (siehe [Vergleichszeitraum](#vergleichszeitraum-und-veränderung)) |
 | Frontend-Tracking (GA4 oder GTM) | `media-lab-seo` → Einstellungen → Analytics |
 
 ---
@@ -99,6 +100,35 @@ in das SEO-Dashboard integriert. Der Kunde entscheidet, welcher Anbieter eingese
 
 **Vollständige Einrichtung:** → [SEO-Dokumentation → Google Search Console & Google Analytics 4](13_SEO.md#google-search-console--google-analytics-4)
 
+### Vergleichszeitraum und Veränderung
+
+Seit v1.11.0 (Quellen seit v1.16.0) zeigen Dashboard, WP-Widget und wöchentlicher E-Mail-Report
+die Veränderung der Analytics-Werte gegenüber einem Vergleichszeitraum (Vorperiode oder
+Vorjahr, Einstellung unter **SEO Toolkit → Einstellungen → „Vergleichszeitraum"**). Im
+E-Mail-Report betrifft das die Kacheln (Seitenaufrufe, Sessions, Nutzer) und die
+**Traffic-Quellen**.
+
+Der Adapter muss dafür nichts Zusätzliches können: Das Plugin ruft dieselben Methoden ein
+zweites Mal mit dem Vergleichszeitraum auf.
+
+| Adapter-Methode | Verwendung im Vergleich |
+|---|---|
+| `get_overview( $start, $end )` | Veränderung der Kacheln (Seitenaufrufe, Sessions, Nutzer) |
+| `get_sources( $start, $end, $limit )` | Veränderung je Traffic-Quelle im E-Mail-Report (Abruf mit Limit 100 für den Vergleichszeitraum) |
+
+Wichtig für eigene Adapter und für den Betrieb:
+
+- **Quellennamen müssen über beide Zeiträume gleich benannt sein.** Der Abgleich läuft über das
+  Feld `source`. Eine Quelle, die im Vergleichszeitraum anders geschrieben war, erscheint als
+  „neu".
+- **Keine Deltas ohne belastbare Basis:** Hat einer der beiden Zeiträume nur Nullwerte oder
+  schlägt der Abruf fehl, werden keine Veränderungswerte angezeigt (statt Werten wie „−100 %").
+- **Mehr Abfragen:** Pro Report kommen für den Vergleich die Übersicht und die Quellen je einmal
+  zusätzlich dazu (6 Stunden gecacht).
+
+Details, Darstellung und Sonderfälle: → [SEO-Dokumentation → Vergleichszeitraum](13_SEO.md#vergleichszeitraum)
+und [→ Veränderung pro Traffic-Quelle](13_SEO.md#veränderung-pro-traffic-quelle-e-mail-report).
+
 ---
 
 ## Datenschutz-Einordnung
@@ -114,6 +144,6 @@ in das SEO-Dashboard integriert. Der Kunde entscheidet, welcher Anbieter eingese
 
 ## Weiterführende Docs
 
-- [SEO Dokumentation](13_SEO.md) — GSC Dashboard, GA4 & Matomo Adapter
+- [SEO Dokumentation](13_SEO.md) — GSC Dashboard, GA4 & Matomo Adapter, Vergleichszeitraum
 - [Plugin-Übersicht](03_PLUGINS.md)
 - [Deployment](10_DEPLOYMENT.md)

@@ -1,7 +1,7 @@
 # SEO Dokumentation
 
-**Version:** 1.15.0 | **Letzte Aktualisierung:** 2026-10-05
-**Plugin:** `media-lab-seo` v1.15.0
+**Version:** 1.16.0 | **Letzte Aktualisierung:** 2026-10-19
+**Plugin:** `media-lab-seo` v1.16.0
 
 > Diese Doku wurde am 13.08.2026 komplett überarbeitet. Der vorherige
 > Stand (Version 1.13.0 / 2026-03-10, Plugin v1.3.0) enthielt mehrere
@@ -73,6 +73,10 @@
 > eingefügter ganzer Tag wird auf den Code gekürzt (siehe
 > [Verifizierung per Meta-Tag](#verifizierung-per-meta-tag)). Der E-Mail-Report nennt außerdem
 > unter dem Säulendiagramm, wenn die jüngsten Tage wegen Datenverzögerung fehlen.
+>
+> **Nachtrag 2026-10-19 (v1.16.0):** Auch die **Traffic-Quellen** im E-Mail-Report zeigen jetzt
+> die Veränderung gegenüber dem Vergleichszeitraum (siehe
+> [Veränderung pro Traffic-Quelle](#veränderung-pro-traffic-quelle-e-mail-report)).
 
 ---
 
@@ -124,6 +128,7 @@ Kits. Benötigt zwingend `media-lab-agency-core` als aktives Plugin.
 | Verlaufs-Chart | Tageswerte (Klicks, Impressionen, Seitenaufrufe, Sessions) mit Vergleichslinie im Dashboard | v1.12.0 |
 | Mail-Grafiken | Säulendiagramme und Balken im E-Mail-Report (Tabellen-HTML, ohne Bilder) | v1.13.0 |
 | Zeilen-Deltas | Veränderung pro Keyword/Seite gegenüber dem Vergleichszeitraum (Dashboard + Mail) | v1.14.0 |
+| Quellen-Deltas | Veränderung pro Traffic-Quelle im E-Mail-Report | v1.16.0 |
 | GA4-OAuth-Adapter | Primärer GA4-Datenweg, teilt Zugangsdaten mit GSC | siehe Hinweis unten |
 
 > **GA4-Historie unklar:** Aus welcher Version genau der OAuth-Umbau für
@@ -201,7 +206,7 @@ Zusätzlich ein WP-Dashboard-Widget auf der Übersichtsseite (`wp_dashboard_setu
 
 **Verlaufs-Chart** (seit v1.12.0): Karte „Verlauf" mit Reitern, siehe [Verlaufs-Chart](#verlaufs-chart).
 
-**Tabellen:** Top-Keywords (10), Top-Seiten (10), Traffic-Quellen (5). Top-Keywords und Top-Seiten zeigen die [Veränderung pro Zeile](#veränderung-pro-zeile-top-keywords--top-seiten).
+**Tabellen:** Top-Keywords (10), Top-Seiten (10), Traffic-Quellen (5). Top-Keywords und Top-Seiten zeigen die [Veränderung pro Zeile](#veränderung-pro-zeile-top-keywords--top-seiten). Die Traffic-Quellen zeigen ihre Veränderung bisher nur im [E-Mail-Report](#veränderung-pro-traffic-quelle-e-mail-report), nicht im Dashboard.
 
 **Consent-Rate-Card** (seit v1.9.0): eigener Umschalter „Letzte 30 Tage" / „Woche vs. Vorwoche", siehe [Consent-Rate-Tracking](#consent-rate-tracking). Diese Card hat ihre **eigene** Vergleichslogik und folgt dem Vergleichszeitraum der Einstellungen nicht.
 
@@ -243,6 +248,16 @@ Seit v1.14.0. Unter den Klicks jeder Zeile steht die **absolute** Veränderung g
 - **Wann keine Zeilen-Deltas erscheinen:** „Kein Vergleich", Vergleichszeitraum jenseits der 16-Monats-Grenze, Vergleichszeitraum ohne Daten oder fehlgeschlagene Abfrage – ohne belastbare Basis wird nichts angezeigt statt falscher Zahlen.
 - **Seiten-Beschriftung:** `MLT_Compare::page_labels()` zeigt normalerweise nur den Pfad. Erscheint derselbe Pfad unter mehreren Adressen (z. B. `https://x.at/` und `https://www.x.at/`), steht zusätzlich der Host, im Zweifel die volle URL. Tritt das auf, ist das ein SEO-Hinweis: Die Seite ist unter mehreren Adressen indexiert, es fehlen Weiterleitungen (www ↔ ohne www, http → https) oder ein Canonical. Mit dem Tooltip (Dashboard) bzw. in der Search Console lässt sich die Variante prüfen.
 
+#### Veränderung pro Traffic-Quelle (E-Mail-Report)
+
+Seit v1.16.0. Unter der Session-Zahl jeder Quelle steht der Prozentanteil an allen Sessions und daneben die **absolute** Veränderung gegenüber dem Vergleichszeitraum (z. B. `66 % · ▲ +40`). Die Kartenüberschrift nennt „Δ vs. Vorperiode".
+
+- **„neu":** Die Quelle war im Vergleichszeitraum nicht unter den ersten 100 Quellen (Konstante `MLT_Compare::SOURCE_COMPARE_LIMIT`). Typisch bei neuen Referrern wie `chatgpt.com`.
+- **Abfrage:** Eine zusätzliche, 6 Stunden gecachte Abfrage über `get_sources()` des Analytics-Adapters mit dem Vergleichszeitraum. Das Adapter-Interface bleibt unverändert, GA4, Matomo und eigene Adapter funktionieren ohne Anpassung.
+- **Wann keine Quellen-Deltas erscheinen:** „Kein Vergleich", Analytics-Vergleich ohne Daten (dieselbe Bedingung wie bei den Analytics-Kacheln) oder fehlgeschlagene Abfrage.
+- **Schlüssel:** Der Abgleich läuft über den Quellennamen des Adapters (GA4: `sessionSource`). Unterschiedliche Schreibweisen zwischen den Zeiträumen gelten als verschiedene Quellen.
+- **Entwickler:** `MLT_Compare::source_deltas()`, `MLT_Delta::html_mail_span()`; das Ergebnis liegt in `$data['compare']['source_deltas']`.
+
 **Hinweis zur Messtoleranz:** Unter den Kacheln (Dashboard) bzw. unter den Kennzahlen (E-Mail-Report) steht ein kurzer Text, der erklärt, warum Zahlen leicht von anderen Auswertungen abweichen können (nachträglich korrigierte Daten der letzten Tage, Datenschutz-Filterung bei Suchanfragen, fehlende Cookie-Zustimmung, unterschiedliche Zählweisen der Tools) und dass kleine Veränderungen bei niedrigen Zahlen wenig aussagekräftig sind. Damit sollen Rückfragen („warum weicht das von … ab?") gar nicht erst entstehen. Der Text erscheint nur, wenn tatsächlich Veränderungswerte angezeigt werden. Er ist **übersetzbar** (Text Domain `media-lab-seo`, Quelle in `MLT_Compare::tolerance_note()`) und lässt sich per Filter `mlt_compare_tolerance_note` pro Projekt anpassen oder mit einem leeren String ausblenden.
 
 ```php
@@ -257,11 +272,12 @@ add_filter( 'mlt_compare_tolerance_note', '__return_empty_string' );
 
 **Filter:** `mlt_compare_mode` überschreibt den Modus (`previous_period`, `previous_year`, `off`), z. B. projektspezifisch.
 
-**Entwickler:** Zentrale Klassen in `inc/class-compare.php` – `MLT_Compare::get_range()` (Vergleichszeitraum ableiten), `MLT_Compare::fetch()` (Vergleichsdaten holen + Deltas berechnen, von Dashboard, Widget und Mailer gemeinsam genutzt) und `MLT_Delta` (Berechnung und Darstellung). Der Analytics-Adapter muss dafür nichts Neues können: Es wird einfach dieselbe `get_overview()`-Methode ein zweites Mal mit dem Vergleichszeitraum aufgerufen.
+**Entwickler:** Zentrale Klassen in `inc/class-compare.php` – `MLT_Compare::get_range()` (Vergleichszeitraum ableiten), `MLT_Compare::fetch()` (Vergleichsdaten holen + Deltas berechnen, von Dashboard, Widget und Mailer gemeinsam genutzt) und `MLT_Delta` (Berechnung und Darstellung). Der Analytics-Adapter muss dafür nichts Neues können: Es werden einfach dieselben Methoden ein zweites Mal mit dem Vergleichszeitraum aufgerufen – `get_overview()` für die Kacheln und (seit v1.16.0) `get_sources()` für die Quellen-Deltas. `MLT_Compare::fetch()` nimmt dafür optional die aktuellen Listen entgegen (`$queries`, `$pages`, `$sources`).
 
 > **Mehr API-Abfragen:** Mit aktivem Vergleich verdoppeln sich die Abfragen
-> (GSC und Analytics je einmal zusätzlich). Ergebnisse werden wie bisher 6
-> Stunden gecacht.
+> (GSC und Analytics je einmal zusätzlich). Dazu kommen je eine Abfrage für
+> die Zeilen-Deltas (Keywords, Seiten) und im Report eine für die Quellen.
+> Ergebnisse werden wie bisher 6 Stunden gecacht.
 
 ### Verlaufs-Chart
 
@@ -458,7 +474,7 @@ add_filter( 'mlt_analytics_adapter', function( $adapter ) {
 } );
 ```
 
-Der [Vergleichszeitraum](#vergleichszeitraum) funktioniert mit jedem Adapter, der `get_overview()` für beliebige Zeiträume korrekt beantwortet – es ist keine Anpassung nötig.
+Der [Vergleichszeitraum](#vergleichszeitraum) funktioniert mit jedem Adapter, der `get_overview()` (und für die Quellen-Deltas `get_sources()`) für beliebige Zeiträume korrekt beantwortet – es ist keine Anpassung nötig.
 
 ---
 
@@ -489,9 +505,9 @@ HTML-Mail, Inline-CSS (`inc/class-report-template.php`). Abschnitte erscheinen n
 | Google Search Console | Kacheln Klicks, Impressionen, Ø CTR, Ø Position – jeweils mit Veränderung ▲/▼; darunter **Säulendiagramm „Klicks"** |
 | Analytics | Kacheln Seitenaufrufe, Sessions, Nutzer – jeweils mit Veränderung; darunter **Säulendiagramm „Seitenaufrufe"** |
 | Hinweis | kleiner Text zur Messtoleranz (nur bei angezeigtem Vergleich), siehe [Vergleichszeitraum](#vergleichszeitraum) |
-| Top Keywords | die ersten 8 der abgerufenen 10, mit **Balken** (Anteil am besten Keyword, nach Klicks) |
-| Top Seiten | die ersten 8 der abgerufenen 10, mit **Balken** (nach Klicks) |
-| Traffic-Quellen | bis zu 5 Quellen nach Sessions, mit **Balken** und Prozentanteil an allen Sessions |
+| Top Keywords | die ersten 8 der abgerufenen 10, mit **Balken** (Anteil am besten Keyword, nach Klicks) und Veränderung unter Klicks und Position |
+| Top Seiten | die ersten 8 der abgerufenen 10, mit **Balken** (nach Klicks) und Veränderung unter Klicks und Position |
+| Traffic-Quellen | bis zu 5 Quellen nach Sessions, mit **Balken**, Prozentanteil an allen Sessions und Veränderung (seit v1.16.0) |
 | Footer | Hinweis auf automatischen Versand, Link zum Deaktivieren |
 
 Die Veränderung steht als kleine Zeile unter jeder Kachel (▲ grün = besser, ▼ rot = schlechter, ▬ grau = unverändert). Ist der Vergleich nicht möglich (siehe [Vergleichszeitraum](#vergleichszeitraum)), entfällt sie; liegt es an der 16-Monats-Grenze der Search Console, steht ein Hinweis im Header.
@@ -508,7 +524,7 @@ E-Mail-Programme führen **kein JavaScript** aus, Gmail und Outlook stellen **ke
 
 **Betreff-Format:** `[Sitename] SEO Report KW {Woche}/{Jahr}` (aus `class-report-mailer.php`, per Filter `mlt_weekly_report_subject` anpassbar).
 
-**Filter `mlt_weekly_report_html`:** Der Parameter `$data` enthält `range`, `gsc_overview`, `gsc_queries`, `gsc_pages`, `analytics`, `analytics_sources`, seit v1.11.0 `compare` und seit v1.13.0 `charts` (Tageswerte) (`range`, `gsc_prev`, `analytics_prev`, `gsc_deltas`, `analytics_deltas`, `notice`, `note`).
+**Filter `mlt_weekly_report_html`:** Der Parameter `$data` enthält `range`, `gsc_overview`, `gsc_queries`, `gsc_pages`, `analytics`, `analytics_sources`, seit v1.11.0 `compare` und seit v1.13.0 `charts` (Tageswerte). `compare` enthält `range`, `gsc_prev`, `analytics_prev`, `gsc_deltas`, `analytics_deltas`, `notice`, `note`, seit v1.14.0 `query_deltas` und `page_deltas` und seit v1.16.0 `source_deltas`.
 
 ### Wichtig: nur ein Handler auf dem Cron-Hook
 
@@ -890,6 +906,8 @@ Seit v1.11.0 werden fehlgeschlagene Abrufe nicht mehr gecacht (siehe [Technische
 - Hinweis zur 16-Monats-Grenze? Der Vergleichszeitraum liegt weiter zurück, als die Search Console Daten speichert (typisch bei „365 Tage"). Kürzeren Zeitraum wählen oder „Vorperiode" statt „Vorjahr".
 - Hat der aktuelle oder der Vergleichszeitraum keine Daten (junge Property, fehlgeschlagener Abruf)? Dann werden bewusst keine Deltas gezeigt – siehe vorheriger Punkt und [Vergleichszeitraum](#vergleichszeitraum).
 - Analytics-Kacheln ohne Veränderung: Nur mit verbundenem GA4/Matomo und Daten im Vergleichszeitraum.
+- **Keywords und Seiten zeigen Veränderungen, Traffic-Quellen nicht:** Plugin vor v1.16.0, oder die Analytics-Kacheln haben selbst keine Veränderung (Quellen-Deltas folgen derselben Bedingung). Ein einzelnes „neu" bei einer Quelle ist normal, wenn sie im Vergleichszeitraum nicht auftauchte.
+- **Gar keine Veränderungswerte im Report (auch nicht bei Kacheln, Keywords, Seiten):** Plugin älter als v1.11.0 (KPI-Deltas), v1.13.0 (Balken) bzw. v1.14.0 (Zeilen-Deltas). Version im Plugin-Header prüfen.
 
 ### Report-Mail kommt nicht an
 
@@ -904,6 +922,23 @@ wp option get mlt_last_report_status
 - **Test-Report-Button reagiert nicht** (kein „Sende …", keine Meldung): Plugin vor v1.12.0 – der Button las ein nicht mehr vorhandenes Feld.
 - Test-Report kommt an, Wochen-Report nicht: Cron-Planung prüfen (s. o.), Empfänger-Liste gespeichert?, WP-Cron aktiv?
 - Mail wird gesendet, kommt aber nicht an: Spam-Ordner, SPF/DKIM der Absenderdomain, SMTP-Zugangsdaten (Agency Core → E-Mail / SMTP). „SMTP aktiv" in der Einstellungskarte bedeutet nur, dass SMTP konfiguriert ist, nicht dass die Zugangsdaten stimmen.
+- `wp cron event run mlt_weekly_report` meldet **`Error: Invalid cron event`**: Es ist kein Termin geplant (Schalter „Wöchentlichen Report aktivieren" aus, oder Plugin vor v1.12.0). Für einen reinen Test braucht es den Termin nicht:
+
+```bash
+# Test-Report an eine Adresse (wie der Button in den Einstellungen)
+wp eval 'var_dump( MLT_Report_Mailer::send_test( "ihre@adresse.at" ) );'
+
+# Report-HTML ohne Versand als Datei erzeugen (render() ist privat)
+wp eval '
+$m = new ReflectionMethod( "MLT_Report_Mailer", "render" );
+$m->setAccessible( true );
+$r = $m->invoke( null, [ "test@example.com" ] );
+file_put_contents( "/tmp/report.html", $r["html"] );
+echo strlen( $r["html"] ) . " Bytes\n";
+'
+```
+
+Ohne verbundene Search Console/Analytics enthält der Report nur den Rahmen (Meldung „Es lagen keine Daten vor") und zeigt keine Veränderungswerte.
 
 ### Report-Mail kommt doppelt an
 
