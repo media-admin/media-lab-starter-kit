@@ -164,6 +164,7 @@ Zwei separate Vite-Configs werden via `npm run build` nacheinander ausgeführt:
 | [docs/12_ANALYTICS.md](docs/12_ANALYTICS.md)                 | Analytics-Dokumentation                                     |
 | [docs/13_SEO.md](docs/13_SEO.md)                             | SEO-Toolkit-Dokumentation                                   |
 | [docs/14_BOOKINGS.md](docs/14_BOOKINGS.md)                   | Bookings-Plugin-Dokumentation                               |
+| [docs/15_AI_AGENT.md](docs/15_AI_AGENT.md)                   | AI-Agent-Dokumentation                                      |
 | [docs/BACKLOG.md](docs/BACKLOG.md)                           | Offene Punkte & Änderungshistorie größerer Aufräum-Sessions |
 
 **Versionshistorie:** Es gibt bewusst **keine** projektweite Changelog-
