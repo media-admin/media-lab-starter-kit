@@ -6,6 +6,21 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ---
 
+## [1.7.1] - 2026-10-20
+
+### media-lab-bookings 1.7.1
+
+#### Fixed
+- **Doppelbuchungen möglich: Kapazitäts- und Tageslimit-Prüfung fand keine
+  bestehenden Buchungen** (`inc/slots.php`) – `submit_booking()` speichert
+  `mlb_booking_date` als `Ymd` (ACF-intern, z.B. `20261105`), `count_bookings()`
+  und `count_day_bookings()` verglichen aber mit `Y-m-d` aus dem Frontend. Der
+  Treffer blieb immer 0, ein gebuchter Slot galt dadurch nie als belegt
+  (`max_capacity` und `max_per_day` wirkungslos). Beide Methoden prüfen jetzt
+  über die neue Hilfsmethode `date_meta_values()` gegen beide Formate (`IN`).
+
+---
+
 ## [1.7.0] - 2026-05-08
 
 ### media-lab-bookings 1.7.0

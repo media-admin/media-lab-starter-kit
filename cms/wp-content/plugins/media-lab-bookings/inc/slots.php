@@ -72,13 +72,25 @@ class MLB_Slots {
         return $slots;
     }
 
+    /**
+     * Mögliche Meta-Werte für ein Datum.
+     * ACF (date_picker) speichert `mlb_booking_date` intern als Ymd (20261105),
+     * das Frontend liefert Y-m-d (2026-11-05). Beide Formate abdecken, damit
+     * Kapazitäts- und Tageslimit-Prüfung bestehende Buchungen auch wirklich finden.
+     */
+    private static function date_meta_values( string $date ): array {
+        $ts = strtotime( $date );
+        if ( ! $ts ) return [ $date ];
+        return array_values( array_unique( [ date( 'Ymd', $ts ), date( 'Y-m-d', $ts ), $date ] ) );
+    }
+
     public static function count_bookings( int $location_id, string $date, string $time ): int {
         $query = new WP_Query( [
             'post_type' => 'mlb_booking', 'post_status' => [ 'publish', 'mlb-pending', 'mlb-confirmed' ],
             'posts_per_page' => -1, 'fields' => 'ids',
             'meta_query' => [ 'relation' => 'AND',
                 [ 'key' => 'mlb_booking_location', 'value' => $location_id ],
-                [ 'key' => 'mlb_booking_date',     'value' => $date ],
+                [ 'key' => 'mlb_booking_date',     'value' => self::date_meta_values( $date ), 'compare' => 'IN' ],
                 [ 'key' => 'mlb_booking_time',     'value' => $time ],
                 [ 'key' => 'mlb_booking_status',   'value' => 'mlb-cancelled', 'compare' => '!=' ],
             ],
@@ -95,7 +107,7 @@ class MLB_Slots {
             'meta_query'     => [
                 'relation' => 'AND',
                 [ 'key' => 'mlb_booking_location', 'value' => $location_id ],
-                [ 'key' => 'mlb_booking_date',     'value' => $date ],
+                [ 'key' => 'mlb_booking_date',     'value' => self::date_meta_values( $date ), 'compare' => 'IN' ],
                 [ 'key' => 'mlb_booking_status',   'value' => 'mlb-cancelled', 'compare' => '!=' ],
             ],
         ] );
