@@ -102,7 +102,7 @@
             "type": "true_false",
             "default_value": 1,
             "ui": 1,
-            "instructions": "Erfasst anonymisiert Fragen, Inhaltslücken, genutzte Quellen, Antwortzeit, Widget-Öffnungen und Link-Klicks (Auswertung unter AI Agent Kosten → Nutzung). Keine IP, Fragetexte werden maskiert. Ausschalten, wenn die Datenschutzerklärung des Projekts das nicht abdeckt."
+            "instructions": "Erfasst anonymisiert Fragen, Inhaltslücken, genutzte Quellen, Antwortzeit, Widget-Öffnungen und Link-Klicks (Auswertung unter AI Agent Auswertung → Nutzung). Keine IP, Fragetexte werden maskiert. Ausschalten, wenn die Datenschutzerklärung des Projekts das nicht abdeckt."
         },
         {
             "key": "field_mlt_ai_max_messages_per_session",
@@ -314,5 +314,5 @@
     "style": "default",
     "active": true,
     "description": "Einstellungen für media-lab-ai-agent",
-    "modified": 1792480200
+    "modified": 1792482000
 }

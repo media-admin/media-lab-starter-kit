@@ -3,7 +3,7 @@
  * Plugin Name:       Media Lab AI Agent
  * Plugin URI:        https://media-lab.at
  * Description:       Datenschutzkonformer AI-Chat-Assistent für mehrsprachige WordPress-Sites, mit austauschbarem Anbieter (Anthropic, OpenAI, ...).
- * Version:           1.10.0
+ * Version:           1.10.1
  * Requires PHP:      8.1
  * Author:            Media Lab Tritremmel GmbH
  * Text Domain:        media-lab-ai-agent
@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('MLT_AI_AGENT_VERSION', '1.10.0');
+define('MLT_AI_AGENT_VERSION', '1.10.1');
 define('MLT_AI_AGENT_PATH', plugin_dir_path(__FILE__));
 define('MLT_AI_AGENT_URL', plugin_dir_url(__FILE__));
 

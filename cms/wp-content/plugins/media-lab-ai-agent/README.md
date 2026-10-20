@@ -104,7 +104,7 @@ Nach nachträglichem Schützen eines bereits indexierten Beitrags: Speichern rei
 
 ### Nutzungsmessung
 
-Auswertung unter **AI Agent Kosten → Nutzung**. Zeigt, wie der Chat genutzt wird: häufigste Fragen, **Inhaltslücken** (Fragen ohne passenden Website-Inhalt, nur mit aktivem RAG), meistgenutzte Quellen, Widget-Öffnungen, Klicks auf Links in Antworten, Ø Antwortzeit und Fragen pro Tag.
+Auswertung unter **AI Agent Auswertung → Nutzung** (Kosten-Dashboard: **AI Agent Auswertung → Kosten**). Zeigt, wie der Chat genutzt wird: häufigste Fragen, **Inhaltslücken** (Fragen ohne passenden Website-Inhalt, nur mit aktivem RAG), meistgenutzte Quellen, Widget-Öffnungen, Klicks auf Links in Antworten, Ø Antwortzeit und Fragen pro Tag.
 
 | Einstellung (AI Agent) | Wirkung |
 |---|---|

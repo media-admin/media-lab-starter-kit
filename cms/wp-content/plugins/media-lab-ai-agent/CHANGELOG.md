@@ -3,6 +3,13 @@
 Alle nennenswerten Änderungen an diesem Plugin werden hier dokumentiert.
 Format angelehnt an [Keep a Changelog](https://keepachangelog.com/), Versionierung nach [Semantic Versioning](https://semver.org/).
 
+## [1.10.1] – 2026-10-20
+
+### fix(ai-agent)
+- Admin-Menü: Der Top-Level-Eintrag heißt jetzt **„AI Agent Auswertung"** (vorher „AI Agent Kosten"), da seit 1.10.0 auch die Nutzungsstatistik darunter liegt. Die Unterpunkte heißen „Kosten" und „Nutzung". Der Seiten-Slug (`mlt-ai-costs`) bleibt unverändert — bestehende Links und das Link-Ziel des Dashboard-Widgets funktionieren weiter.
+- Nutzungsseite: Singular/Plural korrigiert („1 Eintrag" statt „1 Einträge", „1 Tag" statt „1 Tage").
+- ACF-Hinweistext zu „Nutzungsmessung aktiv" nennt den neuen Menünamen. Nach dem Einspielen ACF-Sync anstoßen, damit der Text aktualisiert wird (rein kosmetisch).
+
 ## [1.10.0] – 2026-10-20
 
 ### feat(ai-agent)

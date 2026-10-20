@@ -487,7 +487,7 @@ class MLT_AI_Agent_Analytics {
 
         if ($days > $retention) {
             echo '<div class="notice notice-info inline"><p>Die Aufbewahrung ist auf <strong>'
-                . esc_html((string) $retention) . ' Tage</strong> eingestellt — ältere Daten wurden bereits gelöscht, '
+                . esc_html((string) $retention) . ($retention === 1 ? ' Tag' : ' Tage') . '</strong> eingestellt — ältere Daten wurden bereits gelöscht, '
                 . 'der gewählte Zeitraum ist daher nicht vollständig.</p></div>';
         }
 
@@ -539,11 +539,11 @@ class MLT_AI_Agent_Analytics {
 
         // Speicher-Info / Aufbewahrung
         echo '<h2>Gespeicherte Daten</h2>';
-        echo '<p>' . esc_html(number_format_i18n($storage['count'])) . ' Einträge';
+        echo '<p>' . esc_html(number_format_i18n($storage['count'])) . ($storage['count'] === 1 ? ' Eintrag' : ' Einträge');
         if ($storage['oldest']) {
             echo ', ältester vom ' . esc_html(mysql2date('d.m.Y', $storage['oldest']));
         }
-        echo '. Aufbewahrung: <strong>' . esc_html((string) $retention) . ' Tage</strong> '
+        echo '. Aufbewahrung: <strong>' . esc_html((string) $retention) . ($retention === 1 ? ' Tag' : ' Tage') . '</strong> '
             . '(gilt auch für die Chatverläufe; Änderung unter AI Agent → „Aufbewahrungsdauer“, '
             . 'die Löschung läuft täglich um ca. 03:00 Uhr).</p>';
 

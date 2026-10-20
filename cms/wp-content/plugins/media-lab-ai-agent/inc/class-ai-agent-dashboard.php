@@ -37,14 +37,28 @@ class MLT_AI_Agent_Dashboard {
             return;
         }
 
+        // Menütitel bewusst "Auswertung" (nicht "Kosten"): seit 1.10.0 hängt
+        // auch die Nutzungsstatistik darunter. Der Slug 'mlt-ai-costs' bleibt
+        // unverändert, damit bestehende Links/Lesezeichen weiter funktionieren.
         add_menu_page(
-            'AI Agent — Kosten',
-            'AI Agent Kosten',
+            'AI Agent — Auswertung',
+            'AI Agent Auswertung',
             'manage_options',
             'mlt-ai-costs',
             [self::class, 'render_page'],
             'dashicons-chart-bar',
             81
+        );
+
+        // Erstes Submenu explizit "Kosten" nennen — sonst übernimmt WordPress
+        // automatisch den Titel des Top-Level-Menüs dafür.
+        add_submenu_page(
+            'mlt-ai-costs',
+            'AI Agent — Kosten',
+            'Kosten',
+            'manage_options',
+            'mlt-ai-costs',
+            [self::class, 'render_page']
         );
     }
 
