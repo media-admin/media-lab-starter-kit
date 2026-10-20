@@ -3,6 +3,24 @@
 Alle nennenswerten Änderungen an diesem Plugin werden hier dokumentiert.
 Format angelehnt an [Keep a Changelog](https://keepachangelog.com/), Versionierung nach [Semantic Versioning](https://semver.org/).
 
+## [1.10.0] – 2026-10-20
+
+### feat(ai-agent)
+- **Nutzungsmessung:** Neue Auswertung unter **AI Agent Kosten → Nutzung** (Zeitraum 7/30/90/365 Tage): gestellte Fragen, häufigste Fragen, **Inhaltslücken** (Fragen, zu denen das RAG nichts Passendes fand — inkl. bestem Treffer-Score), meistgenutzte Quellen, Widget-Öffnungen, Klicks auf Links in Antworten, Anteil Fragen ohne passenden Inhalt, Ø Antwortzeit, Fragen pro Tag.
+- Neue Tabelle `wp_mlt_ai_events` (DB_VERSION 1.1.0, Upgrade läuft automatisch beim nächsten Laden) und neue Klasse `class-ai-agent-analytics.php`. Erfasst werden die Event-Typen `chat_message` (serverseitig im Chat-Request), `widget_open` und `source_click` (Browser-Beacon an neuen REST-Endpoint `POST /wp-json/medialab/v1/ai-track`).
+- **Datenschutz by Design:** keine IP, kein User-Bezug; Fragetexte werden vor dem Speichern maskiert (E-Mail → `[email]`, IBAN → `[iban]`, Ziffernfolgen ab 8 Ziffern → `[nummer]`); Seiten- und Link-URLs ohne Query-String/Fragment; Beacon sendet erst nach erteiltem Consent (die Session-ID entsteht erst dann).
+- **Neue Einstellung „Nutzungsmessung aktiv"** (Standard: an). Ausgeschaltet entfällt das Beacon-Attribut im Widget komplett, serverseitig wird nichts mehr geschrieben.
+- **Aufbewahrungsdauer gilt jetzt auch für die Nutzungsstatistik:** Die bestehende Einstellung (`mlt_ai_retention_days`, Standard 30) löscht per täglichem Cron sowohl Chatverläufe als auch Events. Feld jetzt auf 1–730 Tage begrenzt und in „Aufbewahrungsdauer (Tage)" umbenannt; die Admin-Seite zeigt die Anzahl gespeicherter Einträge und den ältesten Eintrag.
+- Beacon-Endpoint mit Missbrauchsschutz: max. 60 Events pro Session und Stunde, max. 3000 pro Stunde global (Transients, keine IP-Verarbeitung); nur erlaubte Event-Typen, Session-ID-Format wird geprüft.
+- Retriever liefert zusätzlich `sources` (Top-K-Treffer mit Typ/ID/Score) und `best_score` (höchste Ähnlichkeit, auch unter dem Schwellwert) zurück — bestehende Rückgabewerte `text`/`attachments` unverändert.
+- Neuer Filter `mlt_ai_get_usage_summary` (analog `mlt_ai_get_cost_summary`): z.B. für eine Card im SEO Toolkit, read-only; `apply_filters('mlt_ai_get_usage_summary', 30)` liefert die Aggregation als Array.
+- Filter `mlt_ai_analytics_enabled` zum projektspezifischen Erzwingen/Abschalten per Code.
+
+### Hinweise zum Einspielen
+- Nach dem Einspielen **ACF-Sync** anstoßen (Custom Fields → Feldgruppen), damit „Nutzungsmessung aktiv" und die aktualisierte Aufbewahrungs-Beschreibung erscheinen. Bis dahin gilt die Nutzungsmessung als eingeschaltet.
+- Die Maskierung gilt nur für `wp_mlt_ai_events`; `wp_mlt_ai_conversations` speichert Fragen und Antworten weiterhin unverändert (gleiche Aufbewahrungsdauer).
+- Die Datenschutzerklärung des jeweiligen Projekts sollte die anonymisierte Nutzungsmessung des Chats erwähnen — Einzelfallprüfung pro Projekt.
+
 ## [1.9.0] – 2026-10-07
 
 ### feat(ai-agent)

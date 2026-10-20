@@ -9,7 +9,15 @@
  *      data-endpoint="https://.../wp-json/medialab/v1/ai-chat"
  *      data-nonce="..."
  *      data-default-state="collapsed|expanded"
- *      data-dismissible="1|0"></div>
+ *      data-dismissible="1|0"
+ *      data-track-endpoint="https://.../wp-json/medialab/v1/ai-track"></div>
+ *
+ * data-track-endpoint ist nur gesetzt, wenn die Nutzungsmessung im Backend
+ * aktiv ist. Ohne das Attribut sendet das Widget keine Tracking-Events.
+ * Gemeldet werden ausschließlich nach erteilter Zustimmung (die Session-ID
+ * entsteht erst nach dem Consent): Widget geöffnet (nur durch Besucher-Klick)
+ * und Klicks auf Links in Chat-Antworten. Fragetexte laufen nicht über den
+ * Beacon, sondern über den normalen Chat-Request.
  *
  * Zustand pro Browser-Sitzung (ausschließlich sessionStorage, nichts davon
  * wird an den Server gesendet):
@@ -75,6 +83,7 @@
 		const settings = {
 			defaultState: container.dataset.defaultState === 'expanded' ? 'expanded' : 'collapsed',
 			dismissible: container.dataset.dismissible === '1',
+			trackEndpoint: container.dataset.trackEndpoint || '',
 		};
 
 		// Besucher hat das Widget in dieser Sitzung bereits komplett ausgeblendet.
@@ -279,8 +288,55 @@
 			}
 		}
 
-		bindShell(container, ensureGreeting);
+		// Beacon für die Nutzungsmessung. Fire-and-forget: ein Fehler darf den
+		// Chat nie beeinträchtigen. keepalive, damit auch ein Klick auf einen
+		// Link im gleichen Tab noch zuverlässig ankommt.
+		function track(eventType, extra) {
+			if (!settings.trackEndpoint) {
+				return;
+			}
+			try {
+				fetch(settings.trackEndpoint, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'X-WP-Nonce': nonce,
+					},
+					body: JSON.stringify(Object.assign({
+						event_type: eventType,
+						session_id: sessionId,
+						lang: lang,
+						page: window.location.pathname,
+					}, extra || {})),
+					keepalive: true,
+				}).catch(function () {});
+			} catch (e) {
+				// bewusst ignoriert, siehe oben
+			}
+		}
+
+		// Nur Öffnungen durch den Besucher zählen (nicht das automatische
+		// Aufklappen bei Startzustand "ausgeklappt"), einmal pro Seitenaufruf.
+		let openTracked = false;
+		function onUserOpen() {
+			ensureGreeting();
+			if (!openTracked) {
+				openTracked = true;
+				track('widget_open');
+			}
+		}
+
+		bindShell(container, onUserOpen);
 		setPanelOpen(container, openInitially, false);
+
+		function onLinkActivate(event) {
+			const link = event.target && event.target.closest ? event.target.closest('a[href]') : null;
+			if (link) {
+				track('source_click', { target_url: link.href });
+			}
+		}
+		messagesEl.addEventListener('click', onLinkActivate);
+		messagesEl.addEventListener('auxclick', onLinkActivate);
 		if (openInitially) {
 			ensureGreeting();
 		}
@@ -332,6 +388,7 @@
 					message: text,
 					session_id: sessionId,
 					lang: lang,
+					page: window.location.pathname,
 				}),
 			}).then(function (response) {
 				if (!response.ok) {

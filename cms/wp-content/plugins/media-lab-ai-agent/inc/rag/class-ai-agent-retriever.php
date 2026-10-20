@@ -36,14 +36,17 @@ class MLT_AI_Rag_Retriever {
     private const MAX_ATTACHMENT_BYTES = 25 * 1024 * 1024;
 
     /**
-     * @return array{text: string[], attachments: array<int, array{path: string, media_type: string}>}
+     * @return array{text: string[], attachments: array<int, array{path: string, media_type: string}>, sources: array<int, array{id: int, type: string, score: float}>, best_score: ?float}
+     *   sources/best_score: für die Nutzungsmessung (siehe class-ai-agent-analytics.php) —
+     *         verwendete Treffer (Top-K) und höchste gemessene Ähnlichkeit, auch wenn sie
+     *         unter dem Schwellwert lag (dann ist text leer, best_score zeigt, wie knapp es war).
      *   text: formatierte Kontext-Snippets (immer befüllt, wenn Treffer da sind — dient als
      *         Fallback-Kontext und für Quellenangaben, auch wenn zusätzlich PDFs angehängt werden).
      *   attachments: PDF-Dateien, die nativ (nicht nur als Text) an den Provider gehen sollen —
      *                aktuell nur unterstützt, wenn der gewählte Provider das auch nutzt (Anthropic).
      */
     public static function get_context(string $query, string $lang): array {
-        $empty = ['text' => [], 'attachments' => []];
+        $empty = ['text' => [], 'attachments' => [], 'sources' => [], 'best_score' => null];
 
         if (!get_field('mlt_ai_rag_enabled', 'option')) {
             return $empty;
@@ -72,6 +75,7 @@ class MLT_AI_Rag_Retriever {
         }
 
         $scored = [];
+        $best_similarity = null;
         foreach ($rows as $row) {
             $vector = json_decode($row['embedding'], true);
             if (!is_array($vector)) {
@@ -79,6 +83,9 @@ class MLT_AI_Rag_Retriever {
             }
 
             $similarity = MLT_AI_Embeddings::cosine_similarity($query_embedding['vector'], $vector);
+            if ($best_similarity === null || $similarity > $best_similarity) {
+                $best_similarity = $similarity;
+            }
             if ($similarity >= self::MIN_SIMILARITY) {
                 $scored[] = [
                     'similarity'   => $similarity,
@@ -91,6 +98,7 @@ class MLT_AI_Rag_Retriever {
         }
 
         if (empty($scored)) {
+            $empty['best_score'] = $best_similarity;
             return $empty;
         }
 
@@ -147,7 +155,18 @@ class MLT_AI_Rag_Retriever {
             }
         }
 
-        return ['text' => $text_chunks, 'attachments' => $attachments];
+        $sources = array_map(static fn(array $row): array => [
+            'id'    => $row['object_id'],
+            'type'  => $row['object_type'],
+            'score' => round($row['similarity'], 4),
+        ], $top);
+
+        return [
+            'text'        => $text_chunks,
+            'attachments' => $attachments,
+            'sources'     => $sources,
+            'best_score'  => $top[0]['similarity'],
+        ];
     }
 
     /**

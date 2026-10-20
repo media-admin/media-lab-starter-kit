@@ -11,7 +11,7 @@ if (!defined('ABSPATH')) {
 
 class MLT_AI_Agent_Install {
 
-    const DB_VERSION = '1.0.1';
+    const DB_VERSION = '1.1.0';
     const DB_VERSION_OPTION = 'mlt_ai_db_version';
 
     /**
@@ -49,6 +49,7 @@ class MLT_AI_Agent_Install {
 
         $conversations_table = $wpdb->prefix . 'mlt_ai_conversations';
         $budget_table        = $wpdb->prefix . 'mlt_ai_budget_log';
+        $events_table        = $wpdb->prefix . 'mlt_ai_events';
 
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
@@ -85,6 +86,29 @@ class MLT_AI_Agent_Install {
             UNIQUE KEY budget_date_provider (budget_date, provider_id)
         ) {$charset_collate};";
         dbDelta($sql_budget);
+
+        // Nutzungsmessung (seit 1.10.0, siehe class-ai-agent-analytics.php).
+        // Anonymisiert: keine IP, Fragetexte maskiert, URLs ohne Query-String.
+        // has_context: NULL = RAG aus, 0 = nichts Passendes gefunden, 1 = Treffer.
+        $sql_events = "CREATE TABLE {$events_table} (
+            id BIGINT UNSIGNED AUTO_INCREMENT,
+            event_type VARCHAR(24) NOT NULL,
+            session_id VARCHAR(64) NOT NULL,
+            lang VARCHAR(10) NOT NULL DEFAULT 'de',
+            page_path VARCHAR(255) NULL,
+            query_text TEXT NULL,
+            sources TEXT NULL,
+            best_score DECIMAL(5,4) NULL,
+            has_context TINYINT(1) NULL,
+            latency_ms INT UNSIGNED NULL,
+            target_url VARCHAR(500) NULL,
+            created_at DATETIME NOT NULL,
+            PRIMARY KEY  (id),
+            KEY type_created (event_type, created_at),
+            KEY session_id (session_id),
+            KEY created_at (created_at)
+        ) {$charset_collate};";
+        dbDelta($sql_events);
     }
 
     private static function schedule_cron_events(): void {
@@ -110,7 +134,9 @@ class MLT_AI_Agent_Install {
 add_action('mlt_ai_daily_retention_cleanup', function () {
     global $wpdb;
 
-    $retention_days = (int) (get_field('mlt_ai_retention_days', 'option') ?: 30);
+    // Zentrale Einstellung für Chatverläufe UND Nutzungsstatistik, auf einen
+    // sinnvollen Bereich (1–730 Tage) begrenzt.
+    $retention_days = MLT_AI_Agent_Analytics::get_retention_days();
     $table = $wpdb->prefix . 'mlt_ai_conversations';
 
     $wpdb->query(
@@ -119,6 +145,9 @@ add_action('mlt_ai_daily_retention_cleanup', function () {
             $retention_days
         )
     );
+
+    // Nutzungsstatistik (wp_mlt_ai_events): gleiche Aufbewahrungsdauer.
+    MLT_AI_Agent_Analytics::cleanup($retention_days);
 
     // Budget-Log bewusst länger aufbewahren (kein PII, dient dem Kosten-Reporting
     // in der SEO-Toolkit-Dashboard-Card) — eigenes, deutlich längeres Retention-Fenster.

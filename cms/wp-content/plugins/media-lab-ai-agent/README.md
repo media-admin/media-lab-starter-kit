@@ -102,6 +102,30 @@ add_filter('mlt_ai_rag_is_post_indexable', function ($indexable, $post) {
 
 Nach nachträglichem Schützen eines bereits indexierten Beitrags: Speichern reicht (löst `save_post` erneut aus). Bereits daran hängende Dateien, die selbst nicht neu gespeichert werden, brauchen einen manuellen Reindex (Werkzeuge → AI Agent Reindex).
 
+### Nutzungsmessung
+
+Auswertung unter **AI Agent Kosten → Nutzung**. Zeigt, wie der Chat genutzt wird: häufigste Fragen, **Inhaltslücken** (Fragen ohne passenden Website-Inhalt, nur mit aktivem RAG), meistgenutzte Quellen, Widget-Öffnungen, Klicks auf Links in Antworten, Ø Antwortzeit und Fragen pro Tag.
+
+| Einstellung (AI Agent) | Wirkung |
+|---|---|
+| **Nutzungsmessung aktiv** | Standard: an. Aus = nichts wird mehr erfasst, das Widget sendet keine Beacons. |
+| **Aufbewahrungsdauer (Tage)** | 1–730, Standard 30. Gilt für Chatverläufe **und** Nutzungsstatistik; Löschung per täglichem Cron (ca. 03:00 Uhr). |
+
+Datenschutz:
+
+- Keine IP, kein User-Bezug. Die Session-ID ist dieselbe zufällige ID wie im Chatverlauf (`sessionStorage`, entsteht erst nach dem Consent).
+- Fragetexte in `wp_mlt_ai_events` werden maskiert: E-Mail → `[email]`, IBAN → `[iban]`, Ziffernfolgen ab 8 Ziffern → `[nummer]` (trifft auch lange Artikel- oder Seriennummern). `wp_mlt_ai_conversations` speichert Fragen/Antworten unverändert.
+- Seiten- und Link-URLs werden ohne Query-String und Fragment gespeichert.
+- Die Datenschutzerklärung des Projekts sollte die anonymisierte Nutzungsmessung erwähnen.
+
+Technik: `chat_message` wird serverseitig beim Chat-Request geschrieben (inkl. Retrieval-Ergebnis und Latenz); `widget_open` (nur durch Klick des Besuchers, einmal pro Seitenaufruf) und `source_click` kommen per Beacon an `POST /wp-json/medialab/v1/ai-track` (Limit: 60 Events pro Session und Stunde, 3000 global). Für andere Plugins, z.B. eine Card im SEO Toolkit:
+
+```php
+$usage = apply_filters('mlt_ai_get_usage_summary', 30); // Array: messages, sessions, opens, clicks, gaps, top_queries, ...
+```
+
+Per Code erzwingen oder abschalten: `add_filter('mlt_ai_analytics_enabled', '__return_false');`
+
 ### Consent (DSGVO)
 
 Das Frontend-Widget zeigt vor jeder Chat-Nutzung einen Consent-Hinweis; erst nach Zustimmung wird die erste Anfrage an den externen AI-Anbieter geschickt. Cookie-Name/-Wert sind über Filter anpassbar, um das Widget an ein bestehendes Consent-Tool der jeweiligen Site anzukoppeln:
@@ -118,11 +142,12 @@ add_filter('mlt_ai_consent_cookie_value', fn() => 'accepted');
 ```
 media-lab-ai-agent.php          Bootstrap, ACF-Options-Page, Widget-Enqueue, Shortcode
 inc/
-  class-ai-agent-install.php    DB-Tabellen (Conversations, Budget-Log), Cron, Versions-Upgrade
+  class-ai-agent-install.php    DB-Tabellen (Conversations, Budget-Log, Events), Cron, Versions-Upgrade
   class-ai-agent-budget.php     Tages-Budget-Kill-Switch, Kosten-Reporting
   class-ai-agent-crypto.php     AES-256-GCM-Verschlüsselung der API-Keys
   class-ai-agent-rest.php       REST-Endpoint (providerunabhängig)
   class-ai-agent-dashboard.php  Kosten-Dashboard (Admin-Seite + WP-Dashboard-Widget)
+  class-ai-agent-analytics.php  Nutzungsmessung (Events-Tabelle, Beacon-Endpoint, Auswertung unter „Nutzung")
   providers/
     interface-ai-provider.php
     class-provider-anthropic.php

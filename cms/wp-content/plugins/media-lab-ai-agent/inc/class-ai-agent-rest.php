@@ -22,6 +22,7 @@ class MLT_AI_Agent_Rest {
                 'message'    => ['required' => true, 'type' => 'string'],
                 'session_id' => ['required' => true, 'type' => 'string'],
                 'lang'       => ['required' => false, 'type' => 'string'],
+                'page'       => ['required' => false, 'type' => 'string'],
             ],
         ]);
     }
@@ -30,6 +31,8 @@ class MLT_AI_Agent_Rest {
         if (!get_field('mlt_ai_enabled', 'option')) {
             return new WP_Error('disabled', 'AI Agent ist nicht aktiv.', ['status' => 403]);
         }
+
+        $started_at = microtime(true);
 
         $message = sanitize_textarea_field((string) $request->get_param('message'));
         $session_id = sanitize_text_field((string) $request->get_param('session_id'));
@@ -90,6 +93,17 @@ class MLT_AI_Agent_Rest {
         self::log_conversation($session_id, $provider->get_id(), $lang, $message, $result);
         mlt_ai_update_budget($provider->get_id(), $result['cost_estimate']);
 
+        // Nutzungsmessung (anonymisiert, abschaltbar) — siehe class-ai-agent-analytics.php.
+        MLT_AI_Agent_Analytics::log_chat(
+            $session_id,
+            $lang,
+            $message,
+            $rag_result,
+            (bool) get_field('mlt_ai_rag_enabled', 'option'),
+            (int) round((microtime(true) - $started_at) * 1000),
+            MLT_AI_Agent_Analytics::sanitize_path($request->get_param('page'))
+        );
+
         return rest_ensure_response(['reply' => $result['text']]);
     }
 
@@ -149,11 +163,11 @@ class MLT_AI_Agent_Rest {
      * Treffer gefunden wird, kommt ein leeres Ergebnis zurück und der Chat
      * läuft unverändert mit dem reinen System-Prompt weiter.
      *
-     * @return array{text: string[], attachments: array}
+     * @return array{text: string[], attachments: array, sources: array, best_score: ?float}
      */
     private static function get_rag_context(string $message, string $lang): array {
         if (!class_exists('MLT_AI_Rag_Retriever')) {
-            return ['text' => [], 'attachments' => []];
+            return ['text' => [], 'attachments' => [], 'sources' => [], 'best_score' => null];
         }
 
         return MLT_AI_Rag_Retriever::get_context($message, $lang);

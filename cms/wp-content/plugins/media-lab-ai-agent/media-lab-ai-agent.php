@@ -3,7 +3,7 @@
  * Plugin Name:       Media Lab AI Agent
  * Plugin URI:        https://media-lab.at
  * Description:       Datenschutzkonformer AI-Chat-Assistent für mehrsprachige WordPress-Sites, mit austauschbarem Anbieter (Anthropic, OpenAI, ...).
- * Version:           1.9.0
+ * Version:           1.10.0
  * Requires PHP:      8.1
  * Author:            Media Lab Tritremmel GmbH
  * Text Domain:        media-lab-ai-agent
@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('MLT_AI_AGENT_VERSION', '1.9.0');
+define('MLT_AI_AGENT_VERSION', '1.10.0');
 define('MLT_AI_AGENT_PATH', plugin_dir_path(__FILE__));
 define('MLT_AI_AGENT_URL', plugin_dir_url(__FILE__));
 
@@ -32,6 +32,7 @@ require_once MLT_AI_AGENT_PATH . 'inc/providers/class-provider-openai.php';
 require_once MLT_AI_AGENT_PATH . 'inc/providers/class-provider-registry.php';
 require_once MLT_AI_AGENT_PATH . 'inc/class-ai-agent-rest.php';
 require_once MLT_AI_AGENT_PATH . 'inc/class-ai-agent-dashboard.php';
+require_once MLT_AI_AGENT_PATH . 'inc/class-ai-agent-analytics.php';
 
 // RAG-Modul: komplett optional, wird aber immer geladen (Zustand steuert
 // mlt_ai_rag_enabled) — so lässt es sich zur Laufzeit ohne Deploy zu-/abschalten.
@@ -197,15 +198,20 @@ function mlt_ai_render_widget(): void {
 
     $widget = mlt_ai_get_widget_settings();
 
+    // Beacon-Endpoint für die Nutzungsmessung nur mitgeben, wenn sie aktiv ist
+    // — ohne Attribut sendet das Widget keinerlei Tracking-Events.
+    $track_endpoint = MLT_AI_Agent_Analytics::is_enabled() ? rest_url('medialab/v1/ai-track') : '';
+
     printf(
-        '<div data-mlt-ai-widget data-lang="%s" data-endpoint="%s" data-nonce="%s" data-consent-cookie="%s" data-consent-value="%s" data-default-state="%s" data-dismissible="%s"></div>',
+        '<div data-mlt-ai-widget data-lang="%s" data-endpoint="%s" data-nonce="%s" data-consent-cookie="%s" data-consent-value="%s" data-default-state="%s" data-dismissible="%s" data-track-endpoint="%s"></div>',
         esc_attr($lang),
         esc_url(rest_url('medialab/v1/ai-chat')),
         esc_attr(wp_create_nonce('wp_rest')),
         esc_attr($consent_cookie_name),
         esc_attr($consent_cookie_value),
         esc_attr($widget['state']),
-        $widget['dismissible'] ? '1' : '0'
+        $widget['dismissible'] ? '1' : '0',
+        esc_url($track_endpoint)
     );
 }
 add_shortcode('mlt_ai_widget', function () {

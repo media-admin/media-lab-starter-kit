@@ -86,12 +86,23 @@
         },
         {
             "key": "field_mlt_ai_retention_days",
-            "label": "Aufbewahrungsdauer Chatverläufe (Tage)",
+            "label": "Aufbewahrungsdauer (Tage)",
             "name": "mlt_ai_retention_days",
             "type": "number",
             "min": 1,
             "default_value": 30,
-            "instructions": "Datenminimierung: löscht wp_mlt_ai_conversations älter als N Tage per täglichem Cron."
+            "instructions": "Datenminimierung: löscht Chatverläufe (wp_mlt_ai_conversations) UND Nutzungsstatistik (wp_mlt_ai_events) älter als N Tage per täglichem Cron (ca. 03:00 Uhr). Erlaubt: 1–730 Tage, Standard 30. Eine Änderung greift beim nächsten Cron-Lauf.",
+            "max": 730,
+            "step": 1
+        },
+        {
+            "key": "field_mlt_ai_analytics_enabled",
+            "label": "Nutzungsmessung aktiv",
+            "name": "mlt_ai_analytics_enabled",
+            "type": "true_false",
+            "default_value": 1,
+            "ui": 1,
+            "instructions": "Erfasst anonymisiert Fragen, Inhaltslücken, genutzte Quellen, Antwortzeit, Widget-Öffnungen und Link-Klicks (Auswertung unter AI Agent Kosten → Nutzung). Keine IP, Fragetexte werden maskiert. Ausschalten, wenn die Datenschutzerklärung des Projekts das nicht abdeckt."
         },
         {
             "key": "field_mlt_ai_max_messages_per_session",
@@ -303,5 +314,5 @@
     "style": "default",
     "active": true,
     "description": "Einstellungen für media-lab-ai-agent",
-    "modified": 1791398599
+    "modified": 1792480200
 }
