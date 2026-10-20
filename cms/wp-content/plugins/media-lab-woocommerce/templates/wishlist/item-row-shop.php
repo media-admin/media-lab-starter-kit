@@ -113,7 +113,7 @@ $selectable = $item['exists'] && empty( $item['config'] ) && $in_stock;
                 <?php esc_html_e( 'Produkt ansehen', 'media-lab-woocommerce' ); ?>
             </a>
         <?php elseif ( ! $in_stock ) : ?>
-            <span class="mlw-wishlist-item__name--gone"><?php esc_html_e( 'Nicht vorrätig', 'media-lab-woocommerce' ); ?></span>
+            <?php // Einfaches Produkt nicht vorrätig: bewusst keine Ausgabe - der Lagerstatus steht schon in der eigenen Spalte. Zweig muss bestehen bleiben, sonst rendert der else-Zweig einen aktiven Warenkorb-Button. ?>
         <?php else : ?>
             <button
                 type="button"

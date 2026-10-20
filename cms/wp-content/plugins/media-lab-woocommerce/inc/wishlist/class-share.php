@@ -31,9 +31,14 @@ class MediaLab_Wishlist_Share {
     const SESSION_TOKEN_KEY     = 'mlw_wishlist_share_token';
     const CRON_HOOK             = 'mlw_wishlist_share_cleanup';
     const GUEST_RETENTION_DAYS  = 90; // via mlw_wishlist_share_guest_retention_days filterbar
+    const DB_VERSION            = '1';
+    const DB_VERSION_OPTION     = 'mlw_share_db_version';
 
     public static function init(): void {
         add_shortcode( 'mlw_wishlist_share_link', [ __CLASS__, 'shortcode_share_button' ] );
+
+        // Tabelle auch ohne Plugin-Neuaktivierung anlegen (Deployments per FTP/Sync)
+        add_action( 'admin_init', [ __CLASS__, 'maybe_create_table' ] );
 
         add_action( self::CRON_HOOK, [ __CLASS__, 'cleanup_expired_guest_snapshots' ] );
         if ( ! wp_next_scheduled( self::CRON_HOOK ) ) {
@@ -44,6 +49,20 @@ class MediaLab_Wishlist_Share {
     private static function table(): string {
         global $wpdb;
         return $wpdb->prefix . self::TABLE_SUFFIX;
+    }
+
+    /**
+     * Legt die Tabelle an, falls sie für die aktuelle DB_VERSION noch nicht
+     * angelegt wurde. Läuft über admin_init (erster Backend-Aufruf nach dem
+     * Deployment) und zusätzlich lazy in get_or_create_token(), damit ein
+     * Share-Klick im Frontend nie auf eine fehlende Tabelle trifft.
+     * Kostet im Normalfall nur ein get_option() (autoloaded).
+     */
+    public static function maybe_create_table(): void {
+        if ( get_option( self::DB_VERSION_OPTION ) === self::DB_VERSION ) return;
+
+        self::create_table();
+        update_option( self::DB_VERSION_OPTION, self::DB_VERSION );
     }
 
     /**
@@ -81,6 +100,7 @@ class MediaLab_Wishlist_Share {
     public static function drop_table(): void {
         global $wpdb;
         $wpdb->query( 'DROP TABLE IF EXISTS ' . self::table() );
+        delete_option( self::DB_VERSION_OPTION );
     }
 
     // ── Token holen/erzeugen ──────────────────────────────────────────────────
@@ -91,6 +111,8 @@ class MediaLab_Wishlist_Share {
      * Aufruf mit dem aktuellen Listeninhalt aktualisiert.
      */
     public static function get_or_create_token(): string {
+        self::maybe_create_table();
+
         return is_user_logged_in() ? self::token_for_user() : self::token_for_guest();
     }
 
@@ -201,11 +223,21 @@ class MediaLab_Wishlist_Share {
         $token     = self::get_or_create_token();
         $share_url = add_query_arg( 'mlw_share', $token, self::wishlist_page_url() );
 
+        // Darstellung (services, style, icon_only, label, show_label, layout)
+        // projektspezifisch überschreibbar, z.B. im Theme:
+        //   add_filter( 'mlw_wishlist_share_args', fn() => [
+        //       'services' => 'facebook,whatsapp,email',
+        //       'style'    => 'mono',
+        //       'label'    => 'Teilen via ...',
+        //   ] );
+        // url/title sind bewusst NICHT überschreibbar (Token-Link).
+        $display_args = (array) apply_filters( 'mlw_wishlist_share_args', [], $share_url );
+
         ob_start();
-        medialab_share( [
+        medialab_share( array_merge( $display_args, [
             'url'   => $share_url,
             'title' => MediaLab_Inquiry_Settings::wording( 'wishlist_label' ),
-        ] );
+        ] ) );
         return ob_get_clean();
     }
 
