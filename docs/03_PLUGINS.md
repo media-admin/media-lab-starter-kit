@@ -1,6 +1,6 @@
 # Plugin-Dokumentation
 
-**Version:** 1.15.2 | **Letzte Aktualisierung:** 2026-09-23
+**Version:** 1.16.0 | **Letzte Aktualisierung:** 2026-10-20
 
 ---
 
@@ -9,7 +9,8 @@
 | Plugin | Version | Zweck | Modifizierbar? |
 |---|---|---|---|
 | media-lab-agency-core | 1.7.0 | Framework + Features | ❌ Nie |
-| media-lab-seo | 1.10.2 | SEO-Toolkit + Dashboard + Reports | ✅ Konfigurierbar |
+| media-lab-seo | 1.16.0 | SEO-Toolkit + Dashboard + Reports | ✅ Konfigurierbar |
+| media-lab-ai-agent | 1.10.1 | AI-Chat-Assistent (RAG) + Nutzungsmessung | ✅ Konfigurierbar |
 | media-lab-project-starter | 1.0.0 (Scaffold) | Projekt-spezifische CPTs/Taxonomien/ACF – wird pro Projekt dupliziert, nicht identisch deployt | ✅ Wird individuell angepasst |
 | advanced-custom-fields-pro | aktuell | Custom Fields | ✅ Konfigurierbar |
 
@@ -389,7 +390,7 @@ Startet bereits geöffnet.
 ---
 
 
-## media-lab-seo `v1.10.2`
+## media-lab-seo `v1.16.0`
 
 **Datei:** `cms/wp-content/plugins/media-lab-seo/media-lab-seo.php`
 
@@ -397,13 +398,15 @@ Pro Projekt aktivieren und konfigurieren unter **SEO Toolkit**. Benötigt
 zwingend `media-lab-agency-core` als aktives Plugin (Dependency-Check,
 sonst automatische Selbst-Deaktivierung mit Admin-Notice).
 
-**Module (Stand 1.10.2):**
+**Module (Stand 1.16.0):**
 
 | Modul | Datei | Beschreibung |
 |---|---|---|
 | GSC API | `inc/class-gsc-api.php` | OAuth2, Token-Management, Datenabruf |
 | GA4 API | `inc/class-ga4-api.php` | GA4 OAuth (separater Flow von GSC) |
 | Analytics-Adapter | `inc/class-analytics-adapter.php` | Pluggbare Schnittstelle: GA4 / Matomo / eigene Implementierung |
+| Vergleich | `inc/class-compare.php` | `MLT_Compare` (Vergleichszeitraum, Zeilen-/Quellen-Deltas, `fetch()`) und `MLT_Delta` (Berechnung + Darstellung), seit 1.11.0 |
+| Charts | `inc/class-chart.php` | Verlaufs-Chart (Inline-SVG) im Dashboard, Säulendiagramme und Balken als Tabellen-HTML im E-Mail-Report, seit 1.12.0/1.13.0 |
 | Settings | `inc/class-settings.php` | Einstellungsseite: Grid aus Cards (SEO inkl. Bing, Google Search Console, GA4, Matomo, Wöchentlicher Report) |
 | SEO | `inc/class-seo.php` | Open Graph, Twitter Cards, Canonical, GSC- + Bing-Verifizierungs-Tags |
 | Schema | `inc/class-schema.php` | Schema.org JSON-LD als verknüpfter `@graph` (Organization/LocalBusiness, WebSite, WebPage, BreadcrumbList, BlogPosting, Service, Person, JobPosting, CreativeWork, FAQPage) |
@@ -413,8 +416,8 @@ sonst automatische Selbst-Deaktivierung mit Admin-Notice).
 | Breadcrumbs | `inc/class-breadcrumbs.php` | Breadcrumbs + Schema.org BreadcrumbList |
 | Redirects | `inc/class-redirects.php` | 301/302-Manager |
 | Consent-Stats | `inc/class-consent-stats.php` | DSGVO Consent-Rate-Tracking (seit 1.9.0), liest read-only aus Agency-Core-Tabelle `wp_mlt_consent_log` |
-| SEO Dashboard | `inc/class-seo-dashboard.php` | Eigenständiger Admin-Menüpunkt + WP-Dashboard-Widget, konfigurierbarer Datumsbereich (seit 1.8.0) |
-| Report Template | `inc/class-report-template.php` | HTML-Mail, Inline-CSS |
+| SEO Dashboard | `inc/class-seo-dashboard.php` | Eigenständiger Admin-Menüpunkt + WP-Dashboard-Widget, Datumsbereich (seit 1.8.0), Vergleichszeitraum (seit 1.11.0), Verlaufs-Chart (seit 1.12.0) |
+| Report Template | `inc/class-report-template.php` | HTML-Mail, Inline-CSS: KPI-Kacheln, Top-Listen und Traffic-Quellen mit Veränderung, Säulendiagramme, Balken |
 | Report Mailer | `inc/class-report-mailer.php` | WP-Cron wöchentlich - **einziger** Handler auf `mlt_weekly_report` (siehe Duplikat-Mail-Fix 1.9.0 im CHANGELOG des Plugins) |
 | Report Recipients | `inc/report-recipients.php` | Dynamische Empfänger-Liste statt nur Admin-E-Mail (seit 1.6.0) |
 | Report Schedule | `inc/report-schedule.php` | Konfigurierbarer Versandtag/-uhrzeit statt fix Montag 08:00 (seit 1.6.0) |
@@ -422,14 +425,15 @@ sonst automatische Selbst-Deaktivierung mit Admin-Notice).
 **Menü-Struktur:**
 ```
 SEO Toolkit (Top-Level, eigenes Icon)
-├── Einstellungen   (slug: media-lab-seo)   → Cards: SEO (inkl. Bing-Tag), Google Search Console (OAuth), GA4, Matomo, Wöchentlicher Report
-├── Schema          (slug: mlt-schema)      → Organisationstyp, Telefon, E-Mail, Adresse, Öffnungszeiten, Einzugsgebiet, sameAs
-└── Dashboard       (slug: mlt-dashboard)   → KPI-Kacheln, Top-Keywords/-Seiten, Datumsbereich-Picker, Consent-Rate-Card, „Mit Google verbinden"
+├── Einstellungen    (slug: media-lab-seo)   → Cards: SEO (inkl. Bing-Tag, Standard-/Vergleichszeitraum), Google Search Console (OAuth), GA4, Matomo, Wöchentlicher Report
+├── Schema           (slug: mlt-schema)      → Organisationstyp, Telefon, E-Mail, Adresse, Öffnungszeiten, Einzugsgebiet, sameAs
+├── Dashboard        (slug: mlt-dashboard)   → KPI-Kacheln mit Veränderung, Verlaufs-Chart, Top-Keywords/-Seiten, Datumsbereich-Picker, Consent-Rate-Card, „Mit Google verbinden"
+└── Weiterleitungen  (slug: mlt-redirects)   → 301/302-Manager, 404-Log
 ```
-Einstellungen, Schema und Dashboard sind drei **gleichrangige**
+Einstellungen, Schema, Dashboard und Weiterleitungen sind vier **gleichrangige**
 Untermenüpunkte (getrennte `add_submenu_page()`-Aufrufe in
-`class-settings.php`, `class-schema-admin.php` bzw.
-`class-seo-dashboard.php`), keine Verschachtelung.
+`class-settings.php`, `class-schema-admin.php`, `class-seo-dashboard.php`
+bzw. `class-redirects.php`), keine Verschachtelung.
 
 ### Features
 
@@ -444,6 +448,9 @@ Untermenüpunkte (getrennte `add_submenu_page()`-Aufrufe in
 | Bing Webmaster Tools | Verifizierungs-Meta-Tag (`msvalidate.01`) |
 | Consent-Rate-Tracking | DSGVO-Auswertung, wie viele Besucher Analytics-Consent geben |
 | llms.txt | Kuratierte `/llms.txt`-Ausgabe für KI-Systeme (Community-Format, kein offizieller Standard) |
+| Vergleichszeitraum | Veränderung ▲/▼ gegenüber Vorperiode oder Vorjahr in Dashboard, Widget und E-Mail-Report (KPIs, Keywords, Seiten, im Report auch Traffic-Quellen) |
+| Verlaufs-Chart | Tageswerte mit gestrichelter Vergleichslinie im Dashboard (serverseitiges SVG) |
+| Report-Grafiken | Säulendiagramme und Balken im E-Mail-Report (reines Tabellen-HTML, ohne Bilder/JS) |
 
 ### Schema-Typen
 
@@ -453,12 +460,8 @@ Erweiterungs-Filter: siehe [13_SEO.md → Schema.org Markup](13_SEO.md#schemaorg
 ### Breadcrumbs im Template
 
 ```php
-if (function_exists('medialab_seo_breadcrumbs')) {
-    medialab_seo_breadcrumbs([
-        'separator'   => ' › ',
-        'home_title'  => 'Home',
-        'wrapper_class' => 'breadcrumbs',
-    ]);
+if ( function_exists( 'mlt_breadcrumbs' ) ) {
+    mlt_breadcrumbs( ' › ', 'breadcrumbs' );   // ( $separator, $class )
 }
 ```
 
@@ -467,6 +470,56 @@ if (function_exists('medialab_seo_breadcrumbs')) {
 Ausführliche Einrichtung (GSC-OAuth, Bing, GA4, Matomo, Schema, Report-
 Empfänger) siehe [13_SEO.md](13_SEO.md) bzw. die Plugin-eigene README
 unter `cms/wp-content/plugins/media-lab-seo/README.md`.
+
+---
+
+## media-lab-ai-agent `v1.10.1`
+
+**Datei:** `cms/wp-content/plugins/media-lab-ai-agent/media-lab-ai-agent.php`
+
+AI-Chat-Assistent mit austauschbarem Anbieter (Anthropic, OpenAI) und
+optionalem Website-Wissen (RAG). Pro Projekt aktivieren und konfigurieren
+unter **AI Agent**. Das Plugin ist **eigenständig** (keine Abhängigkeit zu
+`media-lab-agency-core` oder `media-lab-seo`), benötigt aber **ACF PRO**
+und **PHP 8.1+** (höher als der sonstige Starter-Kit-Standard 8.0).
+
+**Module (Stand 1.10.1):**
+
+| Modul | Datei | Beschreibung |
+|---|---|---|
+| REST-Endpoint | `inc/class-ai-agent-rest.php` | `POST /medialab/v1/ai-chat`, providerunabhängig, Session-Limit, Budget-Check |
+| Provider | `inc/providers/` | Provider-Interface, Anthropic, OpenAI, Registry (Wechsel per ACF-Option, ohne Deploy) |
+| Crypto | `inc/class-ai-agent-crypto.php` | AES-256-GCM-Verschlüsselung der API-Keys |
+| Budget | `inc/class-ai-agent-budget.php` | Tages-Budget-Kill-Switch, Kosten-Log |
+| Kosten-Dashboard | `inc/class-ai-agent-dashboard.php` | Admin-Seite + WP-Dashboard-Widget |
+| Nutzungsmessung | `inc/class-ai-agent-analytics.php` | Events (Fragen, Inhaltslücken, Quellen, Widget-Öffnungen, Link-Klicks), Beacon `POST /medialab/v1/ai-track`, Auswertungsseite (seit 1.10.0) |
+| Install | `inc/class-ai-agent-install.php` | Tabellen, Retention-Cron, automatisches DB-Upgrade |
+| RAG | `inc/rag/` | Optionales Website-Wissen: Embeddings, Indexer, Retriever, Datei-Extraktion (PDF/PPTX/DOCX), PDF-Splitting |
+| Widget | `assets/js/ai-agent-widget.js` | Frontend-Widget mit Consent-Gate, Chat und Tracking-Beacon |
+
+**Menü-Struktur:**
+```
+AI Agent                (Options-Page, slug: acf-options-ai-agent) → alle Einstellungen
+AI Agent Auswertung     (Top-Level, slug: mlt-ai-costs)
+├── Kosten              (slug: mlt-ai-costs)  → Kosten-Dashboard
+└── Nutzung             (slug: mlt-ai-usage)  → Fragen, Inhaltslücken, Quellen, Klicks, Antwortzeit
+Werkzeuge → AI Agent Reindex                                      → Inhalte/Dateien neu indexieren
+```
+
+### Wichtig im Projektalltag
+
+- Widget einbinden: `mlt_ai_render_widget()` im Theme oder Shortcode `[mlt_ai_widget]`.
+- Der Chat startet erst nach **Consent** (Cookie `mlt_consent_ai_agent`, per Filter an das Consent-System des Projekts anpassbar), da Eingaben an einen AI-Anbieter außerhalb der EU übermittelt werden.
+- **Aufbewahrungsdauer** (Standard 30 Tage, 1–730) gilt für Chatverläufe und die Nutzungsstatistik; Löschung per täglichem Cron.
+- Nach jedem Update **ACF-Sync** anstoßen; nach Änderungen an der Indexierung eine **vollständige** Neuindexierung durchführen.
+- Die Nutzungszahlen stehen anderen Plugins read-only über den Filter `mlt_ai_get_usage_summary` zur Verfügung (Kosten analog über `mlt_ai_get_cost_summary`).
+
+### Konfiguration
+
+Ausführliche Einrichtung (Checkliste pro Kundenprojekt, Datenbank-Tabellen,
+Datenschutz, Hooks, Troubleshooting) siehe [15_AI_AGENT.md](15_AI_AGENT.md)
+bzw. die Plugin-eigene README und CHANGELOG unter
+`cms/wp-content/plugins/media-lab-ai-agent/`.
 
 ---
 
