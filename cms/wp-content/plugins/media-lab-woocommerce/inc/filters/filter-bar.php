@@ -72,58 +72,94 @@ function mlwf_render_filter_bar(): void {
 				</div>
 				<?php endif; ?>
 
-				<?php
-				// ── Unterkategorie-Filter (nur auf product_cat) ───────────
-				if ( $show_subcats && $category_slug ) :
-					$subcategories = get_terms( [
-						'taxonomy'   => 'product_cat',
-						'parent'     => $queried_term_id,
-						'hide_empty' => false,
-						'orderby'    => 'name',
-					] );
+<?php
+// ── Unterkategorie-Filter ─────────────────────────────────
+// Kategorie-Archiv: Unterkategorien der aktuellen Kategorie.
+// Marken-Archiv:    Kategorien, in denen Produkte der Marke liegen (Zähler innerhalb der Marke).
+// Hook mlwf_brand_subcategories: Liste für Marken-Archive anpassen (Terms entfernen/umsortieren).
+$subcategories = [];
+if ( $show_subcats && $category_slug ) {
+	$subcategories = get_terms( [
+		'taxonomy'   => 'product_cat',
+		'parent'     => $queried_term_id,
+		'hide_empty' => false,
+		'orderby'    => 'name',
+	] );
+} elseif ( $show_subcats && $is_brand ) {
+	$brand_object_ids = get_objects_in_term( $queried_term_id, 'product_brand' );
+	if ( ! is_wp_error( $brand_object_ids ) && ! empty( $brand_object_ids ) ) {
+		$subcategories = get_terms( [
+			'taxonomy'   => 'product_cat',
+			'hide_empty' => true,
+			'orderby'    => 'name',
+			'object_ids' => $brand_object_ids,
+			'exclude'    => [ (int) get_option( 'default_product_cat' ) ],
+		] );
+		if ( ! is_wp_error( $subcategories ) ) {
+			$subcategories = (array) apply_filters( 'mlwf_brand_subcategories', $subcategories, $queried_term_id );
+		}
+	}
+}
 
-					if ( ! is_wp_error( $subcategories ) && ! empty( $subcategories ) ) :
-						$subcat_raw     = $_GET['subcat'] ?? '';
-						$subcat_raw     = is_array( $subcat_raw ) ? implode( ',', $subcat_raw ) : (string) $subcat_raw;
-						$active_subcats = array_values( array_filter( array_map( 'sanitize_text_field', explode( ',', $subcat_raw ) ) ) );
-						$group_id      = 'filter-drop-subcategories';
-				?>
-				<div class="wc-filter-group js-filter-group" data-filter-type="subcategory">
-					<button class="wc-filter-group__toggle<?php echo $active_subcat ? ' has-active' : ''; ?>"
-						type="button"
-						aria-expanded="false"
-						aria-controls="<?php echo esc_attr( $group_id ); ?>">
-						<?php echo esc_html( MediaLab_Filter_Settings::label( 'category' ) ); ?>
-						<?php if ( $active_subcats ) : ?>
-							<span class="wc-filter-group__count"><?php echo count( $active_subcats ); ?></span>
-						<?php endif; ?>
-						<span class="wc-filter-group__icon" aria-hidden="true"></span>
-					</button>
-					<div class="wc-filter-group__dropdown" id="<?php echo esc_attr( $group_id ); ?>" hidden>
-						<ul class="wc-filter-checklist" role="group">
-							<?php foreach ( $subcategories as $subcat ) :
-								$input_id = 'filter-subcat-' . $subcat->slug;
-							?>
-							<li class="wc-filter-checklist__item">
-								<label class="wc-filter-option" for="<?php echo esc_attr( $input_id ); ?>">
-									<input class="wc-filter-option__checkbox"
-										id="<?php echo esc_attr( $input_id ); ?>"
-										type="checkbox"
-										name="subcat[]"
-										value="<?php echo esc_attr( $subcat->slug ); ?>"
-										<?php checked( in_array( $subcat->slug, $active_subcats, true ) ); ?>>
-									<span class="wc-filter-option__label"><?php echo esc_html( $subcat->name ); ?></span>
-									<span class="wc-filter-option__count">(<?php echo absint( $subcat->count ); ?>)</span>
-								</label>
-							</li>
-							<?php endforeach; ?>
-						</ul>
-					</div>
-				</div>
-				<?php
-					endif;
-				endif;
-				?>
+$subcat_items = [];
+if ( ! is_wp_error( $subcategories ) && ! empty( $subcategories ) ) {
+	// Marken-Archiv: Kategorien, die ALLE Produkte der Marke enthalten, filtern nichts und entfallen.
+	$brand_total = ( $is_brand && ! empty( $context_product_ids ) )
+		? mlwf_count_term_in_context( $queried_term_id, 'product_brand', $context_product_ids )
+		: 0;
+	foreach ( $subcategories as $subcat ) {
+		$subcat_count = $is_brand
+			? mlwf_count_term_in_context( $subcat->term_id, 'product_cat', $context_product_ids )
+			: (int) $subcat->count;
+		if ( $is_brand && ( $subcat_count < 1 || ( $brand_total > 0 && $subcat_count >= $brand_total ) ) ) {
+			continue;
+		}
+		$subcat_items[] = [ 'term' => $subcat, 'count' => $subcat_count ];
+	}
+}
+
+if ( ! empty( $subcat_items ) ) :
+	$subcat_raw     = $_GET['subcat'] ?? '';
+	$subcat_raw     = is_array( $subcat_raw ) ? implode( ',', $subcat_raw ) : (string) $subcat_raw;
+	$active_subcats = array_values( array_filter( array_map( 'sanitize_text_field', explode( ',', $subcat_raw ) ) ) );
+	$group_id       = 'filter-drop-subcategories';
+?>
+<div class="wc-filter-group js-filter-group" data-filter-type="subcategory">
+	<button class="wc-filter-group__toggle<?php echo $active_subcats ? ' has-active' : ''; ?>"
+		type="button"
+		aria-expanded="false"
+		aria-controls="<?php echo esc_attr( $group_id ); ?>">
+		<?php echo esc_html( MediaLab_Filter_Settings::label( 'category' ) ); ?>
+		<?php if ( $active_subcats ) : ?>
+			<span class="wc-filter-group__count"><?php echo count( $active_subcats ); ?></span>
+		<?php endif; ?>
+		<span class="wc-filter-group__icon" aria-hidden="true"></span>
+	</button>
+	<div class="wc-filter-group__dropdown" id="<?php echo esc_attr( $group_id ); ?>" hidden>
+		<ul class="wc-filter-checklist" role="group">
+			<?php foreach ( $subcat_items as $item ) :
+				$subcat   = $item['term'];
+				$input_id = 'filter-subcat-' . $subcat->slug;
+			?>
+			<li class="wc-filter-checklist__item">
+				<label class="wc-filter-option" for="<?php echo esc_attr( $input_id ); ?>">
+					<input class="wc-filter-option__checkbox"
+						id="<?php echo esc_attr( $input_id ); ?>"
+						type="checkbox"
+						name="subcat[]"
+						value="<?php echo esc_attr( $subcat->slug ); ?>"
+						<?php checked( in_array( $subcat->slug, $active_subcats, true ) ); ?>>
+					<span class="wc-filter-option__label"><?php echo esc_html( $subcat->name ); ?></span>
+					<span class="wc-filter-option__count">(<?php echo absint( $item['count'] ); ?>)</span>
+				</label>
+			</li>
+			<?php endforeach; ?>
+		</ul>
+	</div>
+</div>
+<?php
+endif;
+?>
 
 				<?php
 				// ── Attribut-Filter ───────────────────────────────────────
