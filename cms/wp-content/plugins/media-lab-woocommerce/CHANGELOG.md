@@ -4,6 +4,28 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [2.20.0] - 2026-10-21
+
+### Added
+- **Kategorie-Filter auf Marken-Archiven** (`inc/filters/filter-bar.php`) – die Filterleiste zeigt auf
+  Marken-Archiven die Gruppe „Kategorie" (Checkboxen, `subcat[]`) mit allen Haupt- und Unterkategorien,
+  in denen die Marke veröffentlichte Produkte hat. Die Zähler gelten innerhalb der Marke. Die Gruppe erscheint,
+  wenn für die Marke die Unterkategorien-Option (`mlwf_show_subcategories`) aktiv ist.
+  - Neuer Filter `mlwf_brand_subcategories` (`$terms`, `$brand_term_id`): Kategorieliste einer Marke
+    anpassen (Terms entfernen oder umsortieren). Der Standard-Term von WooCommerce (`default_product_cat`)
+    ist ausgeschlossen.
+  - Der AJAX-Handler musste nicht geändert werden: `brand` und `subcat` werden dort bereits kombiniert
+    (UND zwischen Marke und Kategorien, ODER innerhalb der Kategorien).
+
+### Fixed
+- Gruppe „Kategorie" der Filterleiste: Der Button las die nicht definierte Variable `$active_subcat`
+  (PHP-Warnung bei jedem Aufruf, nie die Klasse `has-active`). Jetzt wird `$active_subcats` verwendet,
+  gesetzte Haken werden am Button korrekt angezeigt.
+
+### Hinweis zum Update
+- Marken, bei denen die Unterkategorien-Option (`mlwf_show_subcategories`) bereits aktiv gespeichert ist, zeigen die Gruppe „Kategorie" nach dem Update. Prüfen lässt sich das in der Admin-Übersicht der Filter-Konfiguration (`inc/filters/admin-overview.php`) oder am Marken-Archiv; unerwünschte Einträge entfernt der Filter `mlwf_brand_subcategories`, die Gruppe selbst schaltet die Option am Term ab
+- Wie bei der Unterkategorie-Mehrfachauswahl braucht die Gruppe `custom-theme` ab 1.18.0 (`mlwf-filters.js` sammelt `subcat[]`)
+
 ## [2.19.2] - 2026-10-16
 
 ### Fixed

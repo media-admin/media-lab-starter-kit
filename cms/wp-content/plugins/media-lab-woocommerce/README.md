@@ -16,7 +16,7 @@ Entwickelt von [Media Lab Tritremmel GmbH](https://media-lab.at).
 - **Produkt-Konfigurator**: mehrstufiger Wizard (Alpine.js) mit Preisberechnung, Mengenrabatt-Staffeln, Datei-Uploads; Konfigurator-Schritte lassen sich optional als Shop-Filter nutzen
 - **Wunschliste**: eigenständig vom WooCommerce-Warenkorb; unterstützt konfigurierte Produkte (Preis/Konfiguration/Datei-Uploads) und Varianten; teilbar per Link; im Shop-Modus (ohne Catalog Mode) mit „In den Warenkorb"
 - **Inquiry-Engine**: zentrale Anfrage-Verarbeitung (CPT, Validierung, Mail-Versand über mehrere Kanäle, Mehrsprachigkeit) – gemeinsam genutzt von Cart-Anfrage, Konfigurator-Anfrage und Wunschliste
-- **Produktfilter**: AJAX-Filterleiste pro Kategorie/Marke konfigurierbar, Wording und Attribut-Labels mehrsprachig pflegbar, Unterkategorie-Mehrfachauswahl
+- **Produktfilter**: AJAX-Filterleiste pro Kategorie/Marke konfigurierbar, Wording und Attribut-Labels mehrsprachig pflegbar, Kategorie-Mehrfachauswahl (auch auf Marken-Archiven)
 - **Suche**: Filterleiste auf der Suchergebnisseite (aus der Treffermenge berechnet), Kategorien/Marken als Treffer und eigene Einträge, SKU-Teilsuche, Sichtbarkeits-Ausschluss
 - **Shop-Erweiterungen**: Preis-Suffix (WP Germanized), „Produkte pro Seite", Summenzeile und Mengeneinheit auf der Produktseite, optionales Einzelprodukt-Layout (Opt-in)
 - **Load-More** und AJAX-Suche (`inc/ajax-load-more-wc.php`, `inc/ajax-search-wc.php`)
@@ -41,7 +41,7 @@ Verbindlich ist immer der `Version:`-Header der jeweiligen Komponente.
 |---|---|
 | Kategorien und Marken als Einträge in der Live-Suche | `media-lab-agency-core` ab 1.36.0 (ohne Core erscheint nur die Zeile „Passende Kategorien und Marken" auf der Ergebnisseite) |
 | Zeile „Passende Kategorien und Marken" auf der Ergebnisseite | `search.php` des Themes gibt `mlw_get_search_term_links()` aus (Kit-Theme ab 1.17.0) |
-| Unterkategorie-Mehrfachauswahl | `custom-theme` ab 1.18.0 (`mlwf-filters.js` sammelt `subcat[]`; mit älterem Theme-JS wirkt bei mehreren Haken nur der zuletzt gesetzte) |
+| Unterkategorie-Mehrfachauswahl (Kategorie- und Marken-Archive) | `custom-theme` ab 1.18.0 (`mlwf-filters.js` sammelt `subcat[]`; mit älterem Theme-JS wirkt bei mehreren Haken nur der zuletzt gesetzte) |
 | Filter auf der Suchergebnisseite | Theme reiht das Filter-JS auf der Suche ein (`is_search()`) und gibt in `search.php` `mlwf_get_search_filter_bar()` aus; Projekt-Kopien von `mlwf-filters.js` aktualisieren |
 | Suche ohne Kappung bei 500 Treffern je Term | `media-lab-agency-core` ab 1.35.1 |
 | Interaktive Filterleiste (Preis-Slider, Dropdowns, AJAX) | Frontend-JS/SCSS im Theme (`mlwf-filters.js`, Styling über die Sass-Pipeline) |
@@ -229,6 +229,7 @@ sowie „Von Elternkategorie erben". Hat ein Term keine eigene Konfiguration, gi
 die Konfiguration der Elternkategorie (bei aktiver Vererbung), sonst die globale
 Standard-Konfiguration. Eine Admin-Übersicht (`inc/filters/admin-overview.php`)
 zeigt für alle Kategorien und Marken die aktiven Filter und ihre Quelle.
+Bei Marken bietet die Unterkategorien-Option die Kategorien der Marken-Produkte an (siehe „Filterleiste").
 
 ### Filterleiste
 
@@ -238,6 +239,13 @@ Die Theme-Seite braucht keine eigene Verdrahtung.
 
 - Die native WooCommerce-Sortierung erscheint neben den Filtergruppen und lässt sich mit `add_filter( 'mlwf_filter_bar_show_sort', '__return_false' )` abschalten. Der Sortierwechsel selbst lädt noch die Seite neu (Follow-up aus 2.4.0, siehe CHANGELOG.md).
 - Die Gruppe „Kategorie" nutzt Checkboxen (`subcat[]`, ODER-Verknüpfung). Initialzustand aus der URL: `?subcat=damenuhren,herrenuhren`; ein einzelner Wert funktioniert weiterhin.
+- **Marken-Archive:** Ist für die Marke die Unterkategorien-Option (`mlwf_show_subcategories`) aktiv, zeigt dieselbe Gruppe „Kategorie" alle Haupt- und Unterkategorien, in denen die Marke veröffentlichte Produkte hat (Zähler innerhalb der Marke, der WooCommerce-Standardterm ist ausgeschlossen). Die Liste lässt sich mit `mlwf_brand_subcategories` anpassen, z. B. um Kategorien auszublenden:
+
+```php
+  add_filter( 'mlwf_brand_subcategories', function ( array $terms, int $brand_id ): array {
+      return array_values( array_filter( $terms, fn( WP_Term $t ) => $t->slug !== 'restposten' ) );
+  }, 10, 2 );
+```
 - AJAX-Action `mlwf_filter_products` (Alias `ajax_filter_posts` für abweichende Theme-Konventionen). Die Nonce wird unter `mlwf_filter_nonce` oder `ajax_filters_nonce` akzeptiert.
 - Mobil/Tablet: Schalter „Filter" mit Zähler der aktiven Filter.
 
@@ -296,6 +304,7 @@ Anzahl der Shop-Seite, wenn im Core `0` eingestellt ist (Filter
 | Hook | Zweck |
 |---|---|
 | `mlwf_filter_bar_show_sort` | WooCommerce-Sortierung in der Filterleiste ein-/ausblenden |
+| `mlwf_brand_subcategories( $terms, $brand_id )` | Kategorie-Liste der Filterleiste auf Marken-Archiven anpassen (Terms entfernen, umsortieren) |
 | `mlwf_enqueue_frontend_data` | Weitere Seiten fordern das Filter-Objekt `window.mlwf` an |
 | `mlwf_search_facet_taxonomies`, `mlwf_search_facet_min_terms`, `mlwf_search_facets`, `mlwf_search_filter_min_products`, `mlwf_search_sort_options` | Filter auf der Suchergebnisseite anpassen |
 | `mlw_search_taxonomies` | Taxonomien, die als Treffer zählen (Standard `product_cat`, `product_brand`) |
