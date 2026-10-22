@@ -4,6 +4,38 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [2.21.0] - 2026-10-22
+
+### Added
+- **Farbfelder im Konfigurator** (`templates/configurator/fields/color-picker.php`) – Schritte vom Typ `color_picker`
+  zeigen runde Farbfelder statt Namens-Buttons. Den Farbwert liefert der neue Filter `mlw_configurator_color_value`
+  (`$css_value`, `$option`, `$step`; Rückgabe: CSS-Wert für `background`, also Farbe oder Verlauf) oder das
+  Optionsfeld `color`. Ohne Wert (und ohne Bild) bleibt die Option ein Button mit dem Namen, es werden keine Farben
+  geraten. Der Name der gewählten Farbe steht unter den Feldern, jede Option hat `title` und Screenreader-Text. Der
+  ungültige Rückfall `#<slug>` entfällt.
+
+### Changed
+- **Konfigurator auf Theme-Tokens** (`templates/configurator/wizard.php`, `fields/*.php`) – Karte, Texte, Rahmen,
+  Flächen und Eingabefelder nutzen `--color-card-bg`, `--color-text`, `--color-text-muted`, `--color-border` und
+  `--color-input-bg`. Abgesetzte Flächen und Fortschrittsleiste leiten sich per `color-mix()` aus `--color-text` ab
+  (`--cfg-surface`, `--cfg-track`). Die Karte folgt damit dem Umschalter der Seite (`data-theme`) statt der
+  Systemeinstellung. Fest bleiben der rote Akzent, Hover, Fehler- und Warnfarben, das Rabatt-Grün und die
+  Markierung in der Staffeltabelle.
+
+### Removed
+- Dark-Mode-Block in `assets/css/configurator.css` (`prefers-color-scheme`): Er färbte die Karte nach der
+  Systemeinstellung und ist durch die Tokens ersetzt.
+
+### Fixed
+- Zusammenfassung: Bei Schritten vom Typ `color_picker` stand der Wert (Slug, z. B. `gruen`) statt der Bezeichnung
+  (`grün`) (`assets/js/configurator.js`, `getSummaryItems()`).
+
+### Hinweis zum Update
+- Projekte mit Farbschritten liefern die Farbwerte über den Filter `mlw_configurator_color_value`, zum Beispiel aus
+  dem projektspezifischen Plugin. Ohne Filter erscheinen Namens-Buttons wie bisher.
+- Das Theme muss `--color-card-bg`, `--color-text`, `--color-text-muted`, `--color-border` und `--color-input-bg`
+  für Hell und Dunkel definieren (`custom-theme`). `color-mix()` braucht Chrome 111, Safari 16.2 oder Firefox 113.
+
 ## [2.20.0] - 2026-10-21
 
 ### Added

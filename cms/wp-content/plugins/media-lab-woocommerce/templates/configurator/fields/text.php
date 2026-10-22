@@ -29,7 +29,9 @@ $is_textarea = $step_type === 'textarea';
     padding: 1rem;
     font-size: 16px;
     font-family: inherit;
-    border: 2px solid #e0e0e0;
+    border: 2px solid var(--color-border);
+    background: var(--color-input-bg);
+    color: var(--color-text);
     border-radius: 8px;
     transition: border-color 0.2s;
 }

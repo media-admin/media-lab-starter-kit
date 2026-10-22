@@ -65,7 +65,7 @@ $options = $step['options'];
     display: flex;
     align-items: center;
     gap: 1rem;
-    border: 2px solid #e0e0e0;
+    border: 2px solid var(--color-border);
     border-radius: 12px;
     padding: 1rem;
     transition: all 0.2s ease;
@@ -73,7 +73,7 @@ $options = $step['options'];
 
 .configurator-checkbox input:checked + .configurator-checkbox__content {
     border-color: red;
-    background: #fff5f5;
+    background: color-mix(in srgb, red 8%, transparent);
 }
 
 .configurator-checkbox__content:hover {

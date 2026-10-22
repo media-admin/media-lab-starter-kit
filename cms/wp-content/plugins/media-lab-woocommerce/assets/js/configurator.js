@@ -410,7 +410,7 @@ function productConfigurator(initialData) {
                 let displayValue = value;
                 
                 // Format based on type
-                if (step.step_type === 'select' || step.step_type === 'radio') {
+                if (step.step_type === 'select' || step.step_type === 'radio' || step.step_type === 'color_picker') {
                     const option = step.options.find(opt => opt.value === value);
                     displayValue = option ? option.label : value;
                 } else if (step.step_type === 'checkbox') {

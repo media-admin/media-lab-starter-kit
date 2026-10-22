@@ -82,7 +82,9 @@ $is_quantity = ($step_id === 'quantity');
     font-size: 24px;
     font-weight: 700;
     padding: 1rem;
-    border: 2px solid #e0e0e0;
+    border: 2px solid var(--color-border);
+    background: var(--color-input-bg);
+    color: var(--color-text);
     border-radius: 8px;
     /* Native Browser-Spinner-Pfeile ausblenden - eigene +/- Buttons daneben übernehmen das bereits */
     -moz-appearance: textfield;
@@ -103,7 +105,7 @@ $is_quantity = ($step_id === 'quantity');
 .configurator-number__hint {
     text-align: center;
     margin-top: 1rem;
-    color: #666;
+    color: var(--color-text-muted);
     font-size: 14px;
 }
 </style>

@@ -68,7 +68,7 @@ $max_size = isset($step['max_file_size']) ? $step['max_file_size'] : 10;
 
 .configurator-upload__label {
     display: block;
-    border: 3px dashed #e0e0e0;
+    border: 3px dashed var(--color-border);
     border-radius: 12px;
     padding: 3rem 2rem;
     text-align: center;
@@ -78,7 +78,7 @@ $max_size = isset($step['max_file_size']) ? $step['max_file_size'] : 10;
 
 .configurator-upload__label:hover {
     border-color: red;
-    background: #fff5f5;
+    background: color-mix(in srgb, red 8%, transparent);
 }
 
 .configurator-upload__icon {
@@ -99,18 +99,18 @@ $max_size = isset($step['max_file_size']) ? $step['max_file_size'] : 10;
 }
 
 .configurator-upload__text span {
-    color: #666;
+    color: var(--color-text-muted);
     font-size: 14px;
 }
 
 .configurator-upload__hint {
     font-size: 12px;
-    color: #999;
+    color: var(--color-text-muted);
 }
 
 .configurator-upload__preview {
-    background: #f8f9fa;
-    border: 2px solid #e0e0e0;
+    background: var(--cfg-surface);
+    border: 2px solid var(--color-border);
     border-radius: 12px;
     padding: 1.5rem;
 }
@@ -136,7 +136,7 @@ $max_size = isset($step['max_file_size']) ? $step['max_file_size'] : 10;
 
 .configurator-upload__file-size {
     font-size: 14px;
-    color: #666;
+    color: var(--color-text-muted);
 }
 
 .configurator-upload__remove {
@@ -162,7 +162,7 @@ $max_size = isset($step['max_file_size']) ? $step['max_file_size'] : 10;
 
 .configurator-upload__progress-bar {
     height: 8px;
-    background: #e0e0e0;
+    background: var(--cfg-track);
     border-radius: 9999px;
     overflow: hidden;
 }

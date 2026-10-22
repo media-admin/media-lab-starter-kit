@@ -86,7 +86,7 @@ $is_radio = $step_type === 'radio';
 }
 
 .configurator-option__content {
-    border: 2px solid #e0e0e0;
+    border: 2px solid var(--color-border);
     border-radius: 12px;
     padding: 1rem;
     text-align: center;
@@ -95,7 +95,7 @@ $is_radio = $step_type === 'radio';
 
 .configurator-option input:checked + .configurator-option__content {
     border-color: red;
-    background: #fff5f5;
+    background: color-mix(in srgb, red 8%, transparent);
     box-shadow: 0 4px 12px rgba(255,0,0,0.2);
 }
 
@@ -133,9 +133,10 @@ $is_radio = $step_type === 'radio';
     width: 100%;
     padding: 1rem;
     font-size: 16px;
-    border: 2px solid #e0e0e0;
+    border: 2px solid var(--color-border);
     border-radius: 8px;
-    background: #fff;
+    background: var(--color-input-bg);
+    color: var(--color-text);
     transition: border-color 0.2s;
 }
 

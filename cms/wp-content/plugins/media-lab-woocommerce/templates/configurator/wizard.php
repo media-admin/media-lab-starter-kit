@@ -368,8 +368,17 @@ if (!empty($remaining_tabs)) {
 </div>
 
 <style>
+/*
+ * Karte und Flächen laufen über die Theme-Tokens (--color-card-bg, --color-text,
+ * --color-text-muted, --color-border) und folgen damit dem Umschalter der Seite.
+ * --cfg-surface / --cfg-track sind abgeleitete Töne aus --color-text, damit Flächen
+ * in Hell und Dunkel ohne feste Farbwerte abgesetzt werden.
+ */
 .product-configurator {
-    background: #fff;
+    --cfg-surface: color-mix(in srgb, var(--color-text) 6%, transparent);
+    --cfg-track: color-mix(in srgb, var(--color-text) 14%, transparent);
+    background: var(--color-card-bg);
+    color: var(--color-text);
     border-radius: 12px;
     padding: 2rem;
     margin: 2rem 0;
@@ -382,7 +391,7 @@ if (!empty($remaining_tabs)) {
 
 .configurator-progress__bar {
     height: 8px;
-    background: #e0e0e0;
+    background: var(--cfg-track);
     border-radius: 9999px;
     overflow: hidden;
 }
@@ -396,7 +405,7 @@ if (!empty($remaining_tabs)) {
 .configurator-progress__text {
     text-align: center;
     margin-top: 0.5rem;
-    color: #666;
+    color: var(--color-text-muted);
     font-size: 14px;
 }
 
@@ -408,17 +417,18 @@ if (!empty($remaining_tabs)) {
     font-size: 24px;
     font-weight: 700;
     margin-bottom: 0.5rem;
+    color: var(--color-text);
 }
 
 .configurator-step__description {
-    color: #666;
+    color: var(--color-text-muted);
     margin: 0;
 }
 
 .configurator-price-preview {
     position: sticky;
     bottom: 20px;
-    background: #f8f9fa;
+    background: var(--cfg-surface);
     border: 2px solid red;
     border-radius: 12px;
     padding: 1.5rem;
@@ -428,7 +438,7 @@ if (!empty($remaining_tabs)) {
 
 .configurator-price-preview__label {
     font-size: 14px;
-    color: #666;
+    color: var(--color-text-muted);
     margin-bottom: 0.5rem;
 }
 
@@ -440,13 +450,13 @@ if (!empty($remaining_tabs)) {
 
 .configurator-price-preview__note {
     font-size: 14px;
-    color: #666;
+    color: var(--color-text-muted);
     margin-top: 0.5rem;
 }
 
 .configurator-price-preview__legal {
     font-size: 12px;
-    color: #888;
+    color: var(--color-text-muted);
     margin-top: 0.5rem;
 }
 .configurator-price-preview__legal p {
@@ -455,7 +465,7 @@ if (!empty($remaining_tabs)) {
 
 .configurator-price-preview__suffix {
     font-size: 12px;
-    color: #888;
+    color: var(--color-text-muted);
     margin-top: 0.25rem;
 }
 
@@ -463,7 +473,7 @@ if (!empty($remaining_tabs)) {
     display: block;
     font-size: 11px;
     font-weight: normal;
-    color: #888;
+    color: var(--color-text-muted);
     text-align: right;
 }
 
@@ -505,9 +515,9 @@ if (!empty($remaining_tabs)) {
 }
 
 .button--secondary {
-    background: #fff;
-    color: #333;
-    border: 2px solid #e0e0e0;
+    background: transparent;
+    color: var(--color-text);
+    border: 2px solid var(--color-border);
 }
 
 .button--secondary:hover:not(:disabled) {
@@ -535,7 +545,7 @@ button:disabled {
 }
 
 .configurator-summary__items {
-    background: #f8f9fa;
+    background: var(--cfg-surface);
     border-radius: 8px;
     padding: 1.5rem;
     margin-bottom: 2rem;
@@ -546,7 +556,7 @@ button:disabled {
     grid-template-columns: 150px 1fr auto;
     gap: 1rem;
     padding: 1rem 0;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid var(--color-border);
     align-items: center;
 }
 
@@ -572,8 +582,8 @@ button:disabled {
 }
 
 .configurator-summary__pricing {
-    background: #fff;
-    border: 2px solid #e0e0e0;
+    background: transparent;
+    border: 2px solid var(--color-border);
     border-radius: 8px;
     padding: 1.5rem;
 }
@@ -582,7 +592,7 @@ button:disabled {
     display: flex;
     justify-content: space-between;
     padding: 0.75rem 0;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid var(--color-border);
 }
 
 .price-row:last-child {
@@ -591,12 +601,12 @@ button:disabled {
 
 .price-row--addition {
     font-size: 14px;
-    color: #666;
+    color: var(--color-text-muted);
     padding-left: 1rem;
 }
 
 .price-row--subtotal {
-    border-top: 2px solid #e0e0e0;
+    border-top: 2px solid var(--color-border);
     margin-top: 0.5rem;
     padding-top: 1rem;
     font-weight: 600;
@@ -610,14 +620,14 @@ button:disabled {
 .price-row--total {
     font-size: 18px;
     font-weight: 600;
-    border-top: 2px solid #e0e0e0;
+    border-top: 2px solid var(--color-border);
     margin-top: 0.5rem;
     padding-top: 1rem;
 }
 
 .price-row--tax {
     font-size: 14px;
-    color: #666;
+    color: var(--color-text-muted);
 }
 
 .price-row--grand-total {
@@ -632,7 +642,7 @@ button:disabled {
 .configurator-tier-table {
     margin: 2rem 0;
     padding: 1.5rem;
-    background: #f8f9fa;
+    background: var(--cfg-surface);
     border-radius: 8px;
 }
 
@@ -652,11 +662,11 @@ button:disabled {
 }
 
 .configurator-tier-table thead {
-    background: #e0e0e0;
+    background: var(--cfg-track);
 }
 
 .configurator-tier-table tbody tr {
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid var(--color-border);
 }
 
 .configurator-tier-table tbody tr.is-active {

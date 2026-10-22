@@ -87,29 +87,29 @@ $options = $step['options']; // Größen (S, M, L, XL, etc.)
 .size-matrix-table {
     width: 100%;
     border-collapse: collapse;
-    background: #fff;
+    background: transparent;
     border-radius: 12px;
     overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 0 0 1px var(--color-border);
 }
 
 .size-matrix-table thead {
-    background: #f8f9fa;
+    background: var(--cfg-surface);
 }
 
 .size-matrix-table th {
     padding: 1rem;
     text-align: left;
     font-weight: 600;
-    border-bottom: 2px solid #e0e0e0;
+    border-bottom: 2px solid var(--color-border);
 }
 
 .size-matrix-table tbody tr {
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid var(--color-border);
 }
 
 .size-matrix-table tbody tr:hover {
-    background: #f8f9fa;
+    background: var(--cfg-surface);
 }
 
 .size-matrix-table td {
@@ -157,7 +157,9 @@ $options = $step['options']; // Größen (S, M, L, XL, etc.)
     width: 80px;
     text-align: center;
     padding: 0.5rem;
-    border: 2px solid #e0e0e0;
+    border: 2px solid var(--color-border);
+    background: var(--color-input-bg);
+    color: var(--color-text);
     border-radius: 6px;
     font-size: 16px;
     font-weight: 600;
@@ -169,8 +171,8 @@ $options = $step['options']; // Größen (S, M, L, XL, etc.)
 }
 
 .size-matrix-total {
-    background: #f8f9fa;
-    border-top: 2px solid #e0e0e0;
+    background: var(--cfg-surface);
+    border-top: 2px solid var(--color-border);
 }
 
 .size-matrix-total td {

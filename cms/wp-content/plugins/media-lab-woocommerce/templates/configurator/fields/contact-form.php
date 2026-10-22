@@ -126,7 +126,7 @@ $mlw_phone_mode       = class_exists( 'MediaLab_Inquiry_Settings' ) ? MediaLab_I
     display: block;
     font-weight: 600;
     margin-bottom: 0.5rem;
-    color: #333;
+    color: var(--color-text);
 }
 
 .configurator-form-label .required {
@@ -137,7 +137,9 @@ $mlw_phone_mode       = class_exists( 'MediaLab_Inquiry_Settings' ) ? MediaLab_I
     width: 100%;
     padding: 1rem;
     font-size: 16px;
-    border: 2px solid #e0e0e0;
+    border: 2px solid var(--color-border);
+    background: var(--color-input-bg);
+    color: var(--color-text);
     border-radius: 8px;
     transition: border-color 0.2s;
 }

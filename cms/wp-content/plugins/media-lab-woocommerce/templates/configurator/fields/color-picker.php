@@ -1,146 +1,181 @@
 <?php
 /**
  * Color Picker Field Template
+ *
+ * Farbfelder statt Namens-Buttons. Den Farbwert liefert der Filter 'mlw_configurator_color_value'
+ * (CSS-Wert für background: Farbname, Hex-Wert oder Verlauf) oder, falls vorhanden, $option['color'].
+ * Ohne Farbwert und ohne Bild bleibt die Option ein Button mit dem Namen. Es werden keine Farben geraten.
+ * Der Name der gewählten Farbe steht unter den Feldern; jede Option hat zusätzlich title und Screenreader-Text.
+ *
+ * Filter: apply_filters( 'mlw_configurator_color_value', string $css_value, array $option, array $step )
  */
 
-$options = $step['options'];
+$items = [];
+$names = [];
+
+foreach ( (array) $step['options'] as $option ) {
+    if ( empty( $option['available'] ) ) {
+        continue;
+    }
+
+    $swatch = ( isset( $option['color'] ) && $option['color'] !== '' ) ? (string) $option['color'] : '';
+    if ( $swatch === '' ) {
+        $swatch = (string) apply_filters( 'mlw_configurator_color_value', '', $option, $step );
+    }
+
+    $image_url = ! empty( $option['image'] ) ? (string) ( $option['image']['sizes']['thumbnail'] ?? '' ) : '';
+
+    $items[] = [
+        'option' => $option,
+        'swatch' => $swatch,
+        'image'  => $image_url,
+    ];
+    $names[ (string) $option['value'] ] = (string) $option['label'];
+}
 ?>
 
-<div class="configurator-field configurator-field--color">
-    <div class="configurator-colors">
-        <?php foreach ($options as $option) : 
-            if (!$option['available']) continue;
-            
-            // Versuche Farbe aus Option zu extrahieren
-            $color_value = isset($option['color']) ? $option['color'] : '#' . $option['value'];
-            $has_image = !empty($option['image']);
+<div class="configurator-field configurator-field--color"
+     x-data="{ colorNames: <?php echo esc_attr( wp_json_encode( $names ) ); ?> }">
+    <div class="configurator-colors" role="radiogroup" aria-label="<?php echo esc_attr( $step['step_label'] ?? '' ); ?>">
+        <?php foreach ( $items as $item ) :
+            $option = $item['option'];
+            $label  = (string) $option['label'];
+            $kind   = $item['image'] !== '' ? 'image' : ( $item['swatch'] !== '' ? 'color' : 'text' );
         ?>
-            <label class="configurator-color">
-                <input type="radio" 
-                       name="config_<?php echo esc_attr($step_id); ?>"
-                       :value="'<?php echo esc_attr($option['value']); ?>'"
-                       x-model="config['<?php echo esc_js($step_id); ?>']"
-                       @change="onFieldChange('<?php echo esc_js($step_id); ?>')">
-                
-                <div class="configurator-color__swatch">
-                    <?php if ($has_image) : ?>
-                        <img src="<?php echo esc_url($option['image']['sizes']['thumbnail']); ?>" 
-                             alt="<?php echo esc_attr($option['label']); ?>"
-                             class="configurator-color__image">
-                    <?php else : ?>
-                        <div class="configurator-color__circle" 
-                             style="background: <?php echo esc_attr($color_value); ?>"></div>
-                    <?php endif; ?>
-                    
-                    <span class="configurator-color__checkmark">✓</span>
-                </div>
-                
-                <div class="configurator-color__label">
-                    <?php echo esc_html($option['label']); ?>
-                </div>
-                
-                <?php if ($option['price_modifier'] != 0) : ?>
-                    <div class="configurator-color__price">
-                        <?php echo $option['price_modifier'] > 0 ? '+' : ''; ?>
-                        <?php echo wc_price($option['price_modifier']); ?>
-                    </div>
+            <label class="configurator-color configurator-color--<?php echo esc_attr( $kind ); ?>"
+                   title="<?php echo esc_attr( $label ); ?>">
+                <input type="radio"
+                       name="config_<?php echo esc_attr( $step_id ); ?>"
+                       :value="'<?php echo esc_js( $option['value'] ); ?>'"
+                       x-model="config['<?php echo esc_js( $step_id ); ?>']"
+                       @change="onFieldChange('<?php echo esc_js( $step_id ); ?>')">
+
+                <?php if ( $kind === 'image' ) : ?>
+                    <span class="configurator-color__swatch">
+                        <img src="<?php echo esc_url( $item['image'] ); ?>" alt="" class="configurator-color__image">
+                    </span>
+                    <span class="configurator-color__sr"><?php echo esc_html( $label ); ?></span>
+                <?php elseif ( $kind === 'color' ) : ?>
+                    <span class="configurator-color__swatch"
+                          style="--mlw-swatch: <?php echo esc_attr( $item['swatch'] ); ?>"></span>
+                    <span class="configurator-color__sr"><?php echo esc_html( $label ); ?></span>
+                <?php else : ?>
+                    <span class="configurator-color__text"><?php echo esc_html( $label ); ?></span>
+                <?php endif; ?>
+
+                <?php if ( ! empty( $option['price_modifier'] ) && (float) $option['price_modifier'] !== 0.0 ) : ?>
+                    <span class="configurator-color__price">
+                        <?php echo (float) $option['price_modifier'] > 0 ? '+' : ''; ?>
+                        <?php echo wc_price( $option['price_modifier'] ); ?>
+                    </span>
                 <?php endif; ?>
             </label>
         <?php endforeach; ?>
     </div>
+
+    <p class="configurator-colors__selected" aria-live="polite" style="display: none"
+       x-show="config['<?php echo esc_js( $step_id ); ?>']"
+       x-text="colorNames[config['<?php echo esc_js( $step_id ); ?>']] || ''"></p>
 </div>
 
 <style>
 .configurator-colors {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    gap: 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
 }
 
 .configurator-color {
-    cursor: pointer;
-    text-align: center;
-    display: flex;
+    position: relative;
+    display: inline-flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.75rem;
+    gap: 0.25rem;
+    cursor: pointer;
 }
 
 .configurator-color input {
     position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: 0;
     opacity: 0;
+    pointer-events: none;
+}
+
+.configurator-color__sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
 }
 
 .configurator-color__swatch {
-    position: relative;
-    width: 80px;
-    height: 80px;
-    border: 3px solid #e0e0e0;
+    display: block;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 1px solid var(--color-border);
     border-radius: 50%;
     overflow: hidden;
-    transition: all 0.2s ease;
+    background: var(--mlw-swatch, transparent);
+    transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.configurator-color:hover .configurator-color__swatch {
+    transform: scale(1.08);
 }
 
 .configurator-color input:checked + .configurator-color__swatch {
-    border-color: red;
-    box-shadow: 0 4px 12px rgba(255,0,0,0.3);
-    transform: scale(1.1);
-}
-
-.configurator-color__swatch:hover {
-    border-color: red;
-    transform: scale(1.05);
-}
-
-.configurator-color__circle {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
+    box-shadow: 0 0 0 2px var(--color-card-bg), 0 0 0 4px var(--color-text);
 }
 
 .configurator-color__image {
+    display: block;
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
-.configurator-color__checkmark {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 32px;
-    color: #fff;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-    opacity: 0;
-    transition: opacity 0.2s ease;
-}
-
-.configurator-color input:checked + .configurator-color__swatch .configurator-color__checkmark {
-    opacity: 1;
-}
-
-.configurator-color__label {
+.configurator-color__text {
+    display: inline-block;
+    padding: 0.5rem 0.875rem;
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    background: transparent;
+    color: var(--color-text);
+    font-size: 0.875rem;
     font-weight: 600;
-    font-size: 14px;
-    color: #333;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.configurator-color:hover .configurator-color__text {
+    border-color: var(--color-text);
+}
+
+.configurator-color input:checked + .configurator-color__text {
+    border-color: var(--color-text);
+    background: var(--color-text);
+    color: var(--color-card-bg);
+}
+
+.configurator-color input:focus-visible + .configurator-color__swatch,
+.configurator-color input:focus-visible + .configurator-color__text {
+    outline: 2px solid var(--color-text);
+    outline-offset: 4px;
 }
 
 .configurator-color__price {
-    font-size: 12px;
-    color: red;
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
     font-weight: 600;
 }
 
-@media (max-width: 768px) {
-    .configurator-colors {
-        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-        gap: 1rem;
-    }
-    
-    .configurator-color__swatch {
-        width: 60px;
-        height: 60px;
-    }
+.configurator-colors__selected {
+    margin: 0.75rem 0 0;
+    color: var(--color-text);
+    font-size: 0.875rem;
+    font-weight: 600;
 }
 </style>
