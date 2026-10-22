@@ -31,6 +31,9 @@ class MediaLab_Product_Configurator {
         // bisherige visuelle Reihenfolge (Tabs, dann Konfigurator) erhalten und die Anzeige
         // ist unabhängig von Catalog-Mode-Einstellungen.
         add_action('woocommerce_single_product_summary', array($this, 'move_tabs_before_configurator'), 24);
+        // Opt-in (Filter mlw_configurator_tabs_under_gallery): Tabs unter der Galerie statt vor dem Konfigurator
+        add_action('woocommerce_before_single_product_summary', array($this, 'render_tabs_under_gallery'), 21);
+        add_filter('body_class', array($this, 'tabs_under_gallery_body_class'));
         add_action('woocommerce_single_product_summary', array($this, 'maybe_show_configurator'), 25);
 
         // Rezensionen für konfigurierbare Produkte AUSSERHALB von .summary
@@ -659,6 +662,11 @@ class MediaLab_Product_Configurator {
         if (!$this->is_configurable($product)) {
             return;
         }
+
+        // Tabs stehen unter der Galerie (render_tabs_under_gallery), nicht vor dem Konfigurator
+        if (apply_filters('mlw_configurator_tabs_under_gallery', false)) {
+            return;
+        }
         
         // Entferne Tabs von Standard-Position (nach add_to_cart)
         remove_action('woocommerce_after_single_product_summary', 'woocommerce_output_product_data_tabs', 10);
@@ -667,6 +675,45 @@ class MediaLab_Product_Configurator {
         woocommerce_output_product_data_tabs();
     }
     
+    /**
+     * Opt-in über den Filter mlw_configurator_tabs_under_gallery: Die Produkt-Tabs (Zusätzliche Informationen) stehen als
+     * Geschwister direkt unter der Galerie (woocommerce_before_single_product_summary, Prio 21) statt in der Summary-Spalte
+     * vor dem Konfigurator. Das Layout (zwei Spalten, Reihenfolge mobil) liefert das Theme über die body-Klasse
+     * mlw-tabs-under-gallery. Nicht konfigurierbare Produkte bleiben unverändert.
+     */
+    public function render_tabs_under_gallery() {
+        global $product;
+        if (!$product || !$this->is_configurable($product->get_id())) {
+            return;
+        }
+        if (!apply_filters('mlw_configurator_tabs_under_gallery', false)) {
+            return;
+        }
+
+        remove_action('woocommerce_after_single_product_summary', 'woocommerce_output_product_data_tabs', 10);
+        add_filter('woocommerce_product_tabs', array($this, 'without_reviews_tab'), 99);
+        woocommerce_output_product_data_tabs();
+        remove_filter('woocommerce_product_tabs', array($this, 'without_reviews_tab'), 99);
+    }
+
+    /**
+     * Rezensionen stehen bei konfigurierbaren Produkten im eigenen Abschnitt (render_reviews_for_configurable()). Der Tab
+     * "Rezensionen" entfällt in den Tabs unter der Galerie, sonst stünden Liste und Formular zweimal auf der Seite.
+     */
+    public function without_reviews_tab($tabs) {
+        unset($tabs['reviews']);
+        return $tabs;
+    }
+
+    public function tabs_under_gallery_body_class($classes) {
+        if (function_exists('is_product') && is_product()
+            && apply_filters('mlw_configurator_tabs_under_gallery', false)
+            && $this->is_configurable(get_queried_object_id())) {
+            $classes[] = 'mlw-tabs-under-gallery';
+        }
+        return $classes;
+    }
+
     public function enqueue_scripts() {
         if (!is_product()) return;
 

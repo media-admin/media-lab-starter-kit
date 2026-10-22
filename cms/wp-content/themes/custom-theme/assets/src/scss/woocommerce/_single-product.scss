@@ -592,3 +592,48 @@ body.archive .woocommerce-wrapper {
     padding-bottom: $spacing-8;
     margin-bottom:  $spacing-8;
 }
+
+
+// =============================================================================
+// Konfigurierbare Produkte: Tabs unter der Galerie (Opt-in, Plugin-Filter mlw_configurator_tabs_under_gallery)
+// body-Klasse mlw-tabs-under-gallery. Reihenfolge im DOM: Galerie, Tabs, Summary.
+// Ab md: Galerie und Tabs links untereinander, Summary mit der Konfigurator-Karte rechts über beide Zeilen.
+// Darunter: Galerie, Summary, Tabs (die Karte soll nicht hinter den Tabs verschwinden).
+// =============================================================================
+
+.single-product.mlw-tabs-under-gallery div.product {
+    > .woocommerce-product-gallery { order: -2; }
+    > .summary                     { order: -1; }
+
+    > .woocommerce-tabs {
+        margin-top: var(--space-md);
+    }
+
+    @include respond-to('md') {
+        display:               grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-rows:    auto 1fr;
+        column-gap:            var(--space-md);
+        align-items:           start;
+
+        // Alles übrige (Ähnliche Produkte, Rezensionen) über die volle Breite
+        > * { grid-column: 1 / -1; }
+
+        > .woocommerce-product-gallery,
+        > .woocommerce-tabs {
+            grid-column: 1;
+            width:       auto;
+            max-width:   none;
+        }
+
+        > .woocommerce-product-gallery { grid-row: 1; }
+        > .woocommerce-tabs            { grid-row: 2; }
+
+        > .summary {
+            grid-column: 2;
+            grid-row:    1 / span 2;
+            width:       auto;
+            max-width:   none;
+        }
+    }
+}

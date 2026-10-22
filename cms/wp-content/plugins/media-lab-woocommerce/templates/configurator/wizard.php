@@ -55,7 +55,10 @@ add_filter('woocommerce_product_tabs', function($tabs) {
 // Zeige verbleibende Tabs (falls welche übrig sind)
 $remaining_tabs = apply_filters('woocommerce_product_tabs', array());
 if (!empty($remaining_tabs)) {
-    woocommerce_output_product_data_tabs();
+    // Bei aktivem Filter stehen die Tabs unter der Galerie (class-configurator.php, render_tabs_under_gallery())
+    if (!apply_filters('mlw_configurator_tabs_under_gallery', false)) {
+        woocommerce_output_product_data_tabs();
+    }
 }
 ?>
 

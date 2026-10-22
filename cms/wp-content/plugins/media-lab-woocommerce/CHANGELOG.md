@@ -4,6 +4,23 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [2.22.0] - 2026-10-22
+
+### Added
+- **Tabs unter der Galerie bei konfigurierbaren Produkten (Opt-in)** (`inc/configurator/class-configurator.php`) – mit
+  `add_filter( 'mlw_configurator_tabs_under_gallery', '__return_true' )` stehen die Produkt-Tabs („Zusätzliche
+  Informationen“) bei konfigurierbaren Produkten als Geschwister direkt unter der Galerie
+  (`woocommerce_before_single_product_summary`, Priorität 21) statt in der Summary-Spalte vor der Konfigurator-Karte.
+  Standard aus, bestehende Projekte ändern sich nicht, nicht konfigurierbare Produkte auch nicht.
+  Der Tab „Rezensionen“ entfällt dort, die Rezensionen stehen wie bisher im eigenen Abschnitt
+  (`render_reviews_for_configurable()`).
+  Der Wizard (`templates/configurator/wizard.php`) gibt die Tabs dann nicht mehr selbst aus. Neue Body-Klasse
+  `mlw-tabs-under-gallery`; das Layout dazu (zwei Spalten, Reihenfolge mobil) liefert das Theme (`custom-theme` ab 1.19.0).
+
+### Hinweis zum Update
+- Ohne das Theme-Layout stehen die Tabs bei aktivem Filter zwischen Galerie und Summary. Der Filter gehört deshalb
+  zusammen mit dem Theme-Block in `_single-product.scss` eingeschaltet.
+
 ## [2.21.0] - 2026-10-22
 
 ### Added

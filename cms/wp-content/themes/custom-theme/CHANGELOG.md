@@ -16,6 +16,19 @@ möglich.
 
 ## [Unreleased]
 
+## [1.19.0] - 2026-10-22
+
+### Added
+- **Tabs unter der Galerie bei konfigurierbaren Produkten** (`woocommerce/_single-product.scss`, `functions.php`) –
+  schaltet den Plugin-Filter `mlw_configurator_tabs_under_gallery` ein (`media-lab-woocommerce` ab 2.22.0). Ab `md`
+  stehen Galerie und Tabs („Zusätzliche Informationen“) links untereinander, die Summary mit der Konfigurator-Karte
+  rechts über beide Zeilen. Darunter gilt die Reihenfolge Galerie, Summary, Tabs. Das Layout hängt an der Body-Klasse
+  `mlw-tabs-under-gallery`.
+
+### Hinweis zum Update
+- Projekte mit eigener Kopie von `_single-product.scss` übernehmen den Block „Tabs unter der Galerie“ am Dateiende
+  und schalten `mlw_configurator_tabs_under_gallery` in ihrer `functions.php` ein.
+
 ## [1.18.11] - 2026-10-22
 
 ### Fixed
