@@ -245,13 +245,3 @@
     transform: translate(-50%, -50%) rotate(360deg);
   }
 }
-
-// Dark Mode
-@media (prefers-color-scheme: dark) {
-  .image-comparison {
-    &__label {
-      background: rgba(255, 255, 255, 0.9);
-      color: var(--color-text);
-    }
-  }
-}

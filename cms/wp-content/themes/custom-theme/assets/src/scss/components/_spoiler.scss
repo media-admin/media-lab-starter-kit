@@ -19,7 +19,7 @@
       left: 0;
       right: 0;
       height: 80px;
-      background: linear-gradient(to bottom, transparent, var(--color-bg, #fff));
+      background: linear-gradient(to bottom, transparent, var(--color-background));
       pointer-events: none;
       transition: opacity $transition-base;
     }
@@ -194,25 +194,6 @@
   .spoiler {
     &__toggle {
       padding: $spacing-3 0;
-    }
-  }
-}
-
-
-// ============================================
-// DARK MODE
-// ============================================
-
-@media (prefers-color-scheme: dark) {
-  .spoiler {
-    &__content::after {
-      background: linear-gradient(to bottom, transparent, var(--color-bg, #1a1a1a));
-    }
-  }
-
-  .spoiler--bordered {
-    .spoiler__content::after {
-      background: linear-gradient(to bottom, transparent, var(--color-card-bg));
     }
   }
 }

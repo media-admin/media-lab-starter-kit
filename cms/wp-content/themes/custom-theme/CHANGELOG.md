@@ -16,6 +16,20 @@ möglich.
 
 ## [Unreleased]
 
+## [1.20.1] - 2026-10-22
+
+### Fixed
+- **Dark Mode von Bildvergleich, Spoiler und Timeline folgt dem Umschalter** (`components/_image-comparison.scss`,
+  `_spoiler.scss`, `_timeline.scss`) – die `prefers-color-scheme`-Blöcke entfallen. Spoiler und Timeline nutzten
+  `var(--color-bg)`, das im Theme nicht existiert (der Token heißt `--color-background`): Der Verlauf des Spoilers fiel auf
+  festes Weiß zurück, der Ring um die Timeline-Marker fehlte. Beim Bildvergleich stand bei dunkler Seite helle Schrift auf
+  weißem Label, und die Timeline-Linie war im Hellmodus bei dunklem System fast unsichtbar.
+
+### Hinweis zum Update
+- Weitere Komponenten (`stats`, `logo-carousel`, `notifications`, `tabs`, `pricing-tables`, `video-player`,
+  `team-cards`) haben noch `prefers-color-scheme`-Blöcke. Sie betreffen nur Tönungen und Hover-Flächen und sind nicht
+  geändert. Projekte mit eigener Kopie der drei Dateien übernehmen die Änderungen von Hand.
+
 ## [1.20.0] - 2026-10-22
 
 ### Added

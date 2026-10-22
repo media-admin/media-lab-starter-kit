@@ -80,7 +80,7 @@
     align-items: center;
     justify-content: center;
     z-index: 2;
-    box-shadow: 0 0 0 4px var(--color-bg);
+    box-shadow: 0 0 0 4px var(--color-background);
     
     .dashicons {
       color: $color-white;
@@ -267,21 +267,6 @@
   .timeline-item {
     &__title {
       font-size: $font-size-xl;
-    }
-  }
-}
-
-// Dark Mode
-@media (prefers-color-scheme: dark) {
-  .timeline {
-    &::before {
-      background: rgba(255, 255, 255, 0.2);
-    }
-  }
-  
-  .timeline-item {
-    &__marker {
-      box-shadow: 0 0 0 4px var(--color-bg);
     }
   }
 }
