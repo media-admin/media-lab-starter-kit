@@ -16,6 +16,19 @@ möglich.
 
 ## [Unreleased]
 
+## [1.18.11] - 2026-10-22
+
+### Fixed
+- **Kopfzeile im Hellmodus bei dunkler Systemeinstellung:** `_navigation.scss` färbte `.site-header` über
+  `@media (prefers-color-scheme: dark)` schwarz (`rgba(0, 0, 0, 0.95)`), auch wenn die Seite über den Umschalter hell
+  war. Die Menüpunkte nutzen `--color-text` und standen dann dunkel auf schwarzem Grund. Der Block hängt jetzt an
+  `[data-theme="dark"] .site-header`, die Fläche kommt aus `--color-surface` (`color-mix`, 95 %). Im Dark Mode ist die
+  Kopfzeile dadurch `--color-surface` statt reinem Schwarz (`layout/_navigation.scss`)
+
+### Hinweis zum Update
+- `color-mix()` braucht Chrome 111, Safari 16.2 oder Firefox 113. Projekte mit eigener Kopie von `_navigation.scss`
+  übernehmen den Block „Dark Mode“ am Dateiende von Hand.
+
 ## [1.18.10] - 2026-10-19
 
 ### Fixed

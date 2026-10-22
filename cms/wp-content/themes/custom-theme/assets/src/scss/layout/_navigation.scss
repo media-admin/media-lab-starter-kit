@@ -655,11 +655,11 @@
 
 // ── Dark Mode ─────────────────────────────────────────────────────────────────
 
-@media (prefers-color-scheme: dark) {
-    .site-header {
-        background:      rgba(0, 0, 0, 0.95);
-        backdrop-filter: blur(10px);
-    }
+// Die dunkle Kopfzeile folgt dem Umschalter der Seite (data-theme), nicht der Systemeinstellung. Vorher stand im
+// hellen Modus dunkler Text auf schwarzem Grund, sobald das System dunkel war. Die Fläche kommt aus dem Token.
+[data-theme="dark"] .site-header {
+    background:      color-mix(in srgb, var(--color-surface) 95%, transparent);
+    backdrop-filter: blur(10px);
 }
 
 
