@@ -4,6 +4,15 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [2.23.0] - 2026-10-22
+
+### Added
+- **Wizard-Merkmale nicht doppelt anzeigen (Opt-in)** (`inc/configurator/class-configurator.php`) – mit
+  `add_filter( 'mlw_configurator_hide_wizard_attributes', '__return_true' )` entfallen bei konfigurierbaren Produkten in
+  der Tabelle „Zusätzliche Informationen“ die Zeilen Farbe und Größe, sofern der Wizard dafür einen Schritt hat
+  (`color`, `size` oder `sizes`). Andere Merkmale bleiben. Bleibt keine Zeile übrig, entfällt der Tab „Zusätzliche
+  Informationen“ ganz. Standard aus, nicht konfigurierbare Produkte ändern sich nicht.
+
 ## [2.22.0] - 2026-10-22
 
 ### Added

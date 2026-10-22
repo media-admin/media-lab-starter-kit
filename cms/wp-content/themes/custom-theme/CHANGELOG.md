@@ -16,6 +16,13 @@ möglich.
 
 ## [Unreleased]
 
+## [1.20.0] - 2026-10-22
+
+### Added
+- **Farbe und Größe nicht doppelt in „Zusätzliche Informationen“** (`functions.php`) – schaltet den Plugin-Filter
+  `mlw_configurator_hide_wizard_attributes` ein (`media-lab-woocommerce` ab 2.23.0). Bei konfigurierbaren Produkten
+  stehen Farbe und Größe nur noch im Wizard, nicht zusätzlich in der Merkmale-Tabelle unter der Galerie.
+
 ## [1.19.0] - 2026-10-22
 
 ### Added

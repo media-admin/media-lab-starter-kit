@@ -34,6 +34,9 @@ class MediaLab_Product_Configurator {
         // Opt-in (Filter mlw_configurator_tabs_under_gallery): Tabs unter der Galerie statt vor dem Konfigurator
         add_action('woocommerce_before_single_product_summary', array($this, 'render_tabs_under_gallery'), 21);
         add_filter('body_class', array($this, 'tabs_under_gallery_body_class'));
+        // Opt-in (Filter mlw_configurator_hide_wizard_attributes): Farbe und Größe nicht doppelt in "Zusätzliche Informationen"
+        add_filter('woocommerce_display_product_attributes', array($this, 'hide_covered_attributes'), 20, 2);
+        add_filter('woocommerce_product_tabs', array($this, 'drop_empty_attributes_tab'), 99);
         add_action('woocommerce_single_product_summary', array($this, 'maybe_show_configurator'), 25);
 
         // Rezensionen für konfigurierbare Produkte AUSSERHALB von .summary
@@ -702,6 +705,69 @@ class MediaLab_Product_Configurator {
      */
     public function without_reviews_tab($tabs) {
         unset($tabs['reviews']);
+        return $tabs;
+    }
+
+    /**
+     * Attribute, die der Wizard selbst als Schritt abfragt (Farbe, Größe): Schlüssel der Zeilen in der Tabelle
+     * "Zusätzliche Informationen" (woocommerce_display_product_attributes).
+     */
+    private function wizard_covered_attributes($product_id) {
+        if (!function_exists('get_field')) {
+            return array();
+        }
+        $ids = array();
+        foreach ((array) get_field('config_steps', $product_id) as $step) {
+            if (is_array($step) && !empty($step['step_id'])) {
+                $ids[] = (string) $step['step_id'];
+            }
+        }
+        $map = array(
+            'attribute_pa_color' => array('color'),
+            'attribute_pa_size'  => array('size', 'sizes'),
+        );
+        $covered = array();
+        foreach ($map as $key => $step_ids) {
+            if (array_intersect($step_ids, $ids)) {
+                $covered[] = $key;
+            }
+        }
+        return $covered;
+    }
+
+    /**
+     * Opt-in über den Filter mlw_configurator_hide_wizard_attributes: Bei konfigurierbaren Produkten entfallen in der
+     * Tabelle "Zusätzliche Informationen" die Zeilen, die der Wizard als Schritt abfragt (Farbe, Größe). Andere Merkmale
+     * (Material u. a.) bleiben.
+     */
+    public function hide_covered_attributes($rows, $product) {
+        if (!apply_filters('mlw_configurator_hide_wizard_attributes', false)) {
+            return $rows;
+        }
+        if (!$product instanceof WC_Product || !$this->is_configurable($product->get_id())) {
+            return $rows;
+        }
+        foreach ($this->wizard_covered_attributes($product->get_id()) as $key) {
+            unset($rows[$key]);
+        }
+        return $rows;
+    }
+
+    /** Bleibt nach dem Ausblenden keine Zeile übrig, entfällt der Tab "Zusätzliche Informationen" ganz. */
+    public function drop_empty_attributes_tab($tabs) {
+        global $product;
+        if (!isset($tabs['additional_information']) || !apply_filters('mlw_configurator_hide_wizard_attributes', false)) {
+            return $tabs;
+        }
+        if (!$product instanceof WC_Product || !$this->is_configurable($product->get_id())) {
+            return $tabs;
+        }
+        ob_start();
+        wc_display_product_attributes($product);
+        $html = ob_get_clean();
+        if (strpos($html, '<tr') === false) {
+            unset($tabs['additional_information']);
+        }
         return $tabs;
     }
 
