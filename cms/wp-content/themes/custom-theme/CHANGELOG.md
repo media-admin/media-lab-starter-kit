@@ -16,6 +16,14 @@ möglich.
 
 ## [Unreleased]
 
+## [1.21.0] - 2026-10-23
+
+### Added
+- **Header: Innenabstand am Desktop pro Projekt einstellbar** (`layout/_navigation.scss`) – `.site-navigation` nutzt
+  `var(--header-padding-block, <bisheriger Wert>)` für oben und unten. Ohne Angabe ändert sich nichts. Ein Projekt, dessen
+  Kopfzeile am Desktop zu hoch wirkt, setzt zum Beispiel `:root { --header-padding-block: 1rem; }`. `--header-height` folgt,
+  weil `header.php` die Höhe misst. Mobil (unter 992 px) bleibt es bei `--header-mobile-height`.
+
 ## [1.20.1] - 2026-10-22
 
 ### Fixed

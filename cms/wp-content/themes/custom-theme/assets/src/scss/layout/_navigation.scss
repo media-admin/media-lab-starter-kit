@@ -30,7 +30,8 @@
     align-items:     center;
     justify-content: space-between;
     // Fluid horizontal padding statt festem $spacing-6
-    padding:         $spacing-4 var(--container-padding);
+    // Oben/unten pro Projekt einstellbar: --header-padding-block (Standard wie bisher). Mobil gilt --header-mobile-height.
+    padding:         var(--header-padding-block, #{$spacing-4}) var(--container-padding);
     max-width:       1400px;
     margin:          0 auto;
 }
