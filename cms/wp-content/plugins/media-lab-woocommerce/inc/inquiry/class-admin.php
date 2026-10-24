@@ -197,8 +197,9 @@ class MediaLab_Inquiry_Admin {
         if ( ! $post_id || ! current_user_can( 'edit_post', $post_id ) ) return $data;
 
         $chosen = sanitize_key( wp_unslash( $_POST['mlw_inquiry_status'] ) );
-        $form_states = [ 'draft', 'publish', 'pending', 'future', 'private', 'auto-draft' ];
-        if ( in_array( $chosen, self::STATUSES, true ) && in_array( $data['post_status'] ?? '', $form_states, true ) ) {
+        // Ohne Status im Formular übernimmt wp_update_post() den bisherigen Status der Anfrage (zum Beispiel mlw-open).
+        // Die Auswahl gilt deshalb für jeden Status außer Papierkorb.
+        if ( in_array( $chosen, self::STATUSES, true ) && ! in_array( $data['post_status'] ?? '', [ 'trash', 'inherit' ], true ) ) {
             $data['post_status'] = $chosen;
         }
         return $data;

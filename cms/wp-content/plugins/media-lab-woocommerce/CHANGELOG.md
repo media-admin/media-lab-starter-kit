@@ -4,6 +4,14 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [2.24.2] - 2026-10-24
+
+### Fixed
+- **Statuswechsel bei Anfragen wirkt** (`inc/inquiry/class-admin.php`) – Die Auswahl im Kasten „Status" wurde beim Speichern
+  verworfen, weil WordPress ohne Status im Formular den bisherigen Status übernimmt und die Prüfung nur Standardstatus kannte.
+- **Kein leerer Block „Nachricht:" in der Benachrichtigung** (`inc/inquiry/class-mail.php`) – Ohne Nachricht entfällt der
+  Absatz der Standardvorlage. Angepasste Vorlagen mit anderem Aufbau sind nicht betroffen.
+
 ## [2.24.1] - 2026-10-24
 
 ### Fixed

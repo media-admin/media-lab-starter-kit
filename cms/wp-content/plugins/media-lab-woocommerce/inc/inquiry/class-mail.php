@@ -63,7 +63,14 @@ class MediaLab_Inquiry_Mail {
             $placeholders[ '{' . $key . '}' ] = is_array( $value ) ? esc_html( implode( ', ', $value ) ) : esc_html( (string) $value );
         }
 
-        return str_replace( array_keys( $placeholders ), array_values( $placeholders ), $template );
+        $out = str_replace( array_keys( $placeholders ), array_values( $placeholders ), $template );
+
+        // Leeren Nachrichtenblock nicht ausgeben (Konfigurator und Wunschliste erfassen oft keine Nachricht).
+        if ( trim( (string) ( $data['message'] ?? '' ) ) === '' ) {
+            $out = preg_replace( '#<p>\s*<strong>Nachricht:</strong>\s*<br\s*/?>\s*</p>#i', '', $out );
+        }
+
+        return $out;
     }
 
     private static function source_label( string $source ): string {
