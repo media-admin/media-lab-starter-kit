@@ -4,6 +4,12 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [2.24.1] - 2026-10-24
+
+### Fixed
+- **Menge nur einmal in den Anfrage-Details** (`inc/inquiry/class-admin.php`) – Stand die Menge schon in der Auswahl des
+  Konfigurators, zeigte der Kasten sie zweimal.
+
 ## [2.24.0] - 2026-10-23
 
 ### Added

@@ -134,7 +134,11 @@ class MediaLab_Inquiry_Admin {
         if ( ! empty( $item['variation_id'] ) ) {
             self::row( __( 'Variante', 'media-lab-woocommerce' ), esc_html( '#' . (int) $item['variation_id'] ) );
         }
-        self::row( __( 'Menge', 'media-lab-woocommerce' ), esc_html( (string) ( $item['quantity'] ?? '1' ) ) );
+        // Steht die Menge schon in der Auswahl (config_display), nicht noch einmal zeigen.
+        $has_qty_row = ! empty( $item['config_display'] ) && is_array( $item['config_display'] ) && array_key_exists( 'Menge', $item['config_display'] );
+        if ( ! $has_qty_row ) {
+            self::row( __( 'Menge', 'media-lab-woocommerce' ), esc_html( (string) ( $item['quantity'] ?? '1' ) ) );
+        }
 
         if ( ! empty( $item['config_display'] ) && is_array( $item['config_display'] ) ) {
             foreach ( $item['config_display'] as $label => $value ) {
