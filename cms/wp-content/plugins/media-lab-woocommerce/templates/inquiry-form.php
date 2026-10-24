@@ -136,11 +136,15 @@ $mlw_phone_mode       = class_exists( 'MediaLab_Inquiry_Settings' ) ? MediaLab_I
                     data: data,
                     success: function(response) {
                         if (response.success) {
-                            $msg.html('<p class="success">' + response.data + '</p>').show();
                             $form.hide();
-                            setTimeout(function() {
-                                window.location.href = '<?php echo home_url(); ?>';
-                            }, 3000);
+                            if (window.mlwInquiryFeedback) {
+                                window.mlwInquiryFeedback.show({ type: 'inquiry', message: (typeof response.data === 'string' ? response.data : ''), anchor: $form[0] });
+                            } else {
+                                $msg.html('<p class="success">' + response.data + '</p>').show();
+                                setTimeout(function() {
+                                    window.location.href = '<?php echo home_url(); ?>';
+                                }, 3000);
+                            }
                         } else {
                             $msg.html('<p class="error">' + response.data + '</p>').show();
                             $btn.prop('disabled', false).text('<?php echo esc_js( $mlw_submit_label ); ?>');

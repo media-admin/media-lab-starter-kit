@@ -453,7 +453,7 @@ function productConfigurator(initialData) {
             const messageSteps = this.steps.filter(
                 (s) => (s.step_type === 'textarea' || s.step_type === 'text') && s.step_type !== 'contact_form'
             );
-            const messageValue = messageSteps
+            let messageValue = messageSteps
                 .map((s) => {
                     const val = (this.config[s.step_id] || '').toString().trim();
                     if (!val) return '';
@@ -463,6 +463,12 @@ function productConfigurator(initialData) {
                 })
                 .filter((v) => v !== '')
                 .join('\n\n');
+
+            // Nachrichtenfeld des Kontaktschritts (config.notes) gehört ebenfalls zur Nachricht
+            const contactNote = (this.config.notes || '').toString().trim();
+            if (contactNote) {
+                messageValue = messageValue ? `${messageValue}\n\n${contactNote}` : contactNote;
+            }
 
             try {
                 const response = await fetch(configuratorData.ajax_url, {
@@ -483,14 +489,17 @@ function productConfigurator(initialData) {
                 const data = await response.json();
 
                 if (data.success) {
-                    alert('✅ Zur Wunschliste hinzugefügt!');
                     if (typeof mlwWishlist !== 'undefined' && data.data && typeof data.data.count !== 'undefined') {
                         mlwWishlist.count = data.data.count;
                         document.querySelectorAll('.mlw-wishlist-count').forEach(function (el) {
                             el.textContent = data.data.count;
                         });
                     }
-                    window.location.href = '/';
+                    if (window.mlwInquiryFeedback) {
+                        window.mlwInquiryFeedback.show({ type: 'wishlistAdded', anchor: document.querySelector('[x-data^="productConfigurator"]') });
+                    } else {
+                        window.location.href = '/';
+                    }
                 } else {
                     this.errors = [(data.data && data.data.message) || 'Fehler beim Hinzufügen zur Wunschliste'];
                 }
@@ -540,10 +549,12 @@ function productConfigurator(initialData) {
                 const data = await response.json();
                 
                 if (data.success) {
-                    // Zeige Erfolg
-                    alert('✅ Vielen Dank! Ihre Anfrage wurde versendet. Wir melden uns in Kürze bei Ihnen.');
-                    // Redirect zur Startseite
-                    window.location.href = '/';
+                    if (window.mlwInquiryFeedback) {
+                        window.mlwInquiryFeedback.show({ type: 'inquiry', anchor: document.querySelector('[x-data^="productConfigurator"]') });
+                    } else {
+                        alert('✅ Vielen Dank! Ihre Anfrage wurde versendet. Wir melden uns in Kürze bei Ihnen.');
+                        window.location.href = '/';
+                    }
                 } else {
                     this.errors = [data.data || 'Fehler beim Senden der Anfrage'];
                 }

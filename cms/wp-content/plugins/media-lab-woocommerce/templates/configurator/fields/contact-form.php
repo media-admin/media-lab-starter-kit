@@ -12,6 +12,7 @@ $mlw_extra_fields     = class_exists( 'MediaLab_Inquiry_Settings' ) ? MediaLab_I
 $mlw_privacy_required = class_exists( 'MediaLab_Inquiry_Settings' ) ? MediaLab_Inquiry_Settings::privacy_required() : false;
 $mlw_privacy_text     = class_exists( 'MediaLab_Inquiry_Settings' ) ? MediaLab_Inquiry_Settings::privacy_text() : '';
 $mlw_phone_mode       = class_exists( 'MediaLab_Inquiry_Settings' ) ? MediaLab_Inquiry_Settings::phone_mode() : 'optional';
+$mlw_message_mode     = class_exists( 'MediaLab_Inquiry_Settings' ) ? MediaLab_Inquiry_Settings::message_mode() : 'optional';
 ?>
 
 <div class="configurator-field configurator-field--contact">
@@ -58,6 +59,19 @@ $mlw_phone_mode       = class_exists( 'MediaLab_Inquiry_Settings' ) ? MediaLab_I
                    @input="onFieldChange('customer_phone')"
                    placeholder="+43 123 456789"
                    <?php echo $mlw_phone_mode === 'required' ? 'required' : ''; ?>>
+        </div>
+        <?php endif; ?>
+
+        <?php if ( $mlw_message_mode !== 'hidden' ) : ?>
+        <!-- Nachricht (landet in config.notes, siehe sendInquiry() und der Wunschliste-Übernahme in configurator.js) -->
+        <div class="configurator-form-group">
+            <label class="configurator-form-label" for="customer_message">Nachricht</label>
+            <textarea id="customer_message"
+                      class="configurator-form-input"
+                      rows="3"
+                      x-model="config['notes']"
+                      @input="onFieldChange('notes')"
+                      placeholder="Ihre Anmerkungen zur Anfrage"></textarea>
         </div>
         <?php endif; ?>
 

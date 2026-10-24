@@ -343,11 +343,15 @@ $mlw_phone_mode       = class_exists( 'MediaLab_Inquiry_Settings' ) ? MediaLab_I
                         data: data,
                         success: function(response) {
                             if (response.success) {
-                                $msg.html('<div style="padding:1rem;background:#d4edda;border:1px solid #c3e6cb;color:#155724;border-radius:8px;"><strong>✓ Erfolg!</strong> ' + response.data + '</div>').show();
                                 $form.hide();
-                                setTimeout(function() {
-                                    window.location.href = '<?php echo home_url(); ?>';
-                                }, 3000);
+                                if (window.mlwInquiryFeedback) {
+                                    window.mlwInquiryFeedback.show({ type: 'inquiry', message: (typeof response.data === 'string' ? response.data : ''), anchor: $form[0] });
+                                } else {
+                                    $msg.html('<div style="padding:1rem;background:#d4edda;border:1px solid #c3e6cb;color:#155724;border-radius:8px;"><strong>✓ Erfolg!</strong> ' + response.data + '</div>').show();
+                                    setTimeout(function() {
+                                        window.location.href = '<?php echo home_url(); ?>';
+                                    }, 3000);
+                                }
                             } else {
                                 $msg.html('<div style="padding:1rem;background:#f8d7da;border:1px solid #f5c6cb;color:#721c24;border-radius:8px;"><strong>⚠ Fehler:</strong> ' + response.data + '</div>').show();
                                 $btn.prop('disabled', false).text('<?php echo esc_js( $mlw_submit_label ); ?>');

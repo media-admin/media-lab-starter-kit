@@ -4,6 +4,34 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [2.25.0] - 2026-10-24
+
+### Added
+- **Einheitliches Verhalten nach dem Absenden** (`inc/inquiry/class-feedback.php`, `assets/js/inquiry-feedback.js`,
+  `assets/css/inquiry-feedback.css`) – Alle Wege (Konfigurator-Anfrage, „Zur Wunschliste hinzufügen" im Wizard, Wunschzettel,
+  `inquiry-form.php`, `inquiry-checkout.php`) nutzen denselben Baustein. Neue Einstellung unter Anfragen → Einstellungen:
+  „Nach dem Absenden" (Meldung auf der Seite, Standard, oder Weiterleitung) und „Weiterleitungsseite". Die Weiterleitung gilt
+  nicht für „Zur Wunschliste hinzufügen", dort bleibt es bei der Meldung mit „Zur Wunschliste" und „Weiter einkaufen".
+- **Nachrichtenfeld im Kontaktschritt des Konfigurators** (`templates/configurator/fields/contact-form.php`, `configurator.js`,
+  Einstellung „Nachricht (Konfigurator)" unter Anfragen → Formularfelder: optional anzeigen oder ausblenden). Der Text steht in
+  der Benachrichtigung und in der Anfrage und wird auch bei „Zur Wunschliste hinzufügen" mitgenommen. Standard ist „Optional
+  anzeigen", wer das Feld nicht will, stellt es dort auf „Ausblenden".
+
+### Changed
+- Kein Browser-`alert` und kein Sprung auf die Startseite mehr. Der Konfigurator zeigt die Erfolgsmeldung aus den Einstellungen
+  statt eines festen Textes. Die Formulare leiten nicht mehr nach 3 Sekunden auf die Startseite.
+
+### Fixed
+- **Preis im Konfigurator zeigte „ab" bis zum Datenschutz-Haken** (`templates/configurator/wizard.php`) – „ab" hing an der
+  Vollständigkeit aller Schritte, auch des Kontaktschritts. Jetzt zählen nur preisrelevante Schritte (Kontaktdaten, Texte und
+  Dateien ändern den Preis nicht).
+- **Wunschzettel: Erfolgsmeldung war nie zu sehen** (`assets/js/wishlist.js`) – Die Meldung stand im Formular, das gleichzeitig
+  ausgeblendet wurde. Stattdessen erschien nur der Leerzustand der Liste.
+
+### Hinweis zum Update
+- Ist „Nach dem Absenden" nie gespeichert worden, gilt „Meldung auf der Seite". Wer bisher mit dem Sprung auf die Startseite
+  gearbeitet hat, stellt „Weiterleitung auf eine Seite" und eine Seite ein.
+
 ## [2.24.2] - 2026-10-24
 
 ### Fixed

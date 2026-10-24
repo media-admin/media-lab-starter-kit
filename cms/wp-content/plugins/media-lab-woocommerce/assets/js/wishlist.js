@@ -643,15 +643,17 @@
         postAjax( 'mlw_wishlist_submit', data )
             .then( function ( res ) {
                 if ( res.success ) {
-                    if ( msg ) {
-                        msg.textContent = res.data.message || mlwWishlist.i18n.successMessage;
-                        msg.className = 'mlw-wishlist-message mlw-wishlist-message--success';
-                        msg.style.display = 'block';
-                    }
                     form.reset();
                     form.style.display = 'none';
                     updateCountBadges( 0 );
                     renderItems( [], '' );
+                    if ( window.mlwInquiryFeedback ) {
+                        window.mlwInquiryFeedback.show( { type: 'wishlist', message: ( res.data && res.data.message ) || '', anchor: form } );
+                    } else if ( msg ) {
+                        msg.textContent = ( res.data && res.data.message ) || mlwWishlist.i18n.successMessage;
+                        msg.className = 'mlw-wishlist-message mlw-wishlist-message--success';
+                        msg.style.display = 'block';
+                    }
                 } else {
                     if ( msg ) {
                         msg.textContent = ( res.data && res.data.message ) || mlwWishlist.i18n.genericError;

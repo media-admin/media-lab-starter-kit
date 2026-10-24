@@ -249,7 +249,7 @@ if (!empty($remaining_tabs)) {
     <div class="configurator-price-preview" x-show="currentStep <= totalSteps">
         <div class="configurator-price-preview__content">
             <div class="configurator-price-preview__label">Geschätzter Preis:</div>
-            <div class="configurator-price-preview__amount" x-text="(isConfigurationComplete() ? '' : 'ab ') + formatPrice(estimatedPrice)"></div>
+            <div class="configurator-price-preview__amount" x-text="(steps.filter((s) => !['contact_form', 'file_upload', 'textarea', 'text'].includes(s.step_type)).every((s) => isStepValid(s)) ? '' : 'ab ') + formatPrice(estimatedPrice)"></div>
             <div class="configurator-price-preview__suffix" x-show="priceBreakdown && priceBreakdown.price_suffix" x-text="priceBreakdown ? priceBreakdown.price_suffix : ''"></div>
             <div class="configurator-price-preview__note" x-show="config.quantity > 0">
                 <span x-text="formatPrice(pricePerUnit)"></span> pro Stück

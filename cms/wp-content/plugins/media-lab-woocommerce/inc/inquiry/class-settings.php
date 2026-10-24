@@ -135,6 +135,30 @@ class MediaLab_Inquiry_Settings {
                 'conditional_logic' => $hide_if_multilang,
             ],
             [
+                'key'          => 'field_mlw_after_submit',
+                'label'        => 'Nach dem Absenden',
+                'name'         => 'mlw_after_submit',
+                'type'         => 'select',
+                'instructions' => 'Gilt für alle Anfragewege (Konfigurator, Wunschliste, Formulare). „Meldung auf der Seite“ lässt den Besucher auf der Seite und zeigt die Erfolgsmeldung mit „Weiter einkaufen“.',
+                'choices'      => [ 'message' => 'Meldung auf der Seite', 'redirect' => 'Weiterleitung auf eine Seite' ],
+                'default_value'=> 'message',
+                'return_format'=> 'value',
+                'ui'           => 0,
+                'wrapper'      => [ 'width' => '50' ],
+            ],
+            [
+                'key'          => 'field_mlw_after_submit_page',
+                'label'        => 'Weiterleitungsseite',
+                'name'         => 'mlw_after_submit_page',
+                'type'         => 'page_link',
+                'post_type'    => [ 'page' ],
+                'allow_null'   => 1,
+                'multiple'     => 0,
+                'instructions' => 'Zum Beispiel eine Danke-Seite. Ohne Auswahl bleibt es bei der Meldung auf der Seite. Gilt nicht für „Zur Wunschliste hinzufügen“ im Wizard.',
+                'conditional_logic' => [ [ [ 'field' => 'field_mlw_after_submit', 'operator' => '==', 'value' => 'redirect' ] ] ],
+                'wrapper'      => [ 'width' => '50' ],
+            ],
+            [
                 'key'         => 'field_mlw_wishlist_empty_message',
                 'label'       => 'Hinweistext: Wunschliste leer',
                 'name'        => 'mlw_wishlist_empty_message',
@@ -250,6 +274,15 @@ class MediaLab_Inquiry_Settings {
                 'choices'       => [ 'optional' => 'Optional', 'required' => 'Pflichtfeld', 'hidden' => 'Ausblenden' ],
                 'default_value' => 'optional',
                 'instructions'  => 'Das eingebaute Telefonfeld in allen Anfrage-Formularen (Warenkorb, Checkout, Konfigurator, Wunschliste). Eine zusätzliche Zeile mit dem Key "phone" ist nicht nötig und nicht erlaubt. Bei „Ausblenden" bleibt der Mail-Platzhalter {phone} leer.',
+            ],
+            [
+                'key'           => 'field_mlw_message_mode',
+                'label'         => 'Nachricht (Konfigurator)',
+                'name'          => 'mlw_message_mode',
+                'type'          => 'select',
+                'choices'       => [ 'optional' => 'Optional anzeigen', 'hidden' => 'Ausblenden' ],
+                'default_value' => 'optional',
+                'instructions'  => 'Freitextfeld im Kontaktschritt des Konfigurators. Der Text steht in der Mail und in der Anfrage unter „Nachricht“. Der Wunschzettel hat sein eigenes Nachrichtenfeld.',
             ],
             [
                 'key'          => 'field_mlw_form_fields',
@@ -589,6 +622,12 @@ class MediaLab_Inquiry_Settings {
     public static function phone_mode(): string {
         $mode = function_exists( 'get_field' ) ? get_field( 'mlw_phone_mode', 'option' ) : '';
         return in_array( $mode, [ 'required', 'hidden' ], true ) ? $mode : 'optional';
+    }
+
+    /** Nachrichtenfeld im Kontaktschritt des Konfigurators: 'optional' (Standard) oder 'hidden'. */
+    public static function message_mode(): string {
+        $mode = function_exists( 'get_field' ) ? get_field( 'mlw_message_mode', 'option' ) : '';
+        return $mode === 'hidden' ? 'hidden' : 'optional';
     }
 
     public static function privacy_required(): bool {
