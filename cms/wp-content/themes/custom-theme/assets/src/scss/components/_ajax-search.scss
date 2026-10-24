@@ -159,6 +159,9 @@
     max-height:    400px;
     max-height:    min(400px, 60vh); // kleine Viewports (Nav-Overlay, Mobile)
     overflow-y:    auto;
+    // Scrollleiste folgt dem Umschalter (hell/dunkel): Griff und Spur aus Tokens statt Browser-Standard
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-text-muted) transparent;
     z-index:       100;
 
     &-list { padding: 0.5rem 0; }

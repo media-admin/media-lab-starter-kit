@@ -16,6 +16,14 @@ möglich.
 
 ## [Unreleased]
 
+## [1.21.1] - 2026-10-24
+
+### Fixed
+- **Live-Suche: Scrollleiste im Dunkelmodus** (`components/_ajax-search.scss`) – Die Ergebnisliste behielt im Dunkelmodus die
+  helle Standard-Scrollleiste des Browsers. Griff und Spur kommen jetzt aus `--color-text-muted` und `transparent` und folgen
+  damit dem Umschalter. Gilt für Browser mit `scrollbar-color` (Chrome ab 121, Firefox, Safari ab 18.2), ältere zeigen die
+  Standardleiste.
+
 ## [1.21.0] - 2026-10-23
 
 ### Added
