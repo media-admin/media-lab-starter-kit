@@ -707,7 +707,7 @@ class MediaLab_Inquiry_Settings {
         }
         return [
             'subject'  => 'Neue Anfrage von {name}',
-            'template' => '<p>Neue Anfrage (#{inquiry_id}, Quelle: {source}) eingegangen.</p><p><strong>Name:</strong> {name}<br><strong>E-Mail:</strong> {email}<br><strong>Telefon:</strong> {phone}</p><h3>Produkte</h3>{product_list}<p><strong>Nachricht:</strong><br>{message}</p>',
+            'template' => '<p>Neue Anfrage ({inquiry_id}, Quelle: {source}) eingegangen.</p><p><strong>Name:</strong> {name}<br><strong>E-Mail:</strong> {email}<br><strong>Telefon:</strong> {phone}</p><h3>Produkte</h3>{product_list}<p><strong>Nachricht:</strong><br>{message}</p>',
         ];
     }
 

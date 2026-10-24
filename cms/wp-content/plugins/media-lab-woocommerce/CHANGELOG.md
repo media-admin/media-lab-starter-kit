@@ -4,6 +4,21 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [2.24.0] - 2026-10-23
+
+### Added
+- **Anfragen im Backend lesbar** (`inc/inquiry/class-admin.php`) – Der Kasten „Anfrage-Details" zeigt Kunde, Nachricht,
+  Kanäle und die Produkte mit Auswahl, Menge und Preis (nur lesen). In der Liste gibt es die Spalte „Kunde".
+- **Kasten „Status" statt „Veröffentlichen"** – Anfragen haben eigene Status (Offen, In Bearbeitung, Erledigt, Archiviert).
+  Das Standardfeld kannte sie nicht, ein Klick auf „Veröffentlichen" hätte die Anfrage aus der Liste genommen.
+
+### Fixed
+- **Doppeltes Doppelkreuz in der Benachrichtigung** (`class-settings.php`) – Die Standardvorlage schrieb `#{inquiry_id}`, der
+  Platzhalter liefert das `#` schon mit („##300757").
+
+### Hinweis zum Update
+- Angepasste Mail-Vorlagen (Anfragen → Einstellungen) behalten ihr `#{inquiry_id}`. Dort das Doppelkreuz von Hand entfernen.
+
 ## [2.23.0] - 2026-10-22
 
 ### Added
