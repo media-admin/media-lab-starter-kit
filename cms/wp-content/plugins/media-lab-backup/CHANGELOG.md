@@ -4,6 +4,17 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format: [Keep a Changelog](https://keepachangelog.com/de/1.0.0/)
 Versionierung: [Semantic Versioning](https://semver.org/)
 
+## [2.2.1] — 2026-10-25
+
+### Fixed
+- **Einstellungsseite brach bei sehr vielen Dateien mit einem fatalen Fehler ab** (`Maximum execution time of 30 seconds
+  exceeded`, `class-mlb-file-backup.php`, `estimate_size()`). Die Größenanzeige für `wp-content/` zählte bei jedem Seitenaufruf
+  alle Dateien (lokal rund 750.000 in `uploads`). Jetzt `estimate_size_cached()`: Zeitbudget von 3 Sekunden und Zwischenspeicher
+  von 12 Stunden. Wurde die Zählung abgebrochen, steht „mind. …" statt „~…". `estimate_size()` selbst behält sein Verhalten,
+  wenn man kein Zeitbudget übergibt. Das Backup selbst ist nicht betroffen
+
+---
+
 ## [2.2.0] — 2026-09-11
 
 ### Added

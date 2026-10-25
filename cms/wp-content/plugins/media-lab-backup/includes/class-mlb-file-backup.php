@@ -276,8 +276,10 @@ class MLBKP_File_Backup {
      * Schätzt die Größe eines Verzeichnisses (rekursiv, schnell).
      * Für Anzeige im Admin-Bereich.
      */
-    public static function estimate_size( string $dir ): int {
-        $size = 0;
+    public static function estimate_size( string $dir, float $max_seconds = 0.0, ?bool &$complete = null ): int {
+        $size     = 0;
+        $complete = true;
+        $deadline = $max_seconds > 0 ? microtime( true ) + $max_seconds : 0.0;
         try {
             $iterator = new RecursiveIteratorIterator(
                 new RecursiveDirectoryIterator( $dir, FilesystemIterator::SKIP_DOTS )
@@ -286,11 +288,35 @@ class MLBKP_File_Backup {
                 if ( $file->isFile() ) {
                     $size += $file->getSize();
                 }
+                // Zeitbudget: Bei sehr vielen Dateien (z. B. 750.000 in uploads) abbrechen, statt ins PHP-Limit zu laufen.
+                if ( $deadline > 0 && microtime( true ) > $deadline ) {
+                    $complete = false;
+                    break;
+                }
             }
         } catch ( \Throwable ) {
             // Ignore permission errors
         }
         return $size;
+    }
+
+    /**
+     * Größenschätzung für die Einstellungsseite: mit Zeitbudget und Zwischenspeicher (Transient, 12 Stunden).
+     * Hintergrund (25.10.2026): Die vollständige Zählung lief bei jedem Seitenaufruf und überschritt bei rund 750.000 Dateien
+     * in uploads die max_execution_time (30 s), die Seite brach mit einem fatalen Fehler ab.
+     *
+     * @return array{size:int,complete:bool} complete = false heißt: Die Zählung wurde abgebrochen, die Größe ist ein Mindestwert.
+     */
+    public static function estimate_size_cached( string $dir, float $max_seconds = 3.0 ): array {
+        $key = 'mlbkp_est_' . md5( $dir );
+        $hit = get_transient( $key );
+        if ( is_array( $hit ) && isset( $hit['size'], $hit['complete'] ) ) {
+            return [ 'size' => (int) $hit['size'], 'complete' => (bool) $hit['complete'] ];
+        }
+        $complete = true;
+        $size     = self::estimate_size( $dir, $max_seconds, $complete );
+        set_transient( $key, [ 'size' => $size, 'complete' => $complete ], 12 * HOUR_IN_SECONDS );
+        return [ 'size' => $size, 'complete' => $complete ];
     }
 
     /**

@@ -161,9 +161,9 @@ $suggested_folder = MLBKP_SFTP::get_suggested_folder();
                 <div>
                     <strong>wp-content/</strong>
                     <span>Uploads, Plugins, Themes (ZIP)</span>
-                    <?php $wpcontent_size = MLBKP_File_Backup::estimate_size( WP_CONTENT_DIR );
-                    if ( $wpcontent_size > 0 ): ?>
-                    <em>~<?php echo esc_html( MLBKP_Logger::format_bytes( $wpcontent_size ) ); ?></em>
+                    <?php $wpcontent_est = MLBKP_File_Backup::estimate_size_cached( WP_CONTENT_DIR );
+                    if ( $wpcontent_est['size'] > 0 ): ?>
+                    <em><?php echo $wpcontent_est['complete'] ? '~' : 'mind. '; ?><?php echo esc_html( MLBKP_Logger::format_bytes( $wpcontent_est['size'] ) ); ?></em>
                     <?php endif; ?>
                 </div>
             </label>
