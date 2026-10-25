@@ -17,7 +17,7 @@
     --share-btn-size:    #{$spacing-10};   // z.B. 2.5rem
     --share-btn-radius:  #{$radius-md};
     --share-gap:         #{$spacing-2};
-    --share-label-color: #{$color-gray-700};
+    --share-label-color: var(--color-text-muted);
 }
 
 // ── Abstands-Integration ─────────────────────────────────────────

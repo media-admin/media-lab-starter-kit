@@ -16,6 +16,12 @@ möglich.
 
 ## [Unreleased]
 
+## [1.21.2] - 2026-10-25
+
+### Fixed
+- **Share-Buttons: „Teilen" im Dunkelmodus lesbar** (`components/_social-share.scss`) – Die Farbe der Beschriftung stand fest auf
+  `$color-gray-700` und war auf dunklem Grund kaum zu erkennen. Jetzt `var(--color-text-muted)`, folgt dem Umschalter.
+
 ## [1.21.1] - 2026-10-24
 
 ### Fixed
