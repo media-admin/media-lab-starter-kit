@@ -64,7 +64,11 @@ class MLT_GA4_API {
     }
 
     public function handle_oauth_callback() {
-        error_log( 'GA4 Callback aufgerufen. GET: ' . print_r( $_GET, true ) );
+        // Debug-Ausgabe nur bei gesetzter Konstante ML_SEO_DEBUG (wp-config.php). Der Handler läuft bei jeder Anfrage mit
+        // GET-Parametern, auch beim Action Scheduler (as_async_request_queue_runner), und füllte das Log.
+        if ( defined( 'ML_SEO_DEBUG' ) && ML_SEO_DEBUG ) {
+            error_log( 'GA4 Callback aufgerufen. GET: ' . print_r( $_GET, true ) );
+        }
         
         if ( ! isset( $_GET['mlt_ga4_callback'], $_GET['code'] ) ) return;
         if ( ! current_user_can( 'manage_options' ) ) return;
