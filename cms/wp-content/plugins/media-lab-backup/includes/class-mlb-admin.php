@@ -213,16 +213,13 @@ class MLBKP_Admin {
                     );
 
                     if ( empty( $pending ) ) {
-                        $has_db_error = ! empty( array_filter( $session['chunks'], static fn( $c ) =>
-                            $c['status'] === 'error' && $c['type'] === 'database'
-                        ) );
-
-                        $final_status = $has_db_error ? 'error' : 'success';
+                        [ $final_status, $final_error ] = MLBKP_Session::evaluate( $session );
                         $filenames    = array_filter( array_column( $session['chunks'], 'filename' ) );
                         $total_size   = array_sum( array_column( $session['chunks'], 'size' ) );
 
                         MLBKP_Logger::finish( $session['log_id'], $final_status, [
                             'file_name'   => mb_strimwidth( implode( ', ', $filenames ), 0, 250, '…' ),
+                            'error_message' => $final_error,
                             'file_size'   => $total_size,
                             'remote_path' => $session['remote_session_dir'] ?? '',
                         ] );
@@ -232,6 +229,8 @@ class MLBKP_Admin {
                         MLBKP_Session::save( $session );
 
                         $row['status'] = $final_status;
+
+                        $row['error_message'] = $final_error;
                     }
                 }
 
@@ -296,16 +295,14 @@ class MLBKP_Admin {
         // Session laden
         $session      = MLBKP_Session::load( $session_id );
         $final_status = 'success';
+        $final_error  = '';
         $file_name    = '';
         $file_size    = 0;
         $remote_path  = '';
         $duration     = null;
 
         if ( $session ) {
-            $has_db_error = ! empty( array_filter( $session['chunks'], static fn( $c ) =>
-                $c['status'] === 'error' && $c['type'] === 'database'
-            ) );
-            $final_status = $has_db_error ? 'error' : 'success';
+            [ $final_status, $final_error ] = MLBKP_Session::evaluate( $session );
             $all_names    = array_filter( array_column( $session['chunks'], 'filename' ) );
             $file_name    = mb_strimwidth( implode( ', ', $all_names ), 0, 250, '…' );
             $file_size    = (int) array_sum( array_column( $session['chunks'], 'size' ) );
@@ -323,12 +320,14 @@ class MLBKP_Admin {
         $rows_affected = $wpdb->query( $wpdb->prepare(
             "UPDATE `{$table}` SET
                 status       = %s,
+                error_message = %s,
                 finished_at  = %s,
                 file_name    = %s,
                 file_size    = %d,
                 remote_path  = %s
             WHERE id = %d AND status = 'running'",
             $final_status,
+            $final_error,
             $now,
             $file_name,
             $file_size,
@@ -340,6 +339,7 @@ class MLBKP_Admin {
         wp_send_json_success( [
             'status'        => $final_status,
             'file_size'     => MLBKP_Logger::format_bytes( $file_size ),
+            'error_message' => $final_error,
             'rows_affected' => $rows_affected,
             'db_error'      => $wpdb->last_error ?: null,
         ] );

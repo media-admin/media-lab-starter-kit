@@ -267,15 +267,8 @@ class MLBKP_Chunk_Runner {
 
     private function finish_session(): void {
         // Prüfen ob alle Chunks erfolgreich waren
-        $has_errors = false;
-        foreach ( $this->session['chunks'] as $chunk ) {
-            if ( $chunk['status'] === 'error' && $chunk['type'] === 'database' ) {
-                $has_errors = true;
-            }
-        }
-
-        $status = $has_errors ? 'error' : 'success';
-        MLBKP_Session::finish( $this->session, $status );
+        [ $status, $status_error ] = MLBKP_Session::evaluate( $this->session );
+        MLBKP_Session::finish( $this->session, $status, $status_error );
 
         $this->log( $status === 'success'
             ? '🎉 Backup-Session abgeschlossen.'

@@ -320,9 +320,15 @@
                                 success: function (fin) {
                                     $btn.prop('disabled', false).text('▶ Backup starten');
                                     $('#mlb-cancel-backup').hide();
-                                    appendLog('🎉 Backup erfolgreich abgeschlossen.' + (fin.data && fin.data.file_size ? ' Gesamt: ' + fin.data.file_size : ''));
-                                    setStatus($status, mlbkpData.strings.success, 'ok');
-                                    $logCard.addClass('mlb-log-success');
+                                    if (fin && fin.success && fin.data && fin.data.status === 'success') {
+                                        appendLog('🎉 Backup erfolgreich abgeschlossen.' + (fin.data.file_size ? ' Gesamt: ' + fin.data.file_size : ''));
+                                        setStatus($status, mlbkpData.strings.success, 'ok');
+                                        $logCard.addClass('mlb-log-success');
+                                    } else {
+                                        appendLog('❌ ' + ((fin && fin.data && fin.data.error_message) || 'Backup mit Fehlern beendet.'));
+                                        setStatus($status, mlbkpData.strings.error, 'error');
+                                        $logCard.addClass('mlb-log-error');
+                                    }
                                 },
                                 error: function () {
                                     $btn.prop('disabled', false).text('▶ Backup starten');

@@ -4,6 +4,19 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format: [Keep a Changelog](https://keepachangelog.com/de/1.0.0/)
 Versionierung: [Semantic Versioning](https://semver.org/)
 
+## [2.2.3] — 2026-10-26
+
+### Fixed
+- **Ehrlicher Endstatus** (`MLBKP_Session::evaluate()`, genutzt in `class-mlb-admin.php` und `class-mlbkp-chunk-runner.php`): Ein Backup
+  gilt nur als erfolgreich, wenn kein Chunk einen Fehler hat und die Gesamtgröße größer als 0 ist. Bisher zählte nur ein Fehler im
+  Datenbank-Chunk, Fehler in Datei-Chunks ließen den Status auf „success". Bei Fehlern steht jetzt eine Meldung („n Chunk(s)
+  fehlgeschlagen: …") im Protokoll, und die Benachrichtigungs-Mail wird auch bei Datei-Chunk-Fehlern verschickt
+- **Oberfläche zeigte nach der Finalisierung immer „Backup erfolgreich abgeschlossen"** (`admin/js/admin.js`), auch bei Status
+  `error` und „Gesamt: 0 B". Jetzt wird der Status der Antwort ausgewertet, bei Fehlern erscheint die rote Meldung mit der
+  Fehlermeldung vom Server. `ajax_finalize_session` liefert dafür `error_message` mit und schreibt sie ins Protokoll
+
+---
+
 ## [2.2.2] — 2026-10-26
 
 ### Fixed

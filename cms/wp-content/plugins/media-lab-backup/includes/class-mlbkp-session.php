@@ -412,4 +412,29 @@ class MLBKP_Session {
         return mb_strimwidth( $first, 0, 200, '…' ) . " (+{$rest} weitere)";
     }
 
+    /**
+     * Endstatus einer Session (gemeinsame Regel für Oberfläche, Abfrage-Netz und geplante Läufe).
+     * 'success' nur, wenn kein Chunk einen Fehler hat UND etwas gesichert wurde (Gesamtgröße > 0). Sonst 'error' mit Meldung.
+     * Hintergrund (26.10.2026): Bisher zählte nur ein Fehler im Datenbank-Chunk, und die Oberfläche meldete nach der
+     * Finalisierung immer Erfolg, auch bei „Gesamt: 0 B".
+     *
+     * @return array{0:string,1:string} [ Status, Fehlermeldung ]
+     */
+    public static function evaluate( array $session ): array {
+        $failed = [];
+        $total  = 0;
+        foreach ( $session['chunks'] ?? [] as $c ) {
+            $total += (int) ( $c['size'] ?? 0 );
+            if ( ( $c['status'] ?? '' ) === 'error' ) {
+                $failed[] = ( $c['label'] ?? '?' ) . ( ! empty( $c['error'] ) ? ' (' . $c['error'] . ')' : '' );
+            }
+        }
+        if ( $failed ) {
+            return [ 'error', mb_strimwidth( count( $failed ) . ' Chunk(s) fehlgeschlagen: ' . implode( '; ', $failed ), 0, 480, '…' ) ];
+        }
+        if ( $total <= 0 ) {
+            return [ 'error', 'Es wurde nichts gesichert (Gesamtgröße 0 B).' ];
+        }
+        return [ 'success', '' ];
+    }
 }
