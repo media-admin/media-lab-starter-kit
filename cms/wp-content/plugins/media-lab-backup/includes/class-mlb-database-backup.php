@@ -64,14 +64,55 @@ class MLBKP_Database_Backup {
 
     // ── mysqldump ─────────────────────────────────────────────────────────────
 
+    /** Gefundener mysqldump-Aufruf (`mysqldump` über den PATH oder ein absoluter Pfad), null wenn keiner gefunden wurde. */
+    private ?string $mysqldump_bin = null;
+
     private function is_mysqldump_available(): bool {
         if ( ! function_exists( 'exec' ) && ! function_exists( 'shell_exec' ) ) {
             return false;
         }
 
-        $output = [];
-        @exec( 'mysqldump --version 2>&1', $output, $code );
-        return $code === 0;
+        foreach ( $this->mysqldump_candidates() as $bin ) {
+            $output = [];
+            $code   = 1;
+            @exec( ( $bin === 'mysqldump' ? 'mysqldump' : escapeshellarg( $bin ) ) . ' --version 2>&1', $output, $code );
+            if ( $code === 0 ) {
+                $this->mysqldump_bin = $bin;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Kandidaten für das mysqldump-Binary: zuerst der Aufruf über den PATH, dann bekannte Orte.
+     * Hintergrund (26.10.2026): Unter Valet (macOS) startet PHP-FPM ohne PATH. `mysqldump` wurde nicht gefunden, das Plugin fiel
+     * auf den sehr langsamen PHP-Dump zurück und lief bei großen Datenbanken in den Chunk-Timeout.
+     */
+    private function mysqldump_candidates(): array {
+        $list = [ 'mysqldump' ];
+        foreach ( [
+            '/usr/local/opt/mariadb*/bin/mysqldump',
+            '/usr/local/opt/mysql*/bin/mysqldump',
+            '/opt/homebrew/opt/mariadb*/bin/mysqldump',
+            '/opt/homebrew/opt/mysql*/bin/mysqldump',
+            '/Applications/MAMP/Library/bin/mysqldump',
+            '/usr/local/bin/mysqldump',
+            '/opt/homebrew/bin/mysqldump',
+            '/usr/bin/mysqldump',
+        ] as $pattern ) {
+            foreach ( (array) glob( $pattern ) as $path ) {
+                if ( is_file( $path ) && is_executable( $path ) ) {
+                    $list[] = $path;
+                }
+            }
+        }
+        return array_values( array_unique( $list ) );
+    }
+
+    private function mysqldump_command(): string {
+        $bin = $this->mysqldump_bin ?? 'mysqldump';
+        return $bin === 'mysqldump' ? $bin : escapeshellarg( $bin );
     }
 
     /**
@@ -97,7 +138,7 @@ class MLBKP_Database_Backup {
 
         // Command zusammenbauen
         $args = [
-            'mysqldump',
+            $this->mysqldump_command(),
             '--host=' . escapeshellarg( $host ),
             '--port=' . escapeshellarg( $port ),
             '--user=' . escapeshellarg( $username ),

@@ -4,6 +4,18 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format: [Keep a Changelog](https://keepachangelog.com/de/1.0.0/)
 Versionierung: [Semantic Versioning](https://semver.org/)
 
+## [2.2.2] — 2026-10-26
+
+### Fixed
+- **Datenbank-Chunk fiel ohne `mysqldump` im PATH auf den PHP-Dump zurück und lief ins Timeout** (`class-mlb-database-backup.php`).
+  Unter Valet (macOS) startet PHP-FPM ohne `PATH`, `mysqldump` wurde nicht gefunden. Bei großen Datenbanken (lokal 1,9 GB)
+  sprengte der PHP-Dump das 6-Minuten-Limit des Datenbank-Chunks, und die Läufe brachen nach Stunden mit
+  „Connection closed prematurely" ab. Jetzt sucht das Plugin `mysqldump` zuerst über den PATH und dann an bekannten Orten
+  (Homebrew `mariadb*`/`mysql*`, `/usr/local/bin`, `/opt/homebrew/bin`, `/usr/bin`, MAMP) und ruft den gefundenen Pfad auf.
+  Der PHP-Ersatz bleibt als letzter Ausweg erhalten
+
+---
+
 ## [2.2.1] — 2026-10-25
 
 ### Fixed
