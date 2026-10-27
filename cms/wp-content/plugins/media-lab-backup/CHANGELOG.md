@@ -4,6 +4,17 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format: [Keep a Changelog](https://keepachangelog.com/de/1.0.0/)
 Versionierung: [Semantic Versioning](https://semver.org/)
 
+## [2.2.4] — 2026-10-27
+
+### Fixed
+- **Datenbank-Dump mit dem `mysqldump` von MariaDB** (`class-mlb-database-backup.php`): Das Plugin hängte immer
+  `--skip-column-statistics` und `--set-gtid-purged=OFF` an. Beide Optionen kennt nur der MySQL-Client, der MariaDB-Client bricht mit
+  „unknown option" ab (Exit 7). Das Plugin fiel dann stillschweigend auf den PHP-Dump zurück, der bei großen Datenbanken
+  (lokal 1,9 GB) Stunden braucht und im Chunk-Timeout endete (Fehler „Quelldatei für GZIP nicht gefunden"). Jetzt wird in
+  `mysqldump --help` geprüft, welche der beiden Optionen das Programm kennt, und nur diese werden angehängt
+
+---
+
 ## [2.2.3] — 2026-10-26
 
 ### Fixed

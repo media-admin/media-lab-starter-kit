@@ -116,6 +116,28 @@ class MLBKP_Database_Backup {
     }
 
     /**
+     * Optionen, die nur der MySQL-Client kennt, werden nur angehängt, wenn das gefundene mysqldump sie in `--help` nennt.
+     * Hintergrund (27.10.2026): Der mysqldump von MariaDB bricht bei `--skip-column-statistics` und `--set-gtid-purged=OFF`
+     * sofort mit „unknown option" ab (Exit 7). Das Plugin fiel dann auf den PHP-Dump zurück, der bei großen Datenbanken
+     * Stunden brauchte und im Chunk-Timeout endete.
+     *
+     * @return string[]
+     */
+    private function mysqldump_optional_flags(): array {
+        $out = [];
+        @exec( $this->mysqldump_command() . ' --help 2>&1', $out );
+        $help  = implode( "\n", $out );
+        $flags = [];
+        if ( str_contains( $help, 'skip-column-statistics' ) ) {
+            $flags[] = '--skip-column-statistics';
+        }
+        if ( str_contains( $help, 'set-gtid-purged' ) ) {
+            $flags[] = '--set-gtid-purged=OFF';
+        }
+        return $flags;
+    }
+
+    /**
      * @throws RuntimeException
      */
     private function dump_via_mysqldump( string $filepath ): void {
@@ -146,8 +168,7 @@ class MLBKP_Database_Backup {
             '--single-transaction',
             '--routines',
             '--triggers',
-            '--skip-column-statistics',
-            '--set-gtid-purged=OFF',
+            ...$this->mysqldump_optional_flags(),
         ];
 
         if ( $socket !== '' ) {
