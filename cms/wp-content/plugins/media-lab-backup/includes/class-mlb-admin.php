@@ -445,6 +445,9 @@ class MLBKP_Admin {
 
     // ── AJAX: Verzeichnisbaum ────────────────────────────────────────────────
 
+    /** Ablaufzeitpunkt (Unix-Zeit mit Bruchteilen) für das Einlesen des Verzeichnisbaums, 0 = unbegrenzt. */
+    private static float $tree_deadline = 0.0;
+
     public static function ajax_get_file_tree(): void {
         check_ajax_referer( self::NONCE_ACTION, 'nonce' );
 
@@ -453,6 +456,7 @@ class MLBKP_Admin {
         }
 
         $root = WP_CONTENT_DIR;
+        self::$tree_deadline = microtime( true ) + 20;
         $tree = self::scan_dir_tree( $root, '', 0, 3 );
 
         wp_send_json_success( [ 'tree' => $tree, 'root_label' => 'wp-content' ] );
@@ -468,6 +472,21 @@ class MLBKP_Admin {
         $skip = [ '.', '..', '.git', '.DS_Store', 'node_modules', '.sass-cache', '__MACOSX' ];
 
         $scan_path = $base . ( $relative !== '' ? DIRECTORY_SEPARATOR . $relative : '' );
+        // Ordner mit sehr vielen Einträgen (zum Beispiel Medienordner mit 700.000 Vorschaubildern) nicht weiter
+        // auflisten: Jeder Eintrag kostet einen is_dir()-Aufruf, der Aufruf lief sonst in einen 504. Der Ordner selbst
+        // bleibt im Baum des übergeordneten Ordners sichtbar und auswählbar. Gezählt wird nur bis 2.002 (inklusive . und ..).
+        $dh = @opendir( $scan_path );
+        if ( $dh ) {
+            $count = 0;
+            while ( readdir( $dh ) !== false ) {
+                if ( ++$count > 2002 ) {
+                    closedir( $dh );
+                    return [];
+                }
+            }
+            closedir( $dh );
+        }
+
         $entries   = @scandir( $scan_path );
 
         if ( ! $entries ) return [];
@@ -475,6 +494,7 @@ class MLBKP_Admin {
         $result = [];
 
         foreach ( $entries as $entry ) {
+            if ( self::$tree_deadline > 0 && microtime( true ) > self::$tree_deadline ) break;
             if ( in_array( $entry, $skip, true ) ) continue;
             if ( str_starts_with( $entry, '.' ) ) continue;
 

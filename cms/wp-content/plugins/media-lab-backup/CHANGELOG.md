@@ -4,6 +4,16 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format: [Keep a Changelog](https://keepachangelog.com/de/1.0.0/)
 Versionierung: [Semantic Versioning](https://semver.org/)
 
+## [2.2.6] — 2026-10-27
+
+### Fixed
+- **Verzeichnisbaum in den Einstellungen lief bei Ordnern mit sehr vielen Dateien in einen 504** (`scan_dir_tree()` in
+  `class-mlb-admin.php`): Der Baum las drei Ebenen tief und rief für jeden Eintrag `is_dir()` auf, lokal bei 727.825 Dateien in
+  `uploads/2026/09`. Jetzt werden Ordner mit mehr als 2.000 Einträgen nicht weiter aufgelistet (der Ordner selbst bleibt im Baum
+  sichtbar und auswählbar), und das Einlesen bricht nach 20 Sekunden ab, statt auf den Webserver zu warten
+
+---
+
 ## [2.2.5] — 2026-10-27
 
 ### Fixed
