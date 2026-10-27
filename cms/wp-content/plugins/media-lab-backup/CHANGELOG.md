@@ -4,6 +4,24 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format: [Keep a Changelog](https://keepachangelog.com/de/1.0.0/)
 Versionierung: [Semantic Versioning](https://semver.org/)
 
+## [2.2.5] — 2026-10-27
+
+### Fixed
+- **Ausschlussliste wirkte nur an einem Teil der Stellen** (`MLBKP_Session::is_excluded()`): Jahresordner in `uploads/` wurden als
+  `uploads/2026` geprüft, Monatsordner sowie Plugins und Themes dagegen als `wp-content/uploads/2026/09` beziehungsweise
+  `wp-content/themes/…`. Ein Eintrag wie `themes/twentytwentyfive` oder `uploads/2026/09` blieb dadurch wirkungslos. Jetzt werden
+  Pfade mit und ohne führendes `wp-content/` gleich behandelt. **Achtung:** Bisher wirkungslose Einträge in der Ausschlussliste
+  greifen ab jetzt, das Voll-Backup enthält diese Ordner dann nicht mehr
+
+### Changed
+- **Live-Protokoll zeigt mehr**: Jeder Chunk speichert einen Hinweis, der in der Chunk-Zeile erscheint. Beim Datenbank-Chunk steht dort
+  die Methode (`mysqldump` oder „⚠ PHP-Ersatz statt mysqldump" mit Grund) und die Dauer von Dump und Komprimieren sowie Upload, bei
+  ZIP-Chunks die Dauer von ZIP und Upload und die Zahl der übersprungenen Dateien
+- Die Startzeilen des Protokolls („Backup wird gestartet", „Session … geplant") bleiben stehen, nur die Chunk-Zeilen werden bei jeder
+  Abfrage neu aufgebaut. Bisher löschte die erste Abfrage das ganze Fenster
+
+---
+
 ## [2.2.4] — 2026-10-27
 
 ### Fixed

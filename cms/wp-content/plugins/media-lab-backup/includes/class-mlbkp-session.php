@@ -394,10 +394,21 @@ class MLBKP_Session {
     }
 
     private static function is_excluded( string $path, array $excludes ): bool {
+        // Pfade mit und ohne führendes "wp-content/" gleich behandeln. Bisher wurden Jahresordner als "uploads/2026" geprüft,
+        // Monatsordner sowie Plugins und Themes aber als "wp-content/…". Einträge der Ausschlussliste wirkten deshalb nur
+        // an einem Teil der Stellen (zum Beispiel blieben "themes/twentytwentyfive" und "uploads/2026/09" wirkungslos).
+        $path = self::strip_wpcontent( $path );
         foreach ( $excludes as $exclude ) {
+            $exclude = self::strip_wpcontent( (string) $exclude );
+            if ( $exclude === '' ) continue;
             if ( $path === $exclude || str_starts_with( $path, $exclude . '/' ) ) return true;
         }
         return false;
+    }
+
+    private static function strip_wpcontent( string $path ): string {
+        $path = trim( $path, " \t\n\r\0\x0B/" );
+        return str_starts_with( $path, 'wp-content/' ) ? substr( $path, 11 ) : $path;
     }
 
     /**

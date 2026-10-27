@@ -94,6 +94,7 @@ class MLBKP_Chunk_Runner {
                 'size'        => $result['size'],
                 'filename'    => $result['filename'],
                 'remote_path' => $result['remote_path'],
+                'note'        => $result['note'] ?? '',
             ] );
 
             $this->log( "✅ {$chunk['label']}: " . MLBKP_Logger::format_bytes( $result['size'] ) );
@@ -150,8 +151,10 @@ class MLBKP_Chunk_Runner {
 
     private function process_database( MLBKP_SFTP $sftp ): array {
         $this->log( '🗄  Datenbank-Dump erstellen …' );
+        $t0 = microtime( true );
         $db_backup = new MLBKP_Database_Backup( $this->temp_dir );
         $result    = $db_backup->create();
+        $t1 = microtime( true );
 
         $this->log( "   Methode: {$result['method']}" );
         if ( ! empty( $result['fallback_reason'] ) ) {
@@ -160,11 +163,17 @@ class MLBKP_Chunk_Runner {
 
         $remote_path = $sftp->upload_to_session( $result['path'], $result['filename'], $this->session['remote_session_dir'] );
         @unlink( $result['path'] );
+        $t2   = microtime( true );
+        $note = $result['method'] === 'mysqldump'
+            ? 'mysqldump'
+            : '⚠ PHP-Ersatz statt mysqldump' . ( ! empty( $result['fallback_reason'] ) ? ' (' . mb_strimwidth( preg_replace( '/\s+/', ' ', (string) $result['fallback_reason'] ), 0, 200, '…' ) . ')' : '' );
+        $note .= sprintf( ', Dump und Komprimieren %d s, Upload %d s', round( $t1 - $t0 ), round( $t2 - $t1 ) );
 
         return [
             'size'        => $result['size'],
             'filename'    => $result['filename'],
             'remote_path' => $remote_path,
+            'note'        => $note,
         ];
     }
 
@@ -194,7 +203,9 @@ class MLBKP_Chunk_Runner {
         $zip_path  = $this->temp_dir . $filename;
 
         $file_backup = new MLBKP_File_Backup( $this->temp_dir, $this->session['log_id'] );
+        $t0 = microtime( true );
         $actual_path = $file_backup->create_single_dir_zip( $source, $zip_path, $excludes );
+        $t1 = microtime( true );
         $size        = filesize( $actual_path );
         $filename    = basename( $actual_path );
 
@@ -204,12 +215,19 @@ class MLBKP_Chunk_Runner {
         }
 
         $remote_path = $sftp->upload_to_session( $actual_path, $filename, $this->session['remote_session_dir'] );
+        $t2 = microtime( true );
         @unlink( $actual_path );
+
+        $note = sprintf( 'ZIP %d s, Upload %d s', round( $t1 - $t0 ), round( $t2 - $t1 ) );
+        if ( $file_backup->get_skipped() ) {
+            $note .= ', ' . count( $file_backup->get_skipped() ) . ' Datei(en) übersprungen';
+        }
 
         return [
             'size'        => $size,
             'filename'    => $filename,
             'remote_path' => $remote_path,
+            'note'        => $note,
         ];
     }
 

@@ -260,6 +260,7 @@ class MLBKP_Admin {
                     'status' => $c['status'],
                     'size'   => $c['size'] ? MLBKP_Logger::format_bytes( (int) $c['size'] ) : '',
                     'error'  => $c['error'] ?? '',
+                    'note'   => $c['note'] ?? '',
                 ], $session['chunks'] );
             }
         }

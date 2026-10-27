@@ -11,9 +11,9 @@
             .show();
     }
 
-    function appendLog(line) {
+    function appendLog(line, cls) {
         const $log = $('#mlb-log-output');
-        $log.append($('<div class="mlb-log-line"></div>').text(line));
+        $log.append($('<div class="mlb-log-line' + (cls ? ' ' + cls : '') + '"></div>').text(line));
         $log.scrollTop($log[0].scrollHeight);
     }
 
@@ -298,13 +298,13 @@
 
                     // Chunk-Fortschritt aktualisieren
                     if (poll.data.chunks && poll.data.chunks.length) {
-                        $logOut.empty();
+                        $logOut.find('.mlb-chunk-line').remove();
                         var doneCount = 0;
                         var allDone   = true;
                         poll.data.chunks.forEach(function (c) {
                             var icon = { pending: '⏸', running: '⏳', done: '✅', error: '❌', skipped: '⏭' }[c.status] || '•';
-                            var line = icon + ' ' + c.label + (c.size ? ' (' + c.size + ')' : '') + (c.error ? ' — ' + c.error : '');
-                            appendLog(line);
+                            var line = icon + ' ' + c.label + (c.size ? ' (' + c.size + ')' : '') + (c.error ? ' — ' + c.error : '') + (c.note ? ' — ' + c.note : '');
+                            appendLog(line, 'mlb-chunk-line');
                             if (c.status === 'done' || c.status === 'error' || c.status === 'skipped') doneCount++;
                             if (c.status === 'pending' || c.status === 'running') allDone = false;
                         });
@@ -392,7 +392,7 @@
                 var labels    = res.data.chunk_labels || [];
 
                 appendLog('[' + new Date().toLocaleTimeString('de-AT') + '] Session ' + sessionId + ' — ' + total + ' Chunk(s) geplant:');
-                labels.forEach(function(l) { appendLog('   ⏸ ' + l); });
+                labels.forEach(function(l) { appendLog('   ⏸ ' + l, 'mlb-chunk-line'); });
 
                 $btn.text('⏳ ' + total + ' Chunks läuft …');
                 $('#mlb-cancel-backup').data('log-id', logId).show();
