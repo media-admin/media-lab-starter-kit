@@ -130,6 +130,40 @@ plugins/unused-plugin
 themes/old-theme
 ```
 
+**Hinweise zur Schreibweise und zum Verzeichnisbaum**
+
+- Ob ein Pfad mit oder ohne `wp-content/` davor steht, spielt keine Rolle (seit 2.2.5): `uploads/2026` und `wp-content/uploads/2026` wirken gleich.
+- Ein Eintrag schließt den Ordner samt allem darin aus. `uploads/2026` lässt auch alle Monatsordner darunter (`uploads/2026/08`, `uploads/2026/09`, …) weg.
+- Der Verzeichnisbaum listet Ordner mit mehr als 2.000 Einträgen nicht weiter auf (seit 2.2.6), der Ordner selbst bleibt aber auswählbar. Lädt der Baum nicht oder fehlt ein Pfad, schreibt man ihn einfach in die Textarea.
+- Ein Medienordner mit sehr vielen Dateien (lokal getestet: 727.825 Dateien und 25 GB in einem Monatsordner) schafft die Zeitgrenze für einen Datei-Chunk nicht (siehe „Live-Protokoll und Zeitgrenzen“) und gehört dann in die Ausschlussliste oder muss anders gesichert werden.
+
+---
+
+## Live-Protokoll und Zeitgrenzen
+
+Beim Start einer Sicherung zeigt das Live-Protokoll die Session und die geplanten Chunks. Danach steht je Chunk die Größe der Datei und die Dauer der einzelnen Schritte, zum Beispiel:
+
+```
+Datenbank (74.21 MB) — mysqldump, Dump und Komprimieren 84 s, Upload 17 s
+wp-content/plugins/woocommerce (56.08 MB) — ZIP 5 s, Upload 14 s
+```
+
+Bei der Datenbank nennt die Zeile die verwendete Methode (`mysqldump` oder PHP-Ersatz). Mit ⏭ markierte Ordner wurden übersprungen.
+
+### Zeitgrenzen
+
+| Was | Grenze |
+|---|---|
+| Datenbank-Chunk | 6 Minuten, danach markiert der Wächter ihn als Fehler |
+| Datei-Chunk | 20 Minuten, danach markiert der Wächter ihn als Fehler |
+| Gesamter Lauf | 240 Minuten, danach setzt der stündliche WP-Cron-Job einen noch laufenden Protokolleintrag auf Fehler |
+
+Der Wächter markiert nur den Chunk, er beendet den laufenden Prozess nicht. Als Anhaltspunkt: Bei einem Upload mit rund 4 MB pro Sekunde (Messwert vom lokalen Rechner, Oktober 2026) schafft ein Datei-Chunk in 20 Minuten etwa 5 GB. Die Datenbank (74 MB gepackt) brauchte 101 Sekunden.
+
+### Größe der Dateien auf der Storage Box
+
+Die ZIP-Dateien werden praktisch ohne Komprimierung erzeugt (Beispiel `wpallimport`: ZIP-Datei 2.230 MB bei 2.338.729.693 Byte Inhalt). Die Storage Box zeigt bei `du` den belegten Platz, und der kann kleiner sein als die Dateigröße (Beobachtung: `wpallimport` 357 MB statt 2.230 MB, vermutlich durch Komprimierung auf der Box). Die tatsächliche Dateigröße zeigt ein Download mit `scp`, die Integrität prüft `unzip -tq <Datei>`.
+
 ---
 
 ## Verzeichnisstruktur auf der Storage Box
@@ -246,6 +280,18 @@ Das Verzeichnis ist durch `.htaccess` gegen direkten Webzugriff geschützt. Temp
 
 **mysqldump nicht verfügbar**
 → Plugin verwendet automatisch den PHP-Fallback-Dump. Auf Shared Hosting normal.
+
+**Verzeichnisbaum lädt nicht („Verbindungsfehler“, 504)**
+→ Bis 2.2.5 las der Baum alle Ordner drei Ebenen tief und lief bei Ordnern mit sehr vielen Dateien in ein Zeitlimit. Ab 2.2.6 werden Ordner mit mehr als 2.000 Einträgen nicht aufgelistet. Notfalls den Pfad direkt in die Textarea schreiben.
+
+**Datenbank-Chunk dauert Stunden oder endet mit „Quelldatei für GZIP nicht gefunden“**
+→ Ursache war ein `mysqldump` (MariaDB), der `--skip-column-statistics` und `--set-gtid-purged` nicht kennt und mit Exit-Code 7 endete. Das Plugin fiel dann auf den langsamen PHP-Dump zurück. Ab 2.2.4 werden diese Optionen nur angehängt, wenn `mysqldump --help` sie nennt. Ab 2.2.2 sucht das Plugin `mysqldump` auch an bekannten Pfaden (zum Beispiel Homebrew unter Valet), wenn `PATH` im Webprozess fehlt. Im Live-Protokoll steht in der Datenbank-Zeile, welche Methode lief.
+
+**„du“ auf der Storage Box zeigt weniger, als das Plugin meldet**
+→ Siehe „Größe der Dateien auf der Storage Box“. Mit `scp` laden und mit `unzip -tq` prüfen.
+
+**Nach einem Chunk-Timeout liegen Chunks doppelt in der Session (bekannte Einschränkung, Stand 2.2.6)**
+→ Beobachtung vom 27.10.2026: Nach einem Timeout lagen alle folgenden Chunks zweimal auf der Box. Vermutete Ursache: Der Wächter startet die nächste Chunk-Kette, während der ursprüngliche Prozess weiterläuft. Das kostet Platz und Zeit. Abhilfe bis zur Korrektur: den Chunk, der ins Zeitlimit läuft, in die Ausschlussliste aufnehmen. Siehe `docs/BACKLOG.md` im Starter-Kit.
 
 **Website-Unterordner wird verändert**
 → Sonderzeichen außer `a-z A-Z 0-9 . - _` werden durch `-` ersetzt. Punkte bleiben erhalten.

@@ -4,6 +4,13 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format: [Keep a Changelog](https://keepachangelog.com/de/1.0.0/)
 Versionierung: [Semantic Versioning](https://semver.org/)
 
+## [Unreleased]
+
+### Docs
+- README: Ausschlussliste (Schreibweise mit und ohne `wp-content/`, Verzeichnisbaum bei sehr großen Ordnern), neuer Abschnitt
+  „Live-Protokoll und Zeitgrenzen“ (Wächter 6 und 20 Minuten, Gesamtlauf 240 Minuten, Größe der ZIP-Dateien auf der Storage Box)
+  und vier neue Einträge im Troubleshooting (Verzeichnisbaum 504, `mysqldump` bei MariaDB, `du` auf der Box, doppelte Chunks nach Timeout)
+
 ## [2.2.6] — 2026-10-27
 
 ### Fixed
