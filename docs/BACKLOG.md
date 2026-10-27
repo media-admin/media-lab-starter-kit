@@ -340,6 +340,17 @@ README-Auftrag entdeckt (v1.0.1):**
 
 ---
 
+## ✅ Erledigt — media-lab-backup (2.2.1 – 2.2.6, 27.10.2026)
+
+- ~~Größenanzeige der Einstellungsseite lief in ein Zeitlimit~~ → **2.2.1**: Zeitbudget und Zwischenspeicher (Transient)
+- ~~`mysqldump` wurde ohne `PATH` nicht gefunden (Valet), der PHP-Dump lief dann stundenlang~~ → **2.2.2**: Suche an bekannten Pfaden
+- ~~Der Endstatus meldete Erfolg trotz Fehlern in Chunks~~ → **2.2.3**: ehrlicher Endstatus (`MLBKP_Session::evaluate`), die Oberfläche zeigt Fehler statt Erfolg
+- ~~`mysqldump` (MariaDB) endete mit Exit-Code 7 wegen `--skip-column-statistics` und `--set-gtid-purged`~~ → **2.2.4**: Optionen nur anhängen, wenn `mysqldump --help` sie nennt
+- ~~Einträge der Ausschlussliste wirkten nur teilweise: Plugins, Themes und Monatsordner nur mit vorangestelltem `wp-content/`, Jahresordner nur ohne~~ → **2.2.5**: beide Schreibweisen gleich behandelt, Live-Protokoll zeigt Methode und Dauer
+- ~~Verzeichnisbaum lief bei 727.825 Dateien in `uploads/2026/09` in einen 504~~ → **2.2.6**: Ordner mit mehr als 2.000 Einträgen werden nicht aufgelistet, Zeitbudget 20 Sekunden
+
+---
+
 ## Weiterhin offen (nicht Teil der August-2026-Session)
 
 Diese Punkte wurden bewusst nicht angegangen — entweder weil sie explizit
@@ -399,6 +410,37 @@ Glob-Filter mit Job-ID-Präfix, zusätzlich genereller Lock-Mechanismus.
 **Verwandt, weiterhin unklar:** Live-Log-Persistenz beim Tab-Wechsel im
 "Backup starten"-Tab — Feature-Wunsch aus früherer Session,
 Verifikationsstatus gegen `class-mlb-logger.php` weiterhin ungeklärt.
+
+### media-lab-backup: offene Punkte nach 2.2.6 (Stand 27.10.2026)
+
+Gefunden bei der lokalen Ursachenjagd am 24.–27.10.2026 (das Voll-Backup scheiterte an `uploads/2026/09` mit 727.825 Dateien und 25 GB).
+Betrifft `class-mlbkp-chunk-runner.php` und `class-mlbkp-session.php`. „Beleg“ heißt: in Ausgaben gesehen. „Verdacht“: aus dem Code
+oder den Zahlen geschlossen, nicht geprüft.
+
+1. **Doppelte Ketten nach einem Chunk-Timeout** (Plugin 2.2.7 geplant).
+   **Beleg:** Im Voll-Lauf vom 27.10. (Session `…_07-54-21`) lagen alle Chunks nach `uploads/2026/09` zweimal auf der Storage Box, mit
+   Zeitstempeln im Abstand von zwei bis drei Minuten. **Verdacht:** Der Wächter setzt den Chunk nach 20 Minuten auf Fehler und startet die
+   nächste Kette, der ursprüngliche Prozess läuft weiter und startet eine zweite. Prüfen: die Auswahl des nächsten Chunks in
+   `class-mlbkp-session.php`.
+2. **Temp-Verzeichnis:** `finish_session()` ruft `cleanup_temp_dir()` auf (`class-mlbkp-chunk-runner.php`, Zeile 313), auch wenn ein anderer
+   Prozess der Session noch schreibt. **Verdacht:** Das erklärt „Quelldatei für GZIP nicht gefunden“ im Lauf vom 26.10. Idee: Temp nicht
+   löschen, solange der Wächter einen Chunk beendet hat, und alte Temp-Verzeichnisse im stündlichen Cron nach 24 Stunden aufräumen.
+3. **Wächter-Grenzen** (6 Minuten Datenbank, 20 Minuten Dateien, im Code 360 und 1200 Sekunden) sind fest. Einstellbar machen oder an Größe
+   und gemessene Upload-Geschwindigkeit koppeln (lokal rund 4,3 MB/s).
+4. **ZIP ohne Komprimierung.** **Beleg:** Der Chunk `wpallimport` ist 2.230 MB groß bei 2.338.729.693 Byte Inhalt, `unzip -tq` meldet keinen
+   Fehler. Die Box zeigt per `du` nur 357 MB belegt. Mit Komprimierung wäre der Upload von Textordnern vermutlich etwa sechsmal kleiner,
+   dagegen steht die Rechenzeit (und die 20 Minuten des Wächters). Nicht getestet.
+5. **Komprimieren der Datenbank in PHP:** Dump und Komprimieren brauchten 84 Sekunden bei 74 MB (Lauf vom 27.10.). Ob das System-`gzip`
+   deutlich schneller wäre, ist nicht getestet. Relevant, weil die Grenze für die Datenbank bei 6 Minuten liegt.
+6. **Upload-Geschwindigkeit:** rund 4,3 MB/s im Plugin gegen 11,1 MB/s beim Download per `scp` (27.10.). Ob die Leitung oder die
+   PHP-SFTP-Bibliothek begrenzt, ist ungeklärt.
+7. **Leere Session-Ordner** (512 Byte) bleiben nach gescheiterten Läufen auf der Storage Box liegen (vier Stück am 27.10.). Ob die Retention
+   sie später entfernt, ist nicht geprüft.
+8. **Wiederherstellungstest** vor dem Launch: Datenbank-Datei in eine leere Test-Datenbank einspielen und einen ZIP-Chunk wiederherstellen.
+   Bisher nur die Integrität geprüft (`unzip -tq`), keine Wiederherstellung.
+
+**Verwandt:** Der Eintrag oben („`cleanup()` löscht Dateien anderer paralleler Jobs“) bezieht sich auf den älteren Runner
+(`class-mlb-backup-runner.php`). Ob er noch offen ist, ist zu prüfen; im Code steht inzwischen ein Unterverzeichnis je Job.
 
 ### TI WooCommerce Wishlist → media-lab-woocommerce Wishlist-Migration
 
