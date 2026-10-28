@@ -4,6 +4,23 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [2.26.0] - 2026-10-28
+
+### Added
+- **URL-Basen (Permalinks) für Produkte, Kategorien und Marken** (`inc/permalinks.php`) – Neue Einstellungsseite unter
+  Produkte → URL-Basen mit den Feldern Produkt-, Kategorie- und Marken-Basis. Deutsche Standardwerte `produkte`,
+  `produkt-kategorie` und `marke`, die auch ohne gespeicherte Einstellung gelten. Vorher galten der WooCommerce-Standard
+  `product` und `product-category`, und die Marken-Basis kam aus der deutschen Übersetzung von WooCommerce mit großem
+  Anfangsbuchstaben (`Marke`). Produkt- und Kategorie-Basis überschreiben beim Lesen die Option `woocommerce_permalinks`, die
+  Marken-Basis wird über `register_taxonomy_args` gesetzt. Nach einer Änderung werden die Rewrite-Regeln beim nächsten
+  Seitenaufruf einmal neu geschrieben. Der Filter `mlwc_permalink_bases` erlaubt Überschreibungen (zum Beispiel je Sprache).
+
+### Hinweis
+- Bestehende Adressen ändern sich (`/product/…` wird zu `/produkte/…`), es gibt keine Weiterleitungen. Bei Seiten, die schon
+  live sind, vor dem Update Weiterleitungen einplanen.
+
+---
+
 ## [2.25.0] - 2026-10-24
 
 ### Added
