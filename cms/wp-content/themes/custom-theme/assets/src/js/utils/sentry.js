@@ -4,7 +4,17 @@
 
 import * as Sentry from "@sentry/browser";
 
+// true, sobald Sentry.init() gelaufen ist. Ohne DSN bleibt es false und es wird nichts gemeldet.
+let sentryActive = false;
+
 export function initSentry() {
+  // Ohne konfigurierte DSN läuft Sentry nicht. Die DSN kommt beim Build aus VITE_SENTRY_DSN,
+  // zum Beispiel: VITE_SENTRY_DSN=https://… npm run build
+  const dsn = import.meta.env.VITE_SENTRY_DSN;
+  if (!dsn) {
+    return;
+  }
+
   // Don't initialize in development
   if (window.location.hostname === 'localhost' || 
       window.location.hostname.includes('.localdev')) {
@@ -12,9 +22,9 @@ export function initSentry() {
   }
   
   Sentry.init({
-    dsn: "https://your-sentry-dsn@sentry.io/your-project-id",
+    dsn,
     environment: getSentryEnvironment(),
-    release: "1.0.0", // Should match backend
+    release: import.meta.env.VITE_SENTRY_RELEASE || undefined, // optional, soll zum Backend passen
     
     // Performance Monitoring
     integrations: [
@@ -49,6 +59,8 @@ export function initSentry() {
       return event;
     },
   });
+
+  sentryActive = true;
 }
 
 function getSentryEnvironment() {
@@ -65,5 +77,7 @@ function getSentryEnvironment() {
 
 // Catch unhandled promise rejections
 window.addEventListener('unhandledrejection', event => {
-  Sentry.captureException(event.reason);
+  if (sentryActive) {
+    Sentry.captureException(event.reason);
+  }
 });

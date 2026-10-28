@@ -16,6 +16,20 @@ möglich.
 
 ## [Unreleased]
 
+## [1.21.3] - 2026-10-28
+
+### Fixed
+- **Sentry startete in jedem Produktions-Build mit einer Platzhalter-DSN** (`assets/src/js/utils/sentry.js`, `assets/src/js/main.js`) –
+  `initSentry()` lief auf jeder Domain außer `localhost` und `.localdev` mit `https://your-sentry-dsn@sentry.io/your-project-id`
+  und ohne Einwilligungsprüfung. Jetzt startet Sentry nur, wenn beim Build `VITE_SENTRY_DSN` gesetzt ist (zum Beispiel
+  `VITE_SENTRY_DSN=https://… npm run build`, oder in einer `.env.production` im Vite-Root, das ist laut `vite.config.js` der Ordner
+  `assets/` des Themes). Ohne DSN wird der Baustein zur Laufzeit nicht geladen. Optional gibt es `VITE_SENTRY_RELEASE` statt des
+  fest eingetragenen Release `1.0.0`. Der Listener für unbehandelte Promise-Fehler meldet nur noch, wenn Sentry läuft.
+
+### Hinweis
+- Mit gesetzter DSN schickt der Browser Fehlerdaten an Sentry (Drittanbieter). Ob dafür eine Einwilligung oder ein Eintrag in der
+  Datenschutzerklärung nötig ist, ist pro Projekt zu klären. Eine Einwilligungsprüfung ist hier nicht eingebaut.
+
 ## [1.21.2] - 2026-10-25
 
 ### Fixed

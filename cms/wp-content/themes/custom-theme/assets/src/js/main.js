@@ -7,8 +7,8 @@
 import '../scss/style.scss';
 import 'swiper/css/bundle';
 
-// Sentry (nur in Production)
-if (import.meta.env.PROD) {
+// Sentry (nur in Production und nur mit VITE_SENTRY_DSN)
+if (import.meta.env.PROD && import.meta.env.VITE_SENTRY_DSN) {
   import('./utils/sentry').then(({ initSentry }) => initSentry());
 }
 
