@@ -4,6 +4,26 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [2.27.0] - 2026-10-28
+
+### Fixed
+- **Filterleiste blieb leer, solange keine Filter-Felder gespeichert waren** (`inc/filters/filter-config.php`): Ohne gespeicherten
+  Wert liefert ACF `null`, und der Code behandelte das wie „aus". `mlwf_inherit_parent` war dadurch falsch, die Vererbung auf
+  Eltern-Kategorie und Standard griff nie, und `show_price` wurde falsch statt wahr. Neu: „nicht gespeichert" bedeutet „erbt" und
+  „Preisfilter an" (`mlwf_show_price_value()`). Gespeicherte Werte verhalten sich wie vorher.
+- Die globalen Felder `mlwf_attributes` und `mlwf_show_price`, aus denen die Standard-Konfiguration (Shop, Kategorien und Marken
+  ohne eigene Konfiguration) liest, haben im Code keine eigene Oberfläche, die Standard-Konfiguration war deshalb immer leer.
+
+### Added
+- **Automatische Filter** (`inc/filters/defaults.php`): Sind weder am Term noch global Attribute eingetragen, verwendet die
+  Filterleiste alle WooCommerce-Attribute (`pa_*`). Werte ohne Treffer im aktuellen Kontext blendet sie wie bisher aus. Mit dem Filter
+  `mlwf_auto_filter_attributes` lässt sich die Liste anpassen.
+- **Trefferanzeige für Shop, Kategorien, Schlagwörter und Marken** (`inc/filters/archive-count.php`) im selben Markup wie die Suche
+  (`.wc-loop-header` mit `.js-product-count`), hinter der Filterleiste (`woocommerce_before_shop_loop`, Priorität 16). Sie entfällt,
+  wenn die Ergebnisanzahl von WooCommerce noch eingehängt ist. Mit dem Filter `mlwf_show_archive_count` lässt sie sich abschalten.
+
+---
+
 ## [2.26.0] - 2026-10-28
 
 ### Added

@@ -97,7 +97,8 @@ function mlwf_resolve_filter_config( int $term_id, string $taxonomy, array $visi
 
 	$acf_key = $taxonomy . '_' . $term_id;
 
-	$inherit      = (bool) get_field( 'mlwf_inherit_parent',       $acf_key );
+	$inherit_raw  = get_field( 'mlwf_inherit_parent', $acf_key );
+	$inherit      = ( $inherit_raw === null || $inherit_raw === '' ) ? true : (bool) $inherit_raw; // nicht gespeichert = erbt
 	$show_price   = get_field( 'mlwf_show_price',                  $acf_key );
 	$attributes   = get_field( 'mlwf_attributes',                  $acf_key );
 	$show_brands  = get_field( 'mlwf_show_brands',                 $acf_key );
@@ -143,7 +144,7 @@ function mlwf_resolve_filter_config( int $term_id, string $taxonomy, array $visi
 
 	return [
 		'attributes'         => $attribute_slugs,
-		'show_price'         => $show_price !== false ? (bool) $show_price : true,
+		'show_price'         => mlwf_show_price_value( $show_price ),
 		'show_brands'        => (bool) $show_brands,
 		'show_subcategories' => (bool) $show_subcats,
 		'taxonomy'           => $taxonomy,
@@ -155,12 +156,12 @@ function mlwf_resolve_filter_config( int $term_id, string $taxonomy, array $visi
  * Standard-Konfiguration (Fallback).
  */
 function mlwf_get_default_filter_config(): array {
-    $global_attributes = get_field( 'mlwf_attributes', 'option' ) ?: [];
+    $global_attributes = get_field( 'mlwf_attributes', 'option' ) ?: mlwf_auto_filter_attributes();
     $global_price      = get_field( 'mlwf_show_price', 'option' );
 
     return [
         'attributes'         => $global_attributes,
-        'show_price'         => $global_price !== false ? (bool) $global_price : true,
+        'show_price'         => mlwf_show_price_value( $global_price ),
         'show_brands'        => false,
         'show_subcategories' => false,
         'taxonomy'           => 'product_cat',
