@@ -405,6 +405,30 @@ add_action('acf/init', function () {
                 'instructions' => 'Maximale Breite des Logos auf Mobile',
             ),
 
+            array(
+                'key'           => 'field_logo_desktop_dark',
+                'label'         => 'Logo (Desktop, Dunkelmodus)',
+                'name'          => 'logo_desktop_dark',
+                'type'          => 'image',
+                'return_format' => 'array',
+                'preview_size'  => 'medium',
+                'library'       => 'all',
+                'instructions'  => 'Optional: Logo für den Dunkelmodus (hell auf dunklem Grund). Wenn leer, gilt das normale Desktop-Logo. Die Breite ist die des Desktop-Logos.',
+                'conditional_logic' => array(array(array('field' => 'field_dark_mode_enabled', 'operator' => '==', 'value' => '1'))),
+            ),
+
+            array(
+                'key'           => 'field_logo_mobile_dark',
+                'label'         => 'Logo (Mobile, Dunkelmodus)',
+                'name'          => 'logo_mobile_dark',
+                'type'          => 'image',
+                'return_format' => 'array',
+                'preview_size'  => 'medium',
+                'library'       => 'all',
+                'instructions'  => 'Optional: Mobiles Logo für den Dunkelmodus. Wenn leer, gilt das dunkle Desktop-Logo, sonst das normale Mobile-Logo. Die Breite ist die des Mobile-Logos.',
+                'conditional_logic' => array(array(array('field' => 'field_dark_mode_enabled', 'operator' => '==', 'value' => '1'))),
+            ),
+
             // ── UI-Features ───────────────────────────────────────────────────
             array(
                 'key'     => 'field_ui_features_heading',
@@ -461,6 +485,16 @@ add_action('acf/init', function () {
                 'ui'            => 1,
                 'default_value' => 1,
                 'instructions'  => 'Zeigt den Dark/Light-Mode-Umschalter im Frontend an.',
+            ),
+
+            array(
+                'key'           => 'field_footer_credit_enabled',
+                'label'         => 'Agentur-Credit im Footer',
+                'name'          => 'footer_credit_enabled',
+                'type'          => 'true_false',
+                'ui'            => 1,
+                'default_value' => 1,
+                'instructions'  => 'Zeigt im Footer die Zeile „Konzept und Programmierung: Media Lab Tritremmel GmbH“ an. Für eigene Projekte der Agentur ausschalten.',
             ),
 
         ),

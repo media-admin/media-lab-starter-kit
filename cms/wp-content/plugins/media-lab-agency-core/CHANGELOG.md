@@ -20,6 +20,24 @@ Ende.
 
 ---
 
+## [1.38.0] - 2026-10-28
+
+### media-lab-agency-core 1.38.0
+
+#### Added
+- **Agentur-Credit im Footer abschaltbar** (`inc/acf-settings.php`): Neuer Schalter „Agentur-Credit im Footer“ unter Agency Core → Logo / Globale Einstellungen
+  (Standard: an). Das Theme blendet damit die Zeile „Konzept und Programmierung: …“ im Footer aus, zum Beispiel für eigene Projekte der Agentur.
+
+## [1.37.0] - 2026-10-28
+
+### media-lab-agency-core 1.37.0
+
+#### Added
+- **Logo für den Dunkelmodus** (`inc/acf-settings.php`): Neue optionale Felder „Logo (Desktop, Dunkelmodus)“ und „Logo (Mobile, Dunkelmodus)“ unter
+  Agency Core → Logo / Globale Einstellungen. Sie erscheinen nur, wenn der Dark-Mode-Umschalter eingeschaltet ist. Ohne dunkles Logo ändert sich nichts.
+  Die Ausgabe übernimmt das Theme (custom-theme 1.22.0): Fehlt eine Variante, gilt für Desktop dunkel das normale Desktop-Logo, für Mobil dunkel das
+  dunkle Desktop-Logo, sonst das normale Mobile-Logo.
+
 ## [1.36.0] - 2026-10-13
 
 ### media-lab-agency-core 1.36.0
