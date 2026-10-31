@@ -12,6 +12,12 @@
  *       vor der Konfigurator-Karte; die Karte selbst bleibt unverändert.
  *   add_filter( 'mlw_loop_product_info', '__return_true' );
  *       Produktkarten: Marke über dem Titel, Verfügbarkeit neben dem Preis.
+ *   add_filter( 'mlw_loop_brand', '__return_true' );
+ *       Produktkarten: nur die Marke über dem Titel, ohne Verfügbarkeit (für Projekte, die die Verfügbarkeit selbst
+ *       ausgeben). Standard: der Wert von mlw_loop_product_info, dieser Schalter allein ändert also nichts.
+ *       Mit mlw_loop_product_info an und mlw_loop_brand auf false: nur die Verfügbarkeit.
+ *   add_filter( 'mlw_single_brand', '__return_true' );
+ *       Produktseite: Marke als Link auf das Marken-Archiv, vor dem Titel (Priorität 4).
  *   add_filter( 'mlw_loop_availability', function ( $data, $product ) { ... return [ 'label' => '', 'status' => '' ]; }, 10, 2 );
  *       Verfügbarkeits-Text und -Status der Karte überschreiben (leeres Label = keine Ausgabe).
  *   add_filter( 'mlw_reviews_always_open', '__return_true' );
@@ -55,9 +61,17 @@ class MediaLab_Single_Product_Layout {
             add_filter( 'woocommerce_product_tabs', [ __CLASS__, 'filter_tabs' ], 98 );
         }
 
-        if ( apply_filters( 'mlw_loop_product_info', false ) ) {
+        $loop_info  = (bool) apply_filters( 'mlw_loop_product_info', false );
+        $loop_brand = (bool) apply_filters( 'mlw_loop_brand', $loop_info );   // nur die Marke, Standard wie mlw_loop_product_info
+        if ( $loop_brand ) {
             add_action( 'woocommerce_shop_loop_item_title', [ __CLASS__, 'render_loop_brand' ], 9 );
+        }
+        if ( $loop_info ) {
             add_action( 'woocommerce_after_shop_loop_item_title', [ __CLASS__, 'render_loop_availability' ], 11 );
+        }
+
+        if ( apply_filters( 'mlw_single_brand', false ) ) {
+            add_action( 'woocommerce_single_product_summary', [ __CLASS__, 'render_single_brand' ], 4 );
         }
     }
 
@@ -174,6 +188,21 @@ class MediaLab_Single_Product_Layout {
         if ( ! $terms || is_wp_error( $terms ) ) return;
 
         echo '<span class="mlw-loop-brand">' . esc_html( $terms[0]->name ) . '</span>';
+    }
+
+    /** Marke auf der Produktseite: Link auf das Marken-Archiv, vor dem Titel (Filter mlw_single_brand). */
+    public static function render_single_brand(): void {
+        global $product;
+        if ( ! $product instanceof WC_Product ) return;
+
+        $terms = get_the_terms( $product->get_id(), 'product_brand' );
+        if ( ! $terms || is_wp_error( $terms ) ) return;
+
+        $term = $terms[0];
+        $link = get_term_link( $term );
+        $name = esc_html( $term->name );
+
+        echo '<p class="mlw-single-brand">' . ( is_wp_error( $link ) ? $name : '<a href="' . esc_url( $link ) . '">' . $name . '</a>' ) . '</p>';
     }
 
     public static function render_loop_availability(): void {

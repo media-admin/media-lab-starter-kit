@@ -4,6 +4,15 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [2.28.0] - 2026-10-30
+
+### Added
+- **Marke im Produkt-Grid ohne Verfügbarkeit** (`inc/single-product-layout.php`): Neuer Filter `mlw_loop_brand` (Standard: Wert von `mlw_loop_product_info`).
+  `add_filter( 'mlw_loop_brand', '__return_true' )` zeigt nur die Marke über dem Titel, ohne die Verfügbarkeit neben dem Preis. Bisher schaltete
+  `mlw_loop_product_info` beides gemeinsam. Ohne neue Filter ändert sich nichts.
+- **Marke auf der Produktseite** (`inc/single-product-layout.php`): Neuer Filter `mlw_single_brand` (Standard aus). Gibt die Marke (`product_brand`) als
+  Link auf das Marken-Archiv vor dem Titel aus (`woocommerce_single_product_summary`, Priorität 4, Klasse `mlw-single-brand`).
+
 ## [2.27.0] - 2026-10-28
 
 ### Fixed
