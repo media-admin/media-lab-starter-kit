@@ -470,6 +470,25 @@ $ml-chevron-svg: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' w
     }
 }
 
+// ── Marke auf der Produktseite (Plugin: mlw_single_brand) ────────────────────
+// Kleine Zeile über dem Titel, wie die Marke auf den Produktkarten. Link auf das Marken-Archiv.
+
+.woocommerce div.product .mlw-single-brand {
+    margin:         0 0 $spacing-1;
+    font-size:      var(--text-xs);
+    color:          var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+
+    a {
+        color:           inherit;
+        text-decoration: none;
+
+        &:hover,
+        &:focus-visible { color: $color-primary; }
+    }
+}
+
 // ── Produktkarten (Shop-Grid, Kategorien, Ähnliche Produkte) ─────────────────
 
 .woocommerce ul.products li.product,
@@ -478,7 +497,7 @@ $ml-chevron-svg: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' w
     // Marke über dem Titel (Plugin: mlw_loop_product_info)
     .mlw-loop-brand {
         display:         block;
-        padding:         $spacing-1 $spacing-4 0;
+        padding:         $spacing-3 $spacing-4 0;
         font-size:       var(--text-xs);
         color:           var(--color-text-muted);
         text-transform:  uppercase;

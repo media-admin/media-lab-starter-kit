@@ -16,6 +16,36 @@ möglich.
 
 ## [Unreleased]
 
+## [1.24.0] - 2026-10-30
+
+### Added
+- **Stil für die Marke auf der Produktseite** (`assets/src/scss/woocommerce/_single-product.scss`) – Klasse `.mlw-single-brand` (Plugin media-lab-woocommerce
+  ab 2.28.0, Filter `mlw_single_brand`): kleine Zeile über dem Titel wie die Marke auf den Produktkarten, die Marke ist ein Link auf das Archiv.
+
+### Changed
+- **Mehr Abstand über der Marke auf den Produktkarten** (`assets/src/scss/woocommerce/_single-product.scss`) – Der Abstand zwischen Bild und Marke war mit
+  `$spacing-1` zu knapp, jetzt gleicht er dem Abstand, den der Titel ohne Marke hat.
+
+## [1.23.0] - 2026-10-28
+
+### Added
+- **Logo für den Dunkelmodus** (`header.php`, `footer.php`, `assets/src/scss/layout/_header.scss`) – Zwei optionale Logos (Desktop, Mobil) für den
+  Dunkelmodus, einstellbar in Agency Core ab 1.37.0 unter Logo / Globale Einstellungen (nur sichtbar, wenn der Dark-Mode-Umschalter eingeschaltet ist).
+  Fehlt eine Variante, gilt für Desktop dunkel das normale Desktop-Logo, für Mobil dunkel das dunkle Desktop-Logo, sonst das normale Mobile-Logo.
+  Der Footer zeigt im Dunkelmodus das dunkle Desktop-Logo. Ohne dunkle Logos bleibt alles wie bisher. Die Bilder tragen die Klassen `is-ld`, `is-lm`,
+  `is-dd` und `is-dm`, das CSS blendet nach Modus (`data-theme`) und Bildschirm um.
+
+### Fixed
+- **Mobil fehlte das Logo, wenn nur ein Desktop-Logo hochgeladen war** (`header.php`, `_header.scss`) – Das CSS blendete unterhalb von `md` das Desktop-Logo
+  immer aus, das Mobil-Bild wurde aber nur bei hochgeladener Datei ausgegeben. Jetzt gilt das Desktop-Logo auch mobil, wenn es kein Mobile-Logo gibt.
+  Ohne gespeicherte Breite gelten 180 px (Desktop) und 120 px (Mobil).
+
+## [1.22.0] - 2026-10-28
+
+### Added
+- **Agentur-Credit im Footer abschaltbar** (`footer.php`) – Die Zeile „Konzept und Programmierung: …“ im Footer lässt sich unter Agency Core → Logo / Globale
+  Einstellungen ausschalten (Schalter „Agentur-Credit im Footer“, Standard: an). Ohne Plugin oder ohne gespeicherten Wert bleibt die Zeile wie bisher.
+
 ## [1.21.3] - 2026-10-28
 
 ### Fixed

@@ -6,6 +6,13 @@
             <?php
             // ── Logo oder Site-Name ───────────────────────────────────────
             $logo = function_exists('get_field') ? get_field('logo_desktop', 'option') : null;
+            // Dunkelmodus-Variante (optional): nur wenn der Dunkelmodus eingeschaltet ist, ohne gespeicherten Wert gilt: an
+            $dark_mode_on = function_exists('get_field') ? get_field('dark_mode_enabled', 'option') : null;
+            $dark_mode_on = ($dark_mode_on === null || $dark_mode_on === '') ? true : (bool) $dark_mode_on;
+            $logo_dark    = ($dark_mode_on && function_exists('get_field')) ? get_field('logo_desktop_dark', 'option') : null;
+            if ( ! $logo_dark || empty( $logo_dark['url'] ) || ( $logo && ! empty( $logo['url'] ) && $logo_dark['url'] === $logo['url'] ) ) {
+                $logo_dark = null;
+            }
             ?>
             <div class="site-footer__brand">
                 <?php if ( $logo && ! empty( $logo['url'] ) ) : ?>
@@ -13,9 +20,17 @@
                         <img
                             src="<?php echo esc_url( $logo['url'] ); ?>"
                             alt="<?php bloginfo('name'); ?>"
-                            class="site-footer__logo"
+                            class="site-footer__logo<?php echo $logo_dark ? ' site-footer__logo--light' : ''; ?>"
                             loading="lazy"
                         >
+                        <?php if ( $logo_dark ) : ?>
+                        <img
+                            src="<?php echo esc_url( $logo_dark['url'] ); ?>"
+                            alt="<?php bloginfo('name'); ?>"
+                            class="site-footer__logo site-footer__logo--dark"
+                            loading="lazy"
+                        >
+                        <?php endif; ?>
                     </a>
                 <?php else : ?>
                     <a href="<?php echo esc_url( home_url('/') ); ?>" class="site-footer__site-name">
@@ -65,6 +80,12 @@
 
         </div><!-- .site-footer__bottom -->
 
+        <?php
+        // Agentur-Credit: Standard an, abschaltbar unter Agency Core → Logo / Globale Einstellungen
+        $footer_credit_on = function_exists('get_field') ? get_field('footer_credit_enabled', 'option') : null;
+        $footer_credit_on = ($footer_credit_on === null || $footer_credit_on === '') ? true : (bool) $footer_credit_on;
+        if ( $footer_credit_on ) :
+        ?>
         <div class="site-footer__credit">
 
             <p>
@@ -76,6 +97,7 @@
                 >Media Lab Tritremmel GmbH</a>
             </p>
         </div>
+        <?php endif; ?>
 
     </div><!-- .container -->
 </footer>

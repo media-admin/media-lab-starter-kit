@@ -244,23 +244,52 @@ if ( function_exists( 'get_field' ) && get_field( 'top_header_enable', 'option' 
             $logo_mobile        = function_exists('get_field') ? get_field('logo_mobile', 'option')        : null;
             $logo_desktop_width = function_exists('get_field') ? get_field('logo_desktop_width', 'option') : 180;
             $logo_mobile_width  = function_exists('get_field') ? get_field('logo_mobile_width', 'option')  : 120;
+            // Ohne gespeicherten Wert liefert ACF null: dann gelten die Standardbreiten
+            $logo_desktop_width = $logo_desktop_width ?: 180;
+            $logo_mobile_width  = $logo_mobile_width ?: 120;
+
+            // Dunkelmodus-Logos (optional). Nur wenn der Dunkelmodus eingeschaltet ist, ohne gespeicherten Wert gilt: an.
+            $dark_mode_on      = function_exists('get_field') ? get_field('dark_mode_enabled', 'option') : null;
+            $dark_mode_on      = ($dark_mode_on === null || $dark_mode_on === '') ? true : (bool) $dark_mode_on;
+            $logo_desktop_dark = ($dark_mode_on && function_exists('get_field')) ? get_field('logo_desktop_dark', 'option') : null;
+            $logo_mobile_dark  = ($dark_mode_on && function_exists('get_field')) ? get_field('logo_mobile_dark', 'option')  : null;
 
             if ($logo_desktop) :
-                // Desktop-Logo (immer angezeigt, auf Mobile ggf. via CSS ausgeblendet)
-                echo '<img src="' . esc_url($logo_desktop['url']) . '"'
-                   . ' alt="' . esc_attr($logo_desktop['alt'] ?: get_bloginfo('name')) . '"'
-                   . ' width="' . esc_attr($logo_desktop_width) . '"'
-                   . ' class="site-logo__img site-logo__img--desktop"'
-                   . ' loading="eager">';
+                // Für jede Kombination aus Modus (hell/dunkel) und Bildschirm (Desktop/Mobil) gilt ein Logo:
+                //   hell/Desktop (ld) = Desktop-Logo
+                //   hell/Mobil   (lm) = Mobile-Logo, sonst Desktop-Logo
+                //   dunkel/Desktop (dd) = dunkles Desktop-Logo, sonst Desktop-Logo
+                //   dunkel/Mobil   (dm) = dunkles Mobile-Logo, sonst dunkles Desktop-Logo, sonst Mobile-Logo, sonst Desktop-Logo
+                // Gleiche Bilder werden nur einmal ausgegeben. Das CSS (layout/_header.scss) zeigt nur das Bild, das zur
+                // Kombination passt (Klassen is-ld, is-lm, is-dd, is-dm).
+                $logo_choice = array(
+                    'ld' => $logo_desktop,
+                    'lm' => $logo_mobile ?: $logo_desktop,
+                    'dd' => $logo_desktop_dark ?: $logo_desktop,
+                    'dm' => $logo_mobile_dark ?: ($logo_desktop_dark ?: ($logo_mobile ?: $logo_desktop)),
+                );
+                $logo_images = array();
+                foreach ($logo_choice as $combo => $logo_img) :
+                    $logo_key = $logo_img['url'];
+                    if (!isset($logo_images[$logo_key])) :
+                        $logo_images[$logo_key] = array('img' => $logo_img, 'combos' => array());
+                    endif;
+                    $logo_images[$logo_key]['combos'][] = $combo;
+                endforeach;
 
-                // Mobiles Logo (nur wenn ein separates hochgeladen wurde)
-                if ($logo_mobile) :
-                    echo '<img src="' . esc_url($logo_mobile['url']) . '"'
-                       . ' alt="' . esc_attr($logo_mobile['alt'] ?: get_bloginfo('name')) . '"'
-                       . ' width="' . esc_attr($logo_mobile_width) . '"'
-                       . ' class="site-logo__img site-logo__img--mobile"'
+                foreach ($logo_images as $logo_item) :
+                    $for_desktop = (bool) array_intersect($logo_item['combos'], array('ld', 'dd'));
+                    $logo_classes = 'site-logo__img site-logo__img--' . ($for_desktop ? 'desktop' : 'mobile');
+                    foreach ($logo_item['combos'] as $combo) :
+                        $logo_classes .= ' is-' . $combo;
+                    endforeach;
+
+                    echo '<img src="' . esc_url($logo_item['img']['url']) . '"'
+                       . ' alt="' . esc_attr($logo_item['img']['alt'] ?: get_bloginfo('name')) . '"'
+                       . ' width="' . esc_attr($for_desktop ? $logo_desktop_width : $logo_mobile_width) . '"'
+                       . ' class="' . esc_attr($logo_classes) . '"'
                        . ' loading="eager">';
-                endif;
+                endforeach;
 
             else :
                 // Fallback: Seitenname als Text
