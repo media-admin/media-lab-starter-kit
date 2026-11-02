@@ -294,6 +294,7 @@ Anzahl der Shop-Seite, wenn im Core `0` eingestellt ist (Filter
 - SKU-Teilsuche (Varianten führen zum Elternprodukt).
 - Kategorien und Marken zählen standardmäßig als Treffer (Filter `mlw_search_taxonomies`). Kurze Begriffe finden dadurch alle Produkte passender Kategorien; wer das nicht möchte, schließt Kategorien per Filter aus (Beispiel im Kopfkommentar der Datei).
 - Kategorien und Marken als eigene Einträge: Live-Suche mit bis zu 3 Einträgen ganz oben (Label „Kategorie"/„Marke", Name, Produktanzahl, Link), Ergebnisseite mit der Zeile „Passende Kategorien und Marken". Reihenfolge: exakter Name, Wortanfang, „enthält"; Kategorien vor Marken, dann nach Produktanzahl.
+- Marke auf den Karten der Ergebnisseite (Opt-in über den Filter `mlw_search_card_brand`): „Marke: …“ als erste Meta-Angabe der Produktkarte, eingehängt über den Theme-Filter `ml_search_card_meta` (Priorität 20, also nach den Meta-Angaben eines Projekts). Die Beschriftung folgt dem „Marke-Label“ der Filterleiste.
 
 ---
 
@@ -319,6 +320,11 @@ Anzahl der Shop-Seite, wenn im Core `0` eingestellt ist (Filter
 | `mlw_wishlist_unit_price( $preis, $item, $produkt, $menge )` | Stückpreis nach Menge anpassen |
 | `mlw_wishlist_share_guest_retention_days` | Aufbewahrung geteilter Gast-Wunschlisten (Standard 90 Tage) |
 | `mlw_single_product_layout`, `mlw_loop_product_info`, `mlw_loop_availability`, `mlw_reviews_always_open` | Optionales Einzelprodukt-/Karten-Layout (`inc/single-product-layout.php`, Standard aus) |
+| `mlw_loop_brand` | Nur die Marke als Text über dem Titel der Produktkarten (Standard wie `mlw_loop_product_info`, `inc/single-product-layout.php`) |
+| `mlw_single_brand` | Produktseite: Marke als Link auf das Marken-Archiv vor dem Titel (Standard aus) |
+| `mlw_search_card_brand` | Karten der Suchergebnisseite: „Marke: …“ als erste Meta-Angabe (Standard aus, läuft über den Theme-Filter `ml_search_card_meta`, Priorität 20) |
+| `mlw_loop_sku`, `mlw_loop_sku_value( $sku, $produkt )` | Produktkarten: Artikelnummer („Art.-Nr.: …“) in der Zeile unter dem Preis (Standard aus); der Wert ist anpassbar, Standard ist die SKU |
+| `mlw_loop_category`, `mlw_loop_category_terms( $terms, $produkt )` | Produktkarten: alle Kategorien als Text, durch Komma getrennt, in einer eigenen Zeile unter der Artikelnummer (Standard aus); gleiche Namen erscheinen nur einmal, die WooCommerce-Standardkategorie wird übersprungen, die Liste der Begriffe ist anpassbar |
 | `mlw_stock_unit( $einheit, $produkt )`, `mlw_stock_unit_enabled` | Mengeneinheit im Lagertext (Quelle: Germanized-Feld „Einheit") |
 
 ### JavaScript
