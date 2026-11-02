@@ -534,6 +534,21 @@ $ml-chevron-svg: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' w
         &--out::before      { background: $color-error; }
     }
 
+    // Artikelnummer und Kategorie unter Preis und Verfügbarkeit (Plugin: mlw_loop_sku, mlw_loop_category)
+    .mlw-loop-sku,
+    .mlw-loop-category {
+        font-size:       var(--text-xs);
+        line-height:     1.4;
+        color:           var(--color-text-muted);
+        text-decoration: none;
+    }
+
+    // Mehrere Kategorien umbrechen bei Bedarf in weitere Zeilen
+    .mlw-loop-category { overflow-wrap: anywhere; }
+
+    // Die Artikelnummer bricht nie um (sonst nach „ML-“)
+    .mlw-loop-sku { white-space: nowrap; }
+
     // Kartenlink als Raster: Bild, Marke, Titel volle Breite; Preis links, Verfügbarkeit rechts
     .woocommerce-loop-product__link {
         display:               grid !important;
@@ -556,6 +571,21 @@ $ml-chevron-svg: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' w
             justify-self: end;
             text-align:   right;
             padding:      $spacing-3 $spacing-4 0 0;
+        }
+
+        // Zweite Zeile: Artikelnummer links unter dem Preis
+        > .mlw-loop-sku {
+            grid-column: 1;
+            align-self:  start;
+            padding:     $spacing-1 $spacing-2 0 $spacing-4;
+        }
+
+        // Dritte Zeile: alle Kategorien in einer eigenen Zeile unter der Artikelnummer, volle Breite, linksbündig
+        > .mlw-loop-category {
+            grid-column: 1 / -1;
+            align-self:  start;
+            text-align:  left;
+            padding:     $spacing-1 $spacing-4 0 $spacing-4;
         }
 
         // Preisspanne (variable Produkte, zwei Betraege) braucht die Zeilenbreite: die Verfuegbarkeit
