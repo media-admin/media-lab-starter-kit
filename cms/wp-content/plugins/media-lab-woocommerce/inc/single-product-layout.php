@@ -18,6 +18,16 @@
  *       Mit mlw_loop_product_info an und mlw_loop_brand auf false: nur die Verfügbarkeit.
  *   add_filter( 'mlw_single_brand', '__return_true' );
  *       Produktseite: Marke als Link auf das Marken-Archiv, vor dem Titel (Priorität 4).
+ *   add_filter( 'mlw_search_card_brand', '__return_true' );
+ *       Karten der Suchergebnisseite (Produkte): „Marke: …“ als erste Meta-Angabe der Karte. Läuft über den Filter
+ *       ml_search_card_meta des Themes (Priorität 20, also nach den Meta-Angaben eines Projekts). Das Theme escaped den Wert.
+ *   add_filter( 'mlw_loop_sku', '__return_true' );
+ *       Produktkarten (Shop, Kategorie, Marke): Artikelnummer („Art.-Nr.: …“) in der Zeile unter dem Preis, links. Der Wert ist
+ *       über den Filter mlw_loop_sku_value anpassbar (Standard: SKU des Produkts, ohne SKU keine Ausgabe).
+ *   add_filter( 'mlw_loop_category', '__return_true' );
+ *       Produktkarten: alle Kategorien des Produkts als Text, durch Komma getrennt, in einer eigenen Zeile unter der Artikelnummer.
+ *       Gleiche Namen erscheinen nur einmal, die WooCommerce-Standardkategorie wird übersprungen. Die Liste lässt sich über den
+ *       Filter mlw_loop_category_terms ändern (Array von WP_Term). Beide Schalter sind unabhängig von mlw_loop_product_info, Standard aus.
  *   add_filter( 'mlw_loop_availability', function ( $data, $product ) { ... return [ 'label' => '', 'status' => '' ]; }, 10, 2 );
  *       Verfügbarkeits-Text und -Status der Karte überschreiben (leeres Label = keine Ausgabe).
  *   add_filter( 'mlw_reviews_always_open', '__return_true' );
@@ -70,8 +80,20 @@ class MediaLab_Single_Product_Layout {
             add_action( 'woocommerce_after_shop_loop_item_title', [ __CLASS__, 'render_loop_availability' ], 11 );
         }
 
+        // Artikelnummer und Kategorie unter Preis und Verfügbarkeit (Opt-in, unabhängig voneinander)
+        if ( apply_filters( 'mlw_loop_sku', false ) ) {
+            add_action( 'woocommerce_after_shop_loop_item_title', [ __CLASS__, 'render_loop_sku' ], 12 );
+        }
+        if ( apply_filters( 'mlw_loop_category', false ) ) {
+            add_action( 'woocommerce_after_shop_loop_item_title', [ __CLASS__, 'render_loop_category' ], 13 );
+        }
+
         if ( apply_filters( 'mlw_single_brand', false ) ) {
             add_action( 'woocommerce_single_product_summary', [ __CLASS__, 'render_single_brand' ], 4 );
+        }
+
+        if ( apply_filters( 'mlw_search_card_brand', false ) ) {
+            add_filter( 'ml_search_card_meta', [ __CLASS__, 'search_card_meta' ], 20, 3 );
         }
     }
 
@@ -205,6 +227,29 @@ class MediaLab_Single_Product_Layout {
         echo '<p class="mlw-single-brand">' . ( is_wp_error( $link ) ? $name : '<a href="' . esc_url( $link ) . '">' . $name . '</a>' ) . '</p>';
     }
 
+    /**
+     * Marke in den Karten der Suchergebnisseite: erste Meta-Angabe (Filter ml_search_card_meta des Themes, Opt-in über
+     * mlw_search_card_brand). Der Wert geht unescaped an das Theme, post-card.php escaped Label und Wert selbst.
+     *
+     * @param mixed $meta      Bisherige Meta-Angaben
+     * @param mixed $post_type Inhaltstyp der Karte
+     * @param mixed $post_id   Beitrags-ID der Karte
+     */
+    public static function search_card_meta( $meta, $post_type = '', $post_id = 0 ) {
+        $meta = is_array( $meta ) ? $meta : [];
+        if ( $post_type !== 'product' || ! $post_id ) return $meta;
+
+        $terms = get_the_terms( (int) $post_id, 'product_brand' );
+        if ( ! $terms || is_wp_error( $terms ) ) return $meta;
+
+        // Beschriftung wie in der Filterleiste (Einstellung "Marke-Label"), sonst "Marke"
+        $labels = function_exists( 'mlwf_get_attribute_labels' ) ? mlwf_get_attribute_labels() : [];
+        $label  = ! empty( $labels['product_brand'] ) ? (string) $labels['product_brand'] : __( 'Marke', 'medialab-woo-filters' );
+
+        array_unshift( $meta, [ 'label' => $label, 'value' => $terms[0]->name ] );
+        return $meta;
+    }
+
     public static function render_loop_availability(): void {
         global $product;
         if ( ! $product instanceof WC_Product ) return;
@@ -219,6 +264,51 @@ class MediaLab_Single_Product_Layout {
 
         echo '<span class="mlw-loop-availability mlw-loop-availability--' . esc_attr( sanitize_html_class( $data['status'] ?? 'default' ) ) . '">'
            . esc_html( $data['label'] ) . '</span>';
+    }
+
+    /**
+     * Artikelnummer auf der Produktkarte, unter dem Preis (Filter mlw_loop_sku). Der Wert lässt sich über mlw_loop_sku_value
+     * ersetzen, ohne Wert keine Ausgabe.
+     */
+    public static function render_loop_sku(): void {
+        global $product;
+        if ( ! $product instanceof WC_Product ) return;
+
+        $sku = (string) apply_filters( 'mlw_loop_sku_value', $product->get_sku(), $product );
+        if ( $sku === '' ) return;
+
+        echo '<span class="mlw-loop-sku"><span class="mlw-loop-sku__label">' . esc_html__( 'Art.-Nr.:', 'media-lab-woocommerce' ) . '</span> '
+           . esc_html( $sku ) . '</span>';
+    }
+
+    /**
+     * Kategorien auf der Produktkarte, in einer eigenen Zeile unter der Artikelnummer (Filter mlw_loop_category): alle Kategorien des Produkts als Text
+     * ohne Link (die Karte ist selbst ein Link), durch Komma getrennt. Gleiche Namen erscheinen nur einmal, die
+     * WooCommerce-Standardkategorie wird übersprungen. Über mlw_loop_category_terms lässt sich die Liste der Begriffe ändern.
+     */
+    public static function render_loop_category(): void {
+        global $product;
+        if ( ! $product instanceof WC_Product ) return;
+
+        $terms = get_the_terms( $product->get_id(), 'product_cat' );
+        if ( ! $terms || is_wp_error( $terms ) ) return;
+
+        $default = (int) get_option( 'default_product_cat' );
+        $terms   = array_values( array_filter( (array) $terms, function ( $term ) use ( $default ) {
+            return (int) $term->term_id !== $default;
+        } ) );
+        $terms = apply_filters( 'mlw_loop_category_terms', $terms, $product );
+        if ( ! is_array( $terms ) ) return;
+
+        $names = [];
+        foreach ( $terms as $term ) {
+            if ( is_object( $term ) && ! empty( $term->name ) && ! in_array( $term->name, $names, true ) ) {
+                $names[] = $term->name;
+            }
+        }
+        if ( ! $names ) return;
+
+        echo '<span class="mlw-loop-category">' . esc_html( implode( ', ', $names ) ) . '</span>';
     }
 }
 

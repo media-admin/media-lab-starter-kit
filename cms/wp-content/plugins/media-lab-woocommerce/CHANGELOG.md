@@ -4,6 +4,23 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [2.30.0] - 2026-10-31
+
+### Added
+- **Artikelnummer und Kategorie auf den Produktkarten** (`inc/single-product-layout.php`): Zwei neue Filter, beide Standard aus und unabhängig von
+  `mlw_loop_product_info`. `mlw_loop_sku` gibt „Art.-Nr.: …“ aus (Wert über `mlw_loop_sku_value` anpassbar, Standard die SKU), `mlw_loop_category` alle
+  Kategorien des Produkts als Text, durch Komma getrennt (gleiche Namen nur einmal, über `mlw_loop_category_terms` anpassbar, die WooCommerce-Standardkategorie
+  wird übersprungen). Beide hängen an
+  `woocommerce_after_shop_loop_item_title` (Priorität 12 und 13), also im Kartenlink. Das Theme setzt die Artikelnummer links unter den Preis und die
+  Kategorien in eine eigene Zeile darunter (Klassen `mlw-loop-sku`, `mlw-loop-category`).
+
+## [2.29.0] - 2026-10-31
+
+### Added
+- **Marke in den Karten der Suchergebnisseite** (`inc/single-product-layout.php`): Neuer Filter `mlw_search_card_brand` (Standard aus). Hängt „Marke: …“ als erste
+  Meta-Angabe an die Produktkarten der Ergebnisseite (Filter `ml_search_card_meta` des Themes, Priorität 20). Die Beschriftung kommt aus dem „Marke-Label“ der
+  Filter-Einstellungen, sonst „Marke“. Nach dem Filtern per AJAX zeigt die WooCommerce-Karte die Marke schon über `mlw_loop_product_info` oder `mlw_loop_brand`.
+
 ## [2.28.0] - 2026-10-30
 
 ### Added
