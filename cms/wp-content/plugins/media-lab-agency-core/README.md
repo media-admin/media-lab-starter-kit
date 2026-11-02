@@ -6,6 +6,7 @@ Core functionality plugin for Media Lab agency websites.
 
 - **Shortcodes**: Hero Slider, Accordion, Stats, Testimonials, etc.
 - **Suche**: Ajax-Live-Suche mit Treffer-Highlighting, Kontext-Ausschnitt und WooCommerce-Attribut-/Konfigurator-Suche, optionales Such-Icon in der Hauptnavigation, zentral konfigurierbar (Texte mehrsprachig, Limit, Inhaltstypen, Anzeige) unter Agency Core → Suche / Live-Suche (siehe unten)
+- **Logo und Footer**: Logo für den Dunkelmodus (Desktop und Mobile) und abschaltbarer Agentur-Credit im Footer, unter Agency Core → Logo / Globale Einstellungen (siehe unten)
 - **Plugin Status**: eigene Admin-Seite mit Systemübersicht, Inhaltstypen, Schnellzugriff sowie README und Changelog direkt im Backend (siehe unten)
 - **Heartbeat Monitoring**: Push-basierte Uptime-Überwachung (Better Stack / Healthchecks.io)
 - **Beobachter & zusätzliche Empfänger**: Rolle „Beobachter“ (nur lesen) und beliebig viele zusätzliche Bcc-Empfänger für Update-, Fatal-Error-, Kommentar- und Benutzer-Mails, unter Agency Core → Benachrichtigungen / Beobachter (siehe unten)
@@ -136,6 +137,13 @@ Attribut-/Konfigurator-Treffer, bei denen der Suchbegriff nicht im Beschreibungs
 | `media_lab_ajax_search_query_expansion` | Zusätzliche Suchbegriffe (z. B. Synonyme, Fuzzy-Varianten) |
 | `media_lab_ajax_search_extra_matches` | Zusätzliche Produkt-Treffer, wenn Content- und Attribut-Suche nichts finden |
 | `media_lab_ajax_search_result` | Ergebnis-Daten pro Treffer erweitern (z. B. Preis durch WooCommerce) |
+
+## Logo und Globale Einstellungen
+
+Unter Agency Core → Logo / Globale Einstellungen (`inc/acf-settings.php`):
+
+- **Logo für den Dunkelmodus** (ab 1.37.0): Die optionalen Felder „Logo (Desktop, Dunkelmodus)“ und „Logo (Mobile, Dunkelmodus)“ erscheinen nur, wenn der Dark-Mode-Umschalter eingeschaltet ist. Ohne dunkles Logo ändert sich nichts. Die Ausgabe übernimmt das Theme (ab custom-theme 1.22.0): Fehlt eine Variante, gilt für Desktop dunkel das normale Desktop-Logo, für Mobil dunkel das dunkle Desktop-Logo, sonst das normale Mobile-Logo.
+- **Agentur-Credit im Footer** (ab 1.38.0): Der Schalter „Agentur-Credit im Footer“ (Standard: an) blendet die Zeile „Konzept und Programmierung: …“ im Footer aus, zum Beispiel für eigene Projekte der Agentur. Das Theme wertet den Schalter aus.
 
 ## Plugin Status
 
