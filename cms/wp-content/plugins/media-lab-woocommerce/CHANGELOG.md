@@ -4,6 +4,16 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [2.31.0] - 2026-11-04
+
+### Added
+- **Filter `mlw_wishlist_display_items`** (`inc/wishlist/class-storage.php`, Ende von `get_items_for_display()`): Items fürs Wunschlisten-Rendering,
+  zweiter Parameter `$own_list`. Projekt-Plugins können die Anzeige-Items ergänzen, zum Beispiel `config_display` um projektspezifische Zeilen. `$own_list` ist
+  `true` bei der Wunschliste des aktuellen Besuchers und `false`, wenn eine Liste explizit übergeben wird (etwa die geteilte Token-Ansicht,
+  `MediaLab_Wishlist_Share::render_shared_view()`). Besuchsbezogene Daten dürfen nur bei `true` ergänzt werden, sonst erschiene in der geteilten Ansicht die
+  Auswahl des Besuchers statt der des Listeninhabers. Der Filter wirkt auf die Seite, auf die `items` der Ajax-Antworten (damit auch auf das Nachrendern in
+  `wishlist.js`, das `config_display` anzeigt) und auf `get_grand_total()`. Ohne Filter ändert sich nichts.
+
 ## [2.30.0] - 2026-10-31
 
 ### Added

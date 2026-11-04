@@ -237,7 +237,15 @@ class MediaLab_Wishlist_Storage {
                 'attachment_urls' => array_map( fn( $id ) => [ 'id' => $id, 'url' => wp_get_attachment_url( $id ), 'filename' => basename( (string) wp_get_attachment_url( $id ) ) ], $item['attachments'] ?? [] ),
             ] );
         }
-        return $out;
+        /**
+         * Filter: Projekt-Plugins können die Anzeige-Items ergänzen (z. B. config_display).
+         *
+         * @param array $out      Items fürs Rendering.
+         * @param bool  $own_list true = Wunschliste des aktuellen Besuchers,
+         *                        false = explizit übergebene Liste (z. B. geteilte Token-Ansicht).
+         *                        Besuchsbezogene Daten dürfen nur bei true ergänzt werden.
+         */
+        return apply_filters( 'mlw_wishlist_display_items', $out, $items === null );
     }
 
     /**
