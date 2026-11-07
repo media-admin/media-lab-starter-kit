@@ -4,6 +4,14 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [2.32.0] - 2026-11-07
+
+### Added
+- **Filter `mlw_wishlist_item_extras`** (`inc/wishlist/class-storage.php`, `MediaLab_Wishlist_Storage::add()`): Projekt-Plugins können Zusatzdaten
+  am Wunschlisten-Eintrag ablegen (zum Beispiel eine Veredelungs-Auswahl). Die Zusatzdaten werden als `extras` am Eintrag gespeichert und gehören
+  zur Eintrags-ID (Suffix `_x` und ein Kurz-Hash): Dasselbe Produkt mit anderen Zusatzdaten ist ein eigener Eintrag, dieselben Zusatzdaten
+  ersetzen die Menge des vorhandenen Eintrags. Ohne Zusatzdaten ändert sich nichts, bestehende Einträge und IDs bleiben gültig.
+
 ## [2.31.0] - 2026-11-04
 
 ### Added

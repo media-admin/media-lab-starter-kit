@@ -86,6 +86,7 @@ class MediaLab_Wishlist_Storage {
      * Fügt ein Produkt hinzu. Ist es bereits vorhanden: einfache Produkte bekommen die neue Menge (ersetzt), identische Konfigurationen werden addiert.
      *
      * @param array $data [ 'product_id' => int, 'quantity' => int, 'config' => array|null, 'config_display' => array|null, 'price_breakdown' => array|null, 'attachments' => int[] ]
+     * 'extras'          => array        Zusatzdaten von Projekt-Plugins (Filter mlw_wishlist_item_extras), Teil der item_id.
      * @return array|WP_Error Aktualisierte Item-Liste oder Fehler.
      */
     public static function add( array $data ) {
@@ -110,6 +111,20 @@ class MediaLab_Wishlist_Storage {
         $item_id = $config
             ? 'cfg_' . substr( md5( $product_id . wp_json_encode( $config ) ), 0, 20 )
             : ( $variation_id ? 'variation_' . $variation_id : 'product_' . $product_id );
+            
+            /**
+             * Filter: Zusatzdaten, die Projekt-Plugins am Eintrag ablegen (z. B. die Veredelungs-Auswahl).
+             * Sie gehören zur Identität des Eintrags: Dasselbe Produkt mit anderen Zusatzdaten ist ein eigener Eintrag,
+             * dieselben Zusatzdaten ersetzen die Menge des bestehenden Eintrags.
+             *
+             * @param array $extras Zusatzdaten (Standard: leer). Muss JSON-kodierbar sein, gleiche Daten = gleiche Reihenfolge.
+             * @param array $data   Daten des Hinzufügens (product_id, variation_id, quantity, config, ...).
+             */
+            $extras = apply_filters( 'mlw_wishlist_item_extras', [], $data );
+            $extras = is_array( $extras ) ? $extras : [];
+            if ( $extras ) {
+                $item_id .= '_x' . substr( md5( wp_json_encode( $extras ) ), 0, 8 );
+            }
 
         $items = self::get_items();
 
@@ -134,6 +149,7 @@ class MediaLab_Wishlist_Storage {
             'config_display'  => is_array( $data['config_display'] ?? null ) ? $data['config_display'] : null,
             'price_breakdown' => is_array( $data['price_breakdown'] ?? null ) ? $data['price_breakdown'] : null,
             'attachments'     => array_map( 'intval', $data['attachments'] ?? [] ),
+            'extras'          => $extras,
             'added_at'        => time(),
         ];
 
