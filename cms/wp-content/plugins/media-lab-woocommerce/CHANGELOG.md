@@ -4,6 +4,11 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [2.33.2] - 2026-11-10
+
+### Behoben
+- Variantenbilder bei der Farbwahl: Pro Farbwahl ging bei Produkten mit vielen Varianten derselbe Aufruf mehrfach an den Server (WooCommerce löst mehrere Ereignisse aus). Läuft ein Aufruf für eine Farbe, warten weitere Anfragen auf dessen Antwort, die Ereignisse einer Farbwahl ergeben nur noch einen Abgleich.
+
 ## [2.33.1] - 2026-11-10
 
 ### Geändert

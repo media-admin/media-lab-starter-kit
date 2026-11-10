@@ -10,7 +10,8 @@
     'use strict';
     if ( typeof mlwColorImages === 'undefined' || typeof $.fn.wc_variations_image_update !== 'function' ) return;
 
-    var cache = {};
+    var cache   = {};   // Schlüssel -> Bilddaten (oder null: keine Variante)
+    var pending = {};   // Schlüssel -> wartende Funktionen, solange der Aufruf läuft
 
     function setup( $form ) {
         var attributes = mlwColorImages.attributes || [];
@@ -46,14 +47,23 @@
         function fetchColor( color, done ) {
             var key = productId + '|' + color.attr + '|' + color.value;
             if ( key in cache ) { done( cache[ key ] ); return; }
+            // Läuft für diese Farbe schon ein Aufruf (WooCommerce löst bei einer Farbwahl mehrere Ereignisse aus),
+            // nur die Antwort abwarten statt einen weiteren Aufruf zu starten.
+            if ( pending[ key ] ) { pending[ key ].push( done ); return; }
+            pending[ key ] = [ done ];
+            var finish = function ( data ) {
+                var waiting = pending[ key ] || [];
+                delete pending[ key ];
+                for ( var i = 0; i < waiting.length; i++ ) waiting[ i ]( data );
+            };
             $.ajax( {
                 url: mlwColorImages.ajaxUrl,
                 data: { action: 'mlw_variation_color_image', product_id: productId, attribute: color.attr, value: color.value },
                 dataType: 'json',
             } ).done( function ( res ) {
                 cache[ key ] = res && res.success ? res.data : null;
-                done( cache[ key ] );
-            } ).fail( function () { done( null ); } );
+                finish( cache[ key ] );
+            } ).fail( function () { finish( null ); } );   // nicht merken: ein späterer Versuch darf es erneut probieren
         }
 
         function sync() {
@@ -70,8 +80,10 @@
             fetchColor( color, apply );
         }
 
-        // Nach den Handlern von WooCommerce ausführen (setzt WooCommerce zurück, gilt danach wieder die Farbe)
-        function schedule() { setTimeout( sync, 0 ); }
+        // Nach den Handlern von WooCommerce ausführen (setzt WooCommerce zurück, gilt danach wieder die Farbe).
+        // Mehrere Ereignisse einer Farbwahl ergeben nur einen Abgleich.
+        var timer = null;
+        function schedule() { clearTimeout( timer ); timer = setTimeout( sync, 0 ); }
 
         $form.on( 'change', 'select', schedule );
         $form.on( 'found_variation hide_variation reset_data reset_image', schedule );
