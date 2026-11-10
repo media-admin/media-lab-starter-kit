@@ -89,9 +89,16 @@ class MediaLab_Variation_Color_Images {
     }
 
     public static function variation_for( $product, string $attribute, string $value ): ?array {
-        foreach ( (array) $product->get_children() as $vid ) {
-            if ( (string) get_post_meta( (int) $vid, $attribute, true ) !== $value ) continue;
-            $variation = wc_get_product( (int) $vid );
+        $children = array_map( 'intval', (array) $product->get_children() );
+        if ( ! $children ) return null;
+
+        // Eine einzige Abfrage statt je Variante eine: Welche Varianten haben diese Farbe? (Bei 300 Varianten sind
+        // 300 Einzelabfragen mit Query Monitor oder Xdebug über eine Sekunde.)
+        $with_value = self::variations_with_value( $children, $attribute, $value );
+
+        foreach ( $children as $vid ) {                       // die Reihenfolge der Varianten bleibt maßgeblich
+            if ( ! isset( $with_value[ $vid ] ) ) continue;
+            $variation = wc_get_product( $vid );
             if ( ! $variation || ! $variation->get_image_id() || ! $variation->variation_is_visible() ) continue;
             $data = $product->get_available_variation( $variation );
             if ( ! is_array( $data ) ) continue;
@@ -99,6 +106,28 @@ class MediaLab_Variation_Color_Images {
             if ( $out ) return $out;
         }
         return null;
+    }
+
+    /**
+     * IDs der Varianten aus $ids, deren Attributfeld $attribute den Wert $value hat, als [ id => true ].
+     * Mit einer einzigen Datenbankabfrage, ohne $wpdb (zum Beispiel in Tests) mit dem Lesen je Variante.
+     */
+    private static function variations_with_value( array $ids, string $attribute, string $value ): array {
+        global $wpdb;
+        $found = [];
+        if ( isset( $wpdb ) && is_object( $wpdb ) && ! empty( $wpdb->postmeta ) ) {
+            $placeholders = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
+            $rows = $wpdb->get_col( $wpdb->prepare(
+                "SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = %s AND meta_value = %s AND post_id IN ($placeholders)",
+                array_merge( [ $attribute, $value ], $ids )
+            ) );
+            foreach ( (array) $rows as $id ) $found[ (int) $id ] = true;
+            return $found;
+        }
+        foreach ( $ids as $id ) {
+            if ( (string) get_post_meta( $id, $attribute, true ) === $value ) $found[ $id ] = true;
+        }
+        return $found;
     }
 }
 

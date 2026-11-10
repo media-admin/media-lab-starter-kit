@@ -4,6 +4,11 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [2.33.1] - 2026-11-10
+
+### Geändert
+- Variantenbilder bei der Farbwahl: Die passende Variante wird mit einer einzigen Datenbankabfrage gesucht statt mit einer Abfrage je Variante (bei 300 Varianten und aktivem Query Monitor über eine Sekunde schneller).
+
 ## [2.33.0] - 2026-11-09
 
 ### Hinzugefügt
