@@ -4,6 +4,11 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [2.33.0] - 2026-11-09
+
+### Hinzugefügt
+- Variantenbilder bei der Farbwahl: Hauptbild und Galerie der Produktseite wechseln schon, wenn nur die Farbe gewählt ist. Wendet die Bilddaten der ersten Variante dieser Farbe über `$.fn.wc_variations_image_update` an. Bei Produkten mit vielen Varianten (WooCommerce lädt sie erst mit der vollständigen Auswahl) holt das Skript die Bilddaten über den Endpunkt `mlw_variation_color_image` (Zwischenspeicher 12 Stunden). Filter `mlw_variation_color_images` (Standard an) und `mlw_variation_color_attributes` (Standard `pa_color`).
+
 ## [2.32.0] - 2026-11-07
 
 ### Added
