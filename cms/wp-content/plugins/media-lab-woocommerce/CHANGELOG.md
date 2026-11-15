@@ -4,6 +4,11 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [2.34.0] - 2026-11-15
+
+### Added
+- **Filter `mlw_inquiry_attachment_html( $line, $att_id, $item )`** (`inc/inquiry/class-mail.php`, `MediaLab_Inquiry_Mail::format_product_list()`): Projekt-Plugins können die Datei-Zeile in der Produktliste der Anfrage-Mails ersetzen (`{product_list}`, Kunden- und Admin-Mail). Bisher stand dort immer der direkte Mediathek-Link (`wp_get_attachment_url()`). Liegen die Dateien nicht öffentlich (zum Beispiel geschützter Ordner für hochgeladene Logos), kann ein Projekt nur den Dateinamen oder einen geschützten Link ausgeben oder die Zeile leeren. Geänderte Ausgabe läuft durch `wp_kses_post()`. Der Mail-Anhang der Admin-Mail (`collect_attachments()`) bleibt unverändert. Ohne Filter ändert sich nichts.
+
 ## [2.33.2] - 2026-11-10
 
 ### Behoben

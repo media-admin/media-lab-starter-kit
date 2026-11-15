@@ -167,10 +167,21 @@ class MediaLab_Inquiry_Mail {
             if ( ! empty( $item['attachments'] ) && is_array( $item['attachments'] ) ) {
                 $html .= '<p style="margin-top:6px">';
                 foreach ( $item['attachments'] as $att_id ) {
-                    $url = wp_get_attachment_url( $att_id );
-                    if ( $url ) {
-                        $html .= '📎 <a href="' . esc_url( $url ) . '">' . esc_html( basename( $url ) ) . '</a><br>';
-                    }
+                    $url     = wp_get_attachment_url( $att_id );
+                    $default = $url ? '📎 <a href="' . esc_url( $url ) . '">' . esc_html( basename( $url ) ) . '</a><br>' : '';
+
+                    /**
+                     * Filter: HTML einer Datei-Zeile in der Produktliste ({product_list}, Kunden- und Admin-Mail).
+                     * Projekt-Plugins können den direkten Mediathek-Link ersetzen (zum Beispiel nur den Dateinamen oder
+                     * einen geschützten Link ausgeben, wenn die Dateien nicht öffentlich liegen) oder die Zeile leeren.
+                     * Ohne Filter bleibt die Ausgabe unverändert. Geänderte Ausgabe läuft durch wp_kses_post().
+                     *
+                     * @param string $line   HTML der Zeile (Standard: Link mit Dateiname und Zeilenumbruch, leer ohne URL).
+                     * @param int    $att_id Attachment-ID.
+                     * @param array  $item   Normalisierter Eintrag der Anfrage (product_id, attachments, config_display, ...).
+                     */
+                    $line  = apply_filters( 'mlw_inquiry_attachment_html', $default, (int) $att_id, $item );
+                    $html .= ( $line === $default ) ? $default : wp_kses_post( (string) $line );
                 }
                 $html .= '</p>';
             }
