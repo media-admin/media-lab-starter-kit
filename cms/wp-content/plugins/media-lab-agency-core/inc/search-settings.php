@@ -50,6 +50,7 @@ class MediaLab_Search_Settings {
         add_action( 'acf/init', [ __CLASS__, 'register_options_page' ], 10 );
         add_action( 'pre_get_posts', [ __CLASS__, 'apply_serp_query' ] );
         add_filter( 'posts_orderby', [ __CLASS__, 'filter_orderby_type_priority' ], 10, 2 );
+        add_filter( 'media_lab_search_match_options', [ __CLASS__, 'filter_match_options' ] );
         add_action( 'acf/init', [ __CLASS__, 'register_fields' ], 25 );
         // Checkbox-Choices erst beim Laden des Feldes füllen: acf/init läuft
         // auf init:5, CPTs werden meist erst auf init:10 registriert.
@@ -368,6 +369,25 @@ class MediaLab_Search_Settings {
         $first = "({$field} = 0) ASC, {$field} ASC";
 
         return $orderby !== '' ? $first . ', ' . $orderby : $first;
+    }
+
+    /**
+     * Optionen der Suchsyntax und Trefferregeln (Tab "Verhalten"). Wird vom Parser über den Filter
+     * 'media_lab_search_match_options' abgefragt (MediaLab_Search_Query::options()).
+     *
+     * Standard: Syntax an, Teilwort-Treffer nur bei langen Begriffen (ab 4 Buchstaben), Rangfolge an.
+     *
+     * @param array $defaults operators, partial, min_len, rank
+     */
+    public static function filter_match_options( array $defaults ): array {
+        $partial = (string) self::opt( 'search_match_partial', $defaults['partial'] ?? 'long' );
+
+        return [
+            'operators' => (bool) self::opt( 'search_match_operators', $defaults['operators'] ?? true ),
+            'partial'   => in_array( $partial, [ 'always', 'long', 'word' ], true ) ? $partial : 'long',
+            'min_len'   => max( 2, min( 8, (int) self::opt( 'search_match_min_len', $defaults['min_len'] ?? 4 ) ) ),
+            'rank'      => (bool) self::opt( 'search_match_rank', $defaults['rank'] ?? true ),
+        ];
     }
 
     /** Darstellung des Such-Eintrags im Hauptmenü: icon | icon_text | text. */
@@ -859,6 +879,62 @@ class MediaLab_Search_Settings {
 
         $fields[] = self::toggle( 'search_woo_attributes', 'WooCommerce-Attribute durchsuchen', true, 'Produktattribute (global + lokal) und Konfigurator-Optionen. Nur relevant, wenn „product“ durchsucht wird.', '50' );
         $fields[] = self::toggle( 'search_highlight', 'Treffer hervorheben', true, 'Suchbegriff in Titel und Ausschnitt mit <mark> markieren.', '50' );
+
+        // Mehrere Begriffe, Teilwörter, Rangfolge (since Agency Core 1.39.1)
+        $fields[] = [
+            'key'     => 'field_search_match_help',
+            'label'   => ' ',
+            'name'    => 'search_match_help',
+            'type'    => 'message',
+            'message' => '<strong style="font-size:13px;">Mehrere Begriffe und Teilwörter</strong>'
+                       . '<p style="margin:.4rem 0 0;color:#666;font-size:12px;">'
+                       . 'Gilt für Live-Suche, Ergebnisseite und Produktfilter. Beispiele: <code>rot shirt</code> (beide Begriffe), '
+                       . '<code>rot oder blau</code>, <code>shirt -kinder</code> (ohne), <code>"t-shirt basic"</code> (feste Wendung).</p>',
+        ];
+
+        $fields[] = self::toggle(
+            'search_match_operators',
+            'Und/Oder-Syntax',
+            true,
+            'Erkennt „oder“, „|“, „-wort“ / „ohne wort“ und Anführungszeichen. Aus: alle Wörter müssen vorkommen, Sonderzeichen zählen als normaler Text.',
+            '50'
+        );
+
+        $fields[] = self::toggle(
+            'search_match_rank',
+            'Ganze Wörter und Merkmale zuerst',
+            true,
+            'Bei mehreren Begriffen und Sortierung „Relevanz“: Treffer mit ganzem Wort im Titel oder passendem Merkmal (Farbe, Größe, Kategorie, Marke, Artikelnummer) stehen vor Treffern mitten im Wort oder nur im Beschreibungstext.',
+            '50'
+        );
+
+        $fields[] = [
+            'key'           => 'field_search_match_partial',
+            'label'         => 'Teilwort-Treffer',
+            'name'          => 'search_match_partial',
+            'type'          => 'button_group',
+            'choices'       => [
+                'always' => 'Immer (auch mitten im Wort)',
+                'long'   => 'Nur bei langen Begriffen',
+                'word'   => 'Nur Wortanfänge',
+            ],
+            'default_value' => 'long',
+            'layout'        => 'horizontal',
+            'instructions'  => 'Immer: „rot“ findet auch „Trotter“ und „Brotkorb“. Nur bei langen Begriffen: kurze Begriffe müssen am Wortanfang stehen („rot“ findet „Rotwein“ und „Rot-Weiß“, nicht „Trotter“), lange Begriffe suchen weiterhin im Wortinneren. Nur Wortanfänge: gilt für alle Begriffe. Betrifft Titel, Kurztext und Beschreibung; Merkmale (z. B. „dunkelrot“), Kategorien, Marken und Artikelnummern werden weiterhin im Wortinneren gefunden.',
+        ];
+
+        $fields[] = self::number(
+            'search_match_min_len',
+            'Ab wie vielen Buchstaben ist ein Begriff lang?',
+            4,
+            2,
+            8,
+            1,
+            'Buchstaben',
+            'Begriffe mit weniger Buchstaben gelten als kurz (Standard 4: „rot“ ist kurz, „blau“ ist lang).'
+        );
+        // Mindestlänge nur bei "Nur bei langen Begriffen" anzeigen
+        $fields[ count( $fields ) - 1 ]['conditional_logic'] = [ [ [ 'field' => 'field_search_match_partial', 'operator' => '==', 'value' => 'long' ] ] ];
 
         // ── Tab: Anzeige ─────────────────────────────────────────────────────
         $fields[] = [ 'key' => 'field_search_tab_display', 'label' => 'Anzeige', 'type' => 'tab', 'placement' => 'top' ];

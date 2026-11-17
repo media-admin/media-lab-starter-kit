@@ -20,6 +20,53 @@ Ende.
 
 ---
 
+## [1.39.1] - 2026-11-17
+
+### media-lab-agency-core 1.39.1
+
+#### Added
+- **Einstellungen für die Suche** unter Agency Core → Suche / Live-Suche → Verhalten (`inc/search-settings.php`):
+  - **Und/Oder-Syntax** (Standard an): erkennt „oder“, `|`, `-wort` / „ohne wort“ und Anführungszeichen. Aus: alle Wörter müssen vorkommen, Sonderzeichen zählen als normaler Text.
+  - **Teilwort-Treffer** (Standard „Nur bei langen Begriffen“): WordPress sucht im Wortinneren, „rot“ fand deshalb auch „Trotter“, „Pierrot“ und „Brotkorb“.
+    Bei „Nur bei langen Begriffen“ müssen Begriffe unter der Mindestlänge am Wortanfang stehen („rot“ findet „Rotwein“ und „Rot-Weiß“, nicht „Trotter“). Weitere Auswahl: „Immer“ (wie bisher) und „Nur Wortanfänge“.
+    Betrifft Titel, Kurztext und Beschreibung; Merkmale (z. B. „dunkelrot“), Kategorien, Marken und Artikelnummern werden weiterhin im Wortinneren gefunden.
+  - **Mindestlänge für lange Begriffe** (Standard 4 Buchstaben, nur sichtbar bei „Nur bei langen Begriffen“).
+  - **Ganze Wörter und Merkmale zuerst** (Standard an): Bei mehreren Begriffen und der Sortierung „Relevanz“ stehen Treffer mit ganzem Wort im Titel oder passendem Merkmal
+    (Farbe, Größe, Kategorie, Marke, Artikelnummer) vor Treffern mitten im Wort oder nur im Beschreibungstext.
+- Filter `media_lab_search_match_options` ( array `operators`, `partial`, `min_len`, `rank` ): überschreibt die Backend-Werte im Code.
+- `MediaLab_Search_Query::options()`, `is_word_start_only()`, `word_start_in()`, `whole_word_in()`, `title_score()`, `rank()`, `term_key()`; Parser-Ergebnis: je Begriff `word` (Teilwort-Regel gilt), je Abfrage `rank`.
+- `MediaLab_Serp_Search::ranked_orderby()` (Filter `posts_orderby`, Priorität 5): Reihenfolge der Mehrbegriff-Treffer bei Sortierung „Relevanz“.
+
+#### Changed
+- **Standardverhalten:** Ein einzelner kurzer Begriff (unter 4 Buchstaben, z. B. „rot“) gilt jetzt als erweiterte Abfrage (Teilwort-Regel, Rangfolge). Wer das bisherige Verhalten will, stellt „Teilwort-Treffer“ auf „Immer“ und „Ganze Wörter und Merkmale zuerst“ aus.
+- `media_lab_search_operators_enabled` überschreibt jetzt den Backend-Schalter „Und/Oder-Syntax“. Bei ausgeschalteter Syntax gilt jedes Wort als eigener Begriff (UND), statt die Suche der Standard-Abfrage zu überlassen.
+- Der Zwischenspeicher der Treffer-IDs (`matching_ids()`) berücksichtigt die Such-Optionen.
+
+## [1.39.0] - 2026-11-16
+
+### media-lab-agency-core 1.39.0
+
+#### Added
+- **Suche mit mehreren Begriffen, UND / ODER, Ausschluss und Phrasen** (`inc/search/class-search-query.php`, neu): Live-Suche, Ergebnisseite und Produktfilter
+  (Treffermenge `MediaLab_Serp_Search::matching_ids()`) verstehen jetzt eine einfache Suchsyntax:
+  - `shirt rot` – beide Begriffe (UND ist der Standard, „und“ / „and“ sind optional)
+  - `rot oder blau` – mindestens einer der Begriffe („oder“ / „or“ / `|`)
+  - `shirt rot oder blau` – shirt UND (rot ODER blau); ODER verbindet nur die Nachbar-Begriffe
+  - `shirt -kinder` / `shirt ohne kinder` – Treffer ohne „kinder“
+  - `"t-shirt basic"` – exakte Wortfolge
+  Jeder Begriff wird einzeln über alle Quellen aufgelöst (Titel/Inhalt inkl. Synonyme, Produktattribute, Konfigurator-Optionen, SKU, Kategorien, Marken) und
+  danach per Mengenlogik verknüpft. Zuvor wurde die komplette Zeichenfolge als ein Begriff gegen Attribute/SKU/Kategorien geprüft – „T-Shirt rot“ fand deshalb
+  keine Produkte, bei denen „rot“ nur als Attribut vorkommt.
+- `MediaLab_Serp_Search::advanced_ids()`: gemeinsamer Einstieg für die Mehrbegriff-Auflösung (Kontext `serp`, `matching`, `live` bei `media_lab_search_result_ids`).
+- Filter `media_lab_search_operators_enabled` ( bool ): Suchsyntax global abschalten (Standard `true`).
+- Konstante `MediaLab_Serp_Search::TERM_CAP` (10 000): Obergrenze je Einzelbegriff, damit das Schneiden der Mengen nicht an einer zu kleinen Zwischenmenge scheitert.
+
+#### Changed
+- Hervorheben und Textausschnitt (`agency_core_highlight_search_term()`, `agency_core_get_context_excerpt()`) markieren nur noch die tatsächlich gesuchten Begriffe –
+  Operatoren („oder“, „ohne“ …) und ausgeschlossene Begriffe nicht. Gilt auch für Theme-Templates, die diese Funktionen nutzen.
+- Bei Mehrbegriff-Suchen ersetzt die Ergebnisseite die native Such-Bedingung der Haupt-Abfrage durch die aufgelöste ID-Liste (Sortierung, Pagination, Post-Types und
+  Sprache bleiben unverändert). Eine einzelne normale Suchanfrage läuft unverändert wie bisher.
+
 ## [1.38.0] - 2026-10-28
 
 ### media-lab-agency-core 1.38.0

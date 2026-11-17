@@ -30,6 +30,23 @@ add_action('wp_ajax_agency_search', 'agency_core_ajax_search');
 add_action('wp_ajax_nopriv_agency_search', 'agency_core_ajax_search');
 
 /**
+ * Wörter der Suchanfrage fürs Hervorheben / Ausschnitt-Suchen.
+ *
+ * Kennt die Suchsyntax (MediaLab_Search_Query): Operatoren ("oder", "und", "ohne" ...)
+ * und ausgeschlossene Begriffe ("-kinder") werden NICHT markiert, nur die Begriffe,
+ * nach denen tatsächlich gesucht wird. Ohne Syntax: Wörter an Leerzeichen getrennt (wie bisher).
+ *
+ * @return string[]
+ */
+function agency_core_search_words( string $query ): array {
+    if ( class_exists( 'MediaLab_Search_Query' ) ) {
+        $parsed = MediaLab_Search_Query::parse( $query );
+        if ( ! empty( $parsed['clauses'] ) ) return MediaLab_Search_Query::highlight_terms( $parsed );
+    }
+    return explode( ' ', $query );
+}
+
+/**
  * Hebt alle Treffer des Suchbegriffs (wortweise) in einem Text per <mark>
  * hervor. Escaped den Text zuerst selbst (esc_html) und markiert danach -
  * das <mark>-Tag ist also gezielt das einzige erlaubte HTML im Ergebnis,
@@ -43,7 +60,7 @@ add_action('wp_ajax_nopriv_agency_search', 'agency_core_ajax_search');
 function agency_core_highlight_search_term( string $text, string $query ): string {
     $escaped = esc_html( $text );
 
-    $terms = array_filter( array_map( 'trim', explode( ' ', $query ) ), function( $t ) {
+    $terms = array_filter( array_map( 'trim', agency_core_search_words( $query ) ), function( $t ) {
         return $t !== '' && mb_strlen( $t ) >= 2; // einzelne Buchstaben nicht markieren (zu viel Rauschen)
     } );
     if ( empty( $terms ) ) return $escaped;
@@ -79,7 +96,7 @@ function agency_core_get_context_excerpt( string $content, string $query, string
 
     if ( $content === '' ) return $fallback;
 
-    $terms = array_filter( array_map( 'trim', explode( ' ', $query ) ), function( $t ) {
+    $terms = array_filter( array_map( 'trim', agency_core_search_words( $query ) ), function( $t ) {
         return mb_strlen( $t ) >= 2;
     } );
     if ( empty( $terms ) ) return $fallback;
@@ -341,8 +358,14 @@ function agency_core_ajax_search() {
     // Textausschnitt: Wörter vor/nach der Fundstelle (Fallback-Auszug etwas länger)
     $words_around = $cfg['excerpt_words'];
     
+    // ── 0. Mehrere Begriffe / UND / ODER / Ausschluss / Phrase ───────────────
+    // Jeder Begriff wird einzeln über alle Quellen aufgelöst und per Mengenlogik verknüpft
+    // (Parser: inc/search/class-search-query.php, Auflösung: MediaLab_Serp_Search::advanced_ids()).
+    $parsed   = class_exists( 'MediaLab_Search_Query' ) ? MediaLab_Search_Query::parse( $search_query ) : array( 'advanced' => false );
+    $advanced = ! empty( $parsed['advanced'] ) && class_exists( 'MediaLab_Serp_Search' );
+
     // ── 1. Regulärer Titel/Content/Excerpt-Match (WP_Query 's') ──────────────
-    $search_terms = apply_filters( 'media_lab_ajax_search_query_expansion', array( $search_query ), $search_query );
+    $search_terms = $advanced ? array() : apply_filters( 'media_lab_ajax_search_query_expansion', array( $search_query ), $search_query );
 
     $content_ids = array();
     foreach ( $search_terms as $term ) {
@@ -369,7 +392,7 @@ function agency_core_ajax_search() {
     // ── 2. Zusätzlich: WooCommerce-Produktattribute (global + lokal +
     //    Konfigurator-Optionen) ──────────────────────────────────────────────
     $attribute_matches = array();
-    if ( in_array( 'product', $post_types, true ) && class_exists( 'WooCommerce' ) ) {
+    if ( ! $advanced && in_array( 'product', $post_types, true ) && class_exists( 'WooCommerce' ) ) {
 
         // Attribut-/Konfigurator-Suche ist in den Such-Einstellungen abschaltbar
         if ( $cfg['woo_attributes'] ) {
@@ -398,20 +421,27 @@ function agency_core_ajax_search() {
 
     // ── IDs zusammenführen: Content-Treffer zuerst (Relevanz-sortiert von
     //    WP_Query), danach Attribut-Treffer die noch nicht dabei sind ────────
-    $all_ids = $content_ids;
-    foreach ( array_keys( $attribute_matches ) as $pid ) {
-        if ( ! in_array( $pid, $all_ids, true ) ) {
-            $all_ids[] = $pid;
+    if ( $advanced ) {
+        // Sprache, Passwortschutz und 'media_lab_search_result_ids' (Kontext 'live') sind in advanced_ids() enthalten.
+        // $attribute_matches: Attribut-/SKU-Treffertext je Produkt (Ausschnitt-Zeile in der Trefferliste).
+        $attribute_matches = array();
+        $all_ids = MediaLab_Serp_Search::advanced_ids( $parsed, $post_types, $lang, $limit, 'live', $attribute_matches );
+    } else {
+        $all_ids = $content_ids;
+        foreach ( array_keys( $attribute_matches ) as $pid ) {
+            if ( ! in_array( $pid, $all_ids, true ) ) {
+                $all_ids[] = $pid;
+            }
         }
+
+        // Treffer, die nicht über WP_Query laufen (Attribute, SKU, Kategorien ...),
+        // z. B. auf Produkt-Sichtbarkeit prüfen (Woo-Plugin: search-woo-extras.php)
+        $all_ids = array_values( (array) apply_filters( 'media_lab_search_result_ids', $all_ids, $search_query, 'live' ) );
+
+        // Attribut-/Extra-Treffer laufen nicht über WP_Query -> hier auf die Sprache filtern (Polylang)
+        $all_ids = MediaLab_Search_Settings::filter_ids_by_language( $all_ids, $lang );
+        $all_ids = array_slice( $all_ids, 0, $limit );
     }
-
-    // Treffer, die nicht über WP_Query laufen (Attribute, SKU, Kategorien ...),
-    // z. B. auf Produkt-Sichtbarkeit prüfen (Woo-Plugin: search-woo-extras.php)
-    $all_ids = array_values( (array) apply_filters( 'media_lab_search_result_ids', $all_ids, $search_query, 'live' ) );
-
-    // Attribut-/Extra-Treffer laufen nicht über WP_Query -> hier auf die Sprache filtern (Polylang)
-    $all_ids = MediaLab_Search_Settings::filter_ids_by_language( $all_ids, $lang );
-    $all_ids = array_slice( $all_ids, 0, $limit );
 
     $results = array();
 

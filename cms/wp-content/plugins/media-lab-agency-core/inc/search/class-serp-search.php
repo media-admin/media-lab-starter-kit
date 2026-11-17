@@ -21,6 +21,18 @@
  *   - media_lab_ajax_search_extra_matches     (Fuzzy-Produktcodes, nur wenn sonst nichts gefunden)
  *   - media_lab_search_result_ids              (ID-Bereinigung, Kontext 'serp' bzw. 'matching')
  *
+ * Mehrere Begriffe (seit 1.39.0): Enthält die Anfrage mehrere Begriffe, UND/ODER, einen
+ * Ausschluss (-wort) oder eine Phrase ("a b"), wird jeder Begriff einzeln aufgelöst und per
+ * Mengenlogik verknüpft (MediaLab_Search_Query). Die native Such-Bedingung der Haupt-Abfrage wird
+ * dann durch die fertige ID-Liste ersetzt. Einzelne Wörter laufen unverändert wie bisher.
+ *
+ * Teilwort-Regel und Rangfolge (seit 1.39.1, Einstellungen unter Suche / Live-Suche -> Verhalten):
+ *   - Kurze Begriffe (Standard: unter 4 Buchstaben) zählen im Text nur am Wortanfang
+ *     ("rot" findet "Rotwein", nicht "Trotter"). Merkmale, Kategorien, Marken und SKU bleiben
+ *     Teilstring-Treffer. Ein solcher Begriff läuft ebenfalls über diesen Weg (term_data()).
+ *   - Bei Sortierung "Relevanz" stehen ganze Wörter im Titel und Merkmal-Treffer vor Teilstring-
+ *     Treffern (MediaLab_Search_Query::rank(), ranked_orderby()).
+ *
  * Zusätzlich: matching_ids() liefert dieselbe Treffermenge als ID-Liste,
  * unabhängig von der Haupt-Abfrage. Gedacht für Facetten-Filter (Produktfilter
  * auf der Ergebnisseite: Werte und Anzahlen aus ALLEN gefundenen Produkten) und
@@ -47,6 +59,19 @@ class MediaLab_Serp_Search {
      */
     const MAX_EXTRA_IDS = 5000;
 
+    /**
+     * Obergrenze pro Einzelbegriff bei Mehrbegriff-Suchen (UND / ODER / Ausschluss).
+     * Bewusst größer als die Ergebnis-Obergrenze: Wird die Menge eines Begriffs vor dem
+     * Schneiden abgeschnitten, fehlen Treffer im Ergebnis.
+     */
+    const TERM_CAP = 10000;
+
+    /** Mehrbegriff-Suche aktiv: die Such-Bedingung der Haupt-Abfrage wird komplett ersetzt. */
+    private static bool $advanced = false;
+
+    /** Rangfolge der Treffer (ganze Wörter und Merkmale zuerst) für die Haupt-Abfrage aktiv. */
+    private static bool $ranked = false;
+
     /** @var int[] */
     private static array $extra_ids = [];
 
@@ -57,6 +82,8 @@ class MediaLab_Serp_Search {
         // Nach MediaLab_Search_Settings::apply_serp_query() (Priorität 10)
         add_action( 'pre_get_posts', [ __CLASS__, 'prepare' ], 20 );
         add_filter( 'posts_search', [ __CLASS__, 'extend_search_sql' ], 10, 2 );
+        // Vor MediaLab_Search_Settings::filter_orderby_type_priority() (Priorität 10), das davorschaltet
+        add_filter( 'posts_orderby', [ __CLASS__, 'ranked_orderby' ], 5, 2 );
     }
 
     /**
@@ -78,6 +105,10 @@ class MediaLab_Serp_Search {
 
     public static function prepare( \WP_Query $query ): void {
         if ( is_admin() || ! $query->is_main_query() || ! $query->is_search() ) return;
+
+        self::$advanced = false;
+        self::$ranked   = false;
+
         if ( ! class_exists( 'MediaLab_Search_Settings' ) ) return;
 
         $serp = MediaLab_Search_Settings::serp();
@@ -95,6 +126,22 @@ class MediaLab_Serp_Search {
         $types = MediaLab_Search_Settings::sanitize_post_types( $types );
 
         $lang_args = MediaLab_Search_Settings::apply_language( [], $lang );
+
+        // ── 0. Mehrere Begriffe / UND / ODER / Ausschluss / Phrase ───────────
+        // Jeder Begriff wird einzeln über alle Quellen aufgelöst und per Mengenlogik
+        // verknüpft (siehe MediaLab_Search_Query). Die native Such-Bedingung wird dann
+        // in extend_search_sql() durch die fertige ID-Liste ersetzt.
+        $parsed = self::parse_query( $search );
+        if ( $parsed['advanced'] ) {
+            $labels = [];
+            $ids    = self::advanced_ids( $parsed, $types, $lang, self::MAX_EXTRA_IDS, 'serp', $labels );
+
+            self::$advanced         = true;
+            self::$ranked           = ! empty( $parsed['rank'] );
+            self::$extra_ids        = $ids;
+            self::$attribute_labels = array_intersect_key( $labels, array_flip( $ids ) );
+            return;
+        }
 
         // ── 1. Synonyme / Begriffs-Erweiterung (Filter aus der Live-Suche) ───
         $terms = apply_filters( 'media_lab_ajax_search_query_expansion', [ $search ], $search );
@@ -170,15 +217,44 @@ class MediaLab_Serp_Search {
      * als eigene AND-Bedingungen bestehen.
      */
     public static function extend_search_sql( string $search, \WP_Query $query ): string {
-        if ( $search === '' || empty( self::$extra_ids ) ) return $search;
+        if ( $search === '' ) return $search;
         if ( ! $query->is_main_query() || ! $query->is_search() ) return $search;
 
         global $wpdb;
+
+        // Mehrbegriff-Suche: die native Bedingung kennt weder ODER noch Attribut-/SKU-Treffer
+        // je Begriff - sie wird komplett durch die aufgelöste ID-Liste ersetzt.
+        if ( self::$advanced ) {
+            $ids  = array_map( 'intval', self::$extra_ids );
+            $cond = $ids ? " AND ( {$wpdb->posts}.ID IN (" . implode( ',', $ids ) . ") ) " : ' AND ( 1 = 0 ) ';
+            if ( ! is_user_logged_in() ) {
+                $cond .= " AND ( {$wpdb->posts}.post_password = '' ) "; // wie WP_Query::parse_search()
+            }
+            return $cond;
+        }
+
+        if ( empty( self::$extra_ids ) ) return $search;
 
         $ids   = implode( ',', array_map( 'intval', self::$extra_ids ) );
         $inner = preg_replace( '/^\s*AND\s*/i', '', $search, 1 );
 
         return " AND ( ( {$inner} ) OR {$wpdb->posts}.ID IN ({$ids}) ) ";
+    }
+
+    /**
+     * Mehrbegriff-Suche mit Rangfolge: Bei der Sortierung "Relevanz" gilt die Reihenfolge der
+     * aufgelösten ID-Liste (ganze Wörter und Merkmale zuerst, siehe MediaLab_Search_Query::rank()).
+     * Andere Sortierungen (Datum, Titel) bleiben unberührt.
+     */
+    public static function ranked_orderby( string $orderby, \WP_Query $query ): string {
+        if ( ! self::$advanced || ! self::$ranked ) return $orderby;
+        if ( ! $query->is_main_query() || ! $query->is_search() ) return $orderby;
+        if ( $query->get( 'orderby' ) !== 'relevance' ) return $orderby;
+        if ( count( self::$extra_ids ) < 2 ) return $orderby;
+
+        global $wpdb;
+
+        return "FIELD({$wpdb->posts}.ID, " . implode( ',', array_map( 'intval', self::$extra_ids ) ) . ') ASC';
     }
 
     /**
@@ -213,7 +289,9 @@ class MediaLab_Serp_Search {
         $lang  = MediaLab_Search_Settings::current_lang();
         $types = MediaLab_Search_Settings::sanitize_post_types( $types );
         $cap   = max( 1, min( 20000, $cap ) );
-        $key   = md5( wp_json_encode( [ $search, $types, $lang, $cap ] ) );
+        // Such-Optionen gehören in den Schlüssel: Eine Änderung im Backend soll nicht erst nach Ablauf des Zwischenspeichers wirken
+        $opts  = class_exists( 'MediaLab_Search_Query' ) ? MediaLab_Search_Query::options() : [];
+        $key   = md5( wp_json_encode( [ $search, $types, $lang, $cap, $opts ] ) );
 
         if ( isset( $memo[ $key ] ) ) return $memo[ $key ];
 
@@ -226,6 +304,18 @@ class MediaLab_Serp_Search {
         $cfg       = MediaLab_Search_Settings::get();
         $lang_args = MediaLab_Search_Settings::apply_language( [], $lang );
         $has_products = in_array( 'product', $types, true ) && class_exists( 'WooCommerce' );
+
+        // ── 0. Mehrere Begriffe / UND / ODER / Ausschluss / Phrase ───────────
+        $parsed = self::parse_query( $search );
+        if ( $parsed['advanced'] ) {
+            $labels = [];
+            $ids    = self::advanced_ids( $parsed, $types, $lang, $cap, 'matching', $labels );
+
+            if ( $ttl > 0 ) {
+                set_transient( 'mls_ids_' . $key, $ids, $ttl );
+            }
+            return $memo[ $key ] = $ids;
+        }
 
         // ── 1. Native Treffer + Synonyme (Relevanz-Reihenfolge) ──────────────
         $terms = (array) apply_filters( 'media_lab_ajax_search_query_expansion', [ $search ], $search );
@@ -285,5 +375,175 @@ class MediaLab_Serp_Search {
         }
 
         return $memo[ $key ] = $ids;
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Mehrbegriff-Suche (UND / ODER / Ausschluss / Phrase)
+    // ─────────────────────────────────────────────────────────────────────────
+
+    /**
+     * Zerlegt die Suchanfrage. Ohne Parser-Klasse: immer "einfach" (bisheriges Verhalten).
+     */
+    private static function parse_query( string $search ): array {
+        if ( ! class_exists( 'MediaLab_Search_Query' ) ) {
+            return [ 'raw' => $search, 'clauses' => [], 'exclude' => [], 'advanced' => false ];
+        }
+        return MediaLab_Search_Query::parse( $search );
+    }
+
+    /**
+     * Treffer-IDs einer Mehrbegriff-Abfrage: jeder Begriff einzeln über alle Quellen,
+     * danach Mengenlogik (UND = Schnitt, ODER = Vereinigung, Ausschluss = Differenz).
+     *
+     * @param string               $context 'serp' | 'matching' (3. Parameter von 'media_lab_search_result_ids')
+     * @param array<int,string>    $labels  (Ausgabe) post_id => "Attribut: Wert"
+     * @return int[]
+     */
+    public static function advanced_ids( array $parsed, array $types, string $lang, int $cap, string $context, array &$labels ): array {
+        $attr_sets = [];
+
+        $matcher = static function ( array $term ) use ( $types, $lang, &$labels, &$attr_sets ): array {
+            $data = self::term_data( $term, $types, $lang );
+            $labels += $data['labels'];
+            $attr_sets[ MediaLab_Search_Query::term_key( $term ) ] = $data['attr'];
+            return $data['ids'];
+        };
+
+        $ids = MediaLab_Search_Query::resolve( $parsed, $matcher );
+
+        // Rangfolge: ganze Wörter im Titel und Merkmal-Treffer vor Teilstring-Treffern
+        if ( ! empty( $parsed['rank'] ) && count( $ids ) > 1 ) {
+            $ids = MediaLab_Search_Query::rank( $ids, $parsed, self::titles_for( $ids ), $attr_sets );
+        }
+
+        $ids = MediaLab_Search_Settings::filter_ids_by_language( $ids, $lang );
+        $ids = array_values( array_filter( $ids, static fn( $id ) => ! post_password_required( $id ) ) );
+        $ids = (array) apply_filters( 'media_lab_search_result_ids', $ids, $parsed['raw'], $context );
+
+        return array_slice( array_values( array_map( 'intval', $ids ) ), 0, max( 1, $cap ) );
+    }
+
+    /**
+     * Titel zu den IDs (für die Rangfolge). Ein Abruf in Blöcken, ohne Beschreibungstexte.
+     *
+     * @param int[] $ids
+     * @return array<int,string> post_id => Titel
+     */
+    private static function titles_for( array $ids ): array {
+        global $wpdb;
+
+        $titles = [];
+        foreach ( array_chunk( array_map( 'intval', $ids ), 1000 ) as $chunk ) {
+            $rows = $wpdb->get_results( "SELECT ID, post_title FROM {$wpdb->posts} WHERE ID IN (" . implode( ',', $chunk ) . ')' );
+            foreach ( (array) $rows as $row ) {
+                $titles[ (int) $row->ID ] = html_entity_decode( (string) $row->post_title, ENT_QUOTES | ENT_HTML5, 'UTF-8' );
+            }
+        }
+        return $titles;
+    }
+
+    /**
+     * Teilwort-Regel für Text-Treffer: behält nur IDs, bei denen $needle am Anfang eines Wortes
+     * in Titel, Kurztext oder Beschreibung steht ("rot" findet "Rotwein", nicht "Trotter").
+     * Die Reihenfolge der IDs bleibt erhalten.
+     *
+     * @param int[] $ids
+     * @return int[]
+     */
+    private static function filter_word_start( array $ids, string $needle ): array {
+        if ( empty( $ids ) ) return $ids;
+
+        global $wpdb;
+
+        $keep = [];
+        foreach ( array_chunk( array_map( 'intval', $ids ), 300 ) as $chunk ) {
+            $rows = $wpdb->get_results( "SELECT ID, post_title, post_excerpt, post_content FROM {$wpdb->posts} WHERE ID IN (" . implode( ',', $chunk ) . ')' );
+            foreach ( (array) $rows as $row ) {
+                if ( MediaLab_Search_Query::word_start_in( $needle, (string) $row->post_title )
+                    || MediaLab_Search_Query::word_start_in( $needle, (string) $row->post_excerpt )
+                    || MediaLab_Search_Query::word_start_in( $needle, (string) $row->post_content ) ) {
+                    $keep[ (int) $row->ID ] = true;
+                }
+            }
+        }
+
+        return array_values( array_filter( $ids, static fn( $id ) => isset( $keep[ (int) $id ] ) ) );
+    }
+
+    /**
+     * Alle IDs, die EINEN Begriff treffen: native Suche (inkl. Synonyme), Produktattribute,
+     * Konfigurator-Optionen und Woo-Extras (SKU, Kategorien, Marken ...). Pro Request gemerkt.
+     *
+     * Für Begriffe mit 'word' => true (Teilwort-Regel) zählt der Text nur am Wortanfang;
+     * Merkmal-Treffer (Attribute, SKU, Kategorien, Marken) bleiben Teilstring-Treffer.
+     *
+     * @param array{text:string,phrase:bool,word?:bool} $term
+     * @return array{ids:int[], labels:array<int,string>, attr:array<int,bool>}
+     *         ids = alle Treffer, labels = post_id => "Attribut: Wert", attr = Treffer über Merkmale (post_id => true)
+     */
+    private static function term_data( array $term, array $types, string $lang ): array {
+        static $memo = [];
+
+        $key = md5( wp_json_encode( [ $term, $types, $lang ] ) );
+        if ( isset( $memo[ $key ] ) ) return $memo[ $key ];
+
+        $text      = $term['text'];
+        $phrase    = ! empty( $term['phrase'] );
+        $word_only = ! empty( $term['word'] ) && ! $phrase;
+        $cfg       = MediaLab_Search_Settings::get();
+        $lang_args = MediaLab_Search_Settings::apply_language( [], $lang );
+        $has_products = in_array( 'product', $types, true ) && class_exists( 'WooCommerce' );
+
+        // Native Treffer + Synonyme (Relevanz-Reihenfolge)
+        $ids = [];
+        foreach ( (array) apply_filters( 'media_lab_ajax_search_query_expansion', [ $text ], $text ) as $exp ) {
+            if ( ! is_string( $exp ) || $exp === '' ) continue;
+
+            $args = array_merge( [
+                'post_type'      => $types,
+                'post_status'    => 'publish',
+                's'              => $phrase ? '"' . $exp . '"' : $exp,
+                'orderby'        => 'relevance',
+                'fields'         => 'ids',
+                'posts_per_page' => self::TERM_CAP,
+                'no_found_rows'  => true,
+            ], $lang_args );
+            $args = apply_filters( 'media_lab_ajax_search_query_args', $args, $exp );
+
+            $q   = new \WP_Query( $args );
+            $hit = array_map( 'intval', $q->posts );
+
+            // Teilwort-Regel: nur Wortanfänge (mehrteilige Synonyme bleiben unverändert)
+            if ( $word_only && ! preg_match( '/\s/u', $exp ) ) {
+                $hit = self::filter_word_start( $hit, $exp );
+            }
+
+            $ids = array_merge( $ids, $hit );
+        }
+
+        // WooCommerce: Attribute, Konfigurator-Optionen, Woo-Extras
+        $extra = [];
+        if ( $has_products && ! empty( $cfg['woo_attributes'] ) ) {
+            if ( function_exists( 'agency_core_search_product_attributes' ) ) {
+                $extra = agency_core_search_product_attributes( $text );
+            }
+            if ( function_exists( 'agency_core_search_local_product_attributes' ) ) {
+                $extra += agency_core_search_local_product_attributes( $text, 50 );
+            }
+            if ( function_exists( 'agency_core_search_configurator_options' ) ) {
+                $extra += agency_core_search_configurator_options( $text );
+            }
+        }
+        if ( $has_products ) {
+            $extra += (array) apply_filters( 'media_lab_search_woo_matches', [], $text, self::TERM_CAP );
+        }
+
+        $attr_ids = array_map( 'intval', array_keys( $extra ) );
+
+        return $memo[ $key ] = [
+            'ids'    => array_values( array_unique( array_merge( $ids, $attr_ids ) ) ),
+            'labels' => array_map( 'strval', $extra ),
+            'attr'   => array_fill_keys( $attr_ids, true ),
+        ];
     }
 }
