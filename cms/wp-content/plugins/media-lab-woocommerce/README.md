@@ -168,6 +168,34 @@ wenn der reguläre Preis am Parent leer ist.
 
 ---
 
+## Variantenbilder auf der Produktseite
+
+Zwei Funktionen für variable Produkte, beide ohne Projektlogik im Plugin.
+
+### Bildwechsel bei der Farbwahl (seit 2.33.0, Standard an)
+
+Hauptbild und Galerie wechseln schon, wenn nur die Farbe gewählt ist (WooCommerce wartet sonst auf die vollständige Auswahl). Bei Produkten mit vielen Varianten holt das Skript die Bilddaten über den Endpunkt `mlw_variation_color_image` (Zwischenspeicher 12 Stunden).
+
+```php
+add_filter( 'mlw_variation_color_images', '__return_false' );                       // ausschalten
+add_filter( 'mlw_variation_color_attributes', fn() => [ 'pa_color', 'pa_farbe' ] ); // Farbattribute (Standard pa_color)
+```
+
+### Vorschaubilder je Farbe unter der Galerie (seit 2.36.0, Standard aus)
+
+Unter den Galerie-Thumbnails erscheint je Farbe ein Vorschaubild (Bild der ersten sichtbaren Variante dieser Farbe). Ein Klick wählt die Farbe im Variantenformular, Hauptbild und Galerie wechseln über den Bildwechsel bei der Farbwahl, der dafür aktiv sein muss. Farben, die zur aktuellen Auswahl nicht passen, sind gesperrt. Die Funktion ist **in jedem Projekt einzeln einzuschalten**, am besten im Projekt-Plugin (`inc/variation-thumbs.php` im `media-lab-plugin`):
+
+```php
+add_filter( 'mlw_variation_color_thumbs', '__return_true' );                   // einschalten
+add_filter( 'mlw_variation_color_thumbs_min', fn() => 2 );                     // ab so vielen Farben anzeigen (Standard 2)
+add_filter( 'mlw_variation_color_thumbs_max', fn() => 40 );                    // höchstens so viele Vorschaubilder (Standard 40)
+add_filter( 'mlw_variation_color_thumbs_items', fn( $items, $product ) => $items, 10, 2 ); // Einträge anpassen
+```
+
+Das Aussehen steuert `assets/css/variation-color-thumbs.css` (nur Theme-Variablen mit neutralen Rückfallwerten).
+
+---
+
 ## Einstellungen
 
 ### Anfragen → Einstellungen
