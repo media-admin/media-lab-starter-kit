@@ -4,6 +4,11 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [2.36.0] - 2026-11-19
+
+### Hinzugefügt
+- Varianten-Vorschaubilder in der Galerie variabler Produkte (`inc/variation-color-thumbs.php`, `assets/js/variation-color-thumbs.js`, `assets/css/variation-color-thumbs.css`): Unter der Produktgalerie erscheint je Farbe ein Vorschaubild (Bild der ersten sichtbaren Variante dieser Farbe). Ein Klick wählt die Farbe im Variantenformular, Hauptbild und Galerie wechseln über die Funktion "Variantenbilder bei der Farbwahl" (2.33.0), die dafür aktiv sein muss. Farben, die in der aktuellen Auswahl nicht vorkommen, sind gesperrt. Die Daten kommen mit zwei Datenbankabfragen und werden 12 Stunden zwischengespeichert. **Standardmäßig aus**, bestehende Projekte bleiben unverändert. Einschalten pro Projekt mit `add_filter( 'mlw_variation_color_thumbs', '__return_true' );`. Weitere Filter: `mlw_variation_color_thumbs_min` (Standard 2), `mlw_variation_color_thumbs_max` (Standard 40), `mlw_variation_color_thumbs_items`. Farbattribut wie bei den Variantenbildern über `mlw_variation_color_attributes`.
+
 ## [2.35.0] - 2026-11-19
 
 ### Geändert

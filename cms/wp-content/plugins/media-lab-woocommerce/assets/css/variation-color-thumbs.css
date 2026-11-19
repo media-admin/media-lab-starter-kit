@@ -1,0 +1,48 @@
+/*
+ * Varianten-Vorschaubilder in der Galerie (inc/variation-color-thumbs.php).
+ * Nur Variablen des Themes (mit neutralen Rückfallwerten), keine festen Farben.
+ */
+.mlw-vthumbs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-2, 0.5rem);
+    margin: var(--spacing-3, 0.75rem) 0 0;
+    padding: 0;
+}
+
+.mlw-vthumbs__btn {
+    width: 72px;
+    height: 72px;
+    padding: 0;
+    margin: 0;
+    border: 2px solid transparent;
+    border-radius: var(--radius-sm, 4px);
+    background: none;
+    overflow: hidden;
+    cursor: pointer;
+    opacity: 0.85;
+    transition: border-color 0.2s ease, opacity 0.2s ease;
+}
+
+.mlw-vthumbs__btn img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.mlw-vthumbs__btn:hover,
+.mlw-vthumbs__btn:focus-visible {
+    border-color: var(--color-border, currentColor);
+    opacity: 1;
+}
+
+.mlw-vthumbs__btn[aria-pressed="true"] {
+    border-color: var(--color-primary, currentColor);
+    opacity: 1;
+}
+
+.mlw-vthumbs__btn.is-unavailable {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
