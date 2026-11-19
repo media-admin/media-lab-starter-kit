@@ -95,7 +95,9 @@ class MediaLab_Inquiry_Mail {
             $qty  = (int) ( $item['quantity'] ?? 1 );
             $sku  = trim( (string) ( $item['sku'] ?? '' ) );
 
-            $html .= '<tr style="' . $bg . '"><td colspan="2"><strong>' . $name . '</strong> (Menge: ' . $qty . ')';
+            // Einheit hinter der Menge ("Menge: 7 Stück"), Quelle wie im Lagertext (mlw_stock_unit)
+            $unit  = class_exists( 'MediaLab_Single_Product_Layout' ) ? MediaLab_Single_Product_Layout::get_quantity_unit_for_item( $item ) : '';
+            $html .= '<tr style="' . $bg . '"><td colspan="2"><strong>' . $name . '</strong> (Menge: ' . $qty . ( $unit !== '' ? ' ' . esc_html( $unit ) : '' ) . ')';
             if ( $sku !== '' ) {
                 $html .= '<br><span style="color:#888;font-size:12px">Art.-Nr.: ' . esc_html( $sku ) . '</span>';
             }

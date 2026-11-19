@@ -326,7 +326,7 @@ Anzahl der Shop-Seite, wenn im Core `0` eingestellt ist (Filter
 | `mlw_loop_sku`, `mlw_loop_sku_value( $sku, $produkt )` | Produktkarten: Artikelnummer („Art.-Nr.: …“) in der Zeile unter dem Preis (Standard aus); der Wert ist anpassbar, Standard ist die SKU |
 | `mlw_loop_category`, `mlw_loop_category_terms( $terms, $produkt )` | Produktkarten: alle Kategorien als Text, durch Komma getrennt, in einer eigenen Zeile unter der Artikelnummer (Standard aus); gleiche Namen erscheinen nur einmal, die WooCommerce-Standardkategorie wird übersprungen, die Liste der Begriffe ist anpassbar |
 | `mlw_inquiry_attachment_html( $zeile, $att_id, $eintrag )` | Anfrage-Mails: HTML der Datei-Zeile in der Produktliste ersetzen (Standard: direkter Mediathek-Link mit Dateiname), zum Beispiel für nicht öffentliche Dateien |
-| `mlw_stock_unit( $einheit, $produkt )`, `mlw_stock_unit_enabled` | Mengeneinheit im Lagertext (Quelle: Germanized-Feld „Einheit") |
+| `mlw_stock_unit( $einheit, $produkt )`, `mlw_stock_unit_enabled` | Mengeneinheit im Lagertext, in den Anfrage-Mails („Menge: 7 Stück“) und in der geteilten Wunschliste (Quelle: Germanized-Feld „Einheit", sonst der Filter) |
 
 ### JavaScript
 

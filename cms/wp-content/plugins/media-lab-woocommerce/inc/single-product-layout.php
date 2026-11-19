@@ -163,11 +163,30 @@ class MediaLab_Single_Product_Layout {
      */
     public static function append_stock_unit( $text, $product ) {
         if ( ! is_string( $text ) || $text === '' || ! $product instanceof WC_Product ) return $text;
-        if ( ! apply_filters( 'mlw_stock_unit_enabled', true ) ) return $text;
         if ( ! preg_match( '/\d/', $text ) ) return $text; // "Auf Lager", "Nicht vorrätig": keine Zahl, keine Einheit
 
+        $unit = self::get_quantity_unit( $product );
+        if ( $unit === '' ) return $text;
+
+        // Einheit direkt hinter die erste Zahl (auch 1.250 oder 1,5)
+        return preg_replace_callback( '/\d+(?:[.,]\d+)*/u', static function ( $m ) use ( $unit ) {
+            return $m[0] . ' ' . $unit;
+        }, $text, 1 );
+    }
+
+    /**
+     * Mengeneinheit eines Produkts ("Stück"), leer wenn keine bekannt ist. Eine Quelle für Lagertext, Anfrage-Mails und
+     * geteilte Wunschliste. Quelle: Germanized-Einheit (Variationen erben vom Produkt), sonst Filter
+     * mlw_stock_unit( $einheit, $produkt ). Abschalten: add_filter( 'mlw_stock_unit_enabled', '__return_false' ).
+     *
+     * @param mixed $product WC_Product oder null (Produkt nicht mehr vorhanden: nur der Filter wird gefragt)
+     */
+    public static function get_quantity_unit( $product ): string {
+        if ( ! apply_filters( 'mlw_stock_unit_enabled', true ) ) return '';
+        $product = $product instanceof WC_Product ? $product : null;
+
         $unit = '';
-        if ( function_exists( 'wc_gzd_get_product' ) ) {
+        if ( $product && function_exists( 'wc_gzd_get_product' ) ) {
             $gzd = wc_gzd_get_product( $product );
             if ( $gzd && method_exists( $gzd, 'get_unit_name' ) ) {
                 $unit = (string) $gzd->get_unit_name();
@@ -181,13 +200,14 @@ class MediaLab_Single_Product_Layout {
             }
         }
 
-        $unit = trim( (string) apply_filters( 'mlw_stock_unit', $unit, $product ) );
-        if ( $unit === '' ) return $text;
+        return trim( (string) apply_filters( 'mlw_stock_unit', $unit, $product ) );
+    }
 
-        // Einheit direkt hinter die erste Zahl (auch 1.250 oder 1,5)
-        return preg_replace_callback( '/\d+(?:[.,]\d+)*/u', static function ( $m ) use ( $unit ) {
-            return $m[0] . ' ' . $unit;
-        }, $text, 1 );
+    /** Mengeneinheit zu einem Anfrage- oder Wunschlisten-Eintrag (Variante vor Produkt). Leer, wenn keine bekannt ist. */
+    public static function get_quantity_unit_for_item( array $item ): string {
+        $id      = (int) ( $item['variation_id'] ?? 0 ) ?: (int) ( $item['product_id'] ?? 0 );
+        $product = ( $id && function_exists( 'wc_get_product' ) ) ? wc_get_product( $id ) : null;
+        return self::get_quantity_unit( $product );
     }
 
     /** Tab "Beschreibung" entfaellt, die Beschreibung steht im Summary (gilt auch fuer konfigurierbare Produkte). */

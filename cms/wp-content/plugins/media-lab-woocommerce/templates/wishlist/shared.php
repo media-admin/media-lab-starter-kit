@@ -77,7 +77,11 @@ if ( ! defined( 'ABSPATH' ) ) exit;
                         <?php endif; ?>
 
                         <span class="mlw-wishlist-item__qty-readonly">
-                            <?php printf( esc_html__( 'Menge: %d', 'media-lab-woocommerce' ), (int) $item['quantity'] ); ?>
+                            <?php
+                            printf( esc_html__( 'Menge: %d', 'media-lab-woocommerce' ), (int) $item['quantity'] );
+                            $qty_unit = class_exists( 'MediaLab_Single_Product_Layout' ) ? MediaLab_Single_Product_Layout::get_quantity_unit_for_item( $item ) : '';
+                            echo $qty_unit !== '' ? ' ' . esc_html( $qty_unit ) : '';
+                            ?>
                         </span>
                     </div>
 

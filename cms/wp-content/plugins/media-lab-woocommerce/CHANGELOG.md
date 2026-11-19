@@ -4,6 +4,11 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [2.35.0] - 2026-11-19
+
+### Geändert
+- **Mengeneinheit auch in Anfrage-Mails und geteilter Wunschliste:** "Menge: 7" wird zu "Menge: 7 Stück", sobald eine Einheit bekannt ist (Germanized-Einheit am Produkt oder Filter `mlw_stock_unit`, dieselbe Quelle wie der Lagertext). Ohne Einheit bleibt die Ausgabe unverändert. Neue Methoden `MediaLab_Single_Product_Layout::get_quantity_unit( $produkt )` und `get_quantity_unit_for_item( $eintrag )`, `append_stock_unit()` nutzt sie ebenfalls. Betrifft `inc/single-product-layout.php`, `inc/inquiry/class-mail.php`, `templates/wishlist/shared.php`.
+
 ## [2.34.0] - 2026-11-15
 
 ### Added
