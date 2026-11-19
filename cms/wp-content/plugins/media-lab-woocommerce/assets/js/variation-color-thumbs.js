@@ -38,7 +38,10 @@
         /** Frische Listeneinträge (immer neu gebaut, nie wiederverwendet: die Leiste kann ersetzt worden sein). */
         function build() {
             return $.map( items, function ( item ) {
-                var $img = $( '<img alt="" loading="lazy" decoding="async" width="100" height="100">' ).attr( 'src', item.src );
+                // "#mlw" am Ende: WooCommerce sucht beim Bildwechsel in der Leiste nach einem Bild mit exakt dieser Adresse
+                // (li img[src="…"]) und löst darauf einen Klick aus. Die Vorschaubilder der Farben tragen deshalb eine
+                // leicht andere Adresse (der Browser lädt dieselbe Datei, ein Fragment wird nicht mitgesendet).
+                var $img = $( '<img alt="" loading="lazy" decoding="async" width="100" height="100">' ).attr( 'src', item.src + '#mlw' );
                 var $btn = $( '<button type="button" class="mlw-vthumb__btn"></button>' )
                     .attr( { 'aria-label': ( mlwColorThumbs.groupLabel ? mlwColorThumbs.groupLabel + ': ' : '' ) + item.label, title: item.label } )
                     .append( $img );
@@ -92,7 +95,8 @@
             } );
         }
 
-        $root.on( 'click', '.mlw-vthumb__btn', function () {
+        $root.on( 'click', '.mlw-vthumb__btn', function ( e ) {
+            if ( e.isTrigger ) return;   // nur Klicks von Besuchern, nicht ausgelöste (WooCommerce klickt beim Bildwechsel Vorschaubilder an)
             var $field = field();
             if ( ! $field.length ) return;
             $field.val( String( $( this ).closest( '.mlw-vthumb' ).attr( 'data-value' ) ) ).trigger( 'change' );

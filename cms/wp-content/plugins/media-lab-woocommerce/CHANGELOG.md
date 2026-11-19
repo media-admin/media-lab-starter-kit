@@ -4,6 +4,11 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [2.37.3] - 2026-11-19
+
+### Behoben
+- Bildwechsel bei der Farbwahl funktionierte seit 2.37.0 nicht mehr, wenn die Varianten-Vorschaubilder in der Galerie standen. Ursache: WooCommerce sucht beim Bildwechsel in der Vorschaubild-Leiste ein Bild mit genau der Adresse des neuen Bilds (`li img[src="…"]`) und klickt es an, um dorthin zu gleiten. Die Farb-Vorschaubilder haben dieselbe Adresse wie das Bild der ersten Variante der Farbe, WooCommerce klickte also eines davon an. Das wählte die Farbe erneut, löste `change` aus, der Bildwechsel lief wieder an und so fort (im Test über 100 Durchläufe in 200 ms). Jetzt tragen die Farb-Vorschaubilder die Adresse mit angehängtem `#mlw` (gleiche Datei, kein zusätzlicher Abruf), und das Skript reagiert nur auf Klicks von Besuchern, nicht auf per Skript ausgelöste.
+
 ## [2.37.2] - 2026-11-19
 
 ### Behoben
