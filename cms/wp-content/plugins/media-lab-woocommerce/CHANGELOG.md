@@ -4,6 +4,11 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [2.37.1] - 2026-11-19
+
+### Behoben
+- Varianten-Vorschaubilder (2.37.0): Die anderen Farben bleiben auch in der Galerie einer gewählten Farbe (Variante) sichtbar, nicht nur in der Galerie des Produkts. WooCommerce tauscht bei der Farbwahl die Galerie aus (ab 10.9 mit eigener Galerie je Variante), je nach Version und Theme nur den Inhalt oder das ganze Galerie-Element. Das Skript hing an einem Element, das dabei verloren gehen konnte. Jetzt laufen Beobachtung und Klick über das umgebende Produkt (`div.product`), die Galerie wird bei jedem Zugriff neu gesucht und die Einträge werden bei Bedarf frisch eingesetzt. Hat die Galerie nach dem Austausch keine Vorschaubild-Leiste (zum Beispiel nur ein Bild), legt das Skript nach 400 ms eine mit denselben Klassen an und räumt sie wieder weg, sobald WooCommerce eine eigene aufbaut. Zusätzlich auf `show_variation` und `reset_image` gehört.
+
 ## [2.37.0] - 2026-11-19
 
 ### Geändert
