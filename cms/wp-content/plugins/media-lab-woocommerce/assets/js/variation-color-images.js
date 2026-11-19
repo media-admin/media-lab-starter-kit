@@ -5,6 +5,8 @@
  *
  * Ist nur die Farbe gewählt (keine vollständige Variante), werden Hauptbild und Galerie der ersten Variante dieser Farbe
  * angezeigt. Mit vollständiger Variante bestimmt WooCommerce das Bild wie gewohnt, ohne Farbe setzt WooCommerce zurück.
+ * Hat die gewählte Variante kein eigenes Bild (häufig bei Textilien: nur eine Variante je Farbe trägt das Bild), zeigt
+ * WooCommerce das Bild des Produkts. Dann gilt ebenfalls das Bild der Farbe, auch wenn die Größe zuerst gewählt wurde.
  */
 ( function ( $ ) {
     'use strict';
@@ -28,15 +30,26 @@
             return null;
         }
 
-        /** Ist eine vollständige Variante gewählt? Dann bestimmt WooCommerce das Bild. */
-        function variationChosen() {
-            return ( parseInt( $form.find( 'input.variation_id, input[name="variation_id"]' ).first().val(), 10 ) || 0 ) > 0;
+        function chosenId() {
+            return parseInt( $form.find( 'input.variation_id, input[name="variation_id"]' ).first().val(), 10 ) || 0;
+        }
+
+        // Die zuletzt von WooCommerce gefundene Variante (found_variation), um zu wissen, ob sie ein eigenes Bild hat.
+        var found = null;
+        $form.on( 'found_variation', function ( e, variation ) { found = variation || null; } );
+
+        /** Bestimmt WooCommerce das Bild? Ja bei vollständiger Variante mit eigenem Bild oder eigener Galerie. */
+        function wooCommerceDecides() {
+            var id = chosenId();
+            if ( ! id ) return false;
+            if ( ! found || parseInt( found.variation_id, 10 ) !== id ) return true;   // unbekannt: WooCommerce überlassen
+            return !! ( ( found.image && found.image.src && found.image.src.length > 1 ) || found.gallery_images_html );
         }
 
         /** Variantendaten in der Seite (WooCommerce legt sie bis zur Schwelle von 30 Varianten dort ab). */
         function fromInline( color ) {
             var list = $form.data( 'product_variations' );
-            if ( ! $.isArray( list ) ) return null;
+            if ( ! Array.isArray( list ) ) return null;
             for ( var i = 0; i < list.length; i++ ) {
                 var v = list[ i ];
                 if ( v && v.attributes && v.attributes[ color.attr ] === color.value && ( ( v.image && v.image.src ) || v.gallery_images_html ) ) return v;
@@ -68,11 +81,11 @@
 
         function sync() {
             var color = selectedColor();
-            if ( ! color || variationChosen() ) return;
+            if ( ! color || wooCommerceDecides() ) return;
             var mine  = ++token;
             var apply = function ( data ) {
-                // veraltete Antwort (inzwischen andere Farbe) oder inzwischen vollständige Variante: nichts tun
-                if ( mine !== token || ! data || variationChosen() ) return;
+                // veraltete Antwort (inzwischen andere Farbe) oder inzwischen Variante mit eigenem Bild: nichts tun
+                if ( mine !== token || ! data || wooCommerceDecides() ) return;
                 $form.wc_variations_image_update( data );
             };
             var inline = fromInline( color );

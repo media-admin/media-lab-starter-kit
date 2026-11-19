@@ -4,6 +4,12 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [2.37.2] - 2026-11-19
+
+### Behoben
+- Variantenbilder bei der Farbwahl (2.33.0): Wird zuerst die Größe und danach die Farbe gewählt, zeigt die Galerie jetzt das Bild der Farbe. Vorher blieb das Produktbild stehen, wenn die gewählte Variante kein eigenes Bild hat (bei Cotton-Classics-Textilien trägt oft nur eine Variante je Farbe das Bild): WooCommerce setzt dann auf das Produktbild zurück, und das Skript griff nur ein, solange noch keine vollständige Variante gewählt war. Jetzt merkt sich das Skript die von WooCommerce gefundene Variante (`found_variation`) und wendet das Bild der Farbe an, wenn die Variante weder ein eigenes Bild noch eine eigene Galerie hat. Varianten mit eigenem Bild bleiben unverändert.
+- `$.isArray` durch `Array.isArray` ersetzt (in jQuery 4 entfernt).
+
 ## [2.37.1] - 2026-11-19
 
 ### Behoben
