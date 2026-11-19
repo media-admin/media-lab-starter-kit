@@ -2,12 +2,14 @@
 /**
  * Varianten-Vorschaubilder in der Galerie variabler Produkte.
  *
- * Unter der Produktgalerie erscheint je Farbe der Varianten ein Vorschaubild (das Bild der ersten sichtbaren Variante
- * dieser Farbe). Ein Klick darauf wählt die Farbe im Variantenformular. Hauptbild und Galerie wechseln dann über die
- * Funktion "Variantenbilder bei der Farbwahl" (inc/variation-color-images.php), die dafür aktiv sein muss.
+ * Die Vorschaubild-Leiste der Produktgalerie (.flex-control-thumbs) zeigt zusätzlich die anderen Farben der Varianten,
+ * je Farbe das Bild der ersten sichtbaren Variante. Ein Klick darauf wählt die Farbe im Variantenformular. Hauptbild und
+ * Galerie wechseln dann über die Funktion "Variantenbilder bei der Farbwahl" (inc/variation-color-images.php), die dafür
+ * aktiv sein muss. Die gewählte Farbe fehlt in der Leiste (ihre Bilder zeigt die Galerie schon), ohne Auswahl fehlt die
+ * Farbe, deren Bild das Produkt ohnehin als Hauptbild zeigt.
  *
- * Standardmäßig AUS, damit bestehende Projekte unverändert bleiben. Pro Projekt einschalten:
- *   add_filter( 'mlw_variation_color_thumbs', '__return_true' );
+ * Standardfunktion, seit 2.37.0 standardmäßig AN. Pro Projekt ausschalten:
+ *   add_filter( 'mlw_variation_color_thumbs', '__return_false' );
  *
  * Weitere Anpassungen ohne Core-Code:
  *   add_filter( 'mlw_variation_color_thumbs_min', fn() => 2 );              // ab so vielen Farben anzeigen (Standard 2)
@@ -25,7 +27,7 @@ class MediaLab_Variation_Color_Thumbs {
     }
 
     public static function enabled(): bool {
-        return (bool) apply_filters( 'mlw_variation_color_thumbs', false )
+        return (bool) apply_filters( 'mlw_variation_color_thumbs', true )
             && class_exists( 'MediaLab_Variation_Color_Images' )
             && MediaLab_Variation_Color_Images::enabled();
     }
@@ -49,10 +51,20 @@ class MediaLab_Variation_Color_Thumbs {
         wp_localize_script( 'mlw-variation-color-thumbs', 'mlwColorThumbs', [
             'attribute' => $items[0]['attr'],
             'groupLabel' => self::group_label( $items[0]['attr'] ),
-            'items'     => array_map( static function ( $i ) {
-                return [ 'value' => $i['value'], 'label' => $i['label'], 'src' => $i['src'] ];
+            'items'     => array_map( static function ( $i ) use ( $product ) {
+                return [ 'value' => $i['value'], 'label' => $i['label'], 'src' => $i['src'], 'parent' => self::is_parent_image( $product, (int) $i['image_id'] ) ];
             }, $items ),
         ] );
+    }
+
+    /** Zeigt das Produkt dieses Bild schon als Hauptbild? Gleiche Datei zählt (Importe legen Bilder auch doppelt an). */
+    private static function is_parent_image( $product, int $image_id ): bool {
+        $parent = (int) $product->get_image_id();
+        if ( ! $parent || ! $image_id ) return false;
+        if ( $parent === $image_id ) return true;
+        $a = (string) get_post_meta( $parent, '_wp_attached_file', true );
+        $b = (string) get_post_meta( $image_id, '_wp_attached_file', true );
+        return $a !== '' && $a === $b;
     }
 
     private static function group_label( string $attribute ): string {

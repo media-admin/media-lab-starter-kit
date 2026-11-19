@@ -4,6 +4,12 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [2.37.0] - 2026-11-19
+
+### Geändert
+- Varianten-Vorschaubilder (2.36.0) stehen jetzt **in der Vorschaubild-Leiste der WooCommerce-Galerie** (`.flex-control-thumbs`, dieselbe Leiste wie die Bilder des Produkts) statt als eigener Block darunter. Der eigene Block war ein weiteres Grid-Kind der Galerie (`data-columns`) und landete je nach Ladezeitpunkt unter oder über dem Hauptbild, in einer schmalen Spalte. Gezeigt werden die **anderen** Farben: Die gewählte Farbe entfällt (ihre Bilder zeigt die Galerie schon), ohne Auswahl entfällt die Farbe, deren Bild das Produkt als Hauptbild zeigt (gleiche Bild-ID oder gleiche Datei). Das Skript beobachtet die Galerie und setzt die Einträge wieder ein, wenn WooCommerce oder FlexSlider die Leiste später aufbauen oder ersetzen. Der Klick hängt am Galerie-Container. Gibt es nach dem Laden keine Leiste, legt das Skript eine mit denselben Klassen an. Die Leiste darf mit den Farb-Einträgen umbrechen (`flex-wrap`). Größe und Rahmen kommen aus den Theme-Regeln für `.flex-control-thumbs li`, `assets/css/variation-color-thumbs.css` liefert nur Rückfallwerte.
+- **Standardfunktion: Filter `mlw_variation_color_thumbs` ist jetzt standardmäßig an** (in 2.36.0 aus). Betrifft jedes Projekt, das das Plugin aktualisiert und variable Produkte mit Farbvarianten und eigenen Variantenbildern hat. Ausschalten pro Projekt mit `add_filter( 'mlw_variation_color_thumbs', '__return_false' );`. Voraussetzung bleibt die Funktion "Variantenbilder bei der Farbwahl" (`mlw_variation_color_images`).
+
 ## [2.36.0] - 2026-11-19
 
 ### Hinzugefügt

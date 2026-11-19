@@ -181,18 +181,18 @@ add_filter( 'mlw_variation_color_images', '__return_false' );                   
 add_filter( 'mlw_variation_color_attributes', fn() => [ 'pa_color', 'pa_farbe' ] ); // Farbattribute (Standard pa_color)
 ```
 
-### Vorschaubilder je Farbe unter der Galerie (seit 2.36.0, Standard aus)
+### Vorschaubilder je Farbe in der Galerie (seit 2.36.0, ab 2.37.0 Standard an)
 
-Unter den Galerie-Thumbnails erscheint je Farbe ein Vorschaubild (Bild der ersten sichtbaren Variante dieser Farbe). Ein Klick wählt die Farbe im Variantenformular, Hauptbild und Galerie wechseln über den Bildwechsel bei der Farbwahl, der dafür aktiv sein muss. Farben, die zur aktuellen Auswahl nicht passen, sind gesperrt. Die Funktion ist **in jedem Projekt einzeln einzuschalten**, am besten im Projekt-Plugin (`inc/variation-thumbs.php` im `media-lab-plugin`):
+Die Vorschaubild-Leiste der Galerie zeigt zusätzlich die anderen Farben des Produkts (Bild der ersten sichtbaren Variante dieser Farbe). Ein Klick wählt die Farbe im Variantenformular, Hauptbild und Galerie wechseln über den Bildwechsel bei der Farbwahl, der dafür aktiv sein muss. Die gewählte Farbe fehlt in der Leiste, ihre Bilder zeigt die Galerie schon. Ohne Auswahl fehlt die Farbe, deren Bild das Produkt als Hauptbild zeigt. Farben, die zur aktuellen Auswahl nicht passen, sind gesperrt. Pro Projekt ausschalten oder anpassen, am besten im Projekt-Plugin:
 
 ```php
-add_filter( 'mlw_variation_color_thumbs', '__return_true' );                   // einschalten
+add_filter( 'mlw_variation_color_thumbs', '__return_false' );                  // ausschalten (Standard: an)
 add_filter( 'mlw_variation_color_thumbs_min', fn() => 2 );                     // ab so vielen Farben anzeigen (Standard 2)
 add_filter( 'mlw_variation_color_thumbs_max', fn() => 40 );                    // höchstens so viele Vorschaubilder (Standard 40)
 add_filter( 'mlw_variation_color_thumbs_items', fn( $items, $product ) => $items, 10, 2 ); // Einträge anpassen
 ```
 
-Das Aussehen steuert `assets/css/variation-color-thumbs.css` (nur Theme-Variablen mit neutralen Rückfallwerten).
+Größe und Rahmen kommen aus den Theme-Regeln für `.flex-control-thumbs li`, `assets/css/variation-color-thumbs.css` liefert nur Rückfallwerte (Theme-Variablen, keine festen Farben).
 
 ---
 
