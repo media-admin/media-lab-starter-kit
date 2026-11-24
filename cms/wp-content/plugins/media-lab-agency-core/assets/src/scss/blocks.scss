@@ -798,6 +798,9 @@
     grid-template-columns: auto 1fr;
     gap:                   var(--ml-space-md);
     align-items:           start;
+    // Überschüssige Höhe (Rasterzelle ist so hoch wie der längste Schritt) nicht
+    // auf die Zeilen verteilen, sonst stehen die Titel auf unterschiedlicher Höhe.
+    align-content:         start;
     counter-increment:     ml-step;
 
     // Zweite Zeile: leerer Alternativtext, damit Screenreader die Nummer nicht

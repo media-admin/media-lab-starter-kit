@@ -25,6 +25,7 @@ Ende.
 ### media-lab-agency-core 1.40.1
 
 #### Fixed
+- **Schritte (`medialab/step`), Anordnung nebeneinander: Titel standen auf unterschiedlicher Höhe.** Die Rasterzelle jedes Schritts ist so hoch wie der längste Schritt; die überschüssige Höhe wurde auf die Zeilen (Nummer, Text) verteilt, sodass Titel bei kürzerem Text tiefer standen. `.ml-step` hat jetzt `align-content: start`.
 - **Kachel (`medialab/tile`): Titel im Dark Mode unsichtbar.** Das Theme setzt Überschriften auf `--color-text` (im Dark Mode hell), die Kachel hat einen hellen Hintergrund. Der Titel erbt jetzt die Textfarbe der Kachel (`color: inherit`).
 - **Kachel: Button flackerte beim Überfahren der Kachel.** `.btn--outline:hover` setzt ein `transform`; dadurch wurde der Button zum Bezugsrahmen des über die Kachel gespannten `::after`-Overlays, das Overlay schrumpfte auf Button-Größe, der Hover ging verloren und kam wieder. Der Kachel-Button hat jetzt kein `transform`, und sein Hover-Zustand (gefüllt) wird bei Hover über die ganze Kachel angezeigt.
 

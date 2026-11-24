@@ -53,3 +53,14 @@ a {
     background: rgba(255, 255, 255, 0.05);
   }
 }
+
+
+.entry-content > .wp-block-group + .wp-block-group,
+.entry-content > .wp-block-group + p {
+    margin-top: calc(var(--ml-space-lg) * 2);
+}
+
+.entry-content .wp-block-group > .wp-block-heading + :is(.ml-block-tile-grid, .ml-block-steps),
+.entry-content .wp-block-group > .wp-block-buttons {
+    margin-top: var(--ml-space-md);
+}
