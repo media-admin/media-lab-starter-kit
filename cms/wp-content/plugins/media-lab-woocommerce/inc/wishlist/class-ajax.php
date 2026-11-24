@@ -236,7 +236,7 @@ class MediaLab_Wishlist_Ajax {
         $catalog_items = isset( $_POST['catalog_items'] ) ? (string) wp_unslash( $_POST['catalog_items'] ) : '';
         if ( empty( $items ) && ( MediaLab_Inquiry_Settings::catalog_items_mode() !== 'optional' || trim( $catalog_items ) === '' ) ) {
             $empty_message = MediaLab_Inquiry_Settings::catalog_items_mode() === 'optional'
-                ? __( 'Bitte wählen Sie Artikel aus oder tragen Sie weitere Artikel aus den Blätterkatalogen ein.', 'media-lab-woocommerce' )
+                ? MediaLab_Inquiry_Settings::wording( 'items_or_catalog_error' )
                 : __( 'Ihre Wunschliste ist leer.', 'media-lab-woocommerce' );
             wp_send_json_error( [ 'message' => $empty_message ] );
         }

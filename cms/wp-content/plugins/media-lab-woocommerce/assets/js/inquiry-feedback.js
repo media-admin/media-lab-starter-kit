@@ -45,6 +45,15 @@
         box.setAttribute( 'role', 'status' );
         box.setAttribute( 'tabindex', '-1' );
 
+        // Optionale Überschrift (Einstellung „Bestätigung: Überschrift“), nicht bei „Zur Wunschliste hinzugefügt“
+        var title = ( type !== 'wishlistAdded' && cfg.messages && cfg.messages.title ) || '';
+        if ( title ) {
+            var titleEl = document.createElement( 'p' );
+            titleEl.className = 'mlw-feedback__title';
+            titleEl.textContent = title;
+            box.appendChild( titleEl );
+        }
+
         var text = document.createElement( 'p' );
         text.className = 'mlw-feedback__text';
         text.textContent = message;

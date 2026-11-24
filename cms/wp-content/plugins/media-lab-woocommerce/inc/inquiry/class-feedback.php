@@ -69,9 +69,11 @@ class MediaLab_Inquiry_Feedback {
                 'inquiry'       => MediaLab_Inquiry_Settings::wording( 'success' ),
                 'wishlist'      => MediaLab_Inquiry_Settings::wording( 'wishlist_success' ),
                 'wishlistAdded' => __( 'Zur Wunschliste hinzugefügt.', 'media-lab-woocommerce' ),
+                // Optionale Überschrift über der Meldung (Typen „inquiry“ und „wishlist“), leer = keine.
+                'title'         => MediaLab_Inquiry_Settings::wording( 'success_title' ),
             ],
             'i18n'        => [
-                'continueShopping' => __( 'Weiter einkaufen', 'media-lab-woocommerce' ),
+                'continueShopping' => MediaLab_Inquiry_Settings::wording( 'continue_label' ),
                 'toWishlist'       => __( 'Zur Wunschliste', 'media-lab-woocommerce' ),
             ],
         ] );

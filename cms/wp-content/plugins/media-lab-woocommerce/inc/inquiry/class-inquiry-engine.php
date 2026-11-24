@@ -42,7 +42,7 @@ class MediaLab_Inquiry_Engine {
         // eine Anfrage ohne Artikel auf der Liste möglich).
         if ( empty( $items ) && $catalog_items === '' ) {
             if ( $catalog_mode === 'optional' ) {
-                return new WP_Error( 'mlw_no_items', __( 'Bitte wählen Sie Artikel aus oder tragen Sie weitere Artikel aus den Blätterkatalogen ein.', 'media-lab-woocommerce' ) );
+                return new WP_Error( 'mlw_no_items', MediaLab_Inquiry_Settings::wording( 'items_or_catalog_error' ) );
             }
             return new WP_Error( 'mlw_no_items', __( 'Es wurden keine Produkte angegeben.', 'media-lab-woocommerce' ) );
         }

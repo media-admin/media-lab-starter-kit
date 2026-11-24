@@ -4,6 +4,33 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [2.40.0] - 2026-11-24
+
+### Hinzugefügt
+- **Acht neue Wording-Felder** (Anfragen → Einstellungen → Wording, je Sprache im Tab „Sprachen“ übersetzbar; Wording-Schlüssel in Klammern). Alle sind optional, ohne Eintrag bleibt das Verhalten wie bisher (Ausnahme: siehe „Geändert“).
+  - **Formular: Hinweis ohne Wunschliste** (`form_intro`): Absatz `.mlw-wishlist__intro` über dem Formular, nur sichtbar, solange keine Artikel auf der Liste stehen und das Freitextfeld für Katalogartikel eingeschaltet ist (zum Beispiel beim Öffnen über „Werbemittel besprechen“). Wird beim Entfernen des letzten Artikels ein- und beim Hinzufügen ausgeblendet. Standard: leer.
+  - **Meldung: weder Artikel noch Freitext** (`items_or_catalog_error`).
+  - **Hinweis unter dem Absenden-Button** (`submit_note`): Absatz `.mlw-wishlist__submit-note`. Standard: leer.
+  - **Leere Liste: Button zum Sortiment** (`empty_shop_label`, Standard „Zurück zum Shop“) und **zweiter Button** (`empty_contact_label` und `empty_contact_url`, Standard: nicht angezeigt). Der zweite Button erscheint nur mit Beschriftung **und** Link (relativer Pfad oder vollständige Adresse, mit `esc_url()` bereinigt), trägt die Klassen `mlw-wishlist-back-to-shop mlw-wishlist-back-to-shop--contact` und wird gemeinsam mit dem ersten ein- und ausgeblendet.
+  - **Bestätigung: Überschrift** (`success_title`): fett gesetzte Zeile `.mlw-feedback__title` über der Erfolgsmeldung (Wunschliste und Anfrage, nicht bei „Zur Wunschliste hinzugefügt“). Standard: keine.
+  - **Bestätigung: Button zurück zum Shop** (`continue_label`, Standard „Weiter einkaufen“).
+- **Position je Zusatzfeld** (Anfragen → Einstellungen → Formularfelder → Zusätzliche Felder, neue Spalte „Position im Formular“, Schlüssel `field_position`): *Vor Name*, *Nach Telefon* (Standard, so standen die Felder bisher), *Vor Nachricht* (nach dem Freitextfeld für Katalogartikel) oder *Nach Nachricht* (vor der Datenschutz-Zustimmung). Innerhalb einer Position gilt die Reihenfolge der Tabelle (Drag & Drop). Bestehende Zeilen ohne Position bleiben „Nach Telefon“, es ändert sich nichts.
+  - `MediaLab_Inquiry_Settings::get_form_fields()` liefert die Felder jetzt stabil nach Position sortiert (ungültige oder fehlende Position = `after_phone`); dadurch folgen Formular, Validierung, Mail-Platzhalter und Backend-Ansicht derselben Reihenfolge. Neue Konstante `MediaLab_Inquiry_Settings::FIELD_POSITIONS`.
+  - `templates/wishlist/page.php` gibt die Zusatzfelder über eine Funktion je Position aus (vier Stellen im Formular). Name, E-Mail, Telefon, Freitext für Katalogartikel, Nachricht und Datenschutz bleiben fest.
+
+### Geändert
+- **Fehlermeldung ohne Artikel und ohne Freitext:** Der Standardtext lautet jetzt „Bitte wählen Sie Artikel aus oder beschreiben Sie uns Ihr Vorhaben.“ (bisher „… oder tragen Sie weitere Artikel aus den Blätterkatalogen ein.“, Stand 2.39.0). Die Meldung kommt aus dem Wording-Feld und gilt in Browser, Wunschlisten-Ajax und Inquiry-Engine gleich.
+- Die Beschriftung „Zurück zum Shop“ bei leerer Liste und „Weiter einkaufen“ in der Bestätigung sind jetzt Wording-Felder statt fester Texte (gleicher Standardtext).
+- `assets/js/wishlist.js`: Die Buttons bei leerer Liste (`.mlw-wishlist-back-to-shop`) werden als Gruppe ein- und ausgeblendet (bisher nur der erste).
+
+### Behoben
+- **Zusatzfeld vom Typ Checkbox im Wunschlisten-Formular** (zum Beispiel „Beratung gewünscht“): Die Zeile hat jetzt eigenes Markup `.mlw-wishlist__form-row--checkbox` mit `<label><input type="checkbox"> <span>Beschriftung</span></label>` (Kästchen links neben dem Text, wie bei der Datenschutz-Zustimmung) statt Beschriftung oben und Kästchen darunter. Das Theme braucht dafür eine Regel für `.mlw-wishlist__form-row--checkbox` (siehe Theme-Doku). Außerdem trägt die Checkbox bei „Pflichtfeld“ jetzt das Attribut `required`, damit die Browser-Prüfung in `wishlist.js` greift (serverseitig wurde das Pflichtfeld schon bisher geprüft).
+
+### Nicht enthalten
+- Kein Logo-/Motiv-Upload im Wunschlisten-Formular (Upload gibt es weiterhin nur im Konfigurator).
+- Keine Änderung an den Feldbeschriftungen „Name“, „E-Mail“, „Telefon“, „Nachricht“, „Gesamt“. Die festen Felder lassen sich nicht verschieben, nur die Zusatzfelder (siehe „Position je Zusatzfeld“). Die Überschrift der Seite („Ihre Produktauswahl“) kommt weiterhin aus dem Seitentitel.
+- Im Plugin gibt es für die neuen Elemente kein CSS außer `.mlw-feedback__title`; Gestaltung von Hinweis und Button-Hinweis im Theme.
+
 ## [2.39.0] - 2026-11-24
 
 ### Hinzugefügt

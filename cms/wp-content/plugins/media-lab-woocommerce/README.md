@@ -202,9 +202,9 @@ Größe und Rahmen kommen aus den Theme-Regeln für `.flex-control-thumbs li`, `
 
 | Tab | Inhalt |
 |---|---|
-| Wording | Bezeichnungen, Button-Texte, Erfolgsmeldungen (Anfrage und Wunschliste getrennt), Hinweistext „Wunschliste leer", „Entfernen-Button", Preis-Hinweistext, „Verfügbarkeit: ohne Bestand" (einsprachiger Fallback) |
+| Wording | Bezeichnungen, Button-Texte, Erfolgsmeldungen (Anfrage und Wunschliste getrennt), Hinweistext „Wunschliste leer", „Entfernen-Button", Buttons bei leerer Liste, Hinweise im Formular, Bestätigung (Überschrift, Button), Preis-Hinweistext, „Verfügbarkeit: ohne Bestand" (einsprachiger Fallback) |
 | Sprachen | Mehrsprachigkeit an/aus, pro Sprache: Wording, Wunschlisten-Seite, Mail-Templates |
-| Formularfelder | Eingebautes Telefonfeld (Optional / Pflichtfeld / Ausblenden, gilt für alle Anfrage-Formulare), Freitextfeld „Weitere Artikel aus Blätterkatalogen“ (Wunschliste, Standard aus), Zusatzfelder (Text/E-Mail/Auswahl/Checkbox/…), Pflicht/Optional, pro Sprache übersetzbar |
+| Formularfelder | Eingebautes Telefonfeld (Optional / Pflichtfeld / Ausblenden, gilt für alle Anfrage-Formulare), Freitextfeld „Weitere Artikel aus Blätterkatalogen“ (Wunschliste, Standard aus), Zusatzfelder (Text/E-Mail/Auswahl/Checkbox/…) mit Position im Formular (vor Name / nach Telefon / vor Nachricht / nach Nachricht), Pflicht/Optional, pro Sprache übersetzbar |
 | Kanäle | E-Mail, WhatsApp-Link, Webhook (JSON-POST) – beliebig kombinierbar |
 | Mail-Templates | Kunden-/Admin-Mail, Platzhalter-basiert (einsprachiger Fallback) |
 | Navigation | Wunschlisten-Icon im Hauptmenü an/aus, Mengen-Badge an/aus |
@@ -245,6 +245,22 @@ Optionales Freitextfeld im Anfrageformular der Wunschliste (Katalogmodus) für A
 - **„Beratung gewünscht“** o. Ä. als Checkbox über **Zusätzliche Felder** anlegen, dafür ist kein Code nötig.
 - Das Feld ist ohne eigene Gestaltung im Plugin: Aufbau `.mlw-wishlist__form-row--catalog-items` mit Hinweis `.mlw-wishlist__hint`, Gestaltung im Theme.
 
+#### Texte rund um die Wunschlisten-Seite (seit 2.40.0)
+
+Alle optional, Tab „Wording“ (je Sprache im Tab „Sprachen“). Ohne Eintrag erscheint nichts beziehungsweise der bisherige Text.
+
+| Einstellung | Wirkung |
+|---|---|
+| Formular: Hinweis ohne Wunschliste | Absatz über dem Formular, nur ohne Artikel auf der Liste und bei eingeschaltetem Freitextfeld (`.mlw-wishlist__intro`) |
+| Meldung: weder Artikel noch Freitext | Fehlermeldung beim Absenden ohne Artikel und ohne Freitext (Standard „Bitte wählen Sie Artikel aus oder beschreiben Sie uns Ihr Vorhaben.“) |
+| Hinweis unter dem Absenden-Button | Absatz unter dem Button (`.mlw-wishlist__submit-note`) |
+| Leere Liste: Button zum Sortiment | Beschriftung des Buttons zur Shop-Seite (Standard „Zurück zum Shop“) |
+| Leere Liste: zweiter Button (Beschriftung und Link) | Zweiter Button, nur mit beiden Angaben, zum Beispiel „Werbemittel besprechen“ mit `/katalog/werbemittel-besprechen/?mlw_prefill[beratung]=1` |
+| Bestätigung: Überschrift | Fette Zeile über der Erfolgsmeldung (`.mlw-feedback__title`) |
+| Bestätigung: Button zurück zum Shop | Beschriftung des Buttons in der Bestätigung (Standard „Weiter einkaufen“) |
+
+Die Überschrift der Seite selbst (zum Beispiel „Ihre Produktauswahl“) kommt vom Seitentitel; Einleitungstexte über der Liste stehen als Absätze im Seiteninhalt über dem Shortcode `[mlw_wishlist_page]`.
+
 #### Link mit Vorbelegung (Buttons „Werbemittel besprechen“, „Anfrage zu diesem Katalog“)
 
 Ein Link auf die Seite mit `[mlw_wishlist_page]` kann das Formular vorbelegen: `?mlw_prefill[feldkey]=wert`.
@@ -274,6 +290,17 @@ Die Keys `name`, `email`, `phone`, `message` und `privacy_consent` sind für
 Basisfelder reserviert und lassen sich im Repeater „Zusätzliche Felder" nicht
 als Feld-Key vergeben (ACF-Validierung beim Speichern). Bereits vorhandene
 Zeilen mit einem reservierten Key werden nicht mehr ausgegeben.
+
+**Reihenfolge der Felder im Wunschlisten-Formular (seit 2.40.0):** Fest sind Name, E-Mail, Telefon, das Freitextfeld für Katalogartikel, die Nachricht und die Datenschutz-Zustimmung. Jedes Zusatzfeld hat die Einstellung **„Position im Formular“**:
+
+| Position | Stelle im Formular |
+|---|---|
+| Vor Name | ganz oben, vor dem Namen |
+| Nach Telefon (Standard) | nach dem Telefonfeld, vor dem Freitext für Katalogartikel |
+| Vor Nachricht | nach dem Freitext für Katalogartikel, direkt vor der Nachricht |
+| Nach Nachricht | nach der Nachricht, vor der Datenschutz-Zustimmung |
+
+Innerhalb einer Position gilt die Reihenfolge der Tabelle (Zeilen per Drag & Drop am Griff links verschieben). Ohne Angabe bleibt ein Feld „Nach Telefon“. Die Reihenfolge gilt auch für Mail-Platzhalter und Backend-Ansicht, weil `MediaLab_Inquiry_Settings::get_form_fields()` nach Position sortiert. Die Position wirkt nur im Wunschlisten-Formular; die anderen Anfrage-Formulare bleiben unverändert.
 
 ---
 

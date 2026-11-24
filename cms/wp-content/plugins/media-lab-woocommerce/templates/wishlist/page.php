@@ -59,8 +59,22 @@ $show_empty_notice    = empty( $items ) && ! $arrived_with_prefill;
         class="mlw-wishlist-back-to-shop button"
         style="display:<?php echo $show_empty_notice ? 'inline-block' : 'none'; ?>;"
     >
-        <?php esc_html_e( 'Zurück zum Shop', 'media-lab-woocommerce' ); ?>
+        <?php echo esc_html( MediaLab_Inquiry_Settings::wording( 'empty_shop_label' ) ); ?>
     </a>
+    <?php
+    // Optionaler zweiter Button bei leerer Liste (Einstellungen: „Leere Liste: zweiter Button“), nur mit Beschriftung UND Link.
+    $empty_contact_label = MediaLab_Inquiry_Settings::wording( 'empty_contact_label' );
+    $empty_contact_url   = esc_url( MediaLab_Inquiry_Settings::wording( 'empty_contact_url' ) );
+    if ( $empty_contact_label !== '' && $empty_contact_url !== '' ) :
+    ?>
+    <a
+        href="<?php echo $empty_contact_url; // phpcs:ignore WordPress.Security.EscapeOutput -- oben mit esc_url() bereinigt ?>"
+        class="mlw-wishlist-back-to-shop mlw-wishlist-back-to-shop--contact button"
+        style="display:<?php echo $show_empty_notice ? 'inline-block' : 'none'; ?>;"
+    >
+        <?php echo esc_html( $empty_contact_label ); ?>
+    </a>
+    <?php endif; ?>
 
     <?php if ( $show_form ) : ?>
 
@@ -91,6 +105,68 @@ $show_empty_notice    = empty( $items ) && ! $arrived_with_prefill;
 
             <div class="mlw-wishlist-message" style="display:none;" role="status" aria-live="polite"></div>
 
+            <?php
+            // Hinweis ohne Wunschliste (Einstellung „Formular: Hinweis ohne Wunschliste“): nur sichtbar, solange keine Artikel auf der Liste stehen.
+            $form_intro = $catalog_items_visible ? MediaLab_Inquiry_Settings::wording( 'form_intro' ) : '';
+            if ( $form_intro !== '' ) : ?>
+                <p class="mlw-wishlist__intro"<?php echo empty( $items ) ? '' : ' style="display:none;"'; ?>><?php echo esc_html( $form_intro ); ?></p>
+            <?php endif; ?>
+
+            <?php
+            // Zusatzfelder (Einstellung „Zusätzliche Felder“) einer Position ausgeben. Die Position je Feld
+            // (vor Name / nach Telefon / vor Nachricht / nach Nachricht) kommt aus den Einstellungen.
+            $render_extra_fields = function ( string $position ) use ( $form_fields ) {
+            foreach ( $form_fields as $field ) :
+                if ( ( $field['field_position'] ?? 'after_phone' ) !== $position ) continue;
+                $field_key = esc_attr( $field['field_key'] ?? '' );
+                if ( ! $field_key || $field_key === 'phone' ) continue; // 'phone' ist das eingebaute Feld oben (Einstellung "Telefon")
+                $field_type  = $field['field_type']  ?? 'text';
+                $field_label = $field['label']       ?? '';
+                $required    = ! empty( $field['required'] );
+                $prefill     = MediaLab_Inquiry_Settings::prefill_value( (string) ( $field['field_key'] ?? '' ), $field_type === 'textarea' );
+
+                // Checkbox: eigene Zeile mit Kästchen links neben dem Label (gleiches Muster wie die Datenschutz-Checkbox),
+                // nicht Label oben und Kästchen darunter.
+                if ( $field_type === 'checkbox' ) : ?>
+                <div class="mlw-wishlist__form-row mlw-wishlist__form-row--checkbox">
+                    <label for="mlw-wishlist-<?php echo $field_key; ?>">
+                        <input type="checkbox" id="mlw-wishlist-<?php echo $field_key; ?>" name="<?php echo $field_key; ?>" value="1"<?php echo $required ? ' required' : ''; ?><?php checked( $prefill !== '' && ! in_array( strtolower( $prefill ), [ '0', 'false', 'no', 'nein' ], true ) ); ?>>
+                        <span><?php echo esc_html( $field_label ); ?><?php if ( $required ) echo ' *'; ?></span>
+                    </label>
+                </div>
+                <?php continue; endif; ?>
+                <div class="mlw-wishlist__form-row">
+                    <label for="mlw-wishlist-<?php echo $field_key; ?>">
+                        <?php echo esc_html( $field_label ); ?><?php if ( $required ) echo ' *'; ?>
+                    </label>
+
+                    <?php // WICHTIG: name FLACH (nicht fields[...]) - class-ajax.php::submit()
+                          // liest $_POST[$key] direkt pro konfiguriertem Zusatzfeld. ?>
+
+                    <?php if ( $field_type === 'textarea' ) : ?>
+                        <textarea id="mlw-wishlist-<?php echo $field_key; ?>" name="<?php echo $field_key; ?>" <?php echo $required ? 'required' : ''; ?>><?php echo esc_textarea( $prefill ); ?></textarea>
+                    <?php elseif ( $field_type === 'select' ) : ?>
+                        <select id="mlw-wishlist-<?php echo $field_key; ?>" name="<?php echo $field_key; ?>" <?php echo $required ? 'required' : ''; ?>>
+                            <?php foreach ( array_filter( array_map( 'trim', explode( ',', $field['options'] ?? '' ) ) ) as $option ) : ?>
+                                <option value="<?php echo esc_attr( $option ); ?>"<?php selected( $prefill, $option ); ?>><?php echo esc_html( $option ); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    <?php else : ?>
+                        <input
+                            type="<?php echo esc_attr( $field_type ); ?>"
+                            id="mlw-wishlist-<?php echo $field_key; ?>"
+                            name="<?php echo $field_key; ?>"
+                            placeholder="<?php echo esc_attr( $field['placeholder'] ?? '' ); ?>"
+                            <?php echo $prefill !== '' ? 'value="' . esc_attr( $prefill ) . '"' : ''; ?>
+                            <?php echo $required ? 'required' : ''; ?>
+                        >
+                    <?php endif; ?>
+                </div>
+            <?php endforeach;
+            }; ?>
+
+            <?php $render_extra_fields( 'before_name' ); ?>
+
             <div class="mlw-wishlist__form-row">
                 <label for="mlw-wishlist-name"><?php esc_html_e( 'Name', 'media-lab-woocommerce' ); ?> *</label>
                 <input type="text" id="mlw-wishlist-name" name="name" required value="<?php echo esc_attr( $contact['name'] ); ?>">
@@ -109,44 +185,7 @@ $show_empty_notice    = empty( $items ) && ! $arrived_with_prefill;
             </div>
             <?php endif; ?>
 
-            <?php foreach ( $form_fields as $field ) :
-                $field_key = esc_attr( $field['field_key'] ?? '' );
-                if ( ! $field_key || $field_key === 'phone' ) continue; // 'phone' ist das eingebaute Feld oben (Einstellung "Telefon")
-                $field_type  = $field['field_type']  ?? 'text';
-                $field_label = $field['label']       ?? '';
-                $required    = ! empty( $field['required'] );
-                $prefill     = MediaLab_Inquiry_Settings::prefill_value( (string) ( $field['field_key'] ?? '' ), $field_type === 'textarea' );
-            ?>
-                <div class="mlw-wishlist__form-row">
-                    <label for="mlw-wishlist-<?php echo $field_key; ?>">
-                        <?php echo esc_html( $field_label ); ?><?php if ( $required ) echo ' *'; ?>
-                    </label>
-
-                    <?php // WICHTIG: name FLACH (nicht fields[...]) - class-ajax.php::submit()
-                          // liest $_POST[$key] direkt pro konfiguriertem Zusatzfeld. ?>
-
-                    <?php if ( $field_type === 'textarea' ) : ?>
-                        <textarea id="mlw-wishlist-<?php echo $field_key; ?>" name="<?php echo $field_key; ?>" <?php echo $required ? 'required' : ''; ?>><?php echo esc_textarea( $prefill ); ?></textarea>
-                    <?php elseif ( $field_type === 'select' ) : ?>
-                        <select id="mlw-wishlist-<?php echo $field_key; ?>" name="<?php echo $field_key; ?>" <?php echo $required ? 'required' : ''; ?>>
-                            <?php foreach ( array_filter( array_map( 'trim', explode( ',', $field['options'] ?? '' ) ) ) as $option ) : ?>
-                                <option value="<?php echo esc_attr( $option ); ?>"<?php selected( $prefill, $option ); ?>><?php echo esc_html( $option ); ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                    <?php elseif ( $field_type === 'checkbox' ) : ?>
-                        <input type="checkbox" id="mlw-wishlist-<?php echo $field_key; ?>" name="<?php echo $field_key; ?>" value="1"<?php checked( $prefill !== '' && ! in_array( strtolower( $prefill ), [ '0', 'false', 'no', 'nein' ], true ) ); ?>>
-                    <?php else : ?>
-                        <input
-                            type="<?php echo esc_attr( $field_type ); ?>"
-                            id="mlw-wishlist-<?php echo $field_key; ?>"
-                            name="<?php echo $field_key; ?>"
-                            placeholder="<?php echo esc_attr( $field['placeholder'] ?? '' ); ?>"
-                            <?php echo $prefill !== '' ? 'value="' . esc_attr( $prefill ) . '"' : ''; ?>
-                            <?php echo $required ? 'required' : ''; ?>
-                        >
-                    <?php endif; ?>
-                </div>
-            <?php endforeach; ?>
+            <?php $render_extra_fields( 'after_phone' ); ?>
 
             <?php if ( $catalog_items_visible ) : ?>
                 <div class="mlw-wishlist__form-row mlw-wishlist__form-row--catalog-items">
@@ -165,10 +204,14 @@ $show_empty_notice    = empty( $items ) && ! $arrived_with_prefill;
                     ><?php echo esc_textarea( MediaLab_Inquiry_Settings::prefill_value( 'catalog_items', true, MediaLab_Inquiry_Settings::catalog_items_max_length() ) ); ?></textarea>
                 </div>
             <?php endif; ?>
+            <?php $render_extra_fields( 'before_message' ); ?>
+
             <div class="mlw-wishlist__form-row">
                 <label for="mlw-wishlist-message"><?php esc_html_e( 'Nachricht', 'media-lab-woocommerce' ); ?></label>
                 <textarea id="mlw-wishlist-message" name="message"><?php echo esc_textarea( $contact['message'] ); ?></textarea>
             </div>
+
+            <?php $render_extra_fields( 'after_message' ); ?>
 
             <?php if ( MediaLab_Inquiry_Settings::privacy_required() ) : ?>
                 <div class="mlw-wishlist__form-row mlw-wishlist__form-row--privacy">
@@ -188,6 +231,11 @@ $show_empty_notice    = empty( $items ) && ! $arrived_with_prefill;
             <button type="submit" class="mlw-wishlist-submit button" <?php disabled( empty( $items ) && ! $catalog_items_visible ); ?>>
                 <?php echo esc_html( MediaLab_Inquiry_Settings::wording( 'submit_button' ) ); ?>
             </button>
+
+            <?php $submit_note = MediaLab_Inquiry_Settings::wording( 'submit_note' ); ?>
+            <?php if ( $submit_note !== '' ) : ?>
+                <p class="mlw-wishlist__submit-note"><?php echo esc_html( $submit_note ); ?></p>
+            <?php endif; ?>
 
         </form>
 

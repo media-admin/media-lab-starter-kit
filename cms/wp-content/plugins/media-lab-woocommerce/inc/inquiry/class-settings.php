@@ -139,7 +139,7 @@ class MediaLab_Inquiry_Settings {
                 'label'        => 'Nach dem Absenden',
                 'name'         => 'mlw_after_submit',
                 'type'         => 'select',
-                'instructions' => 'Gilt für alle Anfragewege (Konfigurator, Wunschliste, Formulare). „Meldung auf der Seite“ lässt den Besucher auf der Seite und zeigt die Erfolgsmeldung mit „Weiter einkaufen“.',
+                'instructions' => 'Gilt für alle Anfragewege (Konfigurator, Wunschliste, Formulare). „Meldung auf der Seite“ lässt den Besucher auf der Seite und zeigt die Erfolgsmeldung mit dem Button „Weiter einkaufen“ (Beschriftung unter „Bestätigung: Button zurück zum Shop“).',
                 'choices'      => [ 'message' => 'Meldung auf der Seite', 'redirect' => 'Weiterleitung auf eine Seite' ],
                 'default_value'=> 'message',
                 'return_format'=> 'value',
@@ -183,6 +183,81 @@ class MediaLab_Inquiry_Settings {
                 'type'        => 'text',
                 'instructions'=> 'Hinweis unter der Bezeichnung des Freitextfelds.',
                 'placeholder' => 'Katalog, Artikelnummer und Menge je Zeile',
+                'conditional_logic' => $hide_if_multilang,
+            ],
+            [
+                'key'         => 'field_mlw_form_intro',
+                'label'       => 'Formular: Hinweis ohne Wunschliste',
+                'name'        => 'mlw_form_intro',
+                'type'        => 'textarea',
+                'rows'        => 2,
+                'instructions'=> 'Absatz über dem Formular, nur sichtbar, solange keine Artikel auf der Liste stehen (z. B. wenn die Seite über „Werbemittel besprechen“ geöffnet wird). Leer = nichts anzeigen.',
+                'placeholder' => 'Sie haben noch keine Artikel ausgewählt? Kein Problem. Beschreiben Sie uns kurz, was Sie brauchen, wir beraten Sie gern.',
+                'conditional_logic' => $hide_if_multilang,
+            ],
+            [
+                'key'         => 'field_mlw_items_or_catalog_error',
+                'label'       => 'Meldung: weder Artikel noch Freitext',
+                'name'        => 'mlw_items_or_catalog_error',
+                'type'        => 'text',
+                'instructions'=> 'Erscheint, wenn eine Anfrage ohne Artikel und ohne Eintrag im Freitextfeld für Katalogartikel abgesendet wird.',
+                'placeholder' => 'Bitte wählen Sie Artikel aus oder beschreiben Sie uns Ihr Vorhaben.',
+                'conditional_logic' => $hide_if_multilang,
+            ],
+            [
+                'key'         => 'field_mlw_submit_note',
+                'label'       => 'Hinweis unter dem Absenden-Button',
+                'name'        => 'mlw_submit_note',
+                'type'        => 'text',
+                'instructions'=> 'Kurzer Hinweis direkt unter dem Absenden-Button der Wunschliste. Leer = nichts anzeigen.',
+                'placeholder' => 'Mit dem Absenden senden Sie eine Anfrage, keine Bestellung. Eine Beauftragung erfolgt separat auf Grundlage unseres Angebots.',
+                'conditional_logic' => $hide_if_multilang,
+            ],
+            [
+                'key'         => 'field_mlw_empty_shop_label',
+                'label'       => 'Leere Liste: Button zum Sortiment',
+                'name'        => 'mlw_empty_shop_label',
+                'type'        => 'text',
+                'instructions'=> 'Beschriftung des Buttons zur Shop-Seite bei leerer Liste.',
+                'placeholder' => 'Zurück zum Shop',
+                'wrapper'     => [ 'width' => '33' ],
+                'conditional_logic' => $hide_if_multilang,
+            ],
+            [
+                'key'         => 'field_mlw_empty_contact_label',
+                'label'       => 'Leere Liste: zweiter Button (Beschriftung)',
+                'name'        => 'mlw_empty_contact_label',
+                'type'        => 'text',
+                'instructions'=> 'Zweiter Button bei leerer Liste, zum Beispiel „Werbemittel besprechen“. Wird nur angezeigt, wenn Beschriftung und Link ausgefüllt sind.',
+                'placeholder' => 'Werbemittel besprechen',
+                'wrapper'     => [ 'width' => '33' ],
+                'conditional_logic' => $hide_if_multilang,
+            ],
+            [
+                'key'         => 'field_mlw_empty_contact_url',
+                'label'       => 'Leere Liste: zweiter Button (Link)',
+                'name'        => 'mlw_empty_contact_url',
+                'type'        => 'text',
+                'instructions'=> 'Relativer Pfad oder vollständige Adresse, zum Beispiel /katalog/werbemittel-besprechen/?mlw_prefill[beratung]=1',
+                'wrapper'     => [ 'width' => '34' ],
+                'conditional_logic' => $hide_if_multilang,
+            ],
+            [
+                'key'         => 'field_mlw_success_title',
+                'label'       => 'Bestätigung: Überschrift',
+                'name'        => 'mlw_success_title',
+                'type'        => 'text',
+                'instructions'=> 'Fett gesetzte Zeile über der Erfolgsmeldung (Wunschliste und Anfrage). Leer = keine Überschrift. Nicht für „Zur Wunschliste hinzugefügt“.',
+                'placeholder' => 'Vielen Dank. Ihre Anfrage ist bei uns eingegangen.',
+                'conditional_logic' => $hide_if_multilang,
+            ],
+            [
+                'key'         => 'field_mlw_continue_label',
+                'label'       => 'Bestätigung: Button zurück zum Shop',
+                'name'        => 'mlw_continue_label',
+                'type'        => 'text',
+                'instructions'=> 'Beschriftung des Buttons in der Bestätigung (führt zur Shop-Seite).',
+                'placeholder' => 'Weiter einkaufen',
                 'conditional_logic' => $hide_if_multilang,
             ],
             [
@@ -247,6 +322,14 @@ class MediaLab_Inquiry_Settings {
                     [ 'key' => 'field_mlw_lang_price_notice',   'label' => 'Preis-Hinweistext',          'name' => 'price_notice',    'type' => 'text', 'placeholder' => 'zzgl. Versandkosten', 'wrapper' => [ 'width' => '16' ] ],
                     [ 'key' => 'field_mlw_lang_catalog_items_label', 'label' => 'Katalogartikel: Bezeichnung', 'name' => 'catalog_items_label', 'type' => 'text', 'wrapper' => [ 'width' => '25' ] ],
                     [ 'key' => 'field_mlw_lang_catalog_items_hint',  'label' => 'Katalogartikel: Hinweistext', 'name' => 'catalog_items_hint',  'type' => 'text', 'wrapper' => [ 'width' => '25' ] ],
+                    [ 'key' => 'field_mlw_lang_form_intro',          'label' => 'Formular: Hinweis ohne Wunschliste', 'name' => 'form_intro',          'type' => 'textarea', 'rows' => 2, 'wrapper' => [ 'width' => '100' ] ],
+                    [ 'key' => 'field_mlw_lang_items_or_catalog_error', 'label' => 'Meldung: weder Artikel noch Freitext', 'name' => 'items_or_catalog_error', 'type' => 'text', 'wrapper' => [ 'width' => '50' ] ],
+                    [ 'key' => 'field_mlw_lang_submit_note',         'label' => 'Hinweis unter dem Absenden-Button', 'name' => 'submit_note',         'type' => 'text', 'wrapper' => [ 'width' => '50' ] ],
+                    [ 'key' => 'field_mlw_lang_empty_shop_label',    'label' => 'Leere Liste: Button zum Sortiment', 'name' => 'empty_shop_label',    'type' => 'text', 'wrapper' => [ 'width' => '33' ] ],
+                    [ 'key' => 'field_mlw_lang_empty_contact_label', 'label' => 'Leere Liste: zweiter Button (Beschriftung)', 'name' => 'empty_contact_label', 'type' => 'text', 'wrapper' => [ 'width' => '33' ] ],
+                    [ 'key' => 'field_mlw_lang_empty_contact_url',   'label' => 'Leere Liste: zweiter Button (Link)', 'name' => 'empty_contact_url',   'type' => 'text', 'wrapper' => [ 'width' => '34' ] ],
+                    [ 'key' => 'field_mlw_lang_success_title',       'label' => 'Bestätigung: Überschrift',          'name' => 'success_title',       'type' => 'text', 'wrapper' => [ 'width' => '50' ] ],
+                    [ 'key' => 'field_mlw_lang_continue_label',      'label' => 'Bestätigung: Button zurück zum Shop', 'name' => 'continue_label',      'type' => 'text', 'wrapper' => [ 'width' => '50' ] ],
                     [ 'key' => 'field_mlw_lang_availability_on_request', 'label' => 'Verfügbarkeit: ohne Bestand', 'name' => 'availability_on_request', 'type' => 'text', 'placeholder' => 'Lieferzeit auf Anfrage', 'wrapper' => [ 'width' => '16' ] ],
                     [ 'key' => 'field_mlw_lang_privacy_text',   'label' => 'Datenschutz-Text',           'name' => 'privacy_text',    'type' => 'textarea', 'rows' => 2, 'wrapper' => [ 'width' => '100' ] ],
 
@@ -328,7 +411,7 @@ class MediaLab_Inquiry_Settings {
                         'type'  => 'text',
                         'instructions' => 'Interner Bezeichner, z.B. "company" oder "position". Reserviert sind name, email, phone, message und privacy_consent (Telefon wird über die Einstellung „Telefon" oben gesteuert). Nur Kleinbuchstaben, Zahlen, Unterstrich. Sprachunabhängig - wird als Platzhalter {feldkey} in Mails verwendet.',
                         'required' => 1,
-                        'wrapper' => [ 'width' => '20' ],
+                        'wrapper' => [ 'width' => '15' ],
                     ],
                     [
                         'key'   => 'field_mlw_ff_label',
@@ -337,7 +420,7 @@ class MediaLab_Inquiry_Settings {
                         'type'  => 'text',
                         'required' => 1,
                         'instructions' => 'Wird verwendet, wenn Mehrsprachigkeit deaktiviert ist oder keine Sprache passt.',
-                        'wrapper' => [ 'width' => '25' ],
+                        'wrapper' => [ 'width' => '20' ],
                     ],
                     [
                         'key'     => 'field_mlw_ff_type',
@@ -354,7 +437,17 @@ class MediaLab_Inquiry_Settings {
                             'date'     => 'Datum',
                         ],
                         'default_value' => 'text',
-                        'wrapper' => [ 'width' => '15' ],
+                        'wrapper' => [ 'width' => '12' ],
+                    ],
+                    [
+                        'key'     => 'field_mlw_ff_position',
+                        'label'   => 'Position im Formular',
+                        'name'    => 'field_position',
+                        'type'    => 'select',
+                        'choices' => self::FIELD_POSITIONS,
+                        'default_value' => 'after_phone',
+                        'instructions'  => 'Innerhalb einer Position gilt die Reihenfolge dieser Tabelle.',
+                        'wrapper' => [ 'width' => '18' ],
                     ],
                     [
                         'key'         => 'field_mlw_ff_options',
@@ -362,7 +455,7 @@ class MediaLab_Inquiry_Settings {
                         'name'        => 'options',
                         'type'        => 'text',
                         'instructions'=> 'Nur bei „Auswahl": kommagetrennte Liste, z.B. Vormittag,Nachmittag,Abend',
-                        'wrapper'     => [ 'width' => '20' ],
+                        'wrapper'     => [ 'width' => '15' ],
                         'conditional_logic' => [ [ [ 'field' => 'field_mlw_ff_type', 'operator' => '==', 'value' => 'select' ] ] ],
                     ],
                     [
@@ -372,14 +465,14 @@ class MediaLab_Inquiry_Settings {
                         'type'  => 'true_false',
                         'ui'    => 1,
                         'default_value' => 0,
-                        'wrapper' => [ 'width' => '10' ],
+                        'wrapper' => [ 'width' => '8' ],
                     ],
                     [
                         'key'   => 'field_mlw_ff_placeholder',
                         'label' => 'Platzhalter-Text (Fallback)',
                         'name'  => 'placeholder',
                         'type'  => 'text',
-                        'wrapper' => [ 'width' => '10' ],
+                        'wrapper' => [ 'width' => '12' ],
                     ],
                     [
                         'key'               => 'field_mlw_ff_translations',
@@ -591,6 +684,17 @@ class MediaLab_Inquiry_Settings {
     const RESERVED_FIELD_KEYS = [ 'name', 'email', 'phone', 'message', 'privacy_consent' ];
 
     /**
+     * Mögliche Positionen eines Zusatzfelds im Wunschlisten-Formular (Reihenfolge = Reihenfolge im Formular).
+     * Standard ist 'after_phone' (so standen die Zusatzfelder schon vor 2.40.0).
+     */
+    const FIELD_POSITIONS = [
+        'before_name'    => 'Vor Name',
+        'after_phone'    => 'Nach Telefon (Standard)',
+        'before_message' => 'Vor Nachricht (nach Katalog-Freitext)',
+        'after_message'  => 'Nach Nachricht',
+    ];
+
+    /**
      * Konfigurierte Zusatzfelder des Anfrage-Formulars (Rohdaten, unlokalisiert).
      * Reservierte Basisfeld-Keys werden herausgefiltert.
      */
@@ -598,9 +702,29 @@ class MediaLab_Inquiry_Settings {
         if ( ! function_exists( 'get_field' ) ) return [];
         $fields = get_field( 'mlw_form_fields', 'option' );
         if ( ! is_array( $fields ) ) return [];
-        return array_values( array_filter( $fields, function ( $f ) {
+        $fields = array_values( array_filter( $fields, function ( $f ) {
             return ! in_array( strtolower( trim( $f['field_key'] ?? '' ) ), self::RESERVED_FIELD_KEYS, true );
         } ) );
+
+        // Position normalisieren und stabil nach Position sortieren (Reihenfolge der Tabelle bleibt innerhalb einer
+        // Position erhalten). So folgen Formular, Validierung, Mail und Backend derselben Reihenfolge.
+        $order = array_flip( array_keys( self::FIELD_POSITIONS ) );
+        foreach ( $fields as $i => &$field ) {
+            $pos = $field['field_position'] ?? '';
+            $field['field_position'] = isset( $order[ $pos ] ) ? $pos : 'after_phone';
+            $field['_mlw_index']     = $i;
+        }
+        unset( $field );
+        usort( $fields, function ( $a, $b ) use ( $order ) {
+            $cmp = $order[ $a['field_position'] ] <=> $order[ $b['field_position'] ];
+            return $cmp !== 0 ? $cmp : ( $a['_mlw_index'] <=> $b['_mlw_index'] );
+        } );
+        foreach ( $fields as &$field ) {
+            unset( $field['_mlw_index'] );
+        }
+        unset( $field );
+
+        return $fields;
     }
 
     /**
@@ -869,6 +993,14 @@ class MediaLab_Inquiry_Settings {
             'availability_on_request' => '',
             'catalog_items_label' => 'Weitere Artikel aus den Blätterkatalogen',
             'catalog_items_hint'  => 'Katalog, Artikelnummer und Menge je Zeile',
+            'form_intro'          => '',
+            'items_or_catalog_error' => 'Bitte wählen Sie Artikel aus oder beschreiben Sie uns Ihr Vorhaben.',
+            'submit_note'         => '',
+            'empty_shop_label'    => 'Zurück zum Shop',
+            'empty_contact_label' => '',
+            'empty_contact_url'   => '',
+            'success_title'       => '',
+            'continue_label'      => 'Weiter einkaufen',
         ];
         $field_map = [
             'wishlist_label'   => 'mlw_wishlist_label',
@@ -882,6 +1014,14 @@ class MediaLab_Inquiry_Settings {
             'availability_on_request' => 'mlw_availability_on_request',
             'catalog_items_label' => 'mlw_catalog_items_label',
             'catalog_items_hint'  => 'mlw_catalog_items_hint',
+            'form_intro'          => 'mlw_form_intro',
+            'items_or_catalog_error' => 'mlw_items_or_catalog_error',
+            'submit_note'         => 'mlw_submit_note',
+            'empty_shop_label'    => 'mlw_empty_shop_label',
+            'empty_contact_label' => 'mlw_empty_contact_label',
+            'empty_contact_url'   => 'mlw_empty_contact_url',
+            'success_title'       => 'mlw_success_title',
+            'continue_label'      => 'mlw_continue_label',
         ];
         if ( ! isset( $field_map[ $key ] ) ) return '';
 

@@ -48,7 +48,7 @@ class MediaLab_Wishlist_Enqueue {
                 'successMessage' => MediaLab_Inquiry_Settings::wording( 'wishlist_success' ),
                 'genericError'   => __( 'Es ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.', 'media-lab-woocommerce' ),
                 'formIncomplete' => __( 'Bitte füllen Sie alle Pflichtfelder aus und akzeptieren Sie die Datenschutzerklärung.', 'media-lab-woocommerce' ),
-                'itemsOrCatalog' => __( 'Bitte wählen Sie Artikel aus oder tragen Sie weitere Artikel aus den Blätterkatalogen ein.', 'media-lab-woocommerce' ),
+                'itemsOrCatalog' => MediaLab_Inquiry_Settings::wording( 'items_or_catalog_error' ),
                 'skuLabel'       => __( 'Art.-Nr.:', 'media-lab-woocommerce' ),
                 'confirmRemove'  => __( 'Diesen Artikel von der Wunschliste entfernen?', 'media-lab-woocommerce' ),
                 'emptyWishlist'  => __( 'Ihre Wunschliste ist leer.', 'media-lab-woocommerce' ),
