@@ -1,0 +1,68 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "medialab/tile",
+  "title": "Kachel",
+  "description": "Einzelne Kachel im Kachel-Raster: Titel, Text, optional Icon oder Bild und Link bzw. Button. Nur innerhalb von medialab/tile-grid einfügbar.",
+  "category": "design",
+  "icon": "index-card",
+  "parent": [
+    "medialab/tile-grid"
+  ],
+  "textdomain": "media-lab-agency-core",
+  "usesContext": [
+    "medialab/headingLevel"
+  ],
+  "attributes": {
+    "icon": {
+      "type": "string",
+      "default": ""
+    },
+    "imageId": {
+      "type": "number",
+      "default": 0
+    },
+    "imageUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "imageAlt": {
+      "type": "string",
+      "default": ""
+    },
+    "title": {
+      "type": "string",
+      "default": ""
+    },
+    "text": {
+      "type": "string",
+      "default": ""
+    },
+    "linkUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "linkText": {
+      "type": "string",
+      "default": ""
+    },
+    "linkTarget": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "supports": {
+    "html": false,
+    "reusable": false
+  },
+  "render": "file:./render.php",
+  "example": {
+    "attributes": {
+      "icon": "📦",
+      "title": "Werbemittel",
+      "text": "Von A wie Anstecker bis Z wie Zollstock.",
+      "linkText": "Zum Katalog",
+      "linkUrl": "#"
+    }
+  }
+}

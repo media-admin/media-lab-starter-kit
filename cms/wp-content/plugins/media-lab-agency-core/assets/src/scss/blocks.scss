@@ -589,6 +589,206 @@
 
 
 // =============================================================================
+// KACHEL-RASTER + KACHEL (seit 1.40.0)
+// Farben ausschließlich über Variablen (--ml-color-*), keine festen Werte.
+// Spalten: Smartphone 1, ab 640px höchstens 2, ab 1024px wie eingestellt (1–4).
+// =============================================================================
+
+.ml-block-tile-grid {
+    display:               grid;
+    grid-template-columns: 1fr;
+    gap:                   var(--ml-space-md);
+    list-style:            none;
+    margin:                0;
+    padding:               0;
+
+    @media (min-width: 640px) {
+        &.ml-tile-grid--cols-2,
+        &.ml-tile-grid--cols-3,
+        &.ml-tile-grid--cols-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (min-width: 1024px) {
+        &.ml-tile-grid--cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        &.ml-tile-grid--cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    }
+}
+
+.ml-tile {
+    position:       relative;
+    display:        flex;
+    flex-direction: column;
+    gap:            var(--ml-space-sm);
+    padding:        var(--ml-space-lg);
+    background:     var(--ml-color-light);
+    color:          var(--ml-color-text);
+    border:         1px solid var(--ml-color-border);
+    border-radius:  var(--ml-radius);
+    transition:     border-color 0.2s ease, transform 0.2s ease;
+
+    // Ganze Kachel klickbar: Der (einzige) Link wird über die Kachel gespannt.
+    .ml-tile__link::after {
+        content:       '';
+        position:      absolute;
+        inset:         0;
+        border-radius: var(--ml-radius);
+    }
+
+    &--linked:hover {
+        border-color: var(--ml-color-primary);
+        transform:    translateY(-2px);
+
+        .ml-tile__title { color: var(--ml-color-primary); }
+    }
+
+    // Tastaturfokus: Rahmen um die ganze Kachel (progressiv, zusätzlich zum Link-Fokus)
+    &:has(.ml-tile__link:focus-visible) {
+        outline:        3px solid var(--ml-color-primary);
+        outline-offset: 3px;
+    }
+}
+
+.ml-tile__media {
+    // Bild bündig an den Kachelrand
+    margin:        calc(var(--ml-space-lg) * -1) calc(var(--ml-space-lg) * -1) 0;
+    overflow:      hidden;
+    border-radius: var(--ml-radius) var(--ml-radius) 0 0;
+}
+
+.ml-tile__img {
+    display:      block;
+    width:        100%;
+    height:       auto;
+    aspect-ratio: 16 / 10;
+    object-fit:   cover;
+}
+
+.ml-tile__icon {
+    font-size:   clamp(2rem, 4vw, 2.5rem);
+    line-height: 1;
+    color:       var(--ml-color-primary);
+}
+
+.ml-tile__body {
+    display:        flex;
+    flex-direction: column;
+    gap:            var(--ml-space-xs);
+    flex:           1;
+}
+
+.ml-tile__title {
+    margin:      0;
+    font-size:   clamp(1.125rem, 2vw, 1.375rem);
+    font-weight: 700;
+    line-height: 1.25;
+    transition:  color 0.2s ease;
+
+    .ml-tile__link {
+        color:           inherit;
+        text-decoration: none;
+
+        &:hover { text-decoration: underline; }
+    }
+}
+
+.ml-tile__text {
+    margin:      0;
+    font-size:   clamp(0.9375rem, 1.5vw, 1rem);
+    line-height: 1.6;
+    color:       var(--ml-color-text-muted);
+}
+
+.ml-tile__action {
+    margin:      auto 0 0;
+    padding-top: var(--ml-space-xs);
+}
+
+// Nur für Screenreader sichtbarer Zusatztext am Link
+.ml-tile__sr {
+    position:    absolute;
+    width:       1px;
+    height:      1px;
+    margin:      -1px;
+    padding:     0;
+    overflow:    hidden;
+    clip-path:   inset(50%);
+    white-space: nowrap;
+    border:      0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ml-tile--linked:hover { transform: none; }
+}
+
+
+// =============================================================================
+// SCHRITTE + SCHRITT (seit 1.40.0)
+// Die Nummer kommt aus einem CSS-Zähler (Reihenfolge), nicht aus dem Inhalt.
+// Smartphone: untereinander; ab 1024px nebeneinander oder untereinander.
+// =============================================================================
+
+.ml-block-steps {
+    display:       grid;
+    gap:           var(--ml-space-lg);
+    list-style:    none;
+    margin:        0;
+    padding:       0;
+    counter-reset: ml-step;
+
+    @media (min-width: 1024px) {
+        &.ml-steps--horizontal {
+            grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+        }
+    }
+}
+
+.ml-step {
+    display:               grid;
+    grid-template-columns: auto 1fr;
+    gap:                   var(--ml-space-md);
+    align-items:           start;
+    counter-increment:     ml-step;
+
+    // Zweite Zeile: leerer Alternativtext, damit Screenreader die Nummer nicht
+    // doppelt vorlesen (die Listenposition sagt „Punkt 1 von 4“ bereits an).
+    &::before {
+        content:       counter(ml-step);
+        content:       counter(ml-step) / "";
+        display:       grid;
+        place-items:   center;
+        flex-shrink:   0;
+        width:         2.5rem;
+        height:        2.5rem;
+        border-radius: 50%;
+        background:    var(--ml-color-primary);
+        color:         var(--ml-color-white);
+        font-weight:   700;
+        line-height:   1;
+    }
+
+    .ml-steps--horizontal & {
+        @media (min-width: 1024px) { grid-template-columns: 1fr; }
+    }
+}
+
+.ml-step__title {
+    margin:      0 0 var(--ml-space-xs);
+    font-size:   clamp(1.0625rem, 1.8vw, 1.25rem);
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.ml-step__text {
+    margin:      0;
+    font-size:   clamp(0.9375rem, 1.5vw, 1rem);
+    line-height: 1.6;
+    color:       var(--ml-color-text-muted);
+
+    a { color: var(--ml-color-primary); }
+}
+
+
+// =============================================================================
 // FACEBOOK VIDEO (Consent-Gate)
 // =============================================================================
 

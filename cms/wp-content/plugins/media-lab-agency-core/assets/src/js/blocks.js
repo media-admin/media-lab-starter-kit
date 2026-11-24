@@ -28,6 +28,7 @@ wp.domReady( function () {
         MediaUpload,
         MediaUploadCheck,
         useBlockProps,
+        useInnerBlocksProps,
     } = wp.blockEditor;
     const {
         PanelBody,
@@ -725,6 +726,278 @@ wp.domReady( function () {
                     ),
                 ),
             );
+        },
+    } );
+
+    // =============================================================================
+    // Kachel-Raster + Kachel (seit 1.40.0)
+    //
+    // Eltern-Block (tile-grid): <ul role="list"> mit InnerBlocks, statisch.
+    // Kind-Block (tile):        dynamisch (render.php), weil die Überschriften-
+    //                           ebene per Block-Kontext vom Raster kommt.
+    // =============================================================================
+
+    const HEADING_LEVEL_OPTIONS = [
+        { label: 'H2', value: 'h2' },
+        { label: 'H3', value: 'h3' },
+        { label: 'H4', value: 'h4' },
+    ];
+
+    const safeHeading = ( level ) => ( [ 'h2', 'h3', 'h4' ].indexOf( level ) !== -1 ? level : 'h3' );
+
+    registerBlockType( 'medialab/tile-grid', {
+        edit( { attributes, setAttributes } ) {
+            const { columns, headingLevel } = attributes;
+            const cols = Math.min( 4, Math.max( 1, columns || 3 ) );
+
+            const blockProps = useBlockProps( {
+                className: `ml-block-tile-grid ml-tile-grid--cols-${cols}`,
+            } );
+            const innerBlocksProps = useInnerBlocksProps( blockProps, {
+                allowedBlocks:  [ 'medialab/tile' ],
+                template:       [ [ 'medialab/tile' ], [ 'medialab/tile' ], [ 'medialab/tile' ] ],
+                orientation:    'horizontal',
+                renderAppender: InnerBlocks.ButtonBlockAppender,
+            } );
+
+            return el( Fragment, null,
+                el( InspectorControls, null,
+                    el( PanelBody, { title: __( 'Raster', 'media-lab-agency-core' ), initialOpen: true },
+                        el( RangeControl, {
+                            label:    __( 'Spalten (Desktop)', 'media-lab-agency-core' ),
+                            value:    cols,
+                            min:      1,
+                            max:      4,
+                            onChange: val => setAttributes( { columns: val } ),
+                            help:     __( 'Auf Tablets sind es höchstens 2, auf dem Smartphone 1 Spalte.', 'media-lab-agency-core' ),
+                        } ),
+                        el( SelectControl, {
+                            label:    __( 'Überschriftenebene der Kacheln', 'media-lab-agency-core' ),
+                            value:    safeHeading( headingLevel ),
+                            options:  HEADING_LEVEL_OPTIONS,
+                            onChange: val => setAttributes( { headingLevel: val } ),
+                            help:     __( 'Unter einer H2-Abschnittsüberschrift H3 wählen, direkt unter der Seiten-H1 H2.', 'media-lab-agency-core' ),
+                        } ),
+                    ),
+                ),
+                el( 'ul', innerBlocksProps ),
+            );
+        },
+
+        save( { attributes } ) {
+            const cols = Math.min( 4, Math.max( 1, attributes.columns || 3 ) );
+            const blockProps = useBlockProps.save( {
+                className: `ml-block-tile-grid ml-tile-grid--cols-${cols}`,
+                role:      'list', // Safari/VoiceOver: Listensemantik trotz list-style:none erhalten
+            } );
+            return el( 'ul', useInnerBlocksProps.save( blockProps ) );
+        },
+    } );
+
+    registerBlockType( 'medialab/tile', {
+        edit( { attributes, setAttributes, context } ) {
+            const { icon, imageId, imageUrl, imageAlt, title, text, linkUrl, linkText, linkTarget } = attributes;
+            const level = safeHeading( context && context[ 'medialab/headingLevel' ] );
+
+            const onSelectImage = ( media ) => {
+                setAttributes( {
+                    imageId:  media.id,
+                    imageUrl: ( media.sizes && media.sizes.large && media.sizes.large.url ) || media.url,
+                    imageAlt: media.alt || '',
+                } );
+            };
+            const onRemoveImage = () => setAttributes( { imageId: 0, imageUrl: '', imageAlt: '' } );
+
+            const blockProps = useBlockProps( { className: 'ml-tile ml-tile--editor' } );
+
+            return el( Fragment, null,
+                el( InspectorControls, null,
+                    el( PanelBody, { title: __( 'Icon oder Bild', 'media-lab-agency-core' ), initialOpen: true },
+                        el( TextControl, {
+                            label:    __( 'Icon (Emoji oder Zeichen)', 'media-lab-agency-core' ),
+                            value:    icon,
+                            onChange: val => setAttributes( { icon: val } ),
+                            help:     __( 'Rein dekorativ, wird Screenreadern nicht vorgelesen.', 'media-lab-agency-core' ),
+                        } ),
+                        el( MediaUploadCheck, null,
+                            el( MediaUpload, {
+                                onSelect:     onSelectImage,
+                                allowedTypes: [ 'image' ],
+                                value:        imageId,
+                                render( { open } ) {
+                                    return el( Fragment, null,
+                                        imageUrl && el( 'img', {
+                                            src:   imageUrl,
+                                            alt:   '',
+                                            style: { maxWidth: '100%', height: 'auto', marginBottom: '8px' },
+                                        } ),
+                                        el( Button, { onClick: open, variant: 'secondary' },
+                                            imageUrl
+                                                ? __( 'Bild ersetzen', 'media-lab-agency-core' )
+                                                : __( 'Bild auswählen', 'media-lab-agency-core' )
+                                        ),
+                                        imageUrl && el( Button, { onClick: onRemoveImage, variant: 'link', isDestructive: true, style: { marginLeft: '12px' } },
+                                            __( 'Bild entfernen', 'media-lab-agency-core' )
+                                        ),
+                                    );
+                                },
+                            } ),
+                        ),
+                        imageUrl && el( TextControl, {
+                            label:    __( 'Alternativtext', 'media-lab-agency-core' ),
+                            value:    imageAlt,
+                            onChange: val => setAttributes( { imageAlt: val } ),
+                            help:     __( 'Leer lassen, wenn das Bild nur Dekoration ist.', 'media-lab-agency-core' ),
+                        } ),
+                    ),
+                    el( PanelBody, { title: __( 'Link', 'media-lab-agency-core' ), initialOpen: true },
+                        el( TextControl, {
+                            label:       __( 'Link-URL', 'media-lab-agency-core' ),
+                            value:       linkUrl,
+                            onChange:    val => setAttributes( { linkUrl: val } ),
+                            placeholder: 'https://',
+                            help:        __( 'Mit Button-Text wird ein Button angezeigt, ohne Button-Text ist der Titel der Link. In beiden Fällen ist die ganze Kachel klickbar.', 'media-lab-agency-core' ),
+                        } ),
+                        el( ToggleControl, {
+                            label:    __( 'In neuem Tab öffnen', 'media-lab-agency-core' ),
+                            checked:  linkTarget,
+                            onChange: val => setAttributes( { linkTarget: val } ),
+                        } ),
+                    ),
+                ),
+                el( 'li', blockProps,
+                    imageUrl && el( 'div', { className: 'ml-tile__media' },
+                        el( 'img', { src: imageUrl, alt: imageAlt, className: 'ml-tile__img' } )
+                    ),
+                    icon && el( 'div', { className: 'ml-tile__icon', 'aria-hidden': 'true' }, icon ),
+                    el( 'div', { className: 'ml-tile__body' },
+                        el( RichText, {
+                            tagName:        level,
+                            className:      'ml-tile__title',
+                            value:          title,
+                            onChange:       val => setAttributes( { title: val } ),
+                            placeholder:    __( 'Titel…', 'media-lab-agency-core' ),
+                            allowedFormats: [ 'core/bold', 'core/italic' ],
+                        } ),
+                        el( RichText, {
+                            tagName:        'p',
+                            className:      'ml-tile__text',
+                            value:          text,
+                            onChange:       val => setAttributes( { text: val } ),
+                            placeholder:    __( 'Text…', 'media-lab-agency-core' ),
+                            allowedFormats: [ 'core/bold', 'core/italic' ],
+                        } ),
+                        el( 'p', { className: 'ml-tile__action' },
+                            el( RichText, {
+                                tagName:        'span',
+                                className:      'btn btn--outline ml-tile__link',
+                                value:          linkText,
+                                onChange:       val => setAttributes( { linkText: val } ),
+                                placeholder:    __( 'Button-Text (optional)…', 'media-lab-agency-core' ),
+                                allowedFormats: [],
+                            } ),
+                        ),
+                    ),
+                ),
+            );
+        },
+
+        // Dynamisch: Ausgabe über blocks/tile/render.php
+        save() {
+            return null;
+        },
+    } );
+
+    // =============================================================================
+    // Schritte + Schritt (seit 1.40.0)
+    //
+    // Eltern-Block (steps): <ol role="list"> mit InnerBlocks, statisch.
+    // Kind-Block (step):    dynamisch (render.php). Die Nummer erzeugt CSS aus
+    //                       der Reihenfolge (counter), sie wird nicht gespeichert.
+    // =============================================================================
+
+    registerBlockType( 'medialab/steps', {
+        edit( { attributes, setAttributes } ) {
+            const { orientation, headingLevel } = attributes;
+            const orient = orientation === 'vertical' ? 'vertical' : 'horizontal';
+
+            const blockProps = useBlockProps( {
+                className: `ml-block-steps ml-steps--${orient}`,
+            } );
+            const innerBlocksProps = useInnerBlocksProps( blockProps, {
+                allowedBlocks:  [ 'medialab/step' ],
+                template:       [ [ 'medialab/step' ], [ 'medialab/step' ], [ 'medialab/step' ] ],
+                orientation:    orient,
+                renderAppender: InnerBlocks.ButtonBlockAppender,
+            } );
+
+            return el( Fragment, null,
+                el( InspectorControls, null,
+                    el( PanelBody, { title: __( 'Schritte', 'media-lab-agency-core' ), initialOpen: true },
+                        el( SelectControl, {
+                            label:    __( 'Anordnung (Desktop)', 'media-lab-agency-core' ),
+                            value:    orient,
+                            options:  [
+                                { label: __( 'Nebeneinander', 'media-lab-agency-core' ), value: 'horizontal' },
+                                { label: __( 'Untereinander', 'media-lab-agency-core' ), value: 'vertical' },
+                            ],
+                            onChange: val => setAttributes( { orientation: val } ),
+                            help:     __( 'Auf dem Smartphone stehen die Schritte immer untereinander.', 'media-lab-agency-core' ),
+                        } ),
+                        el( SelectControl, {
+                            label:    __( 'Überschriftenebene der Schritte', 'media-lab-agency-core' ),
+                            value:    safeHeading( headingLevel ),
+                            options:  HEADING_LEVEL_OPTIONS,
+                            onChange: val => setAttributes( { headingLevel: val } ),
+                        } ),
+                    ),
+                ),
+                el( 'ol', innerBlocksProps ),
+            );
+        },
+
+        save( { attributes } ) {
+            const orient = attributes.orientation === 'vertical' ? 'vertical' : 'horizontal';
+            const blockProps = useBlockProps.save( {
+                className: `ml-block-steps ml-steps--${orient}`,
+                role:      'list',
+            } );
+            return el( 'ol', useInnerBlocksProps.save( blockProps ) );
+        },
+    } );
+
+    registerBlockType( 'medialab/step', {
+        edit( { attributes, setAttributes, context } ) {
+            const { title, text } = attributes;
+            const level = safeHeading( context && context[ 'medialab/headingLevel' ] );
+
+            const blockProps = useBlockProps( { className: 'ml-step ml-step--editor' } );
+
+            return el( 'li', blockProps,
+                el( 'div', { className: 'ml-step__body' },
+                    el( RichText, {
+                        tagName:        level,
+                        className:      'ml-step__title',
+                        value:          title,
+                        onChange:       val => setAttributes( { title: val } ),
+                        placeholder:    __( 'Titel des Schritts…', 'media-lab-agency-core' ),
+                        allowedFormats: [ 'core/bold', 'core/italic' ],
+                    } ),
+                    el( RichText, {
+                        tagName:        'p',
+                        className:      'ml-step__text',
+                        value:          text,
+                        onChange:       val => setAttributes( { text: val } ),
+                        placeholder:    __( 'Text…', 'media-lab-agency-core' ),
+                        allowedFormats: [ 'core/bold', 'core/italic', 'core/link' ],
+                    } ),
+                ),
+            );
+        },
+
+        // Dynamisch: Ausgabe über blocks/step/render.php
+        save() {
+            return null;
         },
     } );
 

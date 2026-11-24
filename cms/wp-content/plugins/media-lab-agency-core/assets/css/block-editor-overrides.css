@@ -50,3 +50,91 @@
 .editor-styles-wrapper .alignwide.ml-block-parallax {
     margin-inline: 0;
 }
+
+/* ── Kachel-Raster + Schritte (seit 1.40.0) ──────────────────────────
+ * Nur Layout für die Editor-Vorschau. Das Frontend-Styling kommt aus
+ * blocks.css (Variablen --ml-color-*); im Editor-Iframe sind diese nicht
+ * geladen, daher hier bewusst nur Layout und currentColor.
+ */
+
+.editor-styles-wrapper .ml-block-tile-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.editor-styles-wrapper .ml-tile-grid--cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.editor-styles-wrapper .ml-tile-grid--cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.editor-styles-wrapper .ml-tile-grid--cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+.editor-styles-wrapper .ml-tile--editor {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem;
+    border: 1px solid color-mix(in srgb, currentColor 25%, transparent);
+    border-radius: 0.5rem;
+    list-style: none;
+}
+
+.editor-styles-wrapper .ml-tile--editor .ml-tile__img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+}
+
+.editor-styles-wrapper .ml-tile--editor .ml-tile__title,
+.editor-styles-wrapper .ml-step--editor .ml-step__title {
+    margin: 0;
+}
+
+.editor-styles-wrapper .ml-tile--editor .ml-tile__text,
+.editor-styles-wrapper .ml-step--editor .ml-step__text,
+.editor-styles-wrapper .ml-tile--editor .ml-tile__action {
+    margin: 0;
+}
+
+/* Block-Appender („+“) über die volle Breite statt als Rasterzelle */
+.editor-styles-wrapper .ml-block-tile-grid > .block-list-appender,
+.editor-styles-wrapper .ml-block-steps > .block-list-appender {
+    grid-column: 1 / -1;
+}
+
+.editor-styles-wrapper .ml-block-steps {
+    display: grid;
+    gap: 1rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    counter-reset: ml-step;
+}
+
+.editor-styles-wrapper .ml-steps--horizontal {
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+}
+
+.editor-styles-wrapper .ml-step--editor {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.75rem;
+    align-items: start;
+    counter-increment: ml-step;
+    list-style: none;
+}
+
+.editor-styles-wrapper .ml-step--editor::before {
+    content: counter(ml-step);
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border: 2px solid currentColor;
+    border-radius: 50%;
+    font-weight: 700;
+    line-height: 1;
+}

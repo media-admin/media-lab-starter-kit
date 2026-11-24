@@ -1,0 +1,37 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "medialab/step",
+  "title": "Schritt",
+  "description": "Einzelner Schritt im Schritte-Block: Titel und Text. Die Nummer ergibt sich aus der Reihenfolge. Nur innerhalb von medialab/steps einfügbar.",
+  "category": "design",
+  "icon": "editor-ol",
+  "parent": [
+    "medialab/steps"
+  ],
+  "textdomain": "media-lab-agency-core",
+  "usesContext": [
+    "medialab/headingLevel"
+  ],
+  "attributes": {
+    "title": {
+      "type": "string",
+      "default": ""
+    },
+    "text": {
+      "type": "string",
+      "default": ""
+    }
+  },
+  "supports": {
+    "html": false,
+    "reusable": false
+  },
+  "render": "file:./render.php",
+  "example": {
+    "attributes": {
+      "title": "Auswählen",
+      "text": "Artikel in die Anfrageliste legen."
+    }
+  }
+}

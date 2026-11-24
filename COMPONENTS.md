@@ -60,3 +60,53 @@ Automatic! Button appears after scrolling 300px.
 ## Cookie Notice
 
 Automatic! Shows on first visit.
+
+## Block: Kachel-Raster (Agency Core, seit 1.40.0)
+
+Gutenberg-Block `medialab/tile-grid` mit Kind-Block `medialab/tile`. Kategorie „Design“.
+
+- **Raster:** Spalten 1–4 (Smartphone 1, Tablet höchstens 2, Desktop wie eingestellt); Überschriftenebene H2–H4 (Standard H3) für alle Kacheln.
+- **Kachel:** Titel, Text, optional Icon (Emoji/Zeichen) oder Bild, Link-URL, optional Button-Text, optional „in neuem Tab öffnen“.
+- **Link:** je Kachel genau ein Link. Mit Button-Text ist der Button der Link, ohne Button-Text der Titel. Die ganze Kachel ist klickbar.
+- **Einsatz:** Katalog-Einstieg, Werbemittel-Sammelseite, Startseite, Leistungsseiten.
+- **Überschriftenebene wählen:** unter einer H2-Abschnittsüberschrift H3, direkt unter der Seiten-H1 H2.
+
+Markup (Frontend):
+```html
+<ul class="ml-block-tile-grid ml-tile-grid--cols-3" role="list">
+    <li class="ml-tile ml-tile--linked">
+        <div class="ml-tile__icon" aria-hidden="true">📦</div>
+        <div class="ml-tile__body">
+            <h3 class="ml-tile__title">Titel</h3>
+            <p class="ml-tile__text">Text</p>
+            <p class="ml-tile__action"><a class="btn btn--outline ml-tile__link" href="/ziel/">Button</a></p>
+        </div>
+    </li>
+</ul>
+```
+
+Styling: `assets/src/scss/blocks.scss`, nur Variablen (`--ml-color-*`), keine festen Farbwerte. Anpassungen am Aussehen im Theme über diese Variablen.
+
+## Block: Schritte (Agency Core, seit 1.40.0)
+
+Gutenberg-Block `medialab/steps` mit Kind-Block `medialab/step`. Kategorie „Design“.
+
+- **Schritt:** Titel und Text (Text darf Links enthalten). Die Nummer ergibt sich aus der Reihenfolge (CSS-Zähler) und wird nicht gespeichert.
+- **Block-Einstellungen:** Anordnung am Desktop nebeneinander oder untereinander (Smartphone immer untereinander); Überschriftenebene H2–H4 (Standard H3).
+- **Einsatz:** Ablauf im Katalog-Einstieg (vier Schritte), „So läuft die Zusammenarbeit“ auf Leistungsseiten.
+
+Markup (Frontend):
+```html
+<ol class="ml-block-steps ml-steps--horizontal" role="list">
+    <li class="ml-step">
+        <div class="ml-step__body">
+            <h3 class="ml-step__title">Titel</h3>
+            <p class="ml-step__text">Text</p>
+        </div>
+    </li>
+</ol>
+```
+
+## Hinweis: Build der Blöcke
+
+Nach Änderungen an Blöcken im Agency Core `npm run build:blocks` im Starter-Kit-Wurzelordner ausführen (erzeugt `assets/dist/js/blocks.js` und `assets/dist/css/blocks.css`).

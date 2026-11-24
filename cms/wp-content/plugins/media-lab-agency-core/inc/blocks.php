@@ -9,7 +9,9 @@
  *
  *   Native Blocks – block.json + JS (Vite-Build), InnerBlocks-fähig
  *                   CTA-Banner, Accordion/FAQ, Icon+Text, Parallax-Sektion,
- *                   Slider (+ Folie als Kind-Block)
+ *                   Slider (+ Folie als Kind-Block),
+ *                   Kachel-Raster (+ Kachel als Kind-Block),
+ *                   Schritte (+ Schritt als Kind-Block)
  *
  * Migration (seit 1.17.0):
  *   Parallax und Slider waren ACF-PHP-Blöcke – ACF rendert Feldgruppen
@@ -93,6 +95,10 @@ function medialab_register_native_blocks(): void {
         'parallax',
         'slider',
         'slide',
+        'tile-grid',   // seit 1.40.0 – Kachel-Raster (+ Kind-Block tile, dynamisch)
+        'tile',
+        'steps',       // seit 1.40.0 – Schritte (+ Kind-Block step, dynamisch)
+        'step',
     ];
 
     foreach ( $native_blocks as $block ) {

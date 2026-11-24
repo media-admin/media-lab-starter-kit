@@ -1,0 +1,69 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "medialab/tile-grid",
+  "title": "Kachel-Raster",
+  "description": "Raster aus Kacheln (medialab/tile) mit Titel, Text, optional Icon oder Bild und Link bzw. Button je Kachel. Spaltenzahl und Überschriftenebene einstellbar.",
+  "category": "design",
+  "icon": "screenoptions",
+  "keywords": [
+    "kachel",
+    "raster",
+    "grid",
+    "tiles",
+    "karten",
+    "cards",
+    "bento"
+  ],
+  "textdomain": "media-lab-agency-core",
+  "attributes": {
+    "columns": {
+      "type": "number",
+      "default": 3
+    },
+    "headingLevel": {
+      "type": "string",
+      "default": "h3"
+    }
+  },
+  "providesContext": {
+    "medialab/headingLevel": "headingLevel"
+  },
+  "supports": {
+    "anchor": true,
+    "align": [
+      "wide",
+      "full"
+    ],
+    "spacing": {
+      "margin": true
+    }
+  },
+  "example": {
+    "attributes": {
+      "columns": 2
+    },
+    "innerBlocks": [
+      {
+        "name": "medialab/tile",
+        "attributes": {
+          "icon": "📦",
+          "title": "Werbemittel",
+          "text": "Von A wie Anstecker bis Z wie Zollstock.",
+          "linkText": "Zum Katalog",
+          "linkUrl": "#"
+        }
+      },
+      {
+        "name": "medialab/tile",
+        "attributes": {
+          "icon": "👕",
+          "title": "Textilien",
+          "text": "Für einen gemeinsamen Auftritt.",
+          "linkText": "Zum Katalog",
+          "linkUrl": "#"
+        }
+      }
+    ]
+  }
+}

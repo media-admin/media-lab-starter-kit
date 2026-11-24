@@ -1,0 +1,59 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "medialab/steps",
+  "title": "Schritte",
+  "description": "Nummerierte Schritte (medialab/step) mit Titel und Text, z. B. für einen Ablauf. Die Nummern werden automatisch vergeben.",
+  "category": "design",
+  "icon": "editor-ol",
+  "keywords": [
+    "schritte",
+    "ablauf",
+    "prozess",
+    "steps",
+    "timeline",
+    "nummeriert"
+  ],
+  "textdomain": "media-lab-agency-core",
+  "attributes": {
+    "orientation": {
+      "type": "string",
+      "default": "horizontal"
+    },
+    "headingLevel": {
+      "type": "string",
+      "default": "h3"
+    }
+  },
+  "providesContext": {
+    "medialab/headingLevel": "headingLevel"
+  },
+  "supports": {
+    "anchor": true,
+    "align": [
+      "wide",
+      "full"
+    ],
+    "spacing": {
+      "margin": true
+    }
+  },
+  "example": {
+    "innerBlocks": [
+      {
+        "name": "medialab/step",
+        "attributes": {
+          "title": "Auswählen",
+          "text": "Artikel in die Anfrageliste legen."
+        }
+      },
+      {
+        "name": "medialab/step",
+        "attributes": {
+          "title": "Anfragen",
+          "text": "Unverbindliche Anfrage senden."
+        }
+      }
+    ]
+  }
+}

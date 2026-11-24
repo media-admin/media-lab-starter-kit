@@ -20,6 +20,32 @@ Ende.
 
 ---
 
+## [1.40.0] - 2026-11-23
+
+### media-lab-agency-core 1.40.0
+
+#### Added
+- **Block „Kachel-Raster“** (`medialab/tile-grid`) mit Kind-Block **„Kachel“** (`medialab/tile`), `blocks/tile-grid/`, `blocks/tile/`:
+  - Kachel: Titel, Text, optional Icon (Emoji/Zeichen, dekorativ) **oder** Bild, Link beziehungsweise Button je Kachel (optional in neuem Tab).
+  - Raster: Spaltenzahl 1–4 einstellbar (Smartphone immer 1, Tablet höchstens 2), Überschriftenebene H2–H4 (Standard H3) für alle Kacheln.
+  - Barrierefreiheit: je Kachel genau ein Link; mit Button-Text ist der Button der Link, ohne Button-Text der Titel; der Link wird per CSS über die ganze Kachel gespannt (kein verschachtelter Link). Zusatztext für Screenreader nennt Titel und „öffnet in neuem Tab“. Dekorative Bilder mit leerem Alternativtext. Titel und Text erlauben nur Fett/Kursiv (keine Links). Raster als `<ul role="list">`.
+  - Leere Kacheln werden im Frontend nicht ausgegeben.
+- **Block „Schritte“** (`medialab/steps`) mit Kind-Block **„Schritt“** (`medialab/step`), `blocks/steps/`, `blocks/step/`:
+  - Nummerierte Schritte mit Titel und Text; Nummern erzeugt ein CSS-Zähler aus der Reihenfolge (nichts gespeichert, Umsortieren ohne Nacharbeit).
+  - Anordnung am Desktop nebeneinander oder untereinander (Smartphone immer untereinander), Überschriftenebene H2–H4 (Standard H3).
+  - Semantik `<ol role="list">`; Nummer mit leerem Alternativtext im `content`, damit Screenreader sie nicht doppelt vorlesen.
+- Styles in `assets/src/scss/blocks.scss` ausschließlich über Variablen (`--ml-color-*`, `--ml-space-*`, `--ml-radius`), keine festen Farbwerte; Layout für die Editor-Vorschau in `assets/css/block-editor-overrides.css`.
+- Einsatz laut Aufgabe: Katalog-Einstieg (fünf Kacheln, vier Schritte), Werbemittel-Sammelseite (elf Kategorien), Startseite, Leistungsseiten („So läuft die Zusammenarbeit“).
+
+#### Changed
+- `inc/blocks.php`: native Blöcke `tile-grid`, `tile`, `steps`, `step` registriert.
+- Die Kind-Blöcke sind dynamisch (`render.php`), weil die Überschriftenebene per Block-Kontext (`medialab/headingLevel`) vom Eltern-Block kommt; `save()` hat keinen Zugriff auf Kontext.
+
+#### Hinweis zum Ausrollen
+- Nach dem Update einmal `npm run build:blocks` im Starter-Kit-Wurzelordner ausführen (erzeugt `assets/dist/js/blocks.js` und `assets/dist/css/blocks.css` neu). Ohne Build erscheinen die Blöcke weder im Editor noch mit Styles im Frontend.
+
+---
+
 ## [1.39.1] - 2026-11-17
 
 ### media-lab-agency-core 1.39.1
