@@ -20,6 +20,32 @@ Ende.
 
 ---
 
+## [1.40.1] - 2026-11-24
+
+### media-lab-agency-core 1.40.1
+
+#### Fixed
+- **Kachel (`medialab/tile`): Titel im Dark Mode unsichtbar.** Das Theme setzt Überschriften auf `--color-text` (im Dark Mode hell), die Kachel hat einen hellen Hintergrund. Der Titel erbt jetzt die Textfarbe der Kachel (`color: inherit`).
+- **Kachel: Button flackerte beim Überfahren der Kachel.** `.btn--outline:hover` setzt ein `transform`; dadurch wurde der Button zum Bezugsrahmen des über die Kachel gespannten `::after`-Overlays, das Overlay schrumpfte auf Button-Größe, der Hover ging verloren und kam wieder. Der Kachel-Button hat jetzt kein `transform`, und sein Hover-Zustand (gefüllt) wird bei Hover über die ganze Kachel angezeigt.
+
+- **Dark Mode:** Die Kachel folgt jetzt den Theme-Variablen (`--color-card-bg`, `--color-text`, `--color-text-muted`, `--color-border`) und ist im Dark Mode dunkel. Titel und Button-Text bleiben hell (Rot hat auf dunklem Grund zu wenig Kontrast), Rahmen und Button-Füllung beim Hover rot. Im hellen Modus unverändert.
+- **Schritte (`medialab/step`): Beschreibungstext im Dark Mode kaum lesbar** (fester dunkelgrauer Text auf dunklem Grund). Text und Links folgen im Dark Mode den Theme-Variablen.
+
+#### Added
+- **Kachel: Icon-Auswahl im Editor.** Schaltfläche „Icon auswählen“ in der Seitenleiste mit kuratiertem Raster nach Kategorien (Werbemittel, Druck & Design, Service, Kontakt, Zeichen), „Icon entfernen“, Tooltips mit Namen je Icon. Das Textfeld bleibt für eigene Emoji und Zeichen („Eigenes Icon“).
+- **Icon-Bibliothek (einfarbige SVG-Icons):** 818 Icons aus **Tabler Icons** (Linien, MIT) und 317 aus **Elegant Icons** (gefüllt, MIT/GPL) in 17 Kategorien (Werbemittel & Textilien, Druck & Design, Büro & Business, Kontakt & Kommunikation, Social Media, Service & Prozess, Versand & Lager, Natur & Umwelt, Essen & Trinken, Pfeile, Symbole & Zeichen, Medien & Marketing, Menschen & Gesten, Orte & Verkehr, Sport & Freizeit, Technik & Geräte, Preise & Zahlen). Deutsche Namen und Suchbegriffe (z. B. „Tasse“, „Shirt“, „liefer“).
+  - `assets/icons/sprite-tabler.svg`, `sprite-elegant.svg` (SVG-Sprites), `index.json` (Katalog für den Editor), `LICENSES.md`, `README.md`.
+  - `inc/icons.php`: `medialab_icon_is_id()` (prüft `tabler:NAME` / `elegant:NAME`), `medialab_icon_svg()` (gibt Inline-SVG mit `currentColor`, `aria-hidden` zurück), `medialab_icon_editor_config()`.
+  - `tools/icon-library/` (`build.py`, `curated.py`, `de.py`) zum Neuaufbau der Bibliothek (`npm i @tabler/icons elegant-icons`, dann `python3 tools/icon-library/build.py --node-modules ./node_modules --out assets/icons`).
+  - Editor: Auswahl mit Reitern „Icons“/„Emoji“, Suche, Kategorie- und Bibliotheksfilter, „Mehr anzeigen“, Vorschau, Fehlerhinweis; Konfiguration über `window.mlIconLibrary`.
+  - Frontend: Icons werden inline gerendert (Farbe folgt dem Text, Größe 1em, Tabler-Linienstärke 1.5); keine externen Anfragen.
+
+#### Changed
+- Kachel: Hilfetext des Icon-Felds nennt die Emoji-Auswahl von macOS und Windows.
+- Kachel: Das Textfeld heißt jetzt „Eigenes Icon (Emoji oder Zeichen)“; gespeichert wird entweder Text (Emoji) oder eine Icon-ID (`tabler:…`/`elegant:…`) im Attribut `icon`. Bestehende Kacheln mit Emoji funktionieren unverändert.
+
+---
+
 ## [1.40.0] - 2026-11-23
 
 ### media-lab-agency-core 1.40.0

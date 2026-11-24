@@ -634,11 +634,26 @@
         border-radius: var(--ml-radius);
     }
 
+    // Button-Link: Kein transform am Button (auch nicht aus .btn--outline:hover).
+    // Ein transform macht den Button zum Bezugsrahmen des ::after-Overlays; das
+    // Overlay schrumpft dann auf Button-Größe, der Hover geht verloren, das
+    // transform fällt weg, das Overlay wächst wieder -> Flackern.
+    .btn.ml-tile__link,
+    .btn.ml-tile__link:hover,
+    .btn.ml-tile__link:active { transform: none; }
+
     &--linked:hover {
         border-color: var(--ml-color-primary);
         transform:    translateY(-2px);
 
         .ml-tile__title { color: var(--ml-color-primary); }
+
+        // Button zeigt den Hover-Zustand, sobald die ganze Kachel überfahren wird.
+        .btn--outline.ml-tile__link {
+            background:   var(--ml-color-primary);
+            border-color: var(--ml-color-primary);
+            color:        var(--ml-color-white);
+        }
     }
 
     // Tastaturfokus: Rahmen um die ganze Kachel (progressiv, zusätzlich zum Link-Fokus)
@@ -669,6 +684,18 @@
     color:       var(--ml-color-primary);
 }
 
+// Icons aus der Icon-Bibliothek (Inline-SVG, seit 1.40.1): Größe und Farbe
+// kommen vom umgebenden Element (1em, currentColor).
+.ml-icon {
+    display:     block;
+    width:       1em;
+    height:      1em;
+    flex-shrink: 0;
+}
+
+// Tabler-Icons sind Linien-Icons; etwas dünnerer Strich als der Standard (2).
+.ml-icon--tabler g { stroke-width: 1.5; }
+
 .ml-tile__body {
     display:        flex;
     flex-direction: column;
@@ -681,6 +708,9 @@
     font-size:   clamp(1.125rem, 2vw, 1.375rem);
     font-weight: 700;
     line-height: 1.25;
+    // Das Theme setzt Überschriften auf --color-text (im Dark Mode hell). Die
+    // Kachel hat einen eigenen hellen Hintergrund, daher Farbe der Kachel erben.
+    color:       inherit;
     transition:  color 0.2s ease;
 
     .ml-tile__link {
@@ -718,6 +748,27 @@
 
 @media (prefers-reduced-motion: reduce) {
     .ml-tile--linked:hover { transform: none; }
+}
+
+// Dark Mode (Theme setzt data-theme="dark"): Kachel folgt den Theme-Variablen.
+// Rot (--ml-color-primary) hat auf dunklem Grund zu wenig Kontrast für Text;
+// Titel und Button-Text bleiben deshalb hell, Rahmen und Button-Füllung rot.
+[data-theme='dark'] .ml-tile {
+    background:   var(--color-card-bg);
+    color:        var(--color-text);
+    border-color: var(--color-border);
+
+    .ml-tile__text { color: var(--color-text-muted); }
+
+    .btn--outline.ml-tile__link { color: var(--color-text); }
+
+    &.ml-tile--linked:hover {
+        border-color: var(--ml-color-primary);
+
+        .ml-tile__title { color: var(--color-text); }
+
+        .btn--outline.ml-tile__link { color: var(--ml-color-white); }
+    }
 }
 
 
@@ -785,6 +836,13 @@
     color:       var(--ml-color-text-muted);
 
     a { color: var(--ml-color-primary); }
+}
+
+// Dark Mode: fester dunkelgrauer Text wäre auf dunklem Grund kaum lesbar.
+[data-theme='dark'] .ml-step__text {
+    color: var(--color-text-muted);
+
+    a { color: var(--color-secondary, var(--ml-color-primary)); }
 }
 
 

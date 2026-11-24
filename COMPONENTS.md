@@ -66,7 +66,7 @@ Automatic! Shows on first visit.
 Gutenberg-Block `medialab/tile-grid` mit Kind-Block `medialab/tile`. Kategorie „Design“.
 
 - **Raster:** Spalten 1–4 (Smartphone 1, Tablet höchstens 2, Desktop wie eingestellt); Überschriftenebene H2–H4 (Standard H3) für alle Kacheln.
-- **Kachel:** Titel, Text, optional Icon (Emoji/Zeichen) oder Bild, Link-URL, optional Button-Text, optional „in neuem Tab öffnen“.
+- **Kachel:** Titel, Text, optional Icon (aus der Icon-Bibliothek oder Emoji/Zeichen) oder Bild, Link-URL, optional Button-Text, optional „in neuem Tab öffnen“.
 - **Link:** je Kachel genau ein Link. Mit Button-Text ist der Button der Link, ohne Button-Text der Titel. Die ganze Kachel ist klickbar.
 - **Einsatz:** Katalog-Einstieg, Werbemittel-Sammelseite, Startseite, Leistungsseiten.
 - **Überschriftenebene wählen:** unter einer H2-Abschnittsüberschrift H3, direkt unter der Seiten-H1 H2.
@@ -86,6 +86,17 @@ Markup (Frontend):
 ```
 
 Styling: `assets/src/scss/blocks.scss`, nur Variablen (`--ml-color-*`), keine festen Farbwerte. Anpassungen am Aussehen im Theme über diese Variablen.
+
+## Icon-Bibliothek (Agency Core, seit 1.40.1)
+
+Einfarbige SVG-Icons für Blöcke (aktuell Block „Kachel“): 818 Icons **Tabler** (Linien) und 317 **Elegant Icons** (gefüllt), 17 Kategorien, deutsche Namen und Suchbegriffe. Lizenzen: `assets/icons/LICENSES.md` (beide MIT).
+
+- **Auswahl im Editor:** Kachel → Seitenleiste „Icon auswählen“ (Suche, Kategorie, Bibliothek, „Mehr anzeigen“). Reiter „Emoji“ und Feld „Eigenes Icon“ für Emoji/Zeichen.
+- **Gespeichert:** im Attribut `icon` als `tabler:NAME` oder `elegant:NAME`; alles andere gilt als Text (Emoji).
+- **Ausgabe:** Inline-SVG, Farbe = Textfarbe (`currentColor`), Größe 1em (Klasse `.ml-icon`, `.ml-icon--tabler`/`--elegant`), `aria-hidden`.
+- **PHP:** `medialab_icon_is_id( $wert )`, `medialab_icon_svg( $id )` (`inc/icons.php`).
+- **Dateien:** `assets/icons/sprite-tabler.svg`, `sprite-elegant.svg`, `index.json`.
+- **Neuaufbau/Erweitern:** `tools/icon-library/` (`curated.py` Auswahl, `de.py` deutsche Begriffe, `build.py`); Befehl in `assets/icons/README.md`.
 
 ## Block: Schritte (Agency Core, seit 1.40.0)
 

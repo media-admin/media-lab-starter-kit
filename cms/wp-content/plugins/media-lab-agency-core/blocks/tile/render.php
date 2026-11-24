@@ -37,6 +37,12 @@ if ( $title === '' && $text === '' && $icon === '' && $image_id === 0 && $image_
     return;
 }
 
+// Icon: Eintrag aus der Icon-Bibliothek (z. B. "tabler:shirt") als Inline-SVG,
+// alles andere (Emoji, Zeichen) als Text. Eine unbekannte Bibliotheks-ID
+// (Icon wurde entfernt) wird nicht als Text ausgegeben.
+$icon_is_id = function_exists( 'medialab_icon_is_id' ) && medialab_icon_is_id( $icon );
+$icon_svg   = $icon_is_id ? medialab_icon_svg( $icon ) : '';
+
 $level = $block->context['medialab/headingLevel'] ?? 'h3';
 $level = in_array( $level, [ 'h2', 'h3', 'h4' ], true ) ? $level : 'h3';
 
@@ -96,7 +102,9 @@ if ( $sr_parts ) {
     <div class="ml-tile__media"><?php echo $image_html; // phpcs:ignore WordPress.Security.EscapeOutput -- von WP bzw. esc_* erzeugt ?></div>
     <?php endif; ?>
 
-    <?php if ( $icon !== '' ) : ?>
+    <?php if ( $icon_svg !== '' ) : ?>
+    <div class="ml-tile__icon" aria-hidden="true"><?php echo $icon_svg; // phpcs:ignore WordPress.Security.EscapeOutput -- SVG stammt aus dem Plugin (medialab_icon_svg) ?></div>
+    <?php elseif ( $icon !== '' && ! $icon_is_id ) : ?>
     <div class="ml-tile__icon" aria-hidden="true"><?php echo esc_html( $icon ); ?></div>
     <?php endif; ?>
 

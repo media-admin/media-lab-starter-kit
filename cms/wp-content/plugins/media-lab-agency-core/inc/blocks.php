@@ -202,6 +202,15 @@ function medialab_enqueue_block_editor_scripts(): void {
             filemtime( $blocks_js ),
             true
         );
+
+        // Icon-Bibliothek für die Icon-Auswahl (Kachel): Basis-URL und Version — since 1.40.1
+        if ( function_exists( 'medialab_icon_editor_config' ) ) {
+            wp_add_inline_script(
+                'medialab-blocks',
+                'window.mlIconLibrary = ' . wp_json_encode( medialab_icon_editor_config() ) . ';',
+                'before'
+            );
+        }
     }
 }
 
