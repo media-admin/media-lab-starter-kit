@@ -204,7 +204,7 @@ Größe und Rahmen kommen aus den Theme-Regeln für `.flex-control-thumbs li`, `
 |---|---|
 | Wording | Bezeichnungen, Button-Texte, Erfolgsmeldungen (Anfrage und Wunschliste getrennt), Hinweistext „Wunschliste leer", „Entfernen-Button", Preis-Hinweistext, „Verfügbarkeit: ohne Bestand" (einsprachiger Fallback) |
 | Sprachen | Mehrsprachigkeit an/aus, pro Sprache: Wording, Wunschlisten-Seite, Mail-Templates |
-| Formularfelder | Eingebautes Telefonfeld (Optional / Pflichtfeld / Ausblenden, gilt für alle Anfrage-Formulare), Zusatzfelder (Text/E-Mail/Auswahl/Checkbox/…), Pflicht/Optional, pro Sprache übersetzbar |
+| Formularfelder | Eingebautes Telefonfeld (Optional / Pflichtfeld / Ausblenden, gilt für alle Anfrage-Formulare), Freitextfeld „Weitere Artikel aus Blätterkatalogen“ (Wunschliste, Standard aus), Zusatzfelder (Text/E-Mail/Auswahl/Checkbox/…), Pflicht/Optional, pro Sprache übersetzbar |
 | Kanäle | E-Mail, WhatsApp-Link, Webhook (JSON-POST) – beliebig kombinierbar |
 | Mail-Templates | Kunden-/Admin-Mail, Platzhalter-basiert (einsprachiger Fallback) |
 | Navigation | Wunschlisten-Icon im Hauptmenü an/aus, Mengen-Badge an/aus |
@@ -232,6 +232,36 @@ und `MediaLab_Filter_Settings::attribute_label( $slug )` (leer, wenn nichts konf
 - **„Produkte pro Seite"**: WooCommerce → Einstellungen → Produkte → Anzeige (Option `mlw_products_per_page`). Wirkt auf Shop-/Kategorie-Seiten, AJAX-gefilterte Ansichten und die native Produktsuche.
 - **Preis-Suffix** (`inc/price-suffix.php`): nutzt den mehrsprachigen Preis-Hinweistext der Anfrage-Einstellungen, sonst das native WooCommerce-Feld „Preis-Anzeige-Suffix". Unabhängig von der Inquiry-Engine nutzbar.
 
+### Weitere Artikel aus Blätterkatalogen (seit 2.39.0)
+
+Optionales Freitextfeld im Anfrageformular der Wunschliste (Katalogmodus) für Artikel, die nicht als Produkte im Katalog stehen, zum Beispiel aus Blätterkatalogen. Standard: ausgeblendet, bestehende Projekte bleiben unverändert.
+
+- **Einschalten:** **Anfragen → Einstellungen → Formularfelder → „Weitere Artikel aus Blätterkatalogen“ → Freitextfeld anzeigen** (Meta-Schlüssel `mlw_catalog_items_mode`).
+- **Bezeichnung und Hinweis:** Tab „Wording“ (Standard: „Weitere Artikel aus den Blätterkatalogen“, Hinweis „Katalog, Artikelnummer und Menge je Zeile“), je Sprache im Tab „Sprachen“.
+- **Regel:** Eine Anfrage braucht mindestens einen Artikel auf der Liste **oder** einen Eintrag im Freitextfeld. Bei sichtbarem Feld erscheint das Formular deshalb auch bei leerer Wunschliste (zum Beispiel für einen Button „Werbemittel besprechen“, der auf die Wunschlisten-Seite führt). Geprüft wird serverseitig in der Inquiry-Engine und zusätzlich im Browser.
+- **Ausgabe:** Backend-Detailansicht der Anfrage (Zeile mit der Bezeichnung des Felds), Kunden- und Admin-Mail als eigener Block unter `{product_list}` (keine Änderung der Mail-Vorlagen nötig), Webhook-Feld `catalog_items`, `$data['catalog_items']` in den Hooks `mlw_before_save_inquiry` und `mlw_after_save_inquiry`.
+- **Bereinigung:** reiner Text (Tags entfernt, Zeilenumbrüche bleiben), höchstens 5000 Zeichen (Filter `mlw_catalog_items_max_length`).
+- **Nur Wunschliste:** Konfigurator, Warenkorb-Anfrage und `[mlw_inquiry_form]` zeigen das Feld nicht.
+- **„Beratung gewünscht“** o. Ä. als Checkbox über **Zusätzliche Felder** anlegen, dafür ist kein Code nötig.
+- Das Feld ist ohne eigene Gestaltung im Plugin: Aufbau `.mlw-wishlist__form-row--catalog-items` mit Hinweis `.mlw-wishlist__hint`, Gestaltung im Theme.
+
+#### Link mit Vorbelegung (Buttons „Werbemittel besprechen“, „Anfrage zu diesem Katalog“)
+
+Ein Link auf die Seite mit `[mlw_wishlist_page]` kann das Formular vorbelegen: `?mlw_prefill[feldkey]=wert`.
+
+| Zweck | Link (Beispiel) |
+|---|---|
+| Beratung ohne Artikel | `/wunschliste/?mlw_prefill[beratung]=1` |
+| Katalog vorgetragen | `/wunschliste/?mlw_prefill[catalog_items]=Luftballone%3A%20` |
+| beides | `/wunschliste/?mlw_prefill[beratung]=1&mlw_prefill[catalog_items]=Luftballone%3A%20` |
+
+- **Voraussetzung für „Beratung gewünscht“:** unter **Zusätzliche Felder** eine Checkbox anlegen (Feld-Key `beratung`, Label „Beratung gewünscht“). Der Key im Link muss dem Feld-Key entsprechen.
+- **Button:** In einem Button-Block (zum Beispiel Hero oder Kachel-Raster des Agency Core) die Adresse samt Parametern als Link eintragen. Die Wunschlisten-Seite ist die Seite, auf der `[mlw_wishlist_page]` steht; der Shortcode kann auch auf einer eigenen Seite mit eigener Überschrift stehen.
+- **Was vorbelegt wird:** Zusatzfelder (Text, E-Mail, Telefon, Datum, Textarea, Auswahl nur mit vorhandener Option, Checkbox) und `catalog_items` (nur bei sichtbarem Freitextfeld). Name, E-Mail, Telefon, Nachricht und Datenschutz-Zustimmung nie. Checkbox: `0`, `false`, `no`, `nein` = nicht angehakt, alles andere angehakt.
+- **Sicherheit:** Werte werden bereinigt, gekürzt (Felder 500 Zeichen, Freitext wie dessen Höchstlänge), escaped ausgegeben, Arrays ignoriert. Reine Anzeige: gespeichert oder gesendet wird erst beim Absenden durch den Besucher.
+- **Leere Wunschliste:** Wer bei sichtbarem Freitextfeld mit leerer Liste über so einen Link kommt, sieht direkt das Formular statt „Wunschliste leer“ mit „Zurück zum Shop“. Ohne Parameter bleibt die Seite wie bisher.
+- Im Code: `MediaLab_Inquiry_Settings::prefill_value( $key, $multiline, $max )` und `::has_prefill()`.
+
 ### Telefonfeld und reservierte Feld-Keys
 
 Name, E-Mail und Telefon sind eingebaute Basisfelder. Das Telefonfeld steuert
@@ -244,6 +274,24 @@ Die Keys `name`, `email`, `phone`, `message` und `privacy_consent` sind für
 Basisfelder reserviert und lassen sich im Repeater „Zusätzliche Felder" nicht
 als Feld-Key vergeben (ACF-Validierung beim Speichern). Bereits vorhandene
 Zeilen mit einem reservierten Key werden nicht mehr ausgegeben.
+
+---
+
+## Kategorieseiten
+
+### Überschrift (H1) und SEO-Titel je Produktkategorie (seit 2.38.0)
+
+Unter **Produkte → Kategorien → Kategorie bearbeiten** gibt es die Gruppe „Überschrift (H1) und SEO-Titel“ mit den Feldern „Überschrift (H1)“ (Meta-Schlüssel `mlw_category_h1`) und „SEO-Titel (Titel-Tag)“ (Meta-Schlüssel `mlw_category_seo_title`).
+
+- **Leer:** Die Kategorieseite zeigt den Namen der Kategorie (wie bisher).
+- **Gepflegt:** Die Kategorieseite zeigt diese Überschrift. Reiner Text, Tags werden entfernt.
+- **Unverändert** bleiben der Kategoriename (Menü, Breadcrumbs, Filter, Suche, Produktkarten) und die Meta-Beschreibung. Die H1 ändert den Titel-Tag nicht, dafür gibt es das Feld „SEO-Titel“.
+- **SEO-Titel leer:** Titel-Tag wie bisher (Kategoriename, Trennzeichen, Seitenname).
+- **SEO-Titel gepflegt:** ersetzt den Titelteil des Titel-Tags. Seitenname und Trennzeichen hängt WordPress an, den Seitennamen deshalb nicht mit eintragen. `og:title` und `twitter:title` des SEO-Plugins folgen dem SEO-Titel, weil sie den Titel über `wp_get_document_title()` lesen. Im Schema bleibt der Name der Kategorieseite der Archivtitel. Empfehlung: höchstens etwa 60 Zeichen.
+- Greift nur, wenn der Titel-Tag über die WordPress-Standardfunktion kommt (Kit-Theme: `add_theme_support( 'title-tag' )`). Ein anderes SEO-Plugin mit eigenem Titel-Filter (`pre_get_document_title`) hat Vorrang; dann den Wert mit `mlw_get_category_seo_title( get_queried_object() )` dort einsetzen.
+- **Einleitung:** in das Feld „Beschreibung“ der Kategorie schreiben. WooCommerce gibt sie auf der ersten Seite des Archivs unter der Überschrift aus, das SEO-Plugin nutzt sie als Meta-Beschreibung.
+- **Nur Produktkategorien:** Shop-Seite, Schlagwörter und Marken behalten ihre Überschrift.
+- Setzt voraus, dass das Theme die WooCommerce-Archivvorlage verwendet, die die Überschrift über `woocommerce_page_title()` ausgibt (Kit-Theme: ja). Gibt ein Theme die Überschrift selbst aus, liefert die Funktion `mlw_get_category_heading( get_queried_object() )` die gepflegte Überschrift oder einen leeren String (dann den Kategorienamen nehmen). Die Ausgabe selbst escapen.
 
 ---
 
@@ -354,6 +402,9 @@ Anzahl der Shop-Seite, wenn im Core `0` eingestellt ist (Filter
 | `mlw_loop_sku`, `mlw_loop_sku_value( $sku, $produkt )` | Produktkarten: Artikelnummer („Art.-Nr.: …“) in der Zeile unter dem Preis (Standard aus); der Wert ist anpassbar, Standard ist die SKU |
 | `mlw_loop_category`, `mlw_loop_category_terms( $terms, $produkt )` | Produktkarten: alle Kategorien als Text, durch Komma getrennt, in einer eigenen Zeile unter der Artikelnummer (Standard aus); gleiche Namen erscheinen nur einmal, die WooCommerce-Standardkategorie wird übersprungen, die Liste der Begriffe ist anpassbar |
 | `mlw_inquiry_attachment_html( $zeile, $att_id, $eintrag )` | Anfrage-Mails: HTML der Datei-Zeile in der Produktliste ersetzen (Standard: direkter Mediathek-Link mit Dateiname), zum Beispiel für nicht öffentliche Dateien |
+| `mlw_category_heading( $ueberschrift, $term )` | Überschrift (H1) einer Produktkategorie anpassen oder ersetzen; leerer Rückgabewert = Kategoriename (`inc/category-heading.php`) |
+| `mlw_catalog_items_max_length( $zeichen )` | Höchstlänge des Freitextfelds „Weitere Artikel aus den Blätterkatalogen“ (Standard 5000, mindestens 100; `MediaLab_Inquiry_Settings::catalog_items_max_length()`) |
+| `mlw_category_seo_title( $titel, $term )` | SEO-Titel (Titel-Tag) einer Produktkategorie anpassen oder ersetzen; leerer Rückgabewert = Standardtitel (`inc/category-heading.php`) |
 | `mlw_stock_unit( $einheit, $produkt )`, `mlw_stock_unit_enabled` | Mengeneinheit im Lagertext, in den Anfrage-Mails („Menge: 7 Stück“) und in der geteilten Wunschliste (Quelle: Germanized-Feld „Einheit", sonst der Filter) |
 
 ### JavaScript

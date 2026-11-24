@@ -22,13 +22,28 @@ class MediaLab_Inquiry_Engine {
      * Validiert und verarbeitet eine Anfrage vollständig.
      *
      * @param array  $items       Liste der angefragten Produkte, siehe Datei-Kommentar.
-     * @param array  $contact     Kontaktdaten aus dem Formular: name, email, phone, message, + konfigurierte Zusatzfelder.
+     * @param array  $contact     Kontaktdaten aus dem Formular: name, email, phone, message, + konfigurierte Zusatzfelder
+     *                            und optional catalog_items (Freitext „Weitere Artikel aus den Blätterkatalogen“,
+     *                            nur wirksam bei Einstellung „Freitextfeld anzeigen“).
      * @param string $source      'cart' | 'configurator' | 'wishlist'
      *
      * @return int|WP_Error  Post-ID der Anfrage oder WP_Error bei Validierungsfehlern.
      */
     public static function submit( array $items, array $contact, string $source ) {
-        if ( empty( $items ) ) {
+        // Freitext „Weitere Artikel aus den Blätterkatalogen“: nur wenn das Feld in den Einstellungen
+        // sichtbar ist (Standard: ausgeblendet, dann wird ein mitgesendeter Wert verworfen).
+        $catalog_items = '';
+        $catalog_mode  = MediaLab_Inquiry_Settings::catalog_items_mode();
+        if ( $catalog_mode === 'optional' ) {
+            $catalog_items = self::sanitize_catalog_items( (string) ( $contact['catalog_items'] ?? '' ) );
+        }
+
+        // Regel: mindestens ein Artikel oder ein Freitext (nur bei sichtbarem Freitextfeld ist
+        // eine Anfrage ohne Artikel auf der Liste möglich).
+        if ( empty( $items ) && $catalog_items === '' ) {
+            if ( $catalog_mode === 'optional' ) {
+                return new WP_Error( 'mlw_no_items', __( 'Bitte wählen Sie Artikel aus oder tragen Sie weitere Artikel aus den Blätterkatalogen ein.', 'media-lab-woocommerce' ) );
+            }
             return new WP_Error( 'mlw_no_items', __( 'Es wurden keine Produkte angegeben.', 'media-lab-woocommerce' ) );
         }
 
@@ -103,6 +118,7 @@ class MediaLab_Inquiry_Engine {
             'message'      => $msg,
             'items'        => $normalized_items,
             'extra_fields' => $extra_fields,
+            'catalog_items'=> $catalog_items,
             'source'       => $source,
         ];
 
@@ -133,6 +149,9 @@ class MediaLab_Inquiry_Engine {
         update_post_meta( $inquiry_id, 'mlw_inquiry_message',      $data['message'] );
         update_post_meta( $inquiry_id, 'mlw_inquiry_items',        $data['items'] );
         update_post_meta( $inquiry_id, 'mlw_inquiry_extra_fields', $data['extra_fields'] );
+        if ( ! empty( $data['catalog_items'] ) ) {
+            update_post_meta( $inquiry_id, 'mlw_inquiry_catalog_items', (string) $data['catalog_items'] );
+        }
 
         // Datei-Uploads final der Anfrage zuordnen (siehe class-upload-cleanup.php):
         // Marker "pending" entfernen, damit der Cleanup-Cron sie nie mehr anfasst.
@@ -151,5 +170,23 @@ class MediaLab_Inquiry_Engine {
         do_action( 'mlw_after_save_inquiry', $inquiry_id, $data );
 
         return $inquiry_id;
+    }
+
+    /**
+     * Freitext „Weitere Artikel aus den Blätterkatalogen“ bereinigen: reiner Text mit Zeilenumbrüchen,
+     * Leerzeilen am Rand entfernt, Länge begrenzt (Missbrauchsschutz).
+     */
+    public static function sanitize_catalog_items( string $text ): string {
+        $text = trim( sanitize_textarea_field( $text ) ); // erwartet bereits unslashte Eingabe (wie alle Engine-Felder)
+        if ( $text === '' ) return '';
+
+        $max = MediaLab_Inquiry_Settings::catalog_items_max_length();
+        if ( function_exists( 'mb_substr' ) ) {
+            $text = mb_substr( $text, 0, $max );
+        } else {
+            $text = substr( $text, 0, $max );
+        }
+
+        return trim( $text );
     }
 }

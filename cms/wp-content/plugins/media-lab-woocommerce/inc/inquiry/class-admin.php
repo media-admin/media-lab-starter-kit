@@ -79,6 +79,7 @@ class MediaLab_Inquiry_Admin {
         $message  = (string) $m( 'mlw_inquiry_message' );
         $extra    = $m( 'mlw_inquiry_extra_fields' );
         $items    = $m( 'mlw_inquiry_items' );
+        $catalog  = (string) $m( 'mlw_inquiry_catalog_items' );
         $channels = $m( 'mlw_inquiry_channels_sent' );
         $wa_url   = (string) $m( 'mlw_whatsapp_url' );
 
@@ -97,6 +98,9 @@ class MediaLab_Inquiry_Admin {
             }
         }
         self::row( __( 'Nachricht', 'media-lab-woocommerce' ), $message !== '' ? nl2br( esc_html( $message ) ) : '–' );
+        if ( $catalog !== '' ) {
+            self::row( MediaLab_Inquiry_Settings::wording( 'catalog_items_label' ), nl2br( esc_html( $catalog ) ) );
+        }
 
         $channel_html = is_array( $channels ) && $channels ? esc_html( implode( ', ', $channels ) ) : '–';
         if ( $wa_url !== '' ) {
@@ -106,7 +110,10 @@ class MediaLab_Inquiry_Admin {
         echo '</tbody></table>';
 
         if ( ! is_array( $items ) || ! $items ) {
-            echo '<p>' . esc_html__( 'Keine Produkte an dieser Anfrage gespeichert.', 'media-lab-woocommerce' ) . '</p>';
+            // Bei reinen Katalog-Anfragen (Freitext, ohne Artikel auf der Liste) steht der Inhalt oben in der Tabelle.
+            if ( $catalog === '' ) {
+                echo '<p>' . esc_html__( 'Keine Produkte an dieser Anfrage gespeichert.', 'media-lab-woocommerce' ) . '</p>';
+            }
             return;
         }
 

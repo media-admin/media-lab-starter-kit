@@ -625,6 +625,22 @@
             return;
         }
 
+        // Regel bei sichtbarem Freitextfeld "Weitere Artikel aus den Blätterkatalogen":
+        // mindestens ein Artikel auf der Liste oder ein Eintrag im Freitextfeld.
+        const catalogField = form.querySelector( '#mlw-wishlist-catalog-items' );
+        if ( catalogField ) {
+            const hasItems = !! document.querySelector( '.mlw-wishlist-items .mlw-wishlist-item' );
+            if ( ! hasItems && ! catalogField.value.trim() ) {
+                if ( msg ) {
+                    msg.textContent = mlwWishlist.i18n.itemsOrCatalog || mlwWishlist.i18n.genericError;
+                    msg.className = 'mlw-wishlist-message mlw-wishlist-message--error';
+                    msg.style.display = 'block';
+                }
+                catalogField.focus();
+                return;
+            }
+        }
+
         if ( btn ) btn.disabled = true;
 
         // Alle Formularfelder generisch einsammeln (Basisfelder + konfigurierte
@@ -694,10 +710,18 @@
 
         if ( ! items || items.length === 0 ) {
             container.innerHTML = '';
-            if ( submitBtn )    submitBtn.disabled = true;
             if ( totalEl )      totalEl.style.display = 'none';
             if ( noticeEl )     noticeEl.style.display = 'block';
             if ( backToShopEl ) backToShopEl.style.display = 'inline-block';
+
+            // Mit sichtbarem Freitextfeld "Weitere Artikel aus den Blätterkatalogen" bleibt das Formular
+            // auch bei leerer Liste bestehen (Anfrage nur mit Freitext möglich). Nach erfolgreichem Absenden
+            // blendet handleSubmit() das Formular selbst aus, hier wird es nicht wieder eingeblendet.
+            if ( formEl && formEl.querySelector( '#mlw-wishlist-catalog-items' ) ) {
+                return;
+            }
+
+            if ( submitBtn )    submitBtn.disabled = true;
             if ( formEl )       formEl.style.display = 'none';
             return;
         }

@@ -168,6 +168,24 @@ class MediaLab_Inquiry_Settings {
                 'conditional_logic' => $hide_if_multilang,
             ],
             [
+                'key'         => 'field_mlw_catalog_items_label',
+                'label'       => 'Katalogartikel: Bezeichnung',
+                'name'        => 'mlw_catalog_items_label',
+                'type'        => 'text',
+                'instructions'=> 'Bezeichnung des Freitextfelds für Katalogartikel (Wunschliste, Mails, Backend). Nur wirksam, wenn das Feld im Tab „Formularfelder“ angezeigt wird.',
+                'placeholder' => 'Weitere Artikel aus den Blätterkatalogen',
+                'conditional_logic' => $hide_if_multilang,
+            ],
+            [
+                'key'         => 'field_mlw_catalog_items_hint',
+                'label'       => 'Katalogartikel: Hinweistext',
+                'name'        => 'mlw_catalog_items_hint',
+                'type'        => 'text',
+                'instructions'=> 'Hinweis unter der Bezeichnung des Freitextfelds.',
+                'placeholder' => 'Katalog, Artikelnummer und Menge je Zeile',
+                'conditional_logic' => $hide_if_multilang,
+            ],
+            [
                 'key'         => 'field_mlw_price_notice',
                 'label'       => 'Preis-Hinweistext',
                 'name'        => 'mlw_price_notice',
@@ -227,6 +245,8 @@ class MediaLab_Inquiry_Settings {
                     [ 'key' => 'field_mlw_lang_wishlist_success','label' => 'Erfolgsmeldung Wunschliste','name' => 'wishlist_success','type' => 'text', 'wrapper' => [ 'width' => '14' ] ],
                     [ 'key' => 'field_mlw_lang_wishlist_empty', 'label' => 'Hinweistext: Liste leer',    'name' => 'wishlist_empty',  'type' => 'text', 'wrapper' => [ 'width' => '14' ] ],
                     [ 'key' => 'field_mlw_lang_price_notice',   'label' => 'Preis-Hinweistext',          'name' => 'price_notice',    'type' => 'text', 'placeholder' => 'zzgl. Versandkosten', 'wrapper' => [ 'width' => '16' ] ],
+                    [ 'key' => 'field_mlw_lang_catalog_items_label', 'label' => 'Katalogartikel: Bezeichnung', 'name' => 'catalog_items_label', 'type' => 'text', 'wrapper' => [ 'width' => '25' ] ],
+                    [ 'key' => 'field_mlw_lang_catalog_items_hint',  'label' => 'Katalogartikel: Hinweistext', 'name' => 'catalog_items_hint',  'type' => 'text', 'wrapper' => [ 'width' => '25' ] ],
                     [ 'key' => 'field_mlw_lang_availability_on_request', 'label' => 'Verfügbarkeit: ohne Bestand', 'name' => 'availability_on_request', 'type' => 'text', 'placeholder' => 'Lieferzeit auf Anfrage', 'wrapper' => [ 'width' => '16' ] ],
                     [ 'key' => 'field_mlw_lang_privacy_text',   'label' => 'Datenschutz-Text',           'name' => 'privacy_text',    'type' => 'textarea', 'rows' => 2, 'wrapper' => [ 'width' => '100' ] ],
 
@@ -283,6 +303,15 @@ class MediaLab_Inquiry_Settings {
                 'choices'       => [ 'optional' => 'Optional anzeigen', 'hidden' => 'Ausblenden' ],
                 'default_value' => 'optional',
                 'instructions'  => 'Freitextfeld im Kontaktschritt des Konfigurators. Der Text steht in der Mail und in der Anfrage unter „Nachricht“. Der Wunschzettel hat sein eigenes Nachrichtenfeld.',
+            ],
+            [
+                'key'           => 'field_mlw_catalog_items_mode',
+                'label'         => 'Weitere Artikel aus Blätterkatalogen',
+                'name'          => 'mlw_catalog_items_mode',
+                'type'          => 'select',
+                'choices'       => [ 'hidden' => 'Ausblenden (Standard)', 'optional' => 'Freitextfeld anzeigen' ],
+                'default_value' => 'hidden',
+                'instructions'  => 'Freitextfeld im Anfrageformular der Wunschliste (Katalogmodus) für Artikel, die nicht als Produkte im Katalog stehen, zum Beispiel aus Blätterkatalogen („Katalog, Artikelnummer und Menge je Zeile“). Ist das Feld sichtbar, genügt für eine Anfrage entweder mindestens ein Artikel auf der Liste oder ein Eintrag im Freitextfeld; die Anfrage ist dann auch bei leerer Wunschliste möglich. Bei „Ausblenden“ bleibt alles wie bisher. Bezeichnung und Hinweistext stehen im Tab „Wording“. Gilt nur für die Wunschliste, nicht für Konfigurator und Warenkorb-Anfrage.',
             ],
             [
                 'key'          => 'field_mlw_form_fields',
@@ -630,6 +659,49 @@ class MediaLab_Inquiry_Settings {
         return $mode === 'hidden' ? 'hidden' : 'optional';
     }
 
+    /**
+     * Freitextfeld „Weitere Artikel aus den Blätterkatalogen“ im Wunschlisten-Formular:
+     * 'hidden' (Standard, alles wie bisher) oder 'optional' (Feld sichtbar; eine Anfrage braucht
+     * dann mindestens einen Artikel auf der Liste oder einen Eintrag im Freitextfeld).
+     */
+    public static function catalog_items_mode(): string {
+        $mode = function_exists( 'get_field' ) ? get_field( 'mlw_catalog_items_mode', 'option' ) : '';
+        return $mode === 'optional' ? 'optional' : 'hidden';
+    }
+
+    /** Höchstlänge des Freitextfelds in Zeichen (Missbrauchsschutz), per Filter anpassbar. */
+    public static function catalog_items_max_length(): int {
+        return max( 100, (int) apply_filters( 'mlw_catalog_items_max_length', 5000 ) );
+    }
+
+    /**
+     * Vorbelegung eines Formularfelds über den Link zur Wunschlisten-Seite:
+     *   /wunschliste/?mlw_prefill[beratung]=1&mlw_prefill[catalog_items]=Luftballone%3A%20
+     *
+     * Gilt nur für die in den Einstellungen angelegten Zusatzfelder (Feld-Key) und für das Freitextfeld
+     * "catalog_items"; Name, E-Mail, Telefon, Nachricht und Datenschutz-Zustimmung werden nie vorbelegt.
+     * Der Wert wird bereinigt und gekürzt, die Ausgabe im Formular escaped die Vorlage.
+     * Reine Anzeige-Vorbelegung, nichts wird gespeichert oder gesendet, bevor der Besucher absendet.
+     *
+     * @param bool $multiline Zeilenumbrüche erhalten (Textarea) statt zu einer Zeile zu verdichten.
+     */
+    public static function prefill_value( string $key, bool $multiline = false, int $max = 500 ): string {
+        if ( $key === '' || ! self::has_prefill() || ! isset( $_GET['mlw_prefill'][ $key ] ) || is_array( $_GET['mlw_prefill'][ $key ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification -- reine Anzeige-Vorbelegung
+            return '';
+        }
+
+        $raw = wp_unslash( (string) $_GET['mlw_prefill'][ $key ] ); // phpcs:ignore WordPress.Security.NonceVerification,WordPress.Security.ValidatedSanitizedInput -- unten bereinigt
+        $val = $multiline ? sanitize_textarea_field( $raw ) : sanitize_text_field( $raw );
+        $val = trim( $val );
+
+        return function_exists( 'mb_substr' ) ? mb_substr( $val, 0, $max ) : substr( $val, 0, $max );
+    }
+
+    /** Kommt der Besucher über einen Link mit ?mlw_prefill[…] auf die Seite? */
+    public static function has_prefill(): bool {
+        return ! empty( $_GET['mlw_prefill'] ) && is_array( $_GET['mlw_prefill'] ); // phpcs:ignore WordPress.Security.NonceVerification -- reine Anzeige-Vorbelegung
+    }
+
     public static function privacy_required(): bool {
         if ( ! function_exists( 'get_field' ) ) return true;
         $val = get_field( 'mlw_privacy_required', 'option' );
@@ -795,6 +867,8 @@ class MediaLab_Inquiry_Settings {
             'wishlist_empty'   => 'Ihre Wunschliste ist zurzeit leer.',
             'price_notice'     => '',
             'availability_on_request' => '',
+            'catalog_items_label' => 'Weitere Artikel aus den Blätterkatalogen',
+            'catalog_items_hint'  => 'Katalog, Artikelnummer und Menge je Zeile',
         ];
         $field_map = [
             'wishlist_label'   => 'mlw_wishlist_label',
@@ -806,6 +880,8 @@ class MediaLab_Inquiry_Settings {
             'wishlist_empty'   => 'mlw_wishlist_empty_message',
             'price_notice'     => 'mlw_price_notice',
             'availability_on_request' => 'mlw_availability_on_request',
+            'catalog_items_label' => 'mlw_catalog_items_label',
+            'catalog_items_hint'  => 'mlw_catalog_items_hint',
         ];
         if ( ! isset( $field_map[ $key ] ) ) return '';
 

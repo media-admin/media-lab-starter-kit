@@ -52,7 +52,7 @@ class MediaLab_Inquiry_Mail {
             '{email}'        => esc_html( $data['email']   ?? '' ),
             '{phone}'        => esc_html( $data['phone']   ?? '' ),
             '{message}'      => nl2br( esc_html( $data['message'] ?? '' ) ),
-            '{product_list}' => self::format_product_list( $data['items'] ?? [] ),
+            '{product_list}' => self::format_product_list( $data['items'] ?? [], (string) ( $data['catalog_items'] ?? '' ) ),
             '{inquiry_id}'   => '#' . $inquiry_id,
             '{source}'       => self::source_label( $data['source'] ?? '' ),
             '{site_name}'    => esc_html( get_bloginfo( 'name' ) ),
@@ -84,8 +84,18 @@ class MediaLab_Inquiry_Mail {
 
     // ── Produktlisten-Formatierung (inkl. Konfigurator-Daten & Preis) ────────
 
-    public static function format_product_list( array $items ): string {
-        if ( empty( $items ) ) return '<p><em>Keine Produkte angegeben.</em></p>';
+    public static function format_product_list( array $items, string $catalog_items = '' ): string {
+        // Freitext „Weitere Artikel aus den Blätterkatalogen“ steht als eigener Block unter der Liste
+        // (Teil von {product_list}, damit auch angepasste Mail-Vorlagen ihn ohne Änderung zeigen).
+        $catalog_html = '';
+        if ( trim( $catalog_items ) !== '' ) {
+            $catalog_html = '<p style="margin-top:16px"><strong>' . esc_html( MediaLab_Inquiry_Settings::wording( 'catalog_items_label' ) ) . '</strong><br>'
+                . nl2br( esc_html( $catalog_items ) ) . '</p>';
+        }
+
+        if ( empty( $items ) ) {
+            return $catalog_html !== '' ? $catalog_html : '<p><em>Keine Produkte angegeben.</em></p>';
+        }
 
         $html = '<table cellpadding="8" cellspacing="0" border="0" style="border-collapse:collapse;width:100%">';
         $i    = 0;
@@ -192,7 +202,7 @@ class MediaLab_Inquiry_Mail {
         }
         $html .= '</table>';
 
-        return $html;
+        return $html . $catalog_html;
     }
 
     /**

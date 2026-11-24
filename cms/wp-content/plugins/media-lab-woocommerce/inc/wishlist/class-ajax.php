@@ -230,8 +230,15 @@ class MediaLab_Wishlist_Ajax {
         }
 
         $items = MediaLab_Wishlist_Storage::get_items();
-        if ( empty( $items ) ) {
-            wp_send_json_error( [ 'message' => __( 'Ihre Wunschliste ist leer.', 'media-lab-woocommerce' ) ] );
+
+        // Freitext „Weitere Artikel aus den Blätterkatalogen“ (nur bei sichtbarem Feld, siehe Engine).
+        // Eine leere Wunschliste ist nur dann ein Fehler, wenn auch kein Freitext mitkommt.
+        $catalog_items = isset( $_POST['catalog_items'] ) ? (string) wp_unslash( $_POST['catalog_items'] ) : '';
+        if ( empty( $items ) && ( MediaLab_Inquiry_Settings::catalog_items_mode() !== 'optional' || trim( $catalog_items ) === '' ) ) {
+            $empty_message = MediaLab_Inquiry_Settings::catalog_items_mode() === 'optional'
+                ? __( 'Bitte wählen Sie Artikel aus oder tragen Sie weitere Artikel aus den Blätterkatalogen ein.', 'media-lab-woocommerce' )
+                : __( 'Ihre Wunschliste ist leer.', 'media-lab-woocommerce' );
+            wp_send_json_error( [ 'message' => $empty_message ] );
         }
 
         $engine_items = [];
@@ -255,6 +262,7 @@ class MediaLab_Wishlist_Ajax {
             'phone'           => sanitize_text_field( $_POST['phone']   ?? '' ),
             'message'         => sanitize_textarea_field( $_POST['message'] ?? '' ),
             'privacy_consent' => ! empty( $_POST['privacy_consent'] ),
+            'catalog_items'   => $catalog_items, // wird in der Engine bereinigt und nur bei sichtbarem Feld übernommen
         ];
         foreach ( MediaLab_Inquiry_Settings::get_form_fields() as $field ) {
             $key = $field['field_key'] ?? '';

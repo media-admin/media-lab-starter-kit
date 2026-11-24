@@ -84,6 +84,7 @@ class MediaLab_Inquiry_Channels {
                 ];
             }, $data['items'] ?? [] ),
             'extra_fields' => $data['extra_fields'] ?? [],
+            'catalog_items'=> $data['catalog_items'] ?? '',
             'site'         => home_url(),
             'timestamp'    => current_time( 'mysql' ),
         ];
