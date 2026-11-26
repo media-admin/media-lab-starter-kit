@@ -34,9 +34,10 @@
  * Aufrufe von Hand:
  *   php heartbeat-runner.php                       # Heartbeats + Installer-Check
  *   php heartbeat-runner.php --installer-only      # nur Installer-Check
- *   php heartbeat-runner.php --check-url=https://beispiel.at [--check-url=...]
+ *   php heartbeat-runner.php --check-url=https://beispiel.at [--check-url=...] [--insecure]
  *                                                  # Einmal-Check beliebiger Adressen,
- *                                                  # ohne Config, ohne Mail (Exit-Code 2 = offen)
+ *                                                  # ohne Config, ohne Mail (Exit-Code 2 = offen).
+ *                                                  # --insecure: TLS-Prüfung aus, nur für lokale Valet-Zertifikate
  *
  * Hinweis zur Zuverlässigkeit: Better Stack erwartet pro Site einen
  * Heartbeat alle 10 Minuten mit 15 Minuten Kulanzzeit (Grace Period) -
@@ -129,9 +130,9 @@ function ml_should_alert( array &$state, string $key, int $now ): bool {
 // ── HTTP ─────────────────────────────────────────────────────────────────────
 
 /**
- * Einfacher GET. Folgt bewusst KEINEN Weiterleitungen, wenn $follow false ist:
- * Eine 302-Weiterleitung auf setup-config.php ist selbst noch kein offener
- * Installer, sondern wird über die direkte Probe erfasst.
+ * Einfacher GET, folgt Weiterleitungen (http→https, www, Slash-Umleitungen).
+ * Ohne Redirect-Folgen würde eine 301-Antwort fälschlich als "geschlossen"
+ * gewertet.
  *
  * @return array{code:int, body:string, error:string}
  */
@@ -139,7 +140,10 @@ function ml_http_get( string $url, bool $follow = true, int $timeout = 10 ): arr
     $ch = curl_init( $url );
     curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
     curl_setopt( $ch, CURLOPT_TIMEOUT, $timeout );
-    curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, true );
+    // Nur für lokale Entwicklungs-Zertifikate (Valet): --insecure bei --check-url.
+    $verify = ! ( defined( 'ML_INSECURE_TLS' ) && ML_INSECURE_TLS );
+    curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, $verify );
+    curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST, $verify ? 2 : 0 );
     curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, $follow );
     curl_setopt( $ch, CURLOPT_MAXREDIRS, 5 );
     curl_setopt( $ch, CURLOPT_USERAGENT, 'MediaLab-HeartbeatRunner/2' );
@@ -195,15 +199,16 @@ function ml_classify_installer_response( int $code, string $body ): ?string {
  * @param string   $base_url    Ohne abschließenden Slash.
  * @param string[] $admin_paths Z.B. ['/cms/wp-admin', '/wp-admin'].
  * @param callable|null $fetch  Für Tests: fn(string $url): array{code,body,error}
- * @return array{exposed: array<int,array{url:string,type:string}>, unreachable: string[]}
+ * @return array{exposed: array<int,array{url:string,type:string}>, unreachable: string[], probes: array<int,array{url:string,code:int,error:string}>}
  */
 function ml_check_installer_exposure( string $base_url, array $admin_paths, ?callable $fetch = null ): array {
     $fetch   = $fetch ?? static function ( string $url ): array {
-        return ml_http_get( $url, false );
+        return ml_http_get( $url, true );
     };
     $base    = rtrim( $base_url, '/' );
     $exposed = [];
     $failed  = [];
+    $probes  = [];
 
     foreach ( $admin_paths as $path ) {
         $path = '/' . trim( (string) $path, '/' );
@@ -211,6 +216,8 @@ function ml_check_installer_exposure( string $base_url, array $admin_paths, ?cal
         foreach ( [ 'setup-config.php?step=1', 'install.php?step=1' ] as $file ) {
             $url = $base . $path . '/' . $file;
             $res = $fetch( $url );
+
+            $probes[] = [ 'url' => $url, 'code' => (int) $res['code'], 'error' => (string) $res['error'] ];
 
             if ( $res['error'] !== '' && $res['code'] === 0 ) {
                 $failed[] = $url;
@@ -224,7 +231,7 @@ function ml_check_installer_exposure( string $base_url, array $admin_paths, ?cal
         }
     }
 
-    return [ 'exposed' => $exposed, 'unreachable' => $failed ];
+    return [ 'exposed' => $exposed, 'unreachable' => $failed, 'probes' => $probes ];
 }
 
 /**
@@ -360,20 +367,30 @@ if ( defined( 'ML_RUNNER_AS_LIBRARY' ) ) {
     return; // Nur Funktionen laden (Tests).
 }
 
-$options     = getopt( '', [ 'installer-only', 'check-url:' ] );
+$options     = getopt( '', [ 'installer-only', 'insecure', 'check-url:' ] );
 $check_urls  = isset( $options['check-url'] ) ? (array) $options['check-url'] : [];
 
 // Einmal-Check ohne Config.
 if ( $check_urls ) {
+    if ( isset( $options['insecure'] ) ) {
+        define( 'ML_INSECURE_TLS', true ); // Nur für lokale Dev-Zertifikate.
+    }
+
     $any_exposed = false;
     foreach ( $check_urls as $url ) {
         $result = ml_check_installer_exposure( (string) $url, ML_DEFAULT_ADMIN_PATHS );
+
+        foreach ( $result['probes'] as $probe ) {
+            $status = $probe['code'] > 0 ? 'HTTP ' . $probe['code'] : 'keine Antwort (' . $probe['error'] . ')';
+            echo "  {$status}  {$probe['url']}\n";
+        }
+
         if ( $result['exposed'] ) {
             $any_exposed = true;
             foreach ( $result['exposed'] as $hit ) {
-                echo "OFFEN     {$hit['url']}  ({$hit['type']})\n";
+                echo "OFFEN          {$hit['url']}  ({$hit['type']})\n";
             }
-        } elseif ( count( $result['unreachable'] ) === count( ML_DEFAULT_ADMIN_PATHS ) * 2 ) {
+        } elseif ( count( $result['unreachable'] ) === count( $result['probes'] ) ) {
             echo "KEINE ANTWORT  {$url}\n";
         } else {
             echo "geschlossen    {$url}\n";

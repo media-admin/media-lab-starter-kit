@@ -41,8 +41,11 @@
 
 ```bash
 php scripts/heartbeat-runner.php --check-url=https://kunde.at
+php scripts/heartbeat-runner.php --check-url=https://projekt.localdev --insecure
 php scripts/heartbeat-runner.php --installer-only    # nur Installer-Check für alle Config-Einträge
 ```
+
+Die Ausgabe zeigt pro Anfrage den HTTP-Status. `--insecure` schaltet die TLS-Prüfung ab und ist nur für lokale Valet-Zertifikate gedacht. Weiterleitungen (http→https, www) werden verfolgt.
 
 **Grenzen:**
 - Die Sperre per `.htaccess` gilt nur auf Apache (Hetzner, IONOS, Magenta). Unter Valet/nginx hat sie keine Wirkung – dort ist der Installer ohnehin nicht öffentlich erreichbar.
