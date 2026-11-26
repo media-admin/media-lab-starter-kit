@@ -56,6 +56,9 @@
 - [ ] ~~GitHub Action deploys to production~~
       → **Manuell:** Plugin-Ordner (außer `vendor/`) per SFTP/FTPS hochladen
       **Magenta-Hosts:** Port 22/23 blockiert → FTPS über Kundencenter-Zugang, kein SSH/SFTP-Standardport
+- [ ] `wp-config.php` liegt auf dem Server und wurde **nicht** überschrieben oder gelöscht (nie per SFTP-Sync mitlöschen; Ordner-Sync mit „delete“ ausschließen)
+- [ ] Block „Installer Lock“ in `.htaccess` / `cms/.htaccess` ist vorhanden (siehe MONITORING.md)
+- [ ] `setup.php` ist nach dem Projekt-Setup vom Server gelöscht
 - [ ] Verify https://your-domain.com
 - [ ] Monitor for 15 minutes
 - [ ] Check error logs

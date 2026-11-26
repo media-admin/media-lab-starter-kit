@@ -1,3 +1,16 @@
+# BEGIN Installer Lock
+# WordPress-Installer von außen sperren. Fehlt die wp-config.php (gelöscht,
+# nicht hochgeladen), würde WordPress sonst jedem Besucher das Installations-
+# formular zeigen - ein Angreifer könnte eine eigene Datenbank eintragen und
+# die Seite übernehmen (Vorfall 25.11.2026).
+# Gewollte Neuinstallation im Browser: diesen Block TEMPORÄR auskommentieren.
+# Lokal (Valet/nginx) und per WP-CLI ist die Regel ohne Wirkung.
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteRule ^wp-admin/(setup-config|install)\.php$ - [F,L]
+</IfModule>
+# END Installer Lock
+
 # BEGIN WordPress
 <IfModule mod_rewrite.c>
 RewriteEngine On

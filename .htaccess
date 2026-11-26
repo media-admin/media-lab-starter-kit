@@ -20,6 +20,15 @@
 </IfModule>
 # END Security Headers
 
+# BEGIN Installer Lock
+# Siehe cms/.htaccess. Dieser Block deckt den Fall ab, dass WordPress direkt im
+# Webroot oder unter /cms/ liegt und diese Datei die einzige .htaccess ist.
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteRule ^(cms/)?wp-admin/(setup-config|install)\.php$ - [F,L]
+</IfModule>
+# END Installer Lock
+
 # BEGIN WordPress
 <IfModule mod_rewrite.c>
 RewriteEngine On

@@ -5,6 +5,33 @@ Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ---
+## [Unreleased]
+
+### Security
+
+#### Added
+- **Installer-Sperre** in `.htaccess` und `cms/.htaccess` (Block „Installer Lock“):
+  `wp-admin/setup-config.php` und `wp-admin/install.php` liefern auf Apache 403.
+  Hintergrund: Fehlt die `wp-config.php`, konnte ein Angreifer den WordPress-
+  Installer mit einer eigenen Datenbank ausführen und die Seite übernehmen
+  (Vorfall 25.11.2026).
+- **Installer-Exposure-Check** im `scripts/heartbeat-runner.php`: prüft alle
+  Client-Domains und optionale `extra_urls` (Dev/Staging) alle 10 Minuten auf
+  einen erreichbaren Installer, alarmiert per Mail (`alert_email`) und wiederholt
+  den Alarm alle 6 Stunden. Meldet außerdem `rest_no_route` bei der Heartbeat-
+  Route (Plugin deaktiviert oder fremde Installation).
+  - Neue Aufrufe: `--installer-only`, `--check-url=<URL>` (Einmal-Check ohne Config)
+  - Neues Config-Format (`clients`, `alert_email`, `installer_check`); das alte
+    flache Format `domain => token` bleibt kompatibel
+  - State-Datei `scripts/heartbeat-runner.state.json` (in `.gitignore`)
+- `media-lab-agency-core`: Hardening-Modul sperrt Plugin-/Theme-Installation
+  im Backend (Details im Plugin-CHANGELOG, geplant 1.41.0).
+
+#### Changed
+- `MONITORING.md`: neuer Abschnitt „Installer-Exposure-Check“
+- `DEPLOYMENT.md`: Production-Checkliste um `wp-config.php`, Installer Lock und `setup.php` ergänzt
+
+---
 ## [1.25.0] - 2026-08-12
 
 ### media-lab-agency-core 1.20.0

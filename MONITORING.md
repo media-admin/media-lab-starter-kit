@@ -23,6 +23,32 @@
 - **Config:** `LOGTAIL_SOURCE_TOKEN` in `wp-config.php` setzen
 - **Wichtig:** Läuft über HTTP via `log-forwarder` mu-plugin — **kein SSH-Zugang nötig**. Das ist der primäre und in der Praxis meist einzige Weg, an Logs zu kommen, da die meisten Client-Sites auf Shared Hosting (Hetzner, IONOS, Magenta) ohne SSH laufen.
 
+## 🛡️ Installer-Exposure-Check (Heartbeat-Runner)
+
+**Warum:** Fehlt auf einer Site die `wp-config.php` (gelöscht, nicht hochgeladen, durch ein Deployment überschrieben), zeigt WordPress jedem Besucher das Installationsformular. Ein Angreifer trägt dann eine **eigene Datenbank** ein, legt dort einen Admin an und lädt über das Backend ein Plugin mit Webshell hoch. Genau so lief der Vorfall vom 25.11.2026 (Hetzner-Malware-Ticket). Plugins der Seite (auch `media-lab-agency-core`) können das nicht verhindern, weil WordPress ohne Config gar nicht erst lädt.
+
+**Drei Schutzschichten:**
+
+| Schicht | Wirkung | Wo |
+|---|---|---|
+| `.htaccess` „Installer Lock“ | Webserver liefert 403 für `wp-admin/setup-config.php` und `wp-admin/install.php` | `.htaccess` (Root) und `cms/.htaccess` |
+| Installer-Check im Runner | Alarm per Mail, wenn ein Installer trotzdem erreichbar ist (alle 10 Min., Wiederholung alle 6 h) | `scripts/heartbeat-runner.php` |
+| Heartbeat-Route-Check | Alarm, wenn die Seite antwortet, aber `medialab/v1/heartbeat` nicht kennt (`rest_no_route`) – Hinweis auf deaktiviertes Plugin oder fremde Installation | `scripts/heartbeat-runner.php` |
+
+**Einrichtung:** `scripts/heartbeat-runner.config.example.php` zu `heartbeat-runner.config.php` kopieren und `alert_email` setzen. Jede Domain unter `clients` wird automatisch mitgeprüft. Dev-/Staging-Ordner ohne Heartbeat kommen unter `installer_check.extra_urls` (Basis-URL der Site, z.B. `https://dev.example.at/kunde-a`). Das alte flache Format `'domain' => 'TOKEN'` läuft weiter, kann aber keine Alarm-Mail.
+
+**Von Hand prüfen** (ohne Config, ohne Mail, Exit-Code 2 = Installer offen):
+
+```bash
+php scripts/heartbeat-runner.php --check-url=https://kunde.at
+php scripts/heartbeat-runner.php --installer-only    # nur Installer-Check für alle Config-Einträge
+```
+
+**Grenzen:**
+- Die Sperre per `.htaccess` gilt nur auf Apache (Hetzner, IONOS, Magenta). Unter Valet/nginx hat sie keine Wirkung – dort ist der Installer ohnehin nicht öffentlich erreichbar.
+- Der Check erkennt einen **offenen** Installer, keine bereits **erfolgte Übernahme**. Dafür dient der Heartbeat-Route-Check (nur bei Sites mit Token) und die Kontrolle von `wp-config.php` (`DB_HOST`, `DB_NAME`, Änderungsdatum) nach jedem Alarm.
+- Gewollte Neuinstallation im Browser auf einem Server: Block „Installer Lock“ in `cms/.htaccess` kurz auskommentieren und danach sofort wieder aktivieren.
+
 ## 🔔 Notifications
 
 ### Slack Channels
