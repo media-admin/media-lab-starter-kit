@@ -23,6 +23,11 @@ define('MEDIALAB_CORE_BASENAME', plugin_basename(__FILE__));
 function medialab_core_init() {
     load_plugin_textdomain('media-lab-core', false, dirname(MEDIALAB_CORE_BASENAME) . '/languages');
 
+    // ── Hardening: Plugin-/Theme-Installation im Backend sperren — since 1.41.0 ──
+    // Bewusst als Erstes geladen: Ein Fehler in einem späteren Modul darf den Schutz nicht aushebeln.
+    require_once MEDIALAB_CORE_PATH . 'inc/hardening.php';
+    MLA_Hardening::init();
+
     // ── Core ─────────────────────────────────────────────
     require_once MEDIALAB_CORE_PATH . 'inc/shortcodes.php';
     require_once MEDIALAB_CORE_PATH . 'inc/social-share.php';

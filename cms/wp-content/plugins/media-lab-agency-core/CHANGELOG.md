@@ -20,6 +20,27 @@ Ende.
 
 ---
 
+## [Unreleased]
+
+### media-lab-agency-core (geplant: 1.41.0)
+
+#### Added
+- **Hardening-Modul (`inc/hardening.php`, Klasse `MLA_Hardening`): Plugin-/Theme-Installation im Backend gesperrt.** Auslöser: Vorfall vom 25.11.2026 auf `at.media-lab.dev` (Hetzner-Malware-Meldung, Ticket 2026112603015684) — eine Webshell wurde als Plugin per `wp-admin/update.php?action=upload-plugin` mit gültiger Admin-Session hochgeladen. Dasselbe Muster gab es zuvor bei ib-mosbacher.at.
+  - Gesperrt für alle Benutzer (auch Administratoren): `install_plugins`, `upload_plugins`, `install_themes`, `upload_themes`, `edit_plugins`, `edit_themes`, `edit_files` (über den `map_meta_cap`-Filter, wirkt auch bei Multisite-Super-Admins).
+  - Nicht gesperrt: Updates (`update_core`, `update_plugins`, `update_themes`) — automatische Updates und MainWP-Updates laufen weiter.
+  - Das Plugin schützt sich selbst: Deaktivieren/Löschen von `media-lab-agency-core` ist gesperrt (Capability-Filter, Entfernen des „Deaktivieren"-Links, Filter auf `active_plugins`), damit der Schutz nicht per „deaktivieren → hochladen" umgangen werden kann.
+  - Blockierte Versuche (`update.php`-Installationsaktionen, AJAX `install-plugin`/`install-theme`/`edit-theme-plugin-file`) werden im Activity Log protokolliert (`blocked_file_mod`) und per E-Mail gemeldet (max. 1 Mail / 15 Min., Empfänger `mla_security_notify_email`, sonst `admin_email`).
+  - Aufruf von `plugin-install.php`, `theme-install.php`, `plugin-editor.php`, `theme-editor.php` zeigt eine verständliche Sperr-Meldung statt der generischen WordPress-Fehlermeldung.
+  - **Ausnahmen nur per Code, nie per Datenbank-Option** (sonst könnte ein Angreifer mit Admin-Rechten den Schutz selbst abschalten): `define( 'MLA_ALLOW_FILE_MODS', true );` in der `wp-config.php` (temporär, für Backend-Installationen), `WP_ENVIRONMENT_TYPE` = `local` oder `development` (lokale Entwicklung mit Valet), Filter `mla_hardening_active`.
+- **Security Scanner: neuer Hardening-Check „Plugin-/Theme-Installation im Backend gesperrt"** (`file_mods_blocked`). `ok` = aktiv, `warn` = lokale/Development-Umgebung, `fail` = per Konstante oder Filter abgeschaltet (löst die Alarm-Mail des wöchentlichen Scans aus, damit `MLA_ALLOW_FILE_MODS` nicht vergessen wird).
+
+#### Hinweise
+- Neue Plugins und Themes kommen nur noch per SFTP/Git auf den Server. Auf lokalen Installationen `define( 'WP_ENVIRONMENT_TYPE', 'local' );` in die `wp-config.php` setzen.
+- Grenzen: Der Schutz gilt für das Standard-Backend und die REST-API. Plugins, die selbst Code entpacken oder ausführen (z. B. All-in-One WP Migration beim Import, Code-Snippet-Plugins), bleiben ein Risiko und gehören auf Live-Seiten nicht aktiv.
+- `DISALLOW_FILE_EDIT` in der `wp-config.php` bleibt als zusätzliche Absicherung empfohlen (wirkt auch, wenn das Plugin nicht geladen ist); der bestehende Health-Check dafür ist unverändert.
+
+---
+
 ## [1.40.1] - 2026-11-24
 
 ### media-lab-agency-core 1.40.1

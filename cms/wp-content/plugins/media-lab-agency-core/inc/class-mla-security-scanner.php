@@ -691,6 +691,7 @@ class MLA_Security_Scanner {
 	public function run_health_checks() {
 		$checks = array(
 			$this->check_disallow_file_edit(),
+			$this->check_file_mods_blocked(),
 			$this->check_uploads_php_blocked(),
 			$this->check_wp_debug_not_public(),
 			$this->check_xmlrpc(),
@@ -721,6 +722,43 @@ class MLA_Security_Scanner {
 				? 'Theme-/Plugin-Editor im Adminbereich ist deaktiviert.'
 				: 'Theme-/Plugin-Editor ist aktiv. Ein kompromittierter Admin-Account kann darüber direkt PHP-Code einschleusen.',
 			'fix' => "Zeile in wp-config.php ergänzen (vor \"That's all, stop editing!\"):\ndefine( 'DISALLOW_FILE_EDIT', true );",
+		);
+	}
+
+	/**
+	 * Prüft, ob das Hardening-Modul (inc/hardening.php) die Installation und
+	 * den Upload von Plugins/Themes im Backend sperrt. Genau dieser Weg wurde
+	 * bei at.media-lab.dev für eine Webshell genutzt (POST auf
+	 * update.php?action=upload-plugin mit gültiger Admin-Session).
+	 *
+	 * Status: ok = aktiv · warn = lokale/Development-Umgebung (gewollt) ·
+	 * fail = per Konstante/Filter abgeschaltet (z. B. nach einem Deployment
+	 * vergessen) - löst die Alarm-Mail des wöchentlichen Scans aus.
+	 */
+	private function check_file_mods_blocked() {
+		$status = class_exists( 'MLA_Hardening' )
+			? MLA_Hardening::status()
+			: array(
+				'state'  => 'missing',
+				'reason' => 'Das Hardening-Modul ist nicht geladen.',
+			);
+
+		if ( 'active' === $status['state'] ) {
+			return array(
+				'id'          => 'file_mods_blocked',
+				'label'       => 'Plugin-/Theme-Installation im Backend gesperrt',
+				'status'      => 'ok',
+				'description' => 'Installation, Upload und Datei-Editor sind für alle Benutzer gesperrt. Updates laufen weiter.',
+				'fix'         => '',
+			);
+		}
+
+		return array(
+			'id'          => 'file_mods_blocked',
+			'label'       => 'Plugin-/Theme-Installation im Backend gesperrt',
+			'status'      => 'environment' === $status['state'] ? 'warn' : 'fail',
+			'description' => 'Die Sperre ist NICHT aktiv. ' . $status['reason'] . ' Ein kompromittierter Admin-Account kann darüber eine Webshell als Plugin hochladen.',
+			'fix'         => "Konstante MLA_ALLOW_FILE_MODS aus der wp-config.php entfernen (nur temporär für Deployments setzen)\nund sicherstellen, dass WP_ENVIRONMENT_TYPE auf Live-Seiten nicht auf 'local' oder 'development' steht.",
 		);
 	}
 
