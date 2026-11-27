@@ -4,6 +4,14 @@ Alle wesentlichen Änderungen werden in dieser Datei dokumentiert.
 Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/),
 Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
+## [2.40.1] - 2026-11-27
+
+### Behoben
+- **`inc/enqueue.php`: Abhängigkeit auf ein nicht vorhandenes Style-Handle.** Das Stylesheet `assets/dist/css/woocommerce.css` hing fest an `media-lab-theme`. Dieses Handle gibt es in keinem Theme des Starter Kits (Haupt-Stylesheet: `custom-theme-style`, nach dem Umbenennen `{theme-slug}-style`). WordPress lässt ein Stylesheet mit unbekannter Abhängigkeit stillschweigend weg. In den Standard-Themes fiel das nicht auf, weil die WooCommerce-Styles in `css/style.css` kompiliert werden und `woocommerce.css` gar nicht entsteht. Sobald ein Projekt die Datei baut, wäre sie nie geladen worden.
+  - Das Handle wird jetzt zur Laufzeit bestimmt: `{stylesheet}-style`, `{template}-style`, dann `custom-theme-style`, jeweils nur wenn registriert. Ohne Treffer gibt es keine Abhängigkeit.
+  - Neuer Filter `medialab_wc_style_dependencies` zum Überschreiben.
+  - Hook-Priorität 20 (vorher 10), damit das Theme-Handle schon registriert ist.
+
 ## [2.40.0] - 2026-11-24
 
 ### Hinzugefügt
