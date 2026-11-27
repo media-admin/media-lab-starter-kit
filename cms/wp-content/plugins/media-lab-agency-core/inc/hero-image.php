@@ -402,7 +402,10 @@ function media_lab_get_hero_image(?int $post_id = null) : ?array {
     $desktop = _medialab_resolve_image(get_field('hero_image_desktop', $post_id))
             ?? _medialab_resolve_image(get_field('hero_fallback_desktop', 'option'));
 
-    if (!$desktop && has_post_thumbnail($post_id)) {
+    // Featured Image als letzter Fallback. Projekte können das abschalten, z. B. für Beiträge, deren
+    // Beitragsbilder nicht im Hero-Format vorliegen (Filter 'media_lab_hero_use_featured_image').
+    if (!$desktop && has_post_thumbnail($post_id)
+        && apply_filters('media_lab_hero_use_featured_image', true, $post_id)) {
         $desktop = _medialab_resolve_image(get_post_thumbnail_id($post_id));
     }
 

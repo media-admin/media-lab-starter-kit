@@ -34,6 +34,8 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 ### Theme (custom-theme)
 
 #### Fixed
+- **Hauptmenü vertikal mittig:** `.primary-menu li { margin-bottom: 0 }`. Die globale
+  `li`-Regel schob die Menüpunkte um den halben Abstand nach oben, gegenüber Logo und Icons.
 - `header.php`: Der Seiten-Wrapper `<div id="page" class="site">` wurde nie geöffnet,
   obwohl `footer.php` ihn schloss. Dadurch griff das Sticky-Footer-Layout
   (`.site` mit Flex und `min-height: 100vh`) nicht, und der Footer stand bei kurzen
@@ -47,6 +49,12 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ---
 ## [1.25.0] - 2026-08-12
+
+### media-lab-agency-core (Unreleased)
+
+#### Added
+- Filter `media_lab_hero_use_featured_image` (Standard `true`): schaltet das Beitragsbild als
+  Hero-Fallback pro Projekt/Beitragstyp ab. Ein ausdrücklich gesetztes Hero-Bild gilt weiterhin.
 
 ### media-lab-agency-core 1.20.0
 

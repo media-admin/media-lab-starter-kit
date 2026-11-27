@@ -60,6 +60,9 @@
 
     @include respond-to('lg') { display: flex; }
 
+    // Die globale Regel li { margin-bottom } (base/_typography.scss) schob die Menüpunkte nach oben
+    li { margin-bottom: 0; }
+
     ul {
         list-style:  none;
         margin:      0;
