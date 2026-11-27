@@ -31,6 +31,16 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 - `MONITORING.md`: neuer Abschnitt „Installer-Exposure-Check“
 - `DEPLOYMENT.md`: Production-Checkliste um `wp-config.php`, Installer Lock und `setup.php` ergänzt
 
+### Theme (custom-theme)
+
+#### Fixed
+- `header.php`: Der Seiten-Wrapper `<div id="page" class="site">` wurde nie geöffnet,
+  obwohl `footer.php` ihn schloss. Dadurch griff das Sticky-Footer-Layout
+  (`.site` mit Flex und `min-height: 100vh`) nicht, und der Footer stand bei kurzen
+  Seiten nicht am unteren Fensterrand. Der Wrapper wird jetzt direkt nach dem
+  Skip-Link geöffnet. Bestehende Client-Themes, die `header.php` aus dem Kit
+  übernommen haben, brauchen dieselbe Zeile.
+
 ---
 ## [1.25.0] - 2026-08-12
 

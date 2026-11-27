@@ -95,6 +95,8 @@
     <?php esc_html_e( 'Zum Inhalt springen', 'custom-theme' ); ?>
 </a>
 
+<div id="page" class="site"><?php /* wird in footer.php geschlossen (</div><!-- #page -->) */ ?>
+
 <?php
 // ── Scroll Progress Bar ───────────────────────────────────────────────────
 // Sichtbarkeit per ACF gesteuert (Agency Core → Logo / Globale Einstellungen)
