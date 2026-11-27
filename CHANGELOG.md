@@ -40,6 +40,10 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   Seiten nicht am unteren Fensterrand. Der Wrapper wird jetzt direkt nach dem
   Skip-Link geöffnet. Bestehende Client-Themes, die `header.php` aus dem Kit
   übernommen haben, brauchen dieselbe Zeile.
+- `assets/src/js/main.js`: Das Modul `youtube-embed-consent.js` wurde nie geladen.
+  Der Platzhalter aus `agency-core` (`.ml-block-youtube-embed`) erschien zwar, aber
+  der Button „YouTube-Video laden & abspielen“ blieb wirkungslos. Jetzt wird das
+  Modul geladen, sobald ein solcher Platzhalter auf der Seite steht.
 
 ---
 ## [1.25.0] - 2026-08-12

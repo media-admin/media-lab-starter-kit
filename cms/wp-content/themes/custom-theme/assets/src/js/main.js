@@ -174,6 +174,12 @@ const initApp = async () => {
     safeInit('FacebookVideoConsent', () => FacebookVideoConsent.init());
   }
 
+  // YouTube-Videos: Klasse aus PHP → .ml-block-youtube-embed
+  if (has('.ml-block-youtube-embed')) {
+    const { default: YoutubeEmbedConsent } = await import('./components/youtube-embed-consent');
+    safeInit('YoutubeEmbedConsent', () => YoutubeEmbedConsent.init());
+  }
+
   // Social Videos: Klasse aus PHP → .ml-block-social-embed
   if (has('.ml-block-social-embed')) {
     const { default: SocialEmbedConsent } = await import('./components/social-embed-consent');
